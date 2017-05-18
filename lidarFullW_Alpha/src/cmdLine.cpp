@@ -4,8 +4,10 @@
  * Author: ravi
  */
 
+#include <stdexcept>
 #include <iostream>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include "cmdLine.hpp"
@@ -22,7 +24,7 @@ void parseCmdLineArgs (int argc,char *argv[])
 	/*if the program is run without any command line arguments, display the correct
 	 * program usage and quit.*/
 	if(argc < 2){
-		throw invalid_argument("No command line arguments present");
+		throw std::invalid_argument("No command line arguments present");
 	}
 
 

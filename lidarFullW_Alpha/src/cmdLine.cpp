@@ -13,7 +13,7 @@
 void printUsage(char *s);
 using namespace std;
 
-void parseCmdLineArgs (int argc,char **argv)
+void parseCmdLineArgs (int argc,char *argv[])
 {
 	char optionChar; 	/* Option character */
 	char *fArg; 		/* Argument of the f(file) option character */
@@ -22,8 +22,7 @@ void parseCmdLineArgs (int argc,char **argv)
 	/*if the program is run without any command line arguments, display the correct
 	 * program usage and quit.*/
 	if(argc < 2){
-		printUsage(argv[0]);
-		exit(1);
+		throw invalid_argument("No command line arguments present");
 	}
 
 

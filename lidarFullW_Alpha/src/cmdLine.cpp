@@ -4,37 +4,46 @@
  * Author: ravi
  */
 
-#include <stdexcept>
+
 #include <iostream>
-#include <string.h>
+#include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include "cmdLine.hpp"
-using namespace std;
+#include "parseFile.hpp"
 
+using namespace std;
 
 void printUsage(char *s);
 
+/**
+* Custom exception for no command line arguments
+*/
+struct cmdLineException : public exception{
+  const char * what() const throw(){
+    return "No command line arguments";
+  }
+};
+
 void parseCmdLineArgs (int argc,char *argv[])
 {
-  char optionChar; 	/* Option character */
-  char *fArg; 		/* Argument of the f(file) option character */
+  char optionChar;  /* Option character */
+  char *fArg;     /* Argument of the f(file) option character */
 
   /*if the program is run without any command line arguments, display
    * the correct program usage and quit.*/
   if(argc < 2){
-    throw std::invalid_argument("No command line arguments present");
+    printUsage(argv[0]);
+    throw cmdLineException();
   }
 
 
   static struct option long_options[] =
   {
-      /* These options don’t set a flag.
-	             We distinguish them by their indices. */
       {"file", required_argument, NULL, 'f'},
       {"help", no_argument, NULL, 'h'},
-      {0, 0, 0,	0}
+      {0, 0, 0, 0}
   };
 
   /* getopt_long stores the option index here. */
@@ -51,15 +60,15 @@ void parseCmdLineArgs (int argc,char *argv[])
     /*option h show the help information*/
     case 'f':
       fArg = optarg;
-      cout<<"Your filename is "<<fArg<<endl;
+      parseFile(fArg);
       break;
     case 'h':
       printUsage(argv[0]);
       break;
     case ':':
       /* missing option argument */
-      fprintf(stderr, "%s: option '-%c' requires an argument\n",
-          argv[0], optopt);
+      std::cerr << argv[0] << ": option '-" << optopt <<
+        "' requires an argument\n" <<endl;
       printUsage(argv[0]);
       break;
     default: /* '?' */
@@ -77,9 +86,9 @@ void parseCmdLineArgs (int argc,char *argv[])
 /* Function that shows correct usage of this program*/
 void printUsage(char *s)
 {
-  cout<<"Usage:   "<<s<<" [-option argument]+\n"<<endl;
-  cout<<"Option:  "<<"-f  fileName.pls"<<endl;
-  cout<<"         "<<"-h  show help information\n"<<endl;
-  cout<<"Example: "<<s<<" -f 140823_183115_1_clipped_test.pls"<<endl;
+  cout<<"\nUsage:   "<<s<<" [-option argument]+\n"<<endl;
+  cout<<"Option:  "<<"-f  ../src/fileName.pls"<<endl;
+  cout<<"Help:    "<<"-h\n"<<endl;
+  cout<<"Example: "<<s<<" -f ../src/140823_183115_1_clipped_test.pls\n"<<endl;
 }
 

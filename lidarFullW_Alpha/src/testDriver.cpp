@@ -14,9 +14,7 @@ int testCmdLine();
 
 int main (){
   int failCount = 0;
-
   failCount += testCmdLine(); // Final fail count
-
   std::cerr << "All Testing Complete: " << failCount << " tests failed\n";
 
 }

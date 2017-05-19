@@ -4,7 +4,6 @@
  * Author: ravi
  */
 #include <iostream>
-#include <vector>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -16,12 +15,15 @@ int testCmdLine();
 int main (){
   int failCount = 0;
 
-  failCount += testCmdLine();
+  failCount += testCmdLine(); // Final fail count
 
   std::cerr << "All Testing Complete: " << failCount << " tests failed\n";
 
 }
 
+/**
+ * This function tests various command line arguments
+ */
 int testCmdLine(){
 
   int passCount = 0;
@@ -40,20 +42,45 @@ int testCmdLine(){
   }
 
   try{
-    //Test for only 1 command line argument
+    /* Test for no command line arguments
+     * The program  name is considered an argument so we use noOfArgs = 1
+     * If an exception is caught, then the test passes
+     * Option: none
+     * Argument: none
+     * Expected result: Catch the exception and print usage
+     */
     noOfArgs = 1;
-    parseCmdLineArgs(noOfArgs,NULL);
+    strncpy( someArgs[0],"test",4);
+    parseCmdLineArgs(noOfArgs,someArgs);
     failCount++;
   }catch(const std::exception& e){
     passCount++;
   }
 
   try{	
-	//Test for 2 command line arguments
-	  noOfArgs = 2;
-    strncpy( someArgs[0],"test",4);  
-    strncpy( someArgs[1],"-f",2);  
-	  parseCmdLineArgs(noOfArgs,someArgs);
+    /* Test for 2 command line arguments
+     * option: f
+     * argument: none
+     * Expected result: Indicate that an argument is required and print usage
+     */
+    noOfArgs = 2;
+    strncpy( someArgs[1],"-f",2);
+    parseCmdLineArgs(noOfArgs,someArgs);
+    passCount++;
+  }catch(const std::exception& e){
+    std::cerr << e.what();
+    failCount++;
+  }
+
+  try{
+    /* Test for 2 command line arguments
+     * option: g
+     * argument: none
+     * Expected result: Indicate that the option is invalid and print usage
+     */
+    noOfArgs = 2;
+    strncpy( someArgs[1],"-g",2);
+    parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
     std::cerr << e.what();
@@ -61,6 +88,8 @@ int testCmdLine(){
   }
 
 
-  std::cerr << "Testing Complete: " << failCount << " of " << failCount+passCount << " tests failed\n";
+  std::cerr << "Testing Complete: " << failCount << " of " <<
+  failCount+passCount << " tests failed\n";
 	return failCount;
 }
+

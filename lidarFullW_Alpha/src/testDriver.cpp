@@ -41,6 +41,10 @@ int testCmdLine(){
     return 0;
   }
 
+  /**
+   * This section contains all good tests
+   */
+
   try{
     /* Test for no command line arguments
      * The program  name is considered an argument so we use noOfArgs = 1
@@ -71,6 +75,25 @@ int testCmdLine(){
     std::cerr << e.what();
     failCount++;
   }
+
+  try{
+    /* Test for 2 command line arguments
+     * option: h
+     * argument: none
+     * Expected result: Prints usage
+     */
+    noOfArgs = 2;
+    strncpy( someArgs[1],"-h",2);
+    parseCmdLineArgs(noOfArgs,someArgs);
+    passCount++;
+  }catch(const std::exception& e){
+    std::cerr << e.what();
+    failCount++;
+  }
+
+  /**
+   * This section contains all bad tests
+   */
 
   try{
     /* Test for 2 command line arguments

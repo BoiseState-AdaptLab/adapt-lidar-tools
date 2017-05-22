@@ -10,8 +10,8 @@ test: $(SRC)/testDriver.o $(SRC)/cmdLine.o $(SRC)/parseFile.o
 	$(CPP) -o $(BIN)/$@ $^ $(CFLAGS)  
 	bin/test
 
-clean: rm $(BIN)/* $(SRC)/*.o
-	bin/rm *
-	src/rm *.o
+clean:
+	rm bin/*
+	rm src/*.o
 
 

@@ -4,11 +4,8 @@
  * Author: ravi
  */
 
-
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <getopt.h>
 #include "cmdLine.hpp"
 #include "parseFile.hpp"
@@ -67,13 +64,13 @@ void parseCmdLineArgs (int argc,char *argv[])
       break;
     case ':':
       /* missing option argument */
-      std::cerr << argv[0] << ": option '-" << optopt <<
-        "' requires an argument\n" <<endl;
+      std::cerr << endl << argv[0] << ": option '-" << optopt <<
+        "' requires an argument" << std::endl;
       printUsage(argv[0]);
       break;
     default: /* '?' */
       /* invalid option */
-      fprintf(stderr, "%s: option '-%c' is invalid\n",
+      fprintf(stderr, "%s: option '-%c' is invalid",
           argv[0], optopt);
       printUsage(argv[0]);
       break;
@@ -86,9 +83,9 @@ void parseCmdLineArgs (int argc,char *argv[])
 /* Function that shows correct usage of this program*/
 void printUsage(char *s)
 {
-  cout<<"\nUsage:   "<<s<<" [-option argument]+\n"<<endl;
-  cout<<"Option:  "<<"-f  ../src/fileName.pls"<<endl;
-  cout<<"Help:    "<<"-h\n"<<endl;
-  cout<<"Example: "<<s<<" -f ../src/140823_183115_1_clipped_test.pls\n"<<endl;
+  std::cout<<"Usage:   "<<s<<" [-option argument]+"<<std::endl;
+  std::cout<<"Option:  "<<"-f  ../src/fileName.pls"<<std::endl;
+  std::cout<<"Help:    "<<"-h"<<std::endl;
+  std::cout<<"Example: "<<s<<" -f ../src/140823_183115_1_clipped_test.pls"<<std::endl;
 }
 

@@ -3,8 +3,8 @@
  * Created on: 18-May-2017
  * Author: ravi
  */
+
 #include <iostream>
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "cmdLine.hpp"
@@ -15,8 +15,8 @@ int testCmdLine();
 int main (){
   int failCount = 0;
   failCount += testCmdLine(); // Final fail count
-  std::cerr << "All Testing Complete: " << failCount << " tests failed\n";
-
+  std::cerr << "All Testing Complete: " << failCount << " tests failed\n" 
+    << std::endl;
 }
 
 /**
@@ -27,15 +27,16 @@ int testCmdLine(){
   int passCount = 0;
   int failCount = 0;
 
-	int noOfArgs;
-	char** someArgs;
+  int noOfArgs;
+  char** someArgs;
 
   someArgs = (char**)malloc(sizeof(char*)*10);
   for(int i=0;i<10;i++){
     someArgs[i] = (char*)malloc(sizeof(char)*256);
   }
   if(someArgs == NULL){
-    fprintf(stderr,"FAILURE: Malloc failed for testing\n");
+    std::cerr << (stderr,"FAILURE: Malloc failed for testing\n") << 
+      std::endl;
     return 0;
   }
 
@@ -53,6 +54,7 @@ int testCmdLine(){
      */
     noOfArgs = 1;
     strncpy( someArgs[0],"test",4);
+    std::cout << "\nTest 1 - No command line arguments" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     failCount++;
   }catch(const std::exception& e){
@@ -67,6 +69,7 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-f",2);
+    std::cout << "\nTest 2 - Valid option '-f' without argument" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
@@ -81,7 +84,8 @@ int testCmdLine(){
      * Expected result: Prints usage
      */
     noOfArgs = 2;
-    strncpy( someArgs[1],"-h",2);
+    strncpy( someArgs[1],"-g",2);
+    std::cout << "\nTest 3 - Valid option '-h'" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
@@ -101,6 +105,7 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-g",2);
+    std::cout << "\nTest 4 - Invalid option '-g'" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
@@ -109,8 +114,8 @@ int testCmdLine(){
   }
 
 
-  std::cerr << "Testing Complete: " << failCount << " of " <<
-  failCount+passCount << " tests failed\n";
+  std::cerr << "\nTesting Complete: " << failCount << " of " <<
+  failCount+passCount << " tests failed" << std::endl;
 	return failCount;
 }
 

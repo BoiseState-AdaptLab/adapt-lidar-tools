@@ -6,26 +6,21 @@
 
 #include <iostream>
 #include <fstream>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <string>
 #include "parseFile.hpp"
 
-using namespace std;
-
 void parseFile(char *fileName){
-  ifstream file;
+  std::ifstream file;
 
   file.open(fileName);
-  string line;
+  std::string line;
 
-  if (!file) //checks to see if file opens properly
-  {
-      cerr << "Error: Could not find the requested file.";
+  if (!file){ //checks to see if file opens properly
+    std::cerr << "Error: Could not find the requested file." << std::endl;
   }
-  else
-  {
-      if (getline(file, line)) cout << line << endl; // Get and print the line.
+  else{
+    if (getline(file, line)) 
+      std::cout << line << std::endl; // Get and print the line.
       file.close(); // Remember to close the file.
   }
 }

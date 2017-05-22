@@ -64,14 +64,15 @@ void parseCmdLineArgs (int argc,char *argv[])
       break;
     case ':':
       /* missing option argument */
-      std::cerr << endl << argv[0] << ": option '-" << optopt <<
+      std::cerr << argv[0] << ": option '-" << optopt <<
         "' requires an argument" << std::endl;
       printUsage(argv[0]);
       break;
     default: /* '?' */
       /* invalid option */
-      fprintf(stderr, "%s: option '-%c' is invalid",
-          argv[0], optopt);
+      //printf("%s: option '-%c' is invalid\n",
+      //    argv[0], optopt);
+      std::cerr << argv[1] << ": is invalid" << std::endl;
       printUsage(argv[0]);
       break;
     }
@@ -86,6 +87,6 @@ void printUsage(char *s)
   std::cout<<"Usage:   "<<s<<" [-option argument]+"<<std::endl;
   std::cout<<"Option:  "<<"-f  ../src/fileName.pls"<<std::endl;
   std::cout<<"Help:    "<<"-h"<<std::endl;
-  std::cout<<"Example: "<<s<<" -f ../src/140823_183115_1_clipped_test.pls"<<std::endl;
+  std::cout<<"Example: "<<s<<" -f ../src/140823_183115_1_clipped_test.pls\n"<<std::endl;
 }
 

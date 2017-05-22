@@ -10,12 +10,27 @@
 #include "cmdLine.hpp"
 
 int testCmdLine();
+int testFileReader();
 
 int main (){
   int failCount = 0;
-  failCount += testCmdLine(); // Final fail count
+
+  // Call all tests associated with cmdLine parsing
+  failCount += testCmdLine(); 
+
+  // Call all tests associated with fileReading
+  failCount += testFileReader();
+
   std::cerr << "All Testing Complete: " << failCount << " tests failed\n" 
     << std::endl;
+}
+
+int testFileReader(){
+
+  int passCount = 0;
+  int failCount = 0;
+
+  return failCount; 
 }
 
 /**
@@ -29,14 +44,17 @@ int testCmdLine(){
   int noOfArgs;
   char** someArgs;
 
+  // set up some space to play around with
+  // command line parsing
   someArgs = (char**)malloc(sizeof(char*)*10);
   for(int i=0;i<10;i++){
     someArgs[i] = (char*)malloc(sizeof(char)*256);
-  }
+  } 
+  // if getting space failed just return with a failure
   if(someArgs == NULL){
-    std::cerr << (stderr,"FAILURE: Malloc failed for testing\n") << 
+    std::cerr << "FAILURE: Malloc failed for testing" << 
       std::endl;
-    return 0;
+    return 1;
   }
 
   /**
@@ -53,8 +71,8 @@ int testCmdLine(){
      */
     noOfArgs = 1;
     strncpy( someArgs[0],"test",4);
-    std::cout << "\nTest 1 - No command line arguments" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
+    std::cerr << "\nFAIL: Test 1 - No command line arguments" << std::endl;
     failCount++;
   }catch(const std::exception& e){
     passCount++;
@@ -68,12 +86,20 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-f",2);
-    std::cout << "\nTest 2 - Valid option '-f' without argument" << std::endl;
-    parseCmdLineArgs(noOfArgs,someArgs);
-    passCount++;
+    CmdLineArgs config = parseCmdLineArgs(noOfArgs,someArgs);
+    if(config == NULL){
+      failCount++;
+      std::cout << "\nFAIL: Test 1 - Valid option '-f' without argument" 
+              << std::endl;
+    }else{
+      if(strncmp(config.inputFile,"filename");
+      passCount++;
+    }
   }catch(const std::exception& e){
-    std::cerr << e.what();
     failCount++;
+    std::cout << "\nFAIL: Test 2 - Valid option '-f' without argument" 
+              << std::endl;
+    std::cerr << e.what();
   }
 
   try{	
@@ -85,7 +111,8 @@ int testCmdLine(){
     noOfArgs = 3;
     strncpy( someArgs[1],"-f",2);
     strncpy( someArgs[2],"test",4);
-    std::cout << "\nTest 3 - Valid option '-f' with argument 'test'" << std::endl;
+    std::cout << "\nTest 3 - Valid option '-f' with argument 'test'" 
+              << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
@@ -102,7 +129,8 @@ int testCmdLine(){
     noOfArgs = 3;
     strncpy( someArgs[1],"-f",2);
     strncpy( someArgs[2],"rest",4);
-    std::cout << "\nTest 4 - Valid option '-f' with argument 'rest'" << std::endl;
+    std::cout << "\nTest 4 - Valid option '-f' with argument 'rest'" 
+              << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){

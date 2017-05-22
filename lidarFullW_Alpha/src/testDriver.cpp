@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cmdLine.hpp"
-using namespace std;
 
 int testCmdLine();
 
@@ -77,6 +76,40 @@ int testCmdLine(){
     failCount++;
   }
 
+  try{	
+    /* Test for 2 command line arguments
+     * option: f
+     * argument: test
+     * Expected result: Print the first line of the 'test' file
+     */
+    noOfArgs = 3;
+    strncpy( someArgs[1],"-f",2);
+    strncpy( someArgs[2],"test",4);
+    std::cout << "\nTest 3 - Valid option '-f' with argument 'test'" << std::endl;
+    parseCmdLineArgs(noOfArgs,someArgs);
+    passCount++;
+  }catch(const std::exception& e){
+    std::cerr << e.what();
+    failCount++;
+  }
+
+  try{	
+    /* Test for 2 command line arguments
+     * option: f
+     * argument: rest
+     * Expected result: Argument 'rest' is not a valid file
+     */
+    noOfArgs = 3;
+    strncpy( someArgs[1],"-f",2);
+    strncpy( someArgs[2],"rest",4);
+    std::cout << "\nTest 4 - Valid option '-f' with argument 'rest'" << std::endl;
+    parseCmdLineArgs(noOfArgs,someArgs);
+    passCount++;
+  }catch(const std::exception& e){
+    std::cerr << e.what();
+    failCount++;
+  }
+
   try{
     /* Test for 2 command line arguments
      * option: h
@@ -85,17 +118,13 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-g",2);
-    std::cout << "\nTest 3 - Valid option '-h'" << std::endl;
+    std::cout << "\nTest 5 - Valid option '-h'" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
     std::cerr << e.what();
     failCount++;
   }
-
-  /**
-   * This section contains all bad tests
-   */
 
   try{
     /* Test for 2 command line arguments
@@ -105,7 +134,7 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-g",2);
-    std::cout << "\nTest 4 - Invalid option '-g'" << std::endl;
+    std::cout << "\nTest 6 - Invalid option '-g'" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){

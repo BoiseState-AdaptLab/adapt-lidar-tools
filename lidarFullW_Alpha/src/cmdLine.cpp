@@ -23,7 +23,25 @@ struct cmdLineException : public exception{
   }
 };
 
-void parseCmdLineArgs (int argc,char *argv[])
+/**
+ * Set the command line arguments
+ */
+void CmdLineArgs::setfileName(char *args){
+  fileName = args;
+}
+
+/* Function that prints correct usage of this program*/
+void printUsage(char *s)
+{
+  std::cout <<"Usage:   " << s <<" [-option argument]+" << std::endl;
+  std::cout <<"Option:  " << "-f  ../src/fileName.pls" << std::endl;
+  std::cout <<"Help:    " << "-h" << std::endl;
+  std::cout <<"Example: " << s
+            << " -f ../src/140823_183115_1_clipped_test.pls\n"
+            <<std::endl;
+}
+
+CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
 {
   char optionChar;  /* Option character */
   char *fArg;     /* Argument of the f(file) option character */
@@ -48,7 +66,8 @@ void parseCmdLineArgs (int argc,char *argv[])
 
   /*use function getopt_long to get the arguments with the option.
    * ":hf:o:" indicate that option h is without arguments while
-   * f and 0 are options with arguments*/
+   * f and 0 are options with arguments
+   */
   while((optionChar = getopt_long (argc, argv, ":hf:",
       long_options, &option_index))!= -1)
   {
@@ -57,7 +76,7 @@ void parseCmdLineArgs (int argc,char *argv[])
     /*option h show the help information*/
     case 'f':
       fArg = optarg;
-      parseFile(fArg);
+//      parseFile(fArg);
       break;
     case 'h':
       printUsage(argv[0]);
@@ -76,17 +95,8 @@ void parseCmdLineArgs (int argc,char *argv[])
       printUsage(argv[0]);
       break;
     }
-
   }
+  CmdLineArgs cla;
+  cla.setfileName(fArg);
+  return cla;
 }
-
-
-/* Function that shows correct usage of this program*/
-void printUsage(char *s)
-{
-  std::cout<<"Usage:   "<<s<<" [-option argument]+"<<std::endl;
-  std::cout<<"Option:  "<<"-f  ../src/fileName.pls"<<std::endl;
-  std::cout<<"Help:    "<<"-h"<<std::endl;
-  std::cout<<"Example: "<<s<<" -f ../src/140823_183115_1_clipped_test.pls\n"<<std::endl;
-}
-

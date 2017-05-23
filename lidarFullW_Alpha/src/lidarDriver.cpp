@@ -5,12 +5,15 @@
  */
 #include <iostream>
 #include "cmdLine.hpp"
+#include "parseFile.hpp"
 
 using namespace std;
 
 int main (int argc,char *argv[]){
 
-  parseCmdLineArgs(argc,argv);
+  CmdLineArgs cla = parseCmdLineArgs(argc,argv);
+  parseFile(cla.inputFile());
+
   return 0;
 }
 

@@ -87,17 +87,16 @@ int testCmdLine(){
     noOfArgs = 2;
     strncpy( someArgs[1],"-f",2);
     CmdLineArgs config = parseCmdLineArgs(noOfArgs,someArgs);
-    if(config == NULL){
-      failCount++;
-      std::cout << "\nFAIL: Test 1 - Valid option '-f' without argument" 
-              << std::endl;
-    }else{
-      if(strncmp(config.inputFile,"filename");
+    if(strncmp(config.inputFile(),"test",4)){
       passCount++;
+    }else{
+        failCount++;
+        std::cerr << "\nFAIL: Test 2 - Valid option '-f' without argument" 
+                  << std::endl;
     }
   }catch(const std::exception& e){
     failCount++;
-    std::cout << "\nFAIL: Test 2 - Valid option '-f' without argument" 
+    std::cerr << "\nFAIL: Test 2 - Valid option '-f' without argument" 
               << std::endl;
     std::cerr << e.what();
   }
@@ -111,13 +110,21 @@ int testCmdLine(){
     noOfArgs = 3;
     strncpy( someArgs[1],"-f",2);
     strncpy( someArgs[2],"test",4);
-    std::cout << "\nTest 3 - Valid option '-f' with argument 'test'" 
-              << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
-    passCount++;
+    CmdLineArgs config = parseCmdLineArgs(noOfArgs,someArgs);
+    if(strncmp(config.inputFile(),"test",4)){
+      passCount++;
+      
+    }else{
+        failCount++;
+        std::cerr << "\nFAIL: Test 3 - Valid option '-f' without argument" 
+                  << std::endl;
+    }
   }catch(const std::exception& e){
-    std::cerr << e.what();
     failCount++;
+    std::cerr << "\nFAIL: Test 3 - Valid option '-f' without argument" 
+              << std::endl;
+    std::cerr << e.what();
   }
 
   try{	
@@ -126,16 +133,16 @@ int testCmdLine(){
      * argument: rest
      * Expected result: Argument 'rest' is not a valid file
      */
-    noOfArgs = 3;
+    noOfArgs = 2;
     strncpy( someArgs[1],"-f",2);
     strncpy( someArgs[2],"rest",4);
-    std::cout << "\nTest 4 - Valid option '-f' with argument 'rest'" 
-              << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
-    std::cerr << e.what();
     failCount++;
+    std::cout << "\nFAIL: Test 4 - Valid option '-f' without argument" 
+              << std::endl;
+    std::cerr << e.what();
   }
 
   try{
@@ -146,12 +153,13 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-g",2);
-    std::cout << "\nTest 5 - Valid option '-h'" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
-    std::cerr << e.what();
     failCount++;
+    std::cout << "\nFAIL: Test 5 - Valid option '-f' without argument" 
+              << std::endl;
+    std::cerr << e.what();
   }
 
   try{
@@ -162,12 +170,13 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-g",2);
-    std::cout << "\nTest 6 - Invalid option '-g'" << std::endl;
     parseCmdLineArgs(noOfArgs,someArgs);
     passCount++;
   }catch(const std::exception& e){
-    std::cerr << e.what();
     failCount++;
+    std::cout << "\nFAIL: Test 6 - Valid option '-f' without argument" 
+              << std::endl;
+    std::cerr << e.what();
   }
 
 
@@ -175,4 +184,5 @@ int testCmdLine(){
   failCount+passCount << " tests failed" << std::endl;
 	return failCount;
 }
+
 

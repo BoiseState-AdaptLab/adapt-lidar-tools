@@ -7,6 +7,14 @@
 #ifndef CMDLINE_HPP_
 #define CMDLINE_HPP_
 
-void parseCmdLineArgs(int argc,char *argv[]);
+class CmdLineArgs{
+  char *fileName;
+  public:
+    void setfileName(char *args);
+    char *inputFile(){
+      return fileName;
+    }
+};
+CmdLineArgs parseCmdLineArgs(int argc,char *argv[]);
 
 #endif /* CMDLINE_HPP_ */

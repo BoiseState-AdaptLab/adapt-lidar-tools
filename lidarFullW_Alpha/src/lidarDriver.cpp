@@ -12,7 +12,10 @@ using namespace std;
 int main (int argc,char *argv[]){
 
   CmdLineArgs cla = parseCmdLineArgs(argc,argv);
-  parseFile(cla.inputFile());
+  
+  if(cla.inputFile() != NULL){
+    parseFile(cla.inputFile());
+  }
 
   return 0;
 }

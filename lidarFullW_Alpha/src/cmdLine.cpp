@@ -64,6 +64,8 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
   /* getopt_long stores the option index here. */
   int option_index = 0;
 
+  CmdLineArgs cla; // Initialize a CmdLineArgs type
+
   /*use function getopt_long to get the arguments with the option.
    * ":hf:o:" indicate that option h is without arguments while
    * f and 0 are options with arguments
@@ -71,32 +73,33 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
   while((optionChar = getopt_long (argc, argv, ":hf:",
       long_options, &option_index))!= -1)
   {
+    
     switch(optionChar)
     {
     /*option h show the help information*/
     case 'f':
       fArg = optarg;
-      CmdLineArgs cla;
       cla.setfileName(fArg);
-      return cla;
       break;
     case 'h':
       printUsage(argv[0]);
+      cla.setfileName(NULL);
       break;
     case ':':
       /* missing option argument */
       std::cerr << argv[0] << ": option '-" << optopt <<
         "' requires an argument" << std::endl;
       printUsage(argv[0]);
+      cla.setfileName(NULL);
       break;
     default: /* '?' */
       /* invalid option */
-      //printf("%s: option '-%c' is invalid\n",
-      //    argv[0], optopt);
       std::cerr << argv[1] << ": is invalid" << std::endl;
       printUsage(argv[0]);
+      cla.setfileName(NULL);
       break;
     }
   }
+  return cla;
   
 }

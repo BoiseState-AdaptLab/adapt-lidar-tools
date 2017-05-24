@@ -76,7 +76,9 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
     /*option h show the help information*/
     case 'f':
       fArg = optarg;
-//      parseFile(fArg);
+      CmdLineArgs cla;
+      cla.setfileName(fArg);
+      return cla;
       break;
     case 'h':
       printUsage(argv[0]);
@@ -96,7 +98,5 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
       break;
     }
   }
-  CmdLineArgs cla;
-  cla.setfileName(fArg);
-  return cla;
+  
 }

@@ -24,6 +24,15 @@ struct cmdLineException : public exception{
 };
 
 /**
+* Custom exception for invalid option
+*/
+struct invalidOptionException : public exception{
+  const char * what() const throw(){
+    return "Invalid option";
+  }
+};
+
+/**
  * Set the command line arguments
  */
 void CmdLineArgs::setfileName(char *args){
@@ -97,7 +106,7 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
       std::cerr << argv[1] << ": is invalid" << std::endl;
       printUsage(argv[0]);
       cla.setfileName(NULL);
-      break;
+      throw invalidOptionException();
     }
   }
   return cla;

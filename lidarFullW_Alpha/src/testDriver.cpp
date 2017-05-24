@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
+#include <getopt.h>
 #include "cmdLine.hpp"
 #include "parseFile.hpp"
 
@@ -40,6 +41,10 @@ int testFileReader(){
 
 /**
  * This function tests various command line arguments
+ * Please note: optind = 0; This line must appear before
+ * each unit test. The getopt_long library maintains this
+ * variable as state and needs to be reset for each test
+ * to make them independent
  */
 int testCmdLine(){
 
@@ -67,6 +72,7 @@ int testCmdLine(){
    */
 
   try{
+    optind = 0;
     /* Test for no command line arguments
      * The program  name is considered an argument so we use noOfArgs = 1
      * If an exception is caught, then the test passes
@@ -84,6 +90,7 @@ int testCmdLine(){
   }
 
   try{	
+    optind = 0;
     /* Test for 2 command line arguments
      * option: f
      * argument: none
@@ -92,15 +99,15 @@ int testCmdLine(){
     noOfArgs = 2;
     strncpy( someArgs[1],"-f",2);
     parseCmdLineArgs(noOfArgs,someArgs);
+    failCount++;
+    std::cerr << "FAIL: Test 2 - Valid option '-f' without argument" 
+              << std::endl;    
+  }catch(const std::exception& e){
     passCount++;
-    }catch(const std::exception& e){
-      failCount++;
-      std::cerr << "FAIL: Test 2 - Valid option '-f' without argument" 
-                << std::endl;    
-      std::cerr << e.what();
   }
 
   try{	
+    optind = 0;
     /* Test for 2 command line arguments
      * option: f
      * argument: none
@@ -110,11 +117,11 @@ int testCmdLine(){
     strncpy( someArgs[1],"-g",2);
     parseCmdLineArgs(noOfArgs,someArgs);
     failCount++;
-    }catch(const std::exception& e){
-      passCount++;
-      std::cerr << "FAIL: Test 3 - Invalid option '-f' without argument" 
-                << std::endl;    
-      std::cerr << e.what();
+  }catch(const std::exception& e){
+    passCount++;
+    std::cerr << "FAIL: Test 3 - Invalid option '-f' without argument" 
+              << std::endl;    
+    std::cerr << e.what();
   }
 
 

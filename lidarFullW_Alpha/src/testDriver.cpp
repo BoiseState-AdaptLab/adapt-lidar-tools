@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "cmdLine.hpp"
+#include "parseFile.hpp"
 
 int testCmdLine();
 int testFileReader();
@@ -25,12 +26,39 @@ int main (){
     << std::endl;
 }
 
+/**
+ * This function tests the file reader
+ */
 int testFileReader(){
 
   int passCount = 0;
   int failCount = 0;
 
-  return failCount; 
+try{	
+    /* Test for a valid file name
+     * Expected result: Prints the first line of the file
+     */
+    parseFile("../README.md");
+    passCount++;
+  }catch(const std::exception& e){
+    failCount++;
+    std::cerr << "\nFAIL: Test 1 - Valid file" 
+              << std::endl;
+    std::cerr << e.what();
+  }
+
+try{	
+    /* Test for an invalid file name
+     * Expected result: Could not find the file
+     */
+    parseFile("test");
+    passCount++;
+  }catch(const std::exception& e){
+    failCount++;
+    std::cerr << "\nFAIL: Test 2 - Invalid file name" 
+              << std::endl;
+    std::cerr << e.what();
+  }
 }
 
 /**
@@ -153,7 +181,28 @@ int testCmdLine(){
      */
     noOfArgs = 2;
     strncpy( someArgs[1],"-g",2);
-    parseCmdLineArgs(noOfArgs,someArgs);
+    parseCmdLineArgs(noOfArgs,someArgs);try{	
+    /* Test for 2 command line arguments
+     * option: f
+     * argument: none
+     * Expected result: Indicate that an argument is required and print usage
+     */
+    noOfArgs = 2;
+    strncpy( someArgs[1],"-f",2);
+    CmdLineArgs config = parseCmdLineArgs(noOfArgs,someArgs);
+    if(strncmp(config.inputFile(),"test",4)){
+      passCount++;
+    }else{
+        failCount++;
+        std::cerr << "\nFAIL: Test 2 - Valid option '-f' without argument" 
+                  << std::endl;
+    }
+  }catch(const std::exception& e){
+    failCount++;
+    std::cerr << "\nFAIL: Test 2 - Valid option '-f' without argument" 
+              << std::endl;
+    std::cerr << e.what();
+  }
     passCount++;
   }catch(const std::exception& e){
     failCount++;

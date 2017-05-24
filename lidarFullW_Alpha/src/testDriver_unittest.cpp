@@ -36,12 +36,41 @@
 
 // Tests parseCmdLineArgs().
 
-// Tests valid short command line arguments.
+  int noOfArgs;
+  char** someArgs;
+
+  // set up some space to play around with
+  // command line parsing
+  someArgs = (char**)malloc(sizeof(char*)*10);
+  for(int i=0;i<10;i++){
+    someArgs[i] = (char*)malloc(sizeof(char)*256);
+  } 
+  // if getting space failed just return with a failure
+  if(someArgs == NULL){
+    std::cerr << "FAILURE: Malloc failed for testing" << 
+      std::endl;
+    return 1;
+  }
+
+// Tests valid short command line options.
 TEST(CmdLineArgsTest, ValidShort) {
-  // This test is named "Valid", and belongs to the "CmdLineArgsTest"
+  // This test is named "ValidShort", and belongs to the "CmdLineArgsTest"
   // test case.
-  EXPECT_EQ(1, parseCmdLineArgs(1, "-h"));
-  EXPECT_EQ(1, parseCmdLineArgs(2, "-f ../src/test"));
+
+  noOfArgs = 2;
+  strncpy( someArgs[0],"test",4);
+   
+  ASSERT_NO_THROW({
+    strncpy(someArgs[1],"-h",2);
+    parseCmdLineArgs(noOfArgs, someArgs);
+  });
+
+  ASSERT_NO_THROW({
+    noOfArgs = 3;
+    strncpy(someArgs[1],"-f",2);
+    strncpy(someArgs[2],"file",4);
+    parseCmdLineArgs(noOfArgs, someArgs);
+  });
 
   // <TechnicalDetails>
   //
@@ -59,25 +88,63 @@ TEST(CmdLineArgsTest, ValidShort) {
   // </TechnicalDetails>
 }
 
-// Tests valid long command line arguments
+// Tests valid long command line options
 TEST(CmdLineArgsTest, ValidLong) {
-  EXPECT_EQ(1, parseCmdLineArgs(1, "--help"));
-  EXPECT_EQ(1, parseCmdLineArgs(1, "--file ../src/test"));
+  noOfArgs = 2;
+  strncpy( someArgs[0],"test",4);
+   
+  ASSERT_NO_THROW({
+    strncpy(someArgs[1],"--help",6);
+    parseCmdLineArgs(noOfArgs, someArgs);
+  });
+
+  ASSERT_NO_THROW({
+    noOfArgs = 3;
+    strncpy(someArgs[1],"--file",6);
+    strncpy(someArgs[2],"file",4);
+    parseCmdLineArgs(noOfArgs, someArgs);
+  });
 }
 
-// Tests invalid short command line arguments
+// Tests missing option argument(short and long options)
+TEST(CmdLineArgsTest, ValidLong) {
+  noOfArgs = 2;
+  strncpy( someArgs[0],"test",4);
+  strncpy(someArgs[1],"-f",2);
+  
+  ASSERT_THROW(parseCmdLineArgs(noOfArgs, someArgs), missingArgException);
+
+  strncpy(someArgs[1],"--file",6);
+  ASSERT_THROW(parseCmdLineArgs(noOfArgs, someArgs), missingArgException);
+}
+
+// Tests invalid short command line options
 TEST(CmdLineArgsTest, InvalidShort) {
-  EXPECT_EQ(1, parseCmdLineArgs(1, "-e"));
-  EXPECT_EQ(1, parseCmdLineArgs(1, "-g"));
-  EXPECT_EQ(1, parseCmdLineArgs(2, "-o, test"));
-  EXPECT_EQ(1, parseCmdLineArgs(2, "-i, someFile"));
+
+  noOfArgs = 2;
+  strncpy(someArgs[0],"test",4);
+  strncpy(someArgs[1],"-e",2);
+
+  ASSERT_THROW(parseCmdLineArgs(noOfArgs, someArgs), invalidOptionException);
+
+  strncpy(someArgs[1],"-g",2);
+  ASSERT_THROW(parseCmdLineArgs(noOfArgs, someArgs), invalidOptionException);
 }
 
 
-// Tests invalid long command line arguments
+// Tests invalid long command line options
 TEST(CmdLineArgsTest, InvalidLong) {
-  EXPECT_EQ(1, parseCmdLineArgs(1, "--help"));
-  EXPECT_EQ(1, parseCmdLineArgs(1, "--file ../src/test"));
+
+  noOfArgs = 2;
+  strncpy( someArgs[0],"test",4);
+  strncpy(someArgs[1],"--selp",6);
+  
+  ASSERT_THROW(parseCmdLineArgs(noOfArgs, someArgs), invalidOptionException);
+
+  noOfArgs = 3;
+  strncpy(someArgs[1],"-bile",2);
+  strncpy(someArgs[2],"file",4);
+  ASSERT_THROW(parseCmdLineArgs(noOfArgs, someArgs), invalidOptionException);
 }
 
 

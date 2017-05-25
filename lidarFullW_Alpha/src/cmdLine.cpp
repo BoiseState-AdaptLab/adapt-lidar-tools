@@ -8,7 +8,6 @@
 #include <fstream>
 #include <getopt.h>
 #include "cmdLine.hpp"
-#include "parseFile.hpp"
 
 using namespace std;
 

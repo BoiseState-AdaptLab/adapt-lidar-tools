@@ -18,7 +18,16 @@ void printUsage(char *s);
 */
 struct cmdLineException : public exception{
   const char * what() const throw(){
-    return "No command line arguments";
+    return "No command line arguments exception caught\n";
+  }
+};
+
+/**
+* Custom exception for invalid option
+*/
+struct missingArgException : public exception{
+  const char * what() const throw(){
+    return "Missing argument option caught\n";
   }
 };
 
@@ -27,7 +36,7 @@ struct cmdLineException : public exception{
 */
 struct invalidOptionException : public exception{
   const char * what() const throw(){
-    return "Invalid option";
+    return "Invalid option exception caught\n";
   }
 };
 
@@ -91,20 +100,12 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
       break;
     case 'h':
       printUsage(argv[0]);
-      cla.setfileName(NULL);
       break;
     case ':':
       /* missing option argument */
-      std::cerr << argv[0] << ": option '-" << optopt <<
-        "' requires an argument" << std::endl;
-      printUsage(argv[0]);
-      cla.setfileName(NULL);
-      break;
+      throw missingArgException();
     default: /* '?' */
       /* invalid option */
-      std::cerr << argv[1] << ": is invalid" << std::endl;
-      printUsage(argv[0]);
-      cla.setfileName(NULL);
       throw invalidOptionException();
     }
   }

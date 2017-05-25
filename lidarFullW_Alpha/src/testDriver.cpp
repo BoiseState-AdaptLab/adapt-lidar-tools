@@ -87,6 +87,7 @@ int testCmdLine(){
     failCount++;
   }catch(const std::exception& e){
     passCount++;
+    std::cerr << e.what();
   }
 
   try{	
@@ -104,6 +105,7 @@ int testCmdLine(){
               << std::endl;    
   }catch(const std::exception& e){
     passCount++;
+    std::cerr << e.what();
   }
 
   try{	
@@ -117,10 +119,10 @@ int testCmdLine(){
     strncpy( someArgs[1],"-g",2);
     parseCmdLineArgs(noOfArgs,someArgs);
     failCount++;
-  }catch(const std::exception& e){
-    passCount++;
     std::cerr << "FAIL: Test 3 - Invalid option '-f' without argument" 
-              << std::endl;    
+              << std::endl;
+  }catch(const std::exception& e){
+    passCount++;    
     std::cerr << e.what();
   }
 

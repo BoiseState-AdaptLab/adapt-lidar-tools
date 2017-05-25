@@ -14,11 +14,10 @@
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
-GTEST_DIR = googletest-master
+GTEST_DIR = ..
 
 # Where to find user code.
-USER_DIR =src
-BIN=bin
+USER_DIR = ../samples
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
@@ -30,7 +29,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = cmdLine_unittests
+TESTS = sample1_unittest
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -72,33 +71,12 @@ gtest_main.a : gtest-all.o gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-$(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
-	
-$(USER_DIR)/%.o: $(USER_DIR)/%.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS)
+sample1.o : $(USER_DIR)/sample1.cc $(USER_DIR)/sample1.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/sample1.cc
 
-$(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFile.o
-	$(CXX) -o $@ $^ $(CFLAGS)
+sample1_unittest.o : $(USER_DIR)/sample1_unittest.cc \
+                     $(USER_DIR)/sample1.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/sample1_unittest.cc
 
-$(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o gtest_main.a
+sample1_unittest : sample1.o sample1_unittest.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
-
-.PHONY: test
-
-test: $(BIN)/cmdLine_unittests
-	$(BIN)/cmdLine_unittests
-
-clean: 
-	rm $(BIN)/*
-	rm $(USER_DIR)/*.o
-
-#sample1.o : $(USER_DIR)/sample1.cc $(USER_DIR)/sample1.h $(GTEST_HEADERS)
-	#$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(USER_DIR)/sample1.cc
-
-#sample1_unittest.o : $(USER_DIR)/sample1_unittest.cc \
-                     #$(USER_DIR)/sample1.h $(GTEST_HEADERS)
-	#$(CXX) $(CXX) $(CXXFLAGS) -c $(USER_DIR)/sample1_unittest.cc
-#
-#sample1_unittest : sample1.o sample1_unittest.o gtest_main.a
-	##$(CXX) $(CXX) $(CXXFLAGS) -lpthread $^ -o $@

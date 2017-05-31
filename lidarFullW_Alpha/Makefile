@@ -37,9 +37,6 @@ TESTS = $(BIN)/cmdLine_unittests
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 
-# House-keeping build targets.
-
-clean :
 
 # Builds gtest.a and gtest_main.a.
 
@@ -82,6 +79,9 @@ $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/
 	$(CXX) -o $@ $^ $(CFLAGS)
 
 .PHONY: test
+
+lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFile.o
+	$(CXX) -o $(BIN)/$@ $^ $(CFLAGS) 
 
 test: $(TESTS)
 	$(BIN)/cmdLine_unittests

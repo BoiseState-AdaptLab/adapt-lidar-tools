@@ -14,7 +14,7 @@ using namespace std;
 void printUsage(char *s);
 
 /**
-* Custom exception for no command line arguments
+* Custom exceptions for no command line arguments
 */
 struct cmdLineException : public exception{
   const char * what() const throw(){
@@ -104,7 +104,7 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
     case ':':
       /* missing option argument */
       throw missingArgException();
-    default: /* '?' */
+    default:
       /* invalid option */
       throw invalidOptionException();
     }

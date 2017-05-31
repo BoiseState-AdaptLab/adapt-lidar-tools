@@ -44,7 +44,7 @@ TEST_F(CmdLineTest, validShortOption) {
 
   noOfArgs = 3;
   strncpy(commonArgSpace[1],"-f",2);
-  strncpy(commonArgSpace[2],"file",4);
+  strncpy(commonArgSpace[2],"someFileName",4);
   ASSERT_NO_THROW({
     parseCmdLineArgs(noOfArgs, commonArgSpace);
   });
@@ -74,8 +74,7 @@ TEST_F(CmdLineTest, validLongOption) {
 TEST_F(CmdLineTest, missingCmdLineArg) {
 
   int noOfArgs = 1;
-  strncpy( commonArgSpace[0],"test",4);   
-
+  strncpy( commonArgSpace[0],"test",4);
   EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 }
 
@@ -87,52 +86,11 @@ TEST_F(CmdLineTest, invalidCmdLineArgs) {
   strncpy(commonArgSpace[1],"-s",2);
   EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 
-  strncpy(commonArgSpace[1],"-y",2);
+  strncpy(commonArgSpace[1],"--who",5);
   EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 }
 
-/*
-// Tests missing option argument(short and long options)
-TEST(CmdLineArgsTest, ValidLong) {
-  noOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",4);
-  strncpy(commonArgSpace[1],"-f",2);
-  
-  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), missingArgException);
 
-  strncpy(commonArgSpace[1],"--file",6);
-  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), missingArgException);
-}
-
-// Tests inva  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), invalidOptionException);lid short command line options
-TEST(CmdLineArgsTest, InvalidShort) {
-
-  noOfArgs = 2;
-  strncpy(commonArgSpace[0],"test",4);
-  strncpy(commonArgSpace[1],"-e",2);
-
-  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), invalidOptionException);
-
-  strncpy(commonArgSpace[1],"-g",2);
-  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), invalidOptionException);
-}
-
-
-// Tests invalid long command line options
-TEST(CmdLineArgsTest, InvalidLong) {
-
-  noOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",4);
-  strncpy(commonArgSpace[1],"--selp",6);
-  
-  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), invalidOptionException);
-
-  noOfArgs = 3;
-  strncpy(commonArgSpace[1],"-bile",2);
-  strncpy(commonArgSpace[2],"file",4);
-  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), invalidOptionException);
-}
-*/
 
 // Step 3. Call RUN_ALL_TESTS() in main().
 //

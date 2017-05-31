@@ -70,25 +70,24 @@ TEST_F(CmdLineTest, validLongOption) {
 
 }
 
-// Tests missing short option argument
-TEST_F(CmdLineTest, missingOptionArg) {
+// Tests missing command line arguments
+TEST_F(CmdLineTest, missingCmdLineArg) {
 
-  int noOfArgs = 2;
+  int noOfArgs = 1;
   strncpy( commonArgSpace[0],"test",4);   
-  strncpy(commonArgSpace[1],"-f",2);
 
-  EXPECT_ANY_THROW({
-    parseCmdLineArgs(noOfArgs, commonArgSpace);
-  });
+  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 }
 
-// Tests invalid short command line argument
-TEST_F(CmdLineTest, invalidShortOption) {
+// Tests invalid command line arguments
+TEST_F(CmdLineTest, invalidCmdLineArgs) {
 
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);   
   strncpy(commonArgSpace[1],"-s",2);
+  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 
+  strncpy(commonArgSpace[1],"-y",2);
   EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 }
 

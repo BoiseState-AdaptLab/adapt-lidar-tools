@@ -23,7 +23,7 @@ struct cmdLineException : public exception{
 };
 
 /**
-* Custom exception for invalid option
+* Custom exception for missing argument
 */
 struct missingArgException : public exception{
   const char * what() const throw(){

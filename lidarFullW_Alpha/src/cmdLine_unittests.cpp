@@ -31,8 +31,8 @@ class CmdLineTest : public testing::Test {
   int maxLengthOfArg;
 };
 
-
-TEST_F(CmdLineTest, tooFewArgs) {
+// Tests valid short command line options
+TEST_F(CmdLineTest, validShortOption) {
 
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);
@@ -51,25 +51,48 @@ TEST_F(CmdLineTest, tooFewArgs) {
 
 }
 
-/*
 // Tests valid long command line options
-TEST(CmdLineArgsTest, ValidLong) {
-  noOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",4);
-   
+TEST_F(CmdLineTest, validLongOption) {
+
+  int noOfArgs = 2;
+  strncpy( commonArgSpace[0],"test",4);   
+  strncpy(commonArgSpace[1],"--help",6);
   ASSERT_NO_THROW({
-    strncpy(commonArgSpace[1],"--help",6);
     parseCmdLineArgs(noOfArgs, commonArgSpace);
   });
 
+  noOfArgs = 3;
+  strncpy(commonArgSpace[1],"--file",6);
+  strncpy(commonArgSpace[2],"file",4);
   ASSERT_NO_THROW({
-    noOfArgs = 3;
-    strncpy(commonArgSpace[1],"--file",6);
-    strncpy(commonArgSpace[2],"file",4);
+    parseCmdLineArgs(noOfArgs, commonArgSpace);
+  });
+
+}
+
+// Tests missing short option argument
+TEST_F(CmdLineTest, missingOptionArg) {
+
+  int noOfArgs = 2;
+  strncpy( commonArgSpace[0],"test",4);   
+  strncpy(commonArgSpace[1],"-f",2);
+
+  EXPECT_ANY_THROW({
     parseCmdLineArgs(noOfArgs, commonArgSpace);
   });
 }
 
+// Tests invalid short command line argument
+TEST_F(CmdLineTest, invalidShortOption) {
+
+  int noOfArgs = 2;
+  strncpy( commonArgSpace[0],"test",4);   
+  strncpy(commonArgSpace[1],"-s",2);
+
+  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+}
+
+/*
 // Tests missing option argument(short and long options)
 TEST(CmdLineArgsTest, ValidLong) {
   noOfArgs = 2;
@@ -82,7 +105,7 @@ TEST(CmdLineArgsTest, ValidLong) {
   ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), missingArgException);
 }
 
-// Tests invalid short command line options
+// Tests inva  ASSERT_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace), invalidOptionException);lid short command line options
 TEST(CmdLineArgsTest, InvalidShort) {
 
   noOfArgs = 2;

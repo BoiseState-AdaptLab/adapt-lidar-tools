@@ -87,6 +87,6 @@ test: $(TESTS)
 	$(BIN)/cmdLine_unittests
 
 clean: 
-	rm $(BIN)/*
-	rm $(USER_DIR)/*.o
+	rm -f $(BIN)/*.*
+	rm -f $(USER_DIR)/*.o
 	rm -f $(TESTS) gtest.a gtest_main.a *.o

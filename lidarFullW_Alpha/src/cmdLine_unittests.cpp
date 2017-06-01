@@ -7,6 +7,7 @@
 
 #include "cmdLine.hpp"
 #include "gtest/gtest.h"
+#include <getopt.h>
 
 
 class CmdLineTest : public testing::Test {
@@ -32,8 +33,8 @@ class CmdLineTest : public testing::Test {
 };
 
 // Tests valid short command line options
-TEST_F(CmdLineTest, validShortOption) {
-
+TEST_F(CmdLineTest, validShortCmdLineOpts) {
+  optind = 0;
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);
    
@@ -48,12 +49,11 @@ TEST_F(CmdLineTest, validShortOption) {
   ASSERT_NO_THROW({
     parseCmdLineArgs(noOfArgs, commonArgSpace);
   });
-
 }
 
 // Tests valid long command line options
-TEST_F(CmdLineTest, validLongOption) {
-
+TEST_F(CmdLineTest, validLongCmdLineOpts) {
+  optind = 0;
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);   
   strncpy(commonArgSpace[1],"--help",6);
@@ -67,29 +67,51 @@ TEST_F(CmdLineTest, validLongOption) {
   ASSERT_NO_THROW({
     parseCmdLineArgs(noOfArgs, commonArgSpace);
   });
-
 }
 
 // Tests missing command line arguments
 TEST_F(CmdLineTest, missingCmdLineArg) {
-
+  optind = 0;
   int noOfArgs = 1;
-  strncpy( commonArgSpace[0],"test",4);
+  strncpy(commonArgSpace[0],"test",4);
   EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 }
 
-// Tests invalid command line arguments
-TEST_F(CmdLineTest, invalidCmdLineArgs) {
+// Tests missing short option arguments
+TEST_F(CmdLineTest, missingShortOptArg) {
+  optind = 0;
+  int noOfArgs = 2;
+  strncpy(commonArgSpace[0],"test",4);
+  strncpy(commonArgSpace[1],"-f",2);
+  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+}
 
+// Tests missing long option arguments
+TEST_F(CmdLineTest, missingLongOptArg) {
+  optind = 0;
+  int noOfArgs = 2;
+  strncpy(commonArgSpace[0],"test",4);
+  strncpy(commonArgSpace[1],"--file",6);
+  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+}
+
+// Tests invalid short command line options
+TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
+  optind = 0;
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);   
   strncpy(commonArgSpace[1],"-s",2);
   EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+}
 
+// Tests invalid long command line options
+TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
+  optind = 0;
+  int noOfArgs = 2;
+  strncpy( commonArgSpace[0],"test",4);   
   strncpy(commonArgSpace[1],"--who",5);
   EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
 }
-
 
 
 // Step 3. Call RUN_ALL_TESTS() in main().

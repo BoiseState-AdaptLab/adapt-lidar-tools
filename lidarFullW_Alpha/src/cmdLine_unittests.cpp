@@ -36,19 +36,25 @@ class CmdLineTest : public testing::Test {
 TEST_F(CmdLineTest, validShortCmdLineOpts) {
   optind = 0;
   int noOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",4);
+  strncpy( commonArgSpace[0],"test",5);
    
-  strncpy(commonArgSpace[1],"-h",2);
+  strncpy(commonArgSpace[1],"-h",3);
+  CmdLineArgs cmd;
   ASSERT_NO_THROW({
-    parseCmdLineArgs(noOfArgs, commonArgSpace);
+    cmd.parse(noOfArgs, commonArgSpace);
   });
+  ASSERT_TRUE(cmd.printUsageMessage);
 
+  CmdLineArgs cmd2;
+  optind=0;
   noOfArgs = 3;
   strncpy(commonArgSpace[1],"-f",2);
-  strncpy(commonArgSpace[2],"someFileName",4);
+  strncpy(commonArgSpace[2],"someFileName",12);
   ASSERT_NO_THROW({
-    parseCmdLineArgs(noOfArgs, commonArgSpace);
+    cmd2.parse(noOfArgs, commonArgSpace);
   });
+  ASSERT_FALSE(cmd2.printUsageMessage);
+  ASSERT_EQ("someFileName",cmd2.getInputFileName());
 }
 
 // Tests valid long command line options
@@ -57,16 +63,21 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);   
   strncpy(commonArgSpace[1],"--help",6);
+  CmdLineArgs cmd;
   ASSERT_NO_THROW({
-    parseCmdLineArgs(noOfArgs, commonArgSpace);
+    cmd.parse(noOfArgs, commonArgSpace);
   });
+  ASSERT_TRUE(cmd.printUsageMessage);
 
+  optind = 0;
   noOfArgs = 3;
   strncpy(commonArgSpace[1],"--file",6);
   strncpy(commonArgSpace[2],"file",4);
   ASSERT_NO_THROW({
-    parseCmdLineArgs(noOfArgs, commonArgSpace);
+    cmd.parse(noOfArgs, commonArgSpace);
   });
+  ASSERT_FALSE(cmd.printUsageMessage);
+  ASSERT_EQ("file",cmd.getInputFileName());
 }
 
 // Tests missing command line arguments
@@ -74,7 +85,8 @@ TEST_F(CmdLineTest, missingCmdLineArg) {
   optind = 0;
   int noOfArgs = 1;
   strncpy(commonArgSpace[0],"test",4);
-  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+  CmdLineArgs cmd;
+  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
 }
 
 // Tests missing short option arguments
@@ -83,7 +95,8 @@ TEST_F(CmdLineTest, missingShortOptArg) {
   int noOfArgs = 2;
   strncpy(commonArgSpace[0],"test",4);
   strncpy(commonArgSpace[1],"-f",2);
-  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+  CmdLineArgs cmd;
+  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
 }
 
 // Tests missing long option arguments
@@ -92,7 +105,8 @@ TEST_F(CmdLineTest, missingLongOptArg) {
   int noOfArgs = 2;
   strncpy(commonArgSpace[0],"test",4);
   strncpy(commonArgSpace[1],"--file",6);
-  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+  CmdLineArgs cmd;
+  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
 }
 
 // Tests invalid short command line options
@@ -101,7 +115,8 @@ TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);   
   strncpy(commonArgSpace[1],"-s",2);
-  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+  CmdLineArgs cmd;
+  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
 }
 
 // Tests invalid long command line options
@@ -110,7 +125,8 @@ TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
   int noOfArgs = 2;
   strncpy( commonArgSpace[0],"test",4);   
   strncpy(commonArgSpace[1],"--who",5);
-  EXPECT_ANY_THROW(parseCmdLineArgs(noOfArgs, commonArgSpace));
+  CmdLineArgs cmd;
+  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
 }
 
 

@@ -7,11 +7,11 @@
 #include <iostream>
 #include <fstream>
 #include <getopt.h>
+#include <sstream>
 #include "cmdLine.hpp"
 
 using namespace std;
 
-void printUsage(char *s);
 
 /**
 * Custom exceptions for no command line arguments
@@ -43,22 +43,34 @@ struct invalidOptionException : public exception{
 /**
  * Set the command line arguments
  */
-void CmdLineArgs::setfileName(char *args){
-  fileName = args;
+void CmdLineArgs::setInputFileName(char *args){
+  inputFileName = args;
 }
 
 /* Function that prints correct usage of this program*/
-void printUsage(char *s)
+void CmdLineArgs::setUsageMessage()
 {
-  std::cout <<"Usage:   " << s <<" [-option argument]+" << std::endl;
-  std::cout <<"Option:  " << "-f  ../src/fileName.pls" << std::endl;
-  std::cout <<"Help:    " << "-h" << std::endl;
-  std::cout <<"Example: " << s
+  std::stringstream buffer;
+  buffer <<"Usage:   " << exeName <<" [-option argument]+" << std::endl;
+  buffer <<"Option:  " << "-f  ../src/fileName.pls" << std::endl;
+  buffer <<"Help:    " << "-h" << std::endl;
+  buffer <<"Example: " << exeName
             << " -f ../src/140823_183115_1_clipped_test.pls\n"
             <<std::endl;
+  usageMessage.append(buffer.str());
 }
 
-CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
+CmdLineArgs::CmdLineArgs(){
+  // enter default values
+  printUsageMessage = false;
+  setUsageMessage();
+}
+
+std::string CmdLineArgs::getInputFileName(){
+  return inputFileName;
+}
+
+void CmdLineArgs::parse(int argc,char *argv[])
 {
   char optionChar;  /* Option character */
   char *fArg;     /* Argument of the f(file) option character */
@@ -66,11 +78,10 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
   /*if the program is run without any command line arguments, display
    * the correct program usage and quit.*/
   if(argc < 2){
-    printUsage(argv[0]);
     throw cmdLineException();
   }
 
-
+  exeName.append(argv[0]);
   static struct option long_options[] =
   {
       {"file", required_argument, NULL, 'f'},
@@ -78,16 +89,15 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
       {0, 0, 0, 0}
   };
 
+
   /* getopt_long stores the option index here. */
   int option_index = 0;
-
-  CmdLineArgs cla; // Initialize a CmdLineArgs type
 
   /*use function getopt_long to get the arguments with the option.
    * ":hf:o:" indicate that option h is without arguments while
    * f and 0 are options with arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hf:",
+  while((optionChar = getopt_long (argc, argv, "hf:",
       long_options, &option_index))!= -1)
   {
     
@@ -96,10 +106,10 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
     /*option h show the help information*/
     case 'f':
       fArg = optarg;
-      cla.setfileName(fArg);
+      setInputFileName(fArg);
       break;
     case 'h':
-      printUsage(argv[0]);
+      printUsageMessage = true;
       break;
     case ':':
       /* missing option argument */
@@ -109,6 +119,5 @@ CmdLineArgs parseCmdLineArgs (int argc,char *argv[])
       throw invalidOptionException();
     }
   }
-  return cla;
   
 }

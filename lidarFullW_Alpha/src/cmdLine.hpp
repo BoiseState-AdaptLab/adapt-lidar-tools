@@ -7,14 +7,31 @@
 #ifndef CMDLINE_HPP_
 #define CMDLINE_HPP_
 
+#include <iostream>
+#include <fstream>
+#include <getopt.h>
+#include <sstream>
+
 class CmdLineArgs{
-  char *fileName;
-  public:
-    void setfileName(char *args);
-    char *inputFile(){
-      return fileName;
-    }
+
+private:
+  //possible parameters
+  std::string inputFileName;
+  // helpful stuff
+  std::string usageMessage;
+  std::string exeName;
+
+public:
+  // help parameter
+  bool printUsageMessage;
+
+    CmdLineArgs();
+    void parse(int argc, char *argv[]);
+    std::string getUsageMessage();
+    void setUsageMessage();
+    void setInputFileName(char *args);
+    void setInputFileName(std::string filename);
+    std::string getInputFileName();
 };
-CmdLineArgs parseCmdLineArgs(int argc,char *argv[]);
 
 #endif /* CMDLINE_HPP_ */

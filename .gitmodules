@@ -1,0 +1,3 @@
+[submodule "lidarFullW_Alpha/deps/PulseWaves"]
+	path = lidarFullW_Alpha/deps/PulseWaves
+	url = https://github.com/PulseWaves/PulseWaves.git

@@ -15,6 +15,7 @@
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
 GTEST_DIR = deps/googletest-master/googletest
+PULSE_DIR = deps/PulseWaves
 
 # Where to find user code.
 USER_DIR =src
@@ -26,11 +27,12 @@ BIN=bin
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
+CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = $(BIN)/cmdLine_unittests
+TESTS = $(BIN)/cmdLine_unittests $(BIN)/FullWaveformIngestion_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -67,10 +69,13 @@ gtest_main.a : gtest-all.o gtest_main.o
 # function.
 
 $(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves
 
 $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
+
+$(USER_DIR)/FullWaveformIngestion.o: $(USER_DIR)/FullWaveformIngestion.cpp
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 	
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
@@ -85,6 +90,7 @@ lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFi
 
 test: $(TESTS)
 	$(BIN)/cmdLine_unittests
+	$(BIN)/FullWaveformIngestion_unittests
 
 clean: 
 	rm -f $(BIN)/*.*

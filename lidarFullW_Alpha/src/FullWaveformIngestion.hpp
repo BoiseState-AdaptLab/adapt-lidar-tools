@@ -11,8 +11,10 @@
 #include <fstream>
 #include <getopt.h>
 #include <sstream>
+#include "pulsereader.hpp"
+#include "pulsewriter.hpp"
 
-class FullWaveFormIngestion{
+class FullWaveformIngestion{
 
 private:
   //possible parameters
@@ -20,10 +22,13 @@ private:
   // helpful stuff
   std::string usageMessage;
   std::string exeName;
+  PULSEreadOpener pOpener;
+  PULSEreader *pReader;
 
 public:
   // help parameter
-  FullWaveFormIngestion();
+  FullWaveformIngestion();
+
   double calculateActualCoordinate(double coordinate, double scaleFactor, 
                                    double offset);
   double calculateDeviation(double anchor, double target);

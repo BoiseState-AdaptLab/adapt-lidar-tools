@@ -5,11 +5,14 @@
  */
 
 #include "gtest/gtest.h"
+#include "FullWaveformIngestion.hpp"
 #include <getopt.h>
 
 
 class FullWaveFormTest : public testing::Test {
   protected:
+
+  FullWaveformIngestion ingester;
 
   // function to set up space used by all tests
   virtual void SetUp(){
@@ -27,13 +30,13 @@ TEST_F(FullWaveFormTest, computeRange) {
   double truthActualAnchorX = 475072.220;
   double truthActualTargetX = 475049.83;
   double truthDeviationX = -0.022395;
-  double actualAnchorX = FullWaveformIngestion::calculateActualCoordinate(
+  double actualAnchorX = ingester.calculateActualCoordinate(
                          anchorX, scaleFactorX, offsetX);
   ASSERT_DOUBLE_EQ(truthActualAnchorX, actualAnchorX);
-  double actualTargetX = FullWaveformIngestion::calculateActualCoordinate(
+  double actualTargetX = ingester.calculateActualCoordinate(
                          targetX, scaleFactorX, offsetX);
   ASSERT_DOUBLE_EQ(truthActualTargetX, actualTargetX);
-  double deviationX = FullWaveformIngestion::calculateDeviation(
+  double deviationX = ingester.calculateDeviation(
                         actualAnchorX,actualTargetX);
   ASSERT_DOUBLE_EQ(truthDeviationX, deviationX);
 
@@ -44,13 +47,13 @@ TEST_F(FullWaveFormTest, computeRange) {
   double truthActualAnchorY = 4426121.9;
   double truthActualTargetY = 4426114.8;
   double truthDeviationY = -0.007606;
-  double actualAnchorY = FullWaveformIngestion::calculateActualCoordinate(
+  double actualAnchorY = ingester.calculateActualCoordinate(
                          anchorY, scaleFactorY, offsetY);
   ASSERT_DOUBLE_EQ(truthActualAnchorY, actualAnchorY);
-  double actualTargetY = FullWaveformIngestion::calculateActualCoordinate(
+  double actualTargetY = ingester.calculateActualCoordinate(
                          targetY, scaleFactorY, offsetY);
   ASSERT_DOUBLE_EQ(truthActualTargetY, actualTargetY);
-  double deviationY = FullWaveformIngestion::calculateDeviation(
+  double deviationY = ingester.calculateDeviation(
                         actualAnchorY,actualTargetY);
   ASSERT_DOUBLE_EQ(truthDeviationY, deviationY);
     
@@ -62,13 +65,13 @@ TEST_F(FullWaveFormTest, computeRange) {
   double truthActualAnchorZ = 3035.992;
   double truthActualTargetZ = 2887.9890;
   double truthDeviationZ = -0.148003;
-  double actualAnchorZ = FullWaveformIngestion::calculateActualCoordinate(
+  double actualAnchorZ = ingester.calculateActualCoordinate(
                          anchorZ, scaleFactorZ, offsetZ);
   ASSERT_DOUBLE_EQ(truthActualAnchorZ, actualAnchorZ);
-  double actualTargetZ = FullWaveformIngestion::calculateActualCoordinate(
+  double actualTargetZ = ingester.calculateActualCoordinate(
                          targetZ, scaleFactorZ, offsetZ);
   ASSERT_DOUBLE_EQ(truthActualTargetZ, actualTargetZ);
-  double deviationZ = FullWaveformIngestion::calculateDeviation(
+  double deviationZ = ingester.calculateDeviation(
                         actualAnchorZ,actualTargetZ);
   ASSERT_DOUBLE_EQ(truthDeviationZ, deviationZ);
 
@@ -81,13 +84,13 @@ TEST_F(FullWaveFormTest, computeRange) {
   double truthReturnLocationZ = 2139.9818;
 
   // actualAnchor + time*deviation
-  double returnLocationX = FullWaveformIngestion::calculateReturnLocation(
+  double returnLocationX = ingester.calculateReturnLocation(
                              actualAnchorX, deviationX, time);
   ASSERT_DOUBLE_EQ(truthReturnLocationX,returnLocationX);
-  double returnLocationY = FullWaveformIngestion::calculateReturnLocation(
+  double returnLocationY = ingester.calculateReturnLocation(
                              actualAnchorY, deviationY, time);
   ASSERT_DOUBLE_EQ(truthReturnLocationY,returnLocationY);
-  double returnLocationZ = FullWaveformIngestion::calculateReturnLocation(
+  double returnLocationZ = ingester.calculateReturnLocation(
                              actualAnchorZ, deviationZ, time);
   ASSERT_DOUBLE_EQ(truthReturnLocationZ,returnLocationZ);
 

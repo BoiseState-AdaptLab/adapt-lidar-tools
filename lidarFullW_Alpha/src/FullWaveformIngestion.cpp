@@ -8,27 +8,23 @@
 #include <fstream>
 #include <getopt.h>
 #include <sstream>
-#include "FullWaveFormIngestion.hpp"
+#include "FullWaveformIngestion.hpp"
 
 using namespace std;
 
 
 //Default constructor
-FullWaveFormIngestion::FullWaveFormIngestion(){
+FullWaveformIngestion::FullWaveformIngestion(){
   // enter default values
   time = 1000.;
 
-}
-
-std::string CmdLineArgs::getInputFileName(){
-  return inputFileName;
 }
 
 /*
 * Calculate the actual coordinate
 * Could be either actual anchor or actual target for x, y and z
 */
-double FullWaveFormIngestion::calculateActualCoordinate(double coordinate, 
+double FullWaveformIngestion::calculateActualCoordinate(double coordinate, 
                               double scaleFactor, double offset){
   double actualCoordinate = (coordinate * scaleFactor) + offset;
   return actualCoordinate;
@@ -38,7 +34,7 @@ double FullWaveFormIngestion::calculateActualCoordinate(double coordinate,
 * Calculate the deviation
 * Could be for x, y or z
 */
-double FullWaveFormIngestion::calculateDeviation(double anchor, double target){
+double FullWaveformIngestion::calculateDeviation(double anchor, double target){
   double deviation = (anchor - target)/time;
   return deviation;
 }
@@ -47,7 +43,7 @@ double FullWaveFormIngestion::calculateDeviation(double anchor, double target){
 * Calculate the return location
 * Could be for x, y or z
 */
-double FullWaveFormIngestion::calculateReturnLocation(double actualAnchor, 
+double FullWaveformIngestion::calculateReturnLocation(double actualAnchor, 
                               double deviation, double time){
   double returnLocation = actualAnchor + (time * deviation);
   return returnLocation;

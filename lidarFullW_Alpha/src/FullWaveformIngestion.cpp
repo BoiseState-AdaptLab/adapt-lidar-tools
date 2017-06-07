@@ -5,9 +5,6 @@
  */
 
 #include <iostream>
-#include <fstream>
-#include <getopt.h>
-#include <sstream>
 #include "FullWaveformIngestion.hpp"
 
 using namespace std;
@@ -35,7 +32,7 @@ double FullWaveformIngestion::calculateActualCoordinate(double coordinate,
 * Could be for x, y or z
 */
 double FullWaveformIngestion::calculateDeviation(double anchor, double target){
-  double deviation = (anchor - target)/time;
+  double deviation = -(anchor - target)/time;
   return deviation;
 }
 

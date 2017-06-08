@@ -9,8 +9,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <getopt.h>
-#include <sstream>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
@@ -19,14 +17,11 @@ class FullWaveformIngestion{
 private:
   //possible parameters
   double time;
-  // helpful stuff
-  std::string usageMessage;
-  std::string exeName;
+
   PULSEreadOpener pOpener;
   PULSEreader *pReader;
 
 public:
-  // help parameter
   FullWaveformIngestion();
 
   double calculateActualCoordinate(double coordinate, double scaleFactor, 

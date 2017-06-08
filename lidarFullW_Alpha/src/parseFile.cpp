@@ -19,9 +19,10 @@ void parseFile(char *fileName){
     std::cerr << "Error: Could not find the requested file." << std::endl;
   }
   else{
-    if (getline(file, line)) 
+    if (getline(file, line)){
       std::cout << line << std::endl; // Get and print the line.
       file.close(); // Remember to close the file.
+    }
   }
 }
 

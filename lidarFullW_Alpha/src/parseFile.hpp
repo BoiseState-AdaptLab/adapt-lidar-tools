@@ -35,15 +35,3 @@ public:
 
 
 #endif /* PARSEFILE_HPP_ */
-
-
-/* Original
-
-#ifndef PARSEFILE_HPP_
-#define PARSEFILE_HPP_
-
-void parseFile(char *fileName);
-
-#endif /* PARSEFILE_HPP_ */
-
-*/

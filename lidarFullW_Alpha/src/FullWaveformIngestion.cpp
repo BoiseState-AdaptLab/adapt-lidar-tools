@@ -32,7 +32,7 @@ double FullWaveformIngestion::calculateActualCoordinate(double coordinate,
 * Could be for x, y or z
 */
 double FullWaveformIngestion::calculateDeviation(double anchor, double target){
-  double deviation = -(anchor - target)/time;
+  double deviation = (target - anchor)/time;
   return deviation;
 }
 

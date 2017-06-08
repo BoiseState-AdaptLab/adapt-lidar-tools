@@ -113,7 +113,7 @@ void CmdLineArgs::parse(int argc,char *argv[])
 
   /*use function getopt_long to get the arguments with the option.
    * ":hf:o:" indicate that option h is without arguments while
-   * f and 0 are options with arguments
+   * f and o are options with arguments
    */
   while((optionChar = getopt_long (argc, argv, ":hf:",
       long_options, &option_index))!= -1)

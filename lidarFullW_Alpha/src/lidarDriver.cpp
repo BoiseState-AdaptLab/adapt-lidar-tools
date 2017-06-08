@@ -11,11 +11,10 @@ using namespace std;
 
 int main (int argc,char *argv[]){
 
-  CmdLineArgs cla = parseCmdLineArgs(argc,argv);
-  
-  if(cla.inputFile() != NULL){
-    parseFile(cla.inputFile());
-  }
+  CmdLineArgs cla;
+  cla.parse(argc,argv);
+  if(cla.printUsageMessage == true)
+    std::cout <<cla.getUsageMessage();
 
   return 0;
 }

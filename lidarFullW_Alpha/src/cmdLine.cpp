@@ -27,7 +27,7 @@ struct cmdLineException : public exception{
 */
 struct missingArgException : public exception{
   const char * what() const throw(){
-    return "Missing argument option caught\n";
+    return "Missing argument option exception caught\n";
   }
 };
 
@@ -59,6 +59,10 @@ void CmdLineArgs::setUsageMessage()
             <<std::endl;
   usageMessage.append(buffer.str());
 }
+
+  std::string CmdLineArgs::getUsageMessage(){
+    return usageMessage;
+  }
 
 CmdLineArgs::CmdLineArgs(){
   // enter default values
@@ -97,7 +101,7 @@ void CmdLineArgs::parse(int argc,char *argv[])
    * ":hf:o:" indicate that option h is without arguments while
    * f and 0 are options with arguments
    */
-  while((optionChar = getopt_long (argc, argv, "hf:",
+  while((optionChar = getopt_long (argc, argv, ":hf:",
       long_options, &option_index))!= -1)
   {
     

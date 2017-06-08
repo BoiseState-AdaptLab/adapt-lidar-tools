@@ -66,7 +66,7 @@ TEST_F(FullWaveFormTest, computeRange) {
   */
   double deviationX = ingester.calculateDeviation(
                         actualAnchorX,actualTargetX);
-  ASSERT_NEAR(truthDeviationX, deviationX,0.0005);
+  ASSERT_NEAR(truthDeviationX, deviationX,0.00001);
 
 
 /****************************************************************************

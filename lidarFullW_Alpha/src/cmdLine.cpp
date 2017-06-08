@@ -13,6 +13,12 @@
 using namespace std;
 
 
+/****************************************************************************
+* 
+* Custom exceptions
+* 
+****************************************************************************/
+
 /**
 * Custom exceptions for no command line arguments
 */
@@ -40,14 +46,18 @@ struct invalidOptionException : public exception{
   }
 };
 
-/**
- * Set the command line arguments
- */
+/****************************************************************************
+* 
+* Begin CmdLineArgs functions
+* 
+****************************************************************************/
+
+/*Function that sets the command line arguments*/
 void CmdLineArgs::setInputFileName(char *args){
   inputFileName = args;
 }
 
-/* Function that prints correct usage of this program*/
+/* Function that prints(sets up) correct usage of this program*/
 void CmdLineArgs::setUsageMessage()
 {
   std::stringstream buffer;
@@ -60,20 +70,24 @@ void CmdLineArgs::setUsageMessage()
   usageMessage.append(buffer.str());
 }
 
-  std::string CmdLineArgs::getUsageMessage(){
+/* Function that prints correct usage of this program*/
+std::string CmdLineArgs::getUsageMessage(){
     return usageMessage;
-  }
+}
 
+/* Default constructor*/
 CmdLineArgs::CmdLineArgs(){
   // enter default values
   printUsageMessage = false;
   setUsageMessage();
 }
 
+/* Function that returns the file name*/
 std::string CmdLineArgs::getInputFileName(){
   return inputFileName;
 }
 
+/* Function that parses the command line arguments*/
 void CmdLineArgs::parse(int argc,char *argv[])
 {
   char optionChar;  /* Option character */

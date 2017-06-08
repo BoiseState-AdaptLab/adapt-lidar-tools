@@ -32,6 +32,12 @@ class CmdLineTest : public testing::Test {
   int maxLengthOfArg;
 };
 
+/****************************************************************************
+* 
+* Begin valid command line option tests
+* 
+****************************************************************************/
+
 // Tests valid short command line options
 TEST_F(CmdLineTest, validShortCmdLineOpts) {
   optind = 0;
@@ -79,6 +85,14 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("file",cmd2.getInputFileName());
 }
+
+
+
+/****************************************************************************
+* 
+* Begin invalid command line option tests
+* 
+****************************************************************************/
 
 // Tests missing command line arguments
 TEST_F(CmdLineTest, missingCmdLineArg) {
@@ -130,14 +144,15 @@ TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
 }
 
 
-// Step 3. Call RUN_ALL_TESTS() in main().
-//
-// We do this by linking in src/gtest_main.cc file, which consists of
-// a main() function which calls RUN_ALL_TESTS() for us.
-//
-// This runs all the tests you've defined, prints the result, and
-// returns 0 if successful, or 1 otherwise.
-//
-// Did you notice that we didn't register the tests?  The
-// RUN_ALL_TESTS() macro magically knows about all the tests we
-// defined.  Isn't this convenient?
+/* Call RUN_ALL_TESTS() in main().
+
+ We do this by linking in src/gtest_main.cc file, which consists of
+ a main() function which calls RUN_ALL_TESTS() for us.
+
+ This runs all the tests you've defined, prints the result, and
+ returns 0 if successful, or 1 otherwise.
+
+ Notice that we didn't register the tests.  The
+ RUN_ALL_TESTS() macro magically knows about all the tests we
+ defined.
+*/

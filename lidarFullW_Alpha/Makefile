@@ -16,6 +16,14 @@ PULSE_DIR = deps/PulseWaves
 # Where to find user code.
 USER_DIR =src
 BIN=bin
+OBJ=obj
+
+$(OBJ):
+	mkdir $@
+$(LIB):
+	mkdir $@
+$(BIN):
+	mkdir $@
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
@@ -46,18 +54,18 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 # implementation details, the dependencies specified below are
 # conservative and not optimized.  This is fine as Google Test
 # compiles fast and for ordinary users its source rarely changes.
-gtest-all.o : $(GTEST_SRCS_)
+$(OBJ)/gtest-all.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-            $(GTEST_DIR)/src/gtest-all.cc
+            $(GTEST_DIR)/src/gtest-all.cc -o $@
 
-gtest_main.o : $(GTEST_SRCS_)
+$(OBJ)/gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
-            $(GTEST_DIR)/src/gtest_main.cc
+            $(GTEST_DIR)/src/gtest_main.cc -o $@
 
-gtest.a : gtest-all.o
+gtest.a : $(OBJ)/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 
-gtest_main.a : gtest-all.o gtest_main.o
+gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 # Builds a test.  A test should link with either gtest.a or

@@ -7,14 +7,10 @@
 #include <iostream>
 #include "FullWaveformIngestion.hpp"
 
-using namespace std;
-
-
 //Default constructor
 FullWaveformIngestion::FullWaveformIngestion(){
   // enter default values
   time = 1000.;
-
 }
 
 /*

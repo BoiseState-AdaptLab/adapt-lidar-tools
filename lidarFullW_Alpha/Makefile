@@ -17,12 +17,14 @@ PULSE_DIR = deps/PulseWaves
 USER_DIR =src
 BIN=bin
 OBJ=obj
+LIB=lib
 
+#Create directories if needed
+$(BIN):
+	mkdir $@
 $(OBJ):
 	mkdir $@
 $(LIB):
-	mkdir $@
-$(BIN):
 	mkdir $@
 
 # Flags passed to the preprocessor.
@@ -54,7 +56,7 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 # implementation details, the dependencies specified below are
 # conservative and not optimized.  This is fine as Google Test
 # compiles fast and for ordinary users its source rarely changes.
-$(OBJ)/gtest-all.o : $(GTEST_SRCS_)
+$(OBJ)/gtest-all.o : $(BIN) $(LIB) $(OBJ) $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
             $(GTEST_DIR)/src/gtest-all.cc -o $@
 
@@ -62,17 +64,17 @@ $(OBJ)/gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
             $(GTEST_DIR)/src/gtest_main.cc -o $@
 
-gtest.a : $(OBJ)/gtest-all.o
+$(LIB)/gtest.a : $(OBJ)/gtest-all.o
 	$(AR) $(ARFLAGS) $@ $^
 
-gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
+$(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 	$(AR) $(ARFLAGS) $@ $^
 
 # Builds a test.  A test should link with either gtest.a or
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-$(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o gtest_main.a
+$(BIN)/%_unittests:$(USER_DIR)/%_unittests.o $(USER_DIR)/%.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves
 
 $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
@@ -80,7 +82,7 @@ $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
 
 $(USER_DIR)/FullWaveformIngestion.o: $(USER_DIR)/FullWaveformIngestion.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
-	
+
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
 
@@ -97,6 +99,7 @@ test: $(TESTS)
 	$(BIN)/FullWaveformIngestion_unittests
 
 clean: 
-	rm -f $(BIN)/*.*
+	rm -rf $(BIN)
+	rm -rf $(OBJ)
+	rm -rf $(LIB)
 	rm -f $(USER_DIR)/*.o
-	rm -f $(TESTS) gtest.a gtest_main.a *.o

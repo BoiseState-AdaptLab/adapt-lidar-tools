@@ -16,7 +16,7 @@ class FullWaveformIngestion{
 
 private:
   //possible parameters
-  double time;
+  double sampleUnitsBetAnchorAndTarget;
 
   PULSEreadOpener pOpener;
   PULSEreader *pReader;

@@ -10,7 +10,7 @@
 //Default constructor
 FullWaveformIngestion::FullWaveformIngestion(){
   // enter default values
-  time = 1000.;
+  sampleUnitsBetAnchorAndTarget = 1000.;
 }
 
 /*
@@ -28,7 +28,7 @@ double FullWaveformIngestion::calculateActualCoordinate(double coordinate,
 * Could be for x, y or z
 */
 double FullWaveformIngestion::calculateDeviation(double anchor, double target){
-  double deviation = (target - anchor)/time;
+  double deviation = (target - anchor)/sampleUnitsBetAnchorAndTarget;
   return deviation;
 }
 

@@ -86,12 +86,12 @@ $(USER_DIR)/FullWaveformIngestion.o: $(USER_DIR)/FullWaveformIngestion.cpp
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
 
-$(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFile.o
+$(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFile.o $(USER_DIR)/ScannerInformation.o
 	$(CXX) -o $@ $^ $(CFLAGS)
 
 .PHONY: test
 
-lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFile.o
+lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFile.o $(USER_DIR)/ScannerInformation.o
 	$(CXX) -o $(BIN)/$@ $^ $(CFLAGS) 
 
 test: $(TESTS)

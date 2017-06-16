@@ -37,7 +37,7 @@ void ScannerInformation::setScannerInformation(/* File name goes here */){
   while(pReader->header.get_scanner(&scanner, i)) {
     scannerId[i] = i; 
     waveLength[i]= scanner.wave_length;
-    outgoingPulseWidth[i] = scanner.;
+    outgoingPulseWidth[i] = scanner.outgoing_pulse_width;
     scanPattern[i] = scanner.scan_pattern;
     numberOfMirrorFacets[i] = scanner.number_of_mirror_facets;
     scanFrequency[i] = scanner.scan_frequency;

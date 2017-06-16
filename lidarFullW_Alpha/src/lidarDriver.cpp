@@ -16,6 +16,10 @@ int main (int argc,char *argv[]){
   if(cla.printUsageMessage == true){
     std::cout <<cla.getUsageMessage();
   }
+  else{
+  ScannerInformation si;
+  si.getScannerInformation();
+  }
 
   return 0;
 }

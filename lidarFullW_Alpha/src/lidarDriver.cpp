@@ -17,8 +17,9 @@ int main (int argc,char *argv[]){
     std::cout <<cla.getUsageMessage();
   }
   else{
-  ScannerInformation si;
-  si.getScannerInformation();
+    ScannerInformation si;
+    si.setScannerInformation(cla.getInputFileName());
+    si.getScannerInformation();
   }
 
   return 0;

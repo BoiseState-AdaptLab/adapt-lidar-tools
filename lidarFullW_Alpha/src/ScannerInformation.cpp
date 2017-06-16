@@ -27,10 +27,10 @@ ScannerInformation::ScannerInformation(){
 
 
 /*
- *Read the file and set he scanner information
+ *Read the file and set the scanner information
  */
-void ScannerInformation::setScannerInformation(/* File name goes here */){
-  pOpener.set_file_name(/* File name goes here. const CHAR* file_name*/);
+void ScannerInformation::setScannerInformation(std::string fileName){
+  pOpener.set_file_name(fileName.c_str());
   pReader = pOpener.open();
   
   int i =1;
@@ -51,8 +51,7 @@ void ScannerInformation::setScannerInformation(/* File name goes here */){
     i++;
   }
   
-  pReader->close();
-  delete pReader;
+
 }
 
 void ScannerInformation::getScannerInformation(){
@@ -65,15 +64,17 @@ void ScannerInformation::getScannerInformation(){
             "Scan Angle Max,Pulse Frequency,Beam Diameter At Exit Aperture,"
             "Beam Divergence,Minimal Range,Maximal Range,Maximal_range\n");
 
-    int i = 1;
-    while(pReader->header.get_scanner(&scanner, i)) {   
-      fprintf(scanout, "%d,%lf,%lf,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-              scannerId[i], waveLength[i], outgoingPulseWidth[i], 
-              scanPattern[i], numberOfMirrorFacets[i], scanFrequency[i], 
-              scanAngleMin[i], scanAngleMax[i], pulseFrequency[i], 
-              beamDiameterAtExitAperture[i], beamDivergence[i], 
-              minimalRange[i], maximalRange[i]);
-      i++;
-    }
-    fclose(scanout);
+  int i = 1;
+  while(pReader->header.get_scanner(&scanner, i)) {   
+    fprintf(scanout, "%d,%lf,%lf,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
+            scannerId[i], waveLength[i], outgoingPulseWidth[i], 
+            scanPattern[i], numberOfMirrorFacets[i], scanFrequency[i], 
+            scanAngleMin[i], scanAngleMax[i], pulseFrequency[i], 
+            beamDiameterAtExitAperture[i], beamDivergence[i], 
+            minimalRange[i], maximalRange[i]);
+    i++;
+  }
+  fclose(scanout);
+  pReader->close();
+  delete pReader;
 }

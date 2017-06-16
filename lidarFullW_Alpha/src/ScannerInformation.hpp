@@ -37,7 +37,7 @@ private:
 public:
   ScannerInformation();
   
-  void setScannerInformation();
+  void setScannerInformation(std::string fileName);
   void getScannerInformation();
 };
 

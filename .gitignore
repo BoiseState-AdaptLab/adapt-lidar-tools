@@ -8,13 +8,6 @@
 *.so
 *.a
 
-# Folders #
-###################
-bin/
-lib/
-obj/
-deps/
-
 # Logs and databases #
 ######################
 *.log

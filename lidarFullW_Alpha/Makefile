@@ -17,9 +17,9 @@ PULSE_DIR = deps/PulseWaves
 USER_DIR =src
 
 # Different directories
-BIN=bin
-OBJ=obj
-LIB=lib
+BIN = bin
+OBJ = obj
+LIB = lib
 
 #Create directories if needed
 $(BIN):
@@ -76,7 +76,7 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-$(BIN)/%_unittests:$(USER_DIR)/%_unittests.o $(USER_DIR)/%.o $(LIB)/gtest_main.a
+$(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves
 
 $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
@@ -91,20 +91,22 @@ $(USER_DIR)/ScannerInformation.o: $(USER_DIR)/ScannerInformation.cpp
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
 
+.PHONY: test
+
+lidarDriver: $(BIN)/lidarDriver
+
 $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/ScannerInformation.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves
 
-.PHONY: test
-
-lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/parseFile.o $(USER_DIR)/ScannerInformation.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves
+$(USER_DIR)/lidarDriver.o: $(USER_DIR)/lidarDriver.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
 
 test: $(TESTS)
 	$(BIN)/cmdLine_unittests
 	$(BIN)/FullWaveformIngestion_unittests
 
 clean: 
-	rm -rf $(BIN)
-	rm -rf $(OBJ)
-	rm -rf $(LIB)
+	rm -f $(BIN)/*
+	rm -f $(OBJ)/*
+	rm -f $(LIB)/*
 	rm -f $(USER_DIR)/*.o

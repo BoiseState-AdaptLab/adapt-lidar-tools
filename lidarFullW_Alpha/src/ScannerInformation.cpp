@@ -10,54 +10,62 @@
 //Default constructor
 ScannerInformation::ScannerInformation(){
   // enter default values
-  scannerId [10] = {0}; 
-  waveLength [10 ]= {0};
-  outgoingPulseWidth [10] = {0};
-  scanPattern [10] = {0};
-  numberOfMirrorFacets [10] = {0};
-  scanFrequency [10] = {0};
-  scanAngleMin [10] = {0};
-  scanAngleMax [10] = {0};
-  pulseFrequency [10] = {0};
-  beamDiameterAtExitAperture [10] = {0};
-  beamDivergence [10] = {0};
-  minimalRange [10] = {0};
-  maximalRange [10] = {0};
+  scannerId  = 0; 
+  waveLength = 0;
+  outgoingPulseWidth  = 0;
+  scanPattern  = 0;
+  numberOfMirrorFacets  = 0;
+  scanFrequency  = 0;
+  scanAngleMin  = 0;
+  scanAngleMax  = 0;
+  pulseFrequency  = 0;
+  beamDiameterAtExitAperture  = 0;
+  beamDivergence  = 0;
+  minimalRange  = 0;
+  maximalRange  = 0;
 }
 
 
 /*
- *Read the file and set the scanner information
+ * Setter: Gets the scanner information and stores it
  */
 void ScannerInformation::setScannerInformation(std::string fileName){
+
   pOpener.set_file_name(fileName.c_str());
   pReader = pOpener.open();
-  
-  int i =1;
+    
+  int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
-    scannerId[i] = i; 
-    waveLength[i]= scanner.wave_length;
-    outgoingPulseWidth[i] = scanner.outgoing_pulse_width;
-    scanPattern[i] = scanner.scan_pattern;
-    numberOfMirrorFacets[i] = scanner.number_of_mirror_facets;
-    scanFrequency[i] = scanner.scan_frequency;
-    scanAngleMin[i] = scanner.scan_angle_min;
-    scanAngleMax[i] = scanner.scan_angle_max;
-    pulseFrequency[i] = scanner.pulse_frequency;
-    beamDiameterAtExitAperture[i] = scanner.beam_diameter_at_exit_aperture;
-    beamDivergence[i] = scanner.beam_divergence;
-    minimalRange[i] = scanner.minimal_range;
-    maximalRange[i] = scanner.maximal_range;
+    scannerId = i; 
+    waveLength = scanner.wave_length;
+    outgoingPulseWidth = scanner.outgoing_pulse_width;
+    scanPattern = scanner.scan_pattern;
+    numberOfMirrorFacets = scanner.number_of_mirror_facets;
+    scanFrequency = scanner.scan_frequency;
+    scanAngleMin = scanner.scan_angle_min;
+    scanAngleMax = scanner.scan_angle_max;
+    pulseFrequency = scanner.pulse_frequency;
+    beamDiameterAtExitAperture = scanner.beam_diameter_at_exit_aperture;
+    beamDivergence = scanner.beam_divergence;
+    minimalRange = scanner.minimal_range;
+    maximalRange = scanner.maximal_range;
     i++;
   }
-  
-
 }
 
+/*
+ * Getter: Create a CSV with the details of all the scanner information 
+ * (may be more thatn one)
+ */
 void ScannerInformation::getScannerInformation(){
 
+  /* Provide the file name to the PULSEreadOpener
+  c_str returns a const char* that points to a null-terminated string 
+  (i.e. a C-style string). It is useful when you want to pass the "contents"
+  of an std::string to a function that expects to work with a C-style string */
+
   FILE *scanout;
-  scanout = fopen("Scanner.csv", "w");
+  scanout = fopen("scanner.csv", "w");
   fprintf(scanout,
             "Scanner Id,Wave Length,Outgoing Pulse Width,Scan Pattern,"
             "Number Of Mirror Facets,Scan Frequency,Scan Angle Min,"
@@ -65,13 +73,28 @@ void ScannerInformation::getScannerInformation(){
             "Beam Divergence,Minimal Range,Maximal Range\n");
 
   int i = 1;
-  while(pReader->header.get_scanner(&scanner, i)) {   
+  while(pReader->header.get_scanner(&scanner, i)) {
+
+    scannerId = i; 
+    waveLength = scanner.wave_length;
+    outgoingPulseWidth = scanner.outgoing_pulse_width;
+    scanPattern = scanner.scan_pattern;
+    numberOfMirrorFacets = scanner.number_of_mirror_facets;
+    scanFrequency = scanner.scan_frequency;
+    scanAngleMin = scanner.scan_angle_min;
+    scanAngleMax = scanner.scan_angle_max;
+    pulseFrequency = scanner.pulse_frequency;
+    beamDiameterAtExitAperture = scanner.beam_diameter_at_exit_aperture;
+    beamDivergence = scanner.beam_divergence;
+    minimalRange = scanner.minimal_range;
+    maximalRange = scanner.maximal_range;
+
     fprintf(scanout, "%d,%lf,%lf,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-            scannerId[i], waveLength[i], outgoingPulseWidth[i], 
-            scanPattern[i], numberOfMirrorFacets[i], scanFrequency[i], 
-            scanAngleMin[i], scanAngleMax[i], pulseFrequency[i], 
-            beamDiameterAtExitAperture[i], beamDivergence[i], 
-            minimalRange[i], maximalRange[i]);
+            scannerId, waveLength, outgoingPulseWidth, 
+            scanPattern, numberOfMirrorFacets, scanFrequency, 
+            scanAngleMin, scanAngleMax, pulseFrequency, 
+            beamDiameterAtExitAperture, beamDivergence, 
+            minimalRange, maximalRange);
     i++;
   }
   fclose(scanout);

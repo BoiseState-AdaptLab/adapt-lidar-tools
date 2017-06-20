@@ -40,7 +40,8 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = $(BIN)/cmdLine_unittests $(BIN)/FullWaveformIngestion_unittests
+TESTS = $(BIN)/cmdLine_unittests $(BIN)/FullWaveformIngestion_unittests \
+        $(BIN)/ScannerInformation_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -76,8 +77,10 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-$(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o $(LIB)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves
+$(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o \
+                    $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
+            $(PULSE_DIR)/lib -lpulsewaves
 
 $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
@@ -95,8 +98,10 @@ $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 
 lidarDriver: $(BIN)/lidarDriver
 
-$(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o $(USER_DIR)/ScannerInformation.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves
+$(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o \
+                    $(USER_DIR)/ScannerInformation.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
+            $(PULSE_DIR)/lib -lpulsewaves
 
 $(USER_DIR)/lidarDriver.o: $(USER_DIR)/lidarDriver.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
@@ -104,6 +109,7 @@ $(USER_DIR)/lidarDriver.o: $(USER_DIR)/lidarDriver.cpp
 test: $(TESTS)
 	$(BIN)/cmdLine_unittests
 	$(BIN)/FullWaveformIngestion_unittests
+	$(BIN)/ScannerInformation_unittests
 
 clean: 
 	rm -f $(BIN)/*

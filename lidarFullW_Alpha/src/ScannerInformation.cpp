@@ -62,7 +62,7 @@ void ScannerInformation::getScannerInformation(){
             "Scanner Id,Wave Length,Outgoing Pulse Width,Scan Pattern,"
             "Number Of Mirror Facets,Scan Frequency,Scan Angle Min,"
             "Scan Angle Max,Pulse Frequency,Beam Diameter At Exit Aperture,"
-            "Beam Divergence,Minimal Range,Maximal Range,Maximal_range\n");
+            "Beam Divergence,Minimal Range,Maximal Range\n");
 
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {   

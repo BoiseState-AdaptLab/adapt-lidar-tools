@@ -25,6 +25,7 @@ private:
 public:
   // help parameter
   bool printUsageMessage;
+  bool exceptionFlag;
 
   CmdLineArgs();
   

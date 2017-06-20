@@ -46,6 +46,7 @@ struct invalidOptionException : public exception{
   }
 };
 
+
 /****************************************************************************
 * 
 * Begin CmdLineArgs functions
@@ -79,6 +80,7 @@ std::string CmdLineArgs::getUsageMessage(){
 CmdLineArgs::CmdLineArgs(){
   // enter default values
   printUsageMessage = false;
+  exceptionFlag = false;
   setUsageMessage();
 }
 
@@ -96,6 +98,7 @@ void CmdLineArgs::parse(int argc,char *argv[])
   /*if the program is run without any command line arguments, display
    * the correct program usage and quit.*/
   if(argc < 2){
+    printUsageMessage = true;
     throw cmdLineException();
   }
 
@@ -112,13 +115,12 @@ void CmdLineArgs::parse(int argc,char *argv[])
   int option_index = 0;
 
   /*use function getopt_long to get the arguments with the option.
-   * ":hf:o:" indicate that option h is without arguments while
-   * f and o are options with arguments
+   * ":hf:" indicate that option 'h' is without arguments while
+   * option 'f' requires arguments
    */
   while((optionChar = getopt_long (argc, argv, ":hf:",
       long_options, &option_index))!= -1)
-  {
-    
+  {    
     switch(optionChar)
     {
     /*option h show the help information*/
@@ -131,11 +133,12 @@ void CmdLineArgs::parse(int argc,char *argv[])
       break;
     case ':':
       /* missing option argument */
+      exceptionFlag = true;
       throw missingArgException();
     default:
       /* invalid option */
+      exceptionFlag = true;
       throw invalidOptionException();
     }
   }
-  
 }

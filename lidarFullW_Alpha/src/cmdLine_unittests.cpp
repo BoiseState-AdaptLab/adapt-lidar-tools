@@ -1,5 +1,5 @@
 /*
- * File name: testDriver.cpp
+ * File name: cmdLine_unittests.cpp
  * Created on: 24-May-2017
  * Author: ravi
  */
@@ -31,6 +31,7 @@ class CmdLineTest : public testing::Test {
   int numberOfArgs;
   int maxLengthOfArg;
 };
+
 
 /****************************************************************************
 * 
@@ -85,7 +86,6 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("file",cmd2.getInputFileName());
 }
-
 
 
 /****************************************************************************
@@ -149,10 +149,7 @@ TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
  We do this by linking in src/gtest_main.cc file, which consists of
  a main() function which calls RUN_ALL_TESTS() for us.
 
- This runs all the tests you've defined, prints the result, and
+ This runs all the tests defined, prints the result, and
  returns 0 if successful, or 1 otherwise.
 
- Notice that we didn't register the tests.  The
- RUN_ALL_TESTS() macro magically knows about all the tests we
- defined.
 */

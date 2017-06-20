@@ -9,19 +9,19 @@
 
 using namespace std;
 
-int main (int argc,char *argv[]){
+int main (int argc, char *argv[]){
 
   CmdLineArgs cla;
   cla.parse(argc,argv);
-  if(cla.printUsageMessage == true){
-    std::cout <<cla.getUsageMessage();
+  
+  if(cla.printUsageMessage == true || cla.exceptionFlag == true){
+    std::cout << cla.getUsageMessage() << std::endl;
   }
   else{
-    ScannerInformation si;
-    si.setScannerInformation(cla.getInputFileName());
-    si.getScannerInformation();
+    ScannerInformation scannerInfo;
+    scannerInfo.setScannerInformation(cla.getInputFileName());
+    scannerInfo.getScannerInformation();
   }
 
   return 0;
 }
-

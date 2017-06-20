@@ -44,8 +44,14 @@ TEST_F(ScannerInformationTest, checkValues){
   double TruthMaximalRange = 1860.605225;
   
   std::string fileName = "bin/140823_183115_1_clipped_test.pls";
-  scannerInfo.setScannerInformation(fileName);
-  
+  ASSERT_ANY_THROW (scannerInfo.setScannerInformation(fileName));
+
+  std::string fileName1 = "etc/140823_183115_1_clipped_test.dat";
+  ASSERT_ANY_THROW (scannerInfo.setScannerInformation(fileName1));
+
+  std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+  ASSERT_NO_THROW (scannerInfo.setScannerInformation(fileNameCorrect));
+ 
   ASSERT_EQ(TruthScannerId, scannerInfo.scannerId);
   ASSERT_DOUBLE_EQ(TruthWaveLength, scannerInfo.waveLength);
   ASSERT_NEAR(TruthOutgoingPulseWidth, scannerInfo.outgoingPulseWidth,

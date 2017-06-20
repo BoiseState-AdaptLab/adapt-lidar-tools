@@ -33,6 +33,9 @@ void ScannerInformation::setScannerInformation(std::string fileName){
 
   pOpener.set_file_name(fileName.c_str());
   pReader = pOpener.open();
+  if(pReader == NULL){
+    throw "Unable to Open File" + fileName;
+  }
     
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {

@@ -12,7 +12,7 @@
 #include "ScannerInformation.hpp"
 
 
-class ScannerInformationTest: public testing::Test {
+class ScannerInformationTest: public testing::Test{
   protected:
 
   ScannerInformation scannerInfo;
@@ -23,12 +23,14 @@ class ScannerInformationTest: public testing::Test {
 
 };
 
-  /*
-  * Given the true values of the actual anchor, target and deviation,
-  * we calculate the actual anchor, actual target and actual deviation
-  * using FullWaveformIngestion functions
-  */
+/*
+* Given the true values of the actual anchor, target and deviation,
+* we calculate the actual anchor, actual target and actual deviation
+* using FullWaveformIngestion functions
+*/
 TEST_F(ScannerInformationTest, checkValues){
+
+  // Known Scanner information
   int TruthScannerId = 1; 
   double TruthWaveLength = 1064;
   double TruthOutgoingPulseWidth = 4.822761;
@@ -52,19 +54,19 @@ TEST_F(ScannerInformationTest, checkValues){
   std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
   ASSERT_NO_THROW (scannerInfo.setScannerInformation(fileNameCorrect));
  
-  ASSERT_EQ(TruthScannerId, scannerInfo.scannerId);
-  ASSERT_DOUBLE_EQ(TruthWaveLength, scannerInfo.waveLength);
-  ASSERT_NEAR(TruthOutgoingPulseWidth, scannerInfo.outgoingPulseWidth,
+  ASSERT_EQ (TruthScannerId, scannerInfo.scannerId);
+  ASSERT_DOUBLE_EQ (TruthWaveLength, scannerInfo.waveLength);
+  ASSERT_NEAR (TruthOutgoingPulseWidth, scannerInfo.outgoingPulseWidth,
               0.0000005);
-  ASSERT_EQ(TruthScanPattern, scannerInfo.scanPattern);
-  ASSERT_EQ(TruthNumberOfMirrorFacets, scannerInfo.numberOfMirrorFacets);
-  ASSERT_NEAR(TruthScanFrequency, scannerInfo.scanFrequency, 0.000001);
-  ASSERT_NEAR(TruthScanAngleMin, scannerInfo.scanAngleMin, 0.0000001);
-  ASSERT_NEAR(TruthScanAngleMax, scannerInfo.scanAngleMax, 0.0000005);
-  ASSERT_DOUBLE_EQ(TruthPulseFrequency, scannerInfo.pulseFrequency);
-  ASSERT_DOUBLE_EQ(TruthBeamDiameterAtExitAperture, 
+  ASSERT_EQ (TruthScanPattern, scannerInfo.scanPattern);
+  ASSERT_EQ (TruthNumberOfMirrorFacets, scannerInfo.numberOfMirrorFacets);
+  ASSERT_NEAR (TruthScanFrequency, scannerInfo.scanFrequency, 0.000001);
+  ASSERT_NEAR (TruthScanAngleMin, scannerInfo.scanAngleMin, 0.0000001);
+  ASSERT_NEAR (TruthScanAngleMax, scannerInfo.scanAngleMax, 0.0000005);
+  ASSERT_DOUBLE_EQ (TruthPulseFrequency, scannerInfo.pulseFrequency);
+  ASSERT_DOUBLE_EQ (TruthBeamDiameterAtExitAperture, 
                    scannerInfo.beamDiameterAtExitAperture);
-  ASSERT_NEAR(TruthBeamDivergence, scannerInfo.beamDivergence, 0.01);
-  ASSERT_NEAR(TruthMinimalRange, scannerInfo.minimalRange, 0.00001);
-  ASSERT_NEAR(TruthMaximalRange, scannerInfo.maximalRange, 0.000001);
+  ASSERT_NEAR (TruthBeamDivergence, scannerInfo.beamDivergence, 0.01);
+  ASSERT_NEAR (TruthMinimalRange, scannerInfo.minimalRange, 0.00001);
+  ASSERT_NEAR (TruthMaximalRange, scannerInfo.maximalRange, 0.000001);
 }

@@ -6,6 +6,7 @@
 #include <iostream>
 #include "cmdLine.hpp"
 #include "ScannerInformation.hpp"
+#include "GPSInformation.hpp"
 
 using namespace std;
 
@@ -21,6 +22,12 @@ int main (int argc, char *argv[]){
     ScannerInformation scannerInfo;
     scannerInfo.setScannerInformation(cla.getInputFileName());
     scannerInfo.getScannerInformation();
+    
+    GPSInformation gpsInfo;
+    std::cout << "No of pulses: " << gpsInfo.getNumberOfPulses \
+                                    (cla.getInputFileName()) <<std::endl;
+    gpsInfo.getGPSInformation();
+    
   }
 
   return 0;

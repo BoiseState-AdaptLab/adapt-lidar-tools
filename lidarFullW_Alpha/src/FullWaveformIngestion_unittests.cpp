@@ -8,7 +8,7 @@
 #include "FullWaveformIngestion.hpp"
 
 
-class FullWaveFormTest : public testing::Test {
+class FullWaveFormTest : public testing::Test{
   protected:
 
   FullWaveformIngestion ingester;

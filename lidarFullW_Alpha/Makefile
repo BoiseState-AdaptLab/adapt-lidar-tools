@@ -14,20 +14,12 @@ GTEST_DIR = deps/googletest/googletest
 PULSE_DIR = deps/PulseWaves
 
 # Where to find user code.
-USER_DIR =src
+USER_DIR = src
 
 # Different directories
 BIN = bin
 OBJ = obj
 LIB = lib
-
-#Create directories if needed
-$(BIN):
-	mkdir $@
-$(OBJ):
-	mkdir $@
-$(LIB):
-	mkdir $@
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
@@ -59,7 +51,7 @@ GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
 # implementation details, the dependencies specified below are
 # conservative and not optimized.  This is fine as Google Test
 # compiles fast and for ordinary users its source rarely changes.
-$(OBJ)/gtest-all.o : $(BIN) $(LIB) $(OBJ) $(GTEST_SRCS_)
+$(OBJ)/gtest-all.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
             $(GTEST_DIR)/src/gtest-all.cc -o $@
 

@@ -4,7 +4,7 @@
  * Author: ravi
  *
  * This test requres the sample 140823_183115_1_clipped_test.pls file 
- * and its corresponding WVS file to be in the bin directory to run
+ * and its corresponding wvs file to be in the etc directory to run
  *
  */
 

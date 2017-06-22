@@ -16,15 +16,16 @@ class GPSInformation{
 
 public:
   //possible parameters
-  long long p = 0;
+  long long noOfPulses;
   double gpsTime;
-  double xa, ya, za;
-  double xt, yt, zt;
-  double dx, dy, dz;
-  double xf, yf, zf;
-  double xl, yl, zl;
+  double xAnchor, yAnchor, zAnchor;
+  double xTarget, yTarget, zTarget;
+  double xDeviation, yDeviation, zDeviation;
+  double xFirst, yFirst, zFirst;
+  double xLast, yLast, zLast;
   unsigned char edge;
-  unsigned char scan_dir;
+  unsigned char facet;
+  unsigned char scanDirection;
   unsigned char intensity;
 
   PULSEreadOpener pOpener;
@@ -33,8 +34,10 @@ public:
 
   GPSInformation();
   
-  void setScannerInformation(std::string fileName);
-  void getScannerInformation();
+  void setGPSInformation();
+  long long getNumberOfPulses(std::string fileName);
+  void getGPSInformation();
+
 };
 
 #endif /* GPSINFORMATION_HPP_ */

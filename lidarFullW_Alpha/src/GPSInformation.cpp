@@ -8,56 +8,85 @@
 #include "GPSInformation.hpp"
 
 //Default constructor
-GPSInformation::ScannerInformation(){
+GPSInformation::GPSInformation(){
   // enter default values
-  xa = 0;
-  ya = 0;
-  za = 0;
-  xt = 0;
-  yt = 0;
-  zt = 0;
-  xf = 0;
-  yf = 0;
-  zf = 0;
-  xl = 0;
-  yl = 0;
-  zl = 0;
-
+  noOfPulses = 0;
+  xAnchor = 0;
+  yAnchor = 0;
+  zAnchor = 0;
+  xTarget = 0;
+  yTarget = 0;
+  zTarget = 0;
+  xFirst = 0;
+  yFirst = 0;
+  zFirst = 0;
+  xLast = 0;
+  yLast = 0;
+  zLast = 0;
   edge = 0;
-  scan_dir = 0;
+  facet = 0;
+  scanDirection = 0;
   intensity = 0;
 }
 
 
+long long GPSInformation::getNumberOfPulses(std::string fileName){
+  pOpener.set_file_name(fileName.c_str());
+  pReader = pOpener.open();
+  noOfPulses = pReader->header.number_of_pulses;
+  return noOfPulses;
+}
+
+
 /*
- * Setter: Gets the scanner information and stores it
+ * Gets the GPS information and stores it
  */
-void GPSInformation::setGPSInformation(){
+void GPSInformation::getGPSInformation(){
+  long long pulseIndex = 0;
+  FILE *scanout;
+  scanout = fopen("gps.csv", "w");
+  fprintf(scanout, "Pulse Index, GPS Time, X Anchor, Y Anchor,  Z Anchor, \
+                    X Target, Y Target, Z Target, Scan Direction, X First, \
+                    Y First, Z First, X Last, Y Last, Z Last, \
+                    edge, facet, intensity\n");
+  
   pReader->seek(0);
-  int outCount = 0;
-  int outFound = 0;
   while(pReader->read_pulse()) {
-    /* Write line to pulse file */
     gpsTime = pReader->pulse.get_t();
+    
     pReader->pulse.compute_anchor_and_target_and_dir();
-    xa = pReader->pulse.get_anchor_x();
-    ya = pReader->pulse.get_anchor_y();
-    za = pReader->pulse.get_anchor_z();
-    xt = pReader->pulse.get_target_x();
-    yt = pReader->pulse.get_target_y();
-    zt = pReader->pulse.get_target_z();
+    xAnchor = pReader->pulse.get_anchor_x();
+    yAnchor = pReader->pulse.get_anchor_y();
+    zAnchor = pReader->pulse.get_anchor_z();
+    xTarget = pReader->pulse.get_target_x();
+    yTarget = pReader->pulse.get_target_y();
+    zTarget = pReader->pulse.get_target_z();
+    
     pReader->pulse.compute_first_and_last();
-    xf = pReader->pulse.get_first_x();
-    yf = pReader->pulse.get_first_y();
-    zf = pReader->pulse.get_first_z();
-    xl = pReader->pulse.get_last_x();
-    yl = pReader->pulse.get_last_y();
-    zl = pReader->pulse.get_last_z();
+    xFirst = pReader->pulse.get_first_x();
+    yFirst = pReader->pulse.get_first_y();
+    zFirst = pReader->pulse.get_first_z();
+    xLast = pReader->pulse.get_last_x();
+    yLast = pReader->pulse.get_last_y();
+    zLast = pReader->pulse.get_last_z();
 
     edge = pReader->pulse.edge_of_scan_line;
-    scan_dir = pReader->pulse.scan_direction;
+    scanDirection = pReader->pulse.scan_direction;
+    facet = pReader->pulse.mirror_facet,
     intensity = pReader->pulse.intensity;
     
-    p++;
+    fprintf(scanout, "%lld,%.8lf,   \
+                      %lf,%lf,%lf,  \
+                      %lf,%lf,%lf,  \
+                      %lf,%lf,%lf,  \
+                      %lf,%lf, %lf, \
+                      %d,%d,%d,%d,\n", 
+            pulseIndex, gpsTime, 
+            xAnchor, yAnchor, zAnchor, 
+            xTarget, yTarget, zTarget,
+            xFirst, yFirst, zFirst,
+            xLast, yLast, zLast, 
+            edge, scanDirection, facet, intensity) ;
+    pulseIndex++;
   }
 }

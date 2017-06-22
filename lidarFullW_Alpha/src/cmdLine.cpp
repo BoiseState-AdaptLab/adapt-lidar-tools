@@ -114,7 +114,7 @@ void CmdLineArgs::parse(int argc,char *argv[])
   /* getopt_long stores the option index here. */
   int option_index = 0;
 
-  /*use function getopt_long to get the arguments with the option.
+  /* Use function getopt_long to get the arguments with the option.
    * ":hf:" indicate that option 'h' is without arguments while
    * option 'f' requires arguments
    */
@@ -138,5 +138,9 @@ void CmdLineArgs::parse(int argc,char *argv[])
         exceptionFlag = true;
         throw invalidOptionException();
     }
+  }
+  // For non option input
+  if(optind < argc){
+    printUsageMessage = true;
   }
 }

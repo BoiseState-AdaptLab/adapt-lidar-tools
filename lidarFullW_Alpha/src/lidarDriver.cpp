@@ -15,7 +15,7 @@ int main (int argc, char *argv[]){
   CmdLineArgs cla;
   cla.parse(argc,argv);
   
-  if(cla.printUsageMessage == true || cla.exceptionFlag == true){
+  if(cla.printUsageMessage == true){
     std::cout << cla.getUsageMessage() << std::endl;
   }
   else{

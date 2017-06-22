@@ -4,6 +4,7 @@
  * Author: ravi
  */
 #include <iostream>
+#include <iomanip>
 #include "cmdLine.hpp"
 #include "ScannerInformation.hpp"
 #include "GPSInformation.hpp"
@@ -26,7 +27,7 @@ int main (int argc, char *argv[]){
     GPSInformation gpsInfo;
     std::cout << "No of pulses: " << gpsInfo.getNumberOfPulses \
                                     (cla.getInputFileName()) <<std::endl;
-    gpsInfo.getGPSInformation();
+    gpsInfo.writeGPSInformation();
     
   }
 

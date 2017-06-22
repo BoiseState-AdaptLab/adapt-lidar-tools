@@ -36,7 +36,8 @@ public:
   
   void setGPSInformation();
   long long getNumberOfPulses(std::string fileName);
-  void getGPSInformation();
+  void writeGPSInformation();
+  void setGPSInformation(int index);
 
 };
 

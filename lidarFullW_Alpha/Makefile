@@ -90,6 +90,9 @@ $(USER_DIR)/FullWaveformIngestion.o: $(USER_DIR)/FullWaveformIngestion.cpp
 
 $(USER_DIR)/ScannerInformation.o: $(USER_DIR)/ScannerInformation.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	
+$(USER_DIR)/GPSInformation.o: $(USER_DIR)/GPSInformation.cpp
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
@@ -99,7 +102,8 @@ $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 lidarDriver: $(BIN)/lidarDriver
 
 $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/cmdLine.o \
-                    $(USER_DIR)/ScannerInformation.o
+                    $(USER_DIR)/ScannerInformation.o \
+                    $(USER_DIR)/GPSInformation.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 

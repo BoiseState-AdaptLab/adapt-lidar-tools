@@ -53,7 +53,7 @@ struct invalidOptionException : public exception{
 * 
 ****************************************************************************/
 
-/*Function that sets the command line arguments*/
+/* Function that sets the command line arguments*/
 void CmdLineArgs::setInputFileName(char *args){
   inputFileName = args;
 }
@@ -95,7 +95,7 @@ void CmdLineArgs::parse(int argc,char *argv[])
   char optionChar;  /* Option character */
   char *fArg;     /* Argument of the f(file) option character */
 
-  /*if the program is run without any command line arguments, display
+  /* If the program is run without any command line arguments, display
    * the correct program usage and quit.*/
   if(argc < 2){
     printUsageMessage = true;
@@ -119,26 +119,24 @@ void CmdLineArgs::parse(int argc,char *argv[])
    * option 'f' requires arguments
    */
   while((optionChar = getopt_long (argc, argv, ":hf:",
-      long_options, &option_index))!= -1)
-  {    
-    switch(optionChar)
-    {
+         long_options, &option_index))!= -1){    
+    switch(optionChar){
     /*option h show the help information*/
-    case 'f':
-      fArg = optarg;
-      setInputFileName(fArg);
-      break;
-    case 'h':
-      printUsageMessage = true;
-      break;
-    case ':':
-      /* missing option argument */
-      exceptionFlag = true;
-      throw missingArgException();
-    default:
-      /* invalid option */
-      exceptionFlag = true;
-      throw invalidOptionException();
+      case 'f':
+        fArg = optarg;
+        setInputFileName(fArg);
+        break;
+      case 'h':
+        printUsageMessage = true;
+        break;
+      case ':':
+        /* missing option argument */
+        exceptionFlag = true;
+        throw missingArgException();
+      default:
+        /* invalid option */
+        exceptionFlag = true;
+        throw invalidOptionException();
     }
   }
 }

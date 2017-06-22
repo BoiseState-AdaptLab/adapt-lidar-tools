@@ -19,11 +19,11 @@ class FullWaveFormTest : public testing::Test {
 
 };
 
-  /*
-  * Given the true values of the actual anchor, target and deviation,
-  * we calculate the actual anchor, actual target and actual deviation
-  * using FullWaveformIngestion functions
-  */
+/*
+* Given the true values of the actual anchor, target and deviation,
+* we calculate the actual anchor, actual target and actual deviation
+* using FullWaveformIngestion functions
+*/
 TEST_F(FullWaveFormTest, computeRange) {
 
 

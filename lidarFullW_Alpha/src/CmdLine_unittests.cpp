@@ -1,11 +1,10 @@
 /*
- * File name: cmdLine_unittests.cpp
+ * File name: CmdLine_unittests.cpp
  * Created on: 24-May-2017
  * Author: ravi
  */
 
-
-#include "cmdLine.hpp"
+#include "CmdLine.hpp"
 #include "gtest/gtest.h"
 #include <getopt.h>
 
@@ -30,6 +29,8 @@ class CmdLineTest : public testing::Test {
   char** commonArgSpace;
   int numberOfArgs;
   int maxLengthOfArg;
+  CmdLine cmd;
+  CmdLine cmd2;
 };
 
 
@@ -41,23 +42,21 @@ class CmdLineTest : public testing::Test {
 
 // Tests valid short command line options
 TEST_F(CmdLineTest, validShortCmdLineOpts) {
-  optind = 0;
-  int noOfArgs = 2;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
   strncpy( commonArgSpace[0],"test",5);   
   strncpy(commonArgSpace[1],"-h",3);
-  CmdLineArgs cmd;
   ASSERT_NO_THROW({
-    cmd.parse(noOfArgs, commonArgSpace);
+    cmd.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_TRUE(cmd.printUsageMessage);
 
-  CmdLineArgs cmd2;
-  optind=0;
-  noOfArgs = 3;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 3;
   strncpy(commonArgSpace[1],"-f",3);
   strncpy(commonArgSpace[2],"someFileName",13);
   ASSERT_NO_THROW({
-    cmd2.parse(noOfArgs, commonArgSpace);
+    cmd2.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("someFileName",cmd2.getInputFileName());
@@ -65,23 +64,21 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
 
 // Tests valid long command line options
 TEST_F(CmdLineTest, validLongCmdLineOpts) {
-  optind = 0;
-  int noOfArgs = 2;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
   strncpy( commonArgSpace[0],"test",5);   
   strncpy(commonArgSpace[1],"--help",7);
-  CmdLineArgs cmd;
   ASSERT_NO_THROW({
-    cmd.parse(noOfArgs, commonArgSpace);
+    cmd.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_TRUE(cmd.printUsageMessage);
 
-  CmdLineArgs cmd2;
-  optind = 0;
-  noOfArgs = 3;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 3;
   strncpy(commonArgSpace[1],"--file",7);
   strncpy(commonArgSpace[2],"file",5);
   ASSERT_NO_THROW({
-    cmd2.parse(noOfArgs, commonArgSpace);
+    cmd2.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("file",cmd2.getInputFileName());
@@ -96,51 +93,46 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
 
 // Tests missing command line arguments
 TEST_F(CmdLineTest, missingCmdLineArg) {
-  optind = 0;
-  int noOfArgs = 1;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 1;
   strncpy(commonArgSpace[0],"test",5);
-  CmdLineArgs cmd;
-  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
+  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests missing short option arguments
 TEST_F(CmdLineTest, missingShortOptArg) {
-  optind = 0;
-  int noOfArgs = 2;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
   strncpy(commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-f",3);
-  CmdLineArgs cmd;
-  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
+  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests missing long option arguments
 TEST_F(CmdLineTest, missingLongOptArg) {
-  optind = 0;
-  int noOfArgs = 2;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
   strncpy(commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"--file",7);
-  CmdLineArgs cmd;
-  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
+  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests invalid short command line options
 TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
-  optind = 0;
-  int noOfArgs = 2;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
   strncpy( commonArgSpace[0],"test",5);   
   strncpy(commonArgSpace[1],"-s",3);
-  CmdLineArgs cmd;
-  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
+  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests invalid long command line options
 TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
-  optind = 0;
-  int noOfArgs = 2;
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
   strncpy( commonArgSpace[0],"test",5);   
   strncpy(commonArgSpace[1],"--who",6);
-  CmdLineArgs cmd;
-  EXPECT_ANY_THROW(cmd.parse(noOfArgs, commonArgSpace));
+  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 

@@ -37,33 +37,6 @@ long long GPSInformation::getNumberOfPulses(std::string fileName){
   return noOfPulses;
 }
 
-void GPSInformation::setGPSInformation(int index){
-   pReader->seek(index);
-   gpsTime = pReader->pulse.get_t();
-    
-   pReader->pulse.compute_anchor_and_target_and_dir();
-   xAnchor = pReader->pulse.get_anchor_x();
-   yAnchor = pReader->pulse.get_anchor_y();
-   zAnchor = pReader->pulse.get_anchor_z();
-   xTarget = pReader->pulse.get_target_x();
-   yTarget = pReader->pulse.get_target_y();
-   zTarget = pReader->pulse.get_target_z();
-   
-   pReader->pulse.compute_first_and_last();
-   xFirst = pReader->pulse.get_first_x();
-   yFirst = pReader->pulse.get_first_y();
-   zFirst = pReader->pulse.get_first_z();
-   xLast = pReader->pulse.get_last_x();
-   yLast = pReader->pulse.get_last_y();
-   zLast = pReader->pulse.get_last_z();
-
-   edge = pReader->pulse.edge_of_scan_line;
-   scanDirection = pReader->pulse.scan_direction;
-   facet = pReader->pulse.mirror_facet,
-   intensity = pReader->pulse.intensity;
-}
-
-
 /*
  * Gets the GPS information and stores it
  */
@@ -72,9 +45,9 @@ void GPSInformation::writeGPSInformation(){
   FILE *scanout;
   scanout = fopen("gps.csv", "w");
   fprintf(scanout, "Pulse Index, GPS Time, X Anchor, Y Anchor,  Z Anchor, \
-                    X Target, Y Target, Z Target, Scan Direction, X First, \
+                    X Target, Y Target, Z Target, X First, \
                     Y First, Z First, X Last, Y Last, Z Last, \
-                    edge, facet, intensity\n");
+                    edge, Scan Direction, facet, intensity\n");
   
   pReader->seek(0);
   while(pReader->read_pulse()) {

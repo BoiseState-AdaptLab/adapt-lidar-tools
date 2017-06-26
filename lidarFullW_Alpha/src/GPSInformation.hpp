@@ -16,7 +16,6 @@ class GPSInformation{
 
 public:
   //possible parameters
-  long long noOfPulses;
   double gpsTime;
   double xAnchor, yAnchor, zAnchor;
   double xTarget, yTarget, zTarget;
@@ -35,8 +34,7 @@ public:
   GPSInformation();
   
   void setGPSInformation();
-  long long getNumberOfPulses(std::string fileName);
-  void getGPSInformation();
+  void writeToFileGPSInformation();
 
 };
 

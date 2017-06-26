@@ -30,18 +30,36 @@ GPSInformation::GPSInformation(){
 }
 
 
-long long GPSInformation::getNumberOfPulses(std::string fileName){
-  pOpener.set_file_name(fileName.c_str());
-  pReader = pOpener.open();
-  noOfPulses = pReader->header.number_of_pulses;
-  return noOfPulses;
-}
+void GPSInformation::setGPSInformation(){
 
+  gpsTime = pReader->pulse.get_t();
+  // Compute anchor, target and direction
+  pReader->pulse.compute_anchor_and_target_and_dir();
+  xAnchor = pReader->pulse.get_anchor_x();
+  yAnchor = pReader->pulse.get_anchor_y();
+  zAnchor = pReader->pulse.get_anchor_z();
+  xTarget = pReader->pulse.get_target_x();
+  yTarget = pReader->pulse.get_target_y();
+  zTarget = pReader->pulse.get_target_z();
+  // Compute first and last returning Values
+  pReader->pulse.compute_first_and_last();
+  xFirst = pReader->pulse.get_first_x();
+  yFirst = pReader->pulse.get_first_y();
+  zFirst = pReader->pulse.get_first_z();
+  xLast = pReader->pulse.get_last_x();
+  yLast = pReader->pulse.get_last_y();
+  zLast = pReader->pulse.get_last_z();
+
+  edge = pReader->pulse.edge_of_scan_line;
+  scanDirection = pReader->pulse.scan_direction;
+  facet = pReader->pulse.mirror_facet,
+  intensity = pReader->pulse.intensity;
+}
 
 /*
  * Gets the GPS information and stores it
  */
-void GPSInformation::getGPSInformation(){
+void GPSInformation::writeToFileGPSInformation(){
   long long pulseIndex = 0;
   FILE *scanout;
   scanout = fopen("gps.csv", "w");

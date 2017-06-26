@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <fstream>
+#include "GPSInfromation.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
@@ -17,12 +18,16 @@ class FullWaveformIngestion{
 private:
   //possible parameters
   double sampleUnitsBetAnchorAndTarget;
+  long long numberOfPulses;
 
   PULSEreadOpener pOpener;
   PULSEreader *pReader;
+  PULSEscanner scanner;  
 
 public:
   FullWaveformIngestion();
+
+  long long getNumberOfPulses(std::string fileName)
 
   double calculateActualCoordinate(double coordinate, double scaleFactor, 
                                    double offset);

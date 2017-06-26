@@ -57,16 +57,16 @@ void GPSInformation::setGPSInformation(){
 }
 
 /*
- * Gets the GPS information and stores it
+ * Writes all GPS information to a csv file
  */
 void GPSInformation::writeToFileGPSInformation(){
   long long pulseIndex = 0;
   FILE *scanout;
   scanout = fopen("gps.csv", "w");
   fprintf(scanout, "Pulse Index, GPS Time, X Anchor, Y Anchor,  Z Anchor, \
-                    X Target, Y Target, Z Target, Scan Direction, X First, \
+                    X Target, Y Target, Z Target, X First, \
                     Y First, Z First, X Last, Y Last, Z Last, \
-                    edge, facet, intensity\n");
+                    edge, Scan Direction, facet, intensity\n");
   
   pReader->seek(0);
   while(pReader->read_pulse()) {

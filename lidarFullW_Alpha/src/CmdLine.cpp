@@ -1,5 +1,5 @@
 /*
- * File name: cmdLine.cpp
+ * File name: CmdLine.cpp
  * Created on: 17-May-2017
  * Author: ravi
  */
@@ -8,7 +8,7 @@
 #include <fstream>
 #include <getopt.h>
 #include <sstream>
-#include "cmdLine.hpp"
+#include "CmdLine.hpp"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ using namespace std;
 /**
 * Custom exceptions for no command line arguments
 */
-struct cmdLineException : public exception{
+struct CmdLineException : public exception{
   const char * what() const throw(){
     return "No command line arguments exception caught\n";
   }
@@ -49,20 +49,20 @@ struct invalidOptionException : public exception{
 
 /****************************************************************************
 * 
-* Begin CmdLineArgs functions
+* Begin CmdLine functions
 * 
 ****************************************************************************/
 
 /* Function that sets the command line arguments*/
-void CmdLineArgs::setInputFileName(char *args){
+void CmdLine::setInputFileName(char *args){
   inputFileName = args;
 }
 
 /* Function that prints(sets up) correct usage of this program*/
-void CmdLineArgs::setUsageMessage()
+void CmdLine::setUsageMessage()
 {
   std::stringstream buffer;
-  buffer <<"Usage:   " << exeName <<" [-option argument]+" << std::endl;
+  buffer <<"\nUsage:   " << exeName <<" [-option argument]+" << std::endl;
   buffer <<"Option:  " << "-f  ../src/fileName.pls" << std::endl;
   buffer <<"Help:    " << "-h" << std::endl;
   buffer <<"Example: " << exeName
@@ -72,12 +72,12 @@ void CmdLineArgs::setUsageMessage()
 }
 
 /* Function that prints correct usage of this program*/
-std::string CmdLineArgs::getUsageMessage(){
+std::string CmdLine::getUsageMessage(){
     return usageMessage;
 }
 
 /* Default constructor*/
-CmdLineArgs::CmdLineArgs(){
+CmdLine::CmdLine(){
   // enter default values
   printUsageMessage = false;
   exceptionFlag = false;
@@ -86,12 +86,12 @@ CmdLineArgs::CmdLineArgs(){
 }
 
 /* Function that returns the file name*/
-std::string CmdLineArgs::getInputFileName(){
+std::string CmdLine::getInputFileName(){
   return inputFileName;
 }
 
 /* Function that parses the command line arguments*/
-void CmdLineArgs::parse(int argc,char *argv[])
+void CmdLine::parse(int argc,char *argv[])
 {
   char optionChar;  /* Option character */
   char *fArg;     /* Argument of the f(file) option character */
@@ -100,7 +100,7 @@ void CmdLineArgs::parse(int argc,char *argv[])
    * the correct program usage and quit.*/
   if(argc < 2){
     printUsageMessage = true;
-    throw cmdLineException();
+    throw CmdLineException();
   }
 
   exeName.append(argv[0]);

@@ -4,7 +4,8 @@
  * Author: ravi
  */
 #include <iostream>
-#include "cmdLine.hpp"
+#include <iomanip>
+#include "CmdLine.hpp"
 #include "ScannerInformation.hpp"
 #include "GPSInformation.hpp"
 
@@ -12,21 +13,21 @@ using namespace std;
 
 int main (int argc, char *argv[]){
 
-  CmdLineArgs cla;
-  cla.parse(argc,argv);
+  CmdLine cmdLineArgs;
+  cmdLineArgs.parse(argc,argv);
   
-  if(cla.printUsageMessage == true){
-    std::cout << cla.getUsageMessage() << std::endl;
+  if(cmdLineArgs.printUsageMessage == true){
+    std::cout << cmdLineArgs.getUsageMessage() << std::endl;
   }
   else{
     ScannerInformation scannerInfo;
-    scannerInfo.setScannerInformation(cla.getInputFileName());
+    scannerInfo.setScannerInformation(cmdLineArgs.getInputFileName());
     scannerInfo.getScannerInformation();
     
     GPSInformation gpsInfo;
     std::cout << "No of pulses: " << gpsInfo.getNumberOfPulses \
-                                    (cla.getInputFileName()) <<std::endl;
-    gpsInfo.getGPSInformation();
+                                    (cmdLineArgs.getInputFileName()) <<std::endl;
+    gpsInfo.writeGPSInformation();
     
   }
 

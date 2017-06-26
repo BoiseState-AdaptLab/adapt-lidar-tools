@@ -1,5 +1,5 @@
 /*
- * File name: CmdLineArgs.hpp
+ * File name: CmdLine.hpp
  * Created on: 17-May-2017
  * Author: ravi
  */
@@ -12,7 +12,7 @@
 #include <getopt.h>
 #include <sstream>
 
-class CmdLineArgs{
+class CmdLine{
 
 private:
   //possible parameters
@@ -27,7 +27,7 @@ public:
   bool printUsageMessage;
   bool exceptionFlag;
 
-  CmdLineArgs();
+  CmdLine();
   
   void parse(int argc, char *argv[]);
   

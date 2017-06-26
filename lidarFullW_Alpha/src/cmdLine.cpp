@@ -81,6 +81,7 @@ CmdLineArgs::CmdLineArgs(){
   // enter default values
   printUsageMessage = false;
   exceptionFlag = false;
+  exeName = "";
   setUsageMessage();
 }
 

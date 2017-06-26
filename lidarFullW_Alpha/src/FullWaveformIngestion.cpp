@@ -17,8 +17,8 @@ FullWaveformIngestion::FullWaveformIngestion(){
 long long FullWaveformIngestion::getNumberOfPulses(std::string fileName){
   pOpener.set_file_name(fileName.c_str());
   pReader = pOpener.open();
-  noOfPulses = pReader->header.number_of_pulses;
-  return noOfPulses;
+  numberOfPulses = pReader->header.number_of_pulses;
+  return numberOfPulses;
 }
 
 /*

@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <fstream>
-#include "GPSInfromation.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
@@ -27,7 +26,7 @@ private:
 public:
   FullWaveformIngestion();
 
-  long long getNumberOfPulses(std::string fileName)
+  long long getNumberOfPulses(std::string fileName);
 
   double calculateActualCoordinate(double coordinate, double scaleFactor, 
                                    double offset);

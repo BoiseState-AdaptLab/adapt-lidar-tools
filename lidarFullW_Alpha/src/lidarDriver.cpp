@@ -9,6 +9,8 @@
 #include "CmdLine.hpp"
 #include "ScannerInformation.hpp"
 #include "GPSInformation.hpp"
+#include "FullWaveformIngestion.hpp"
+
 
 using namespace std;
 
@@ -21,14 +23,17 @@ int main (int argc, char *argv[]){
     std::cout << cmdLineArgs.getUsageMessage() << std::endl;
   }
   else{
+    std::string fileName = cmdLineArgs.getInputFileName();
     ScannerInformation scannerInfo;
-    scannerInfo.setScannerInformation(cmdLineArgs.getInputFileName());
+    scannerInfo.setScannerInformation(fileName);
     scannerInfo.getScannerInformation();
     
+    FullWaveformIngestion ingester;
+
+    std::cout << "No of pulses: " << ingester.getNumberOfPulses \
+                                  (fileName) <<std::endl;
     GPSInformation gpsInfo;
-    std::cout << "No of pulses: " << gpsInfo.getNumberOfPulses \
-                                    (cmdLineArgs.getInputFileName()) <<std::endl;
-    gpsInfo.writeGPSInformation();
+    gpsInfo.writeToFileGPSInformation(fileName);
     
   }
 

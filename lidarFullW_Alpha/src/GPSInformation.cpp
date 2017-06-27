@@ -10,22 +10,6 @@
 //Default constructor
 GPSInformation::GPSInformation(){
   // enter default values
-  xAnchor = 0;
-  yAnchor = 0;
-  zAnchor = 0;
-  xTarget = 0;
-  yTarget = 0;
-  zTarget = 0;
-  xFirst = 0;
-  yFirst = 0;
-  zFirst = 0;
-  xLast = 0;
-  yLast = 0;
-  zLast = 0;
-  edge = 0;
-  facet = 0;
-  scanDirection = 0;
-  intensity = 0;
 }
 
 

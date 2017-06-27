@@ -1,5 +1,5 @@
 /*
- * File name: ScannerInformation.hpp
+ * File name: GPSInformation.hpp
  * Created on: 20-June-2017
  * Author: ravi
  */

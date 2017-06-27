@@ -1,5 +1,5 @@
 /*
- * File name: ScannerInformation.cpp
+ * File name: GPSInformation.cpp
  * Created on: 20-June-2017
  * Author: ravi
  */

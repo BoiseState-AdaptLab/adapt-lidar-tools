@@ -10,7 +10,6 @@
 //Default constructor
 GPSInformation::GPSInformation(){
   // enter default values
-  noOfPulses = 0;
   xAnchor = 0;
   yAnchor = 0;
   zAnchor = 0;
@@ -59,7 +58,7 @@ void GPSInformation::setGPSInformation(){
 /*
  * Writes all GPS information to a csv file
  */
-void GPSInformation::writeToFileGPSInformation(){
+void GPSInformation::writeToFileGPSInformation(std::string fileName){
   long long pulseIndex = 0;
   FILE *scanout;
   scanout = fopen("gps.csv", "w");
@@ -67,7 +66,10 @@ void GPSInformation::writeToFileGPSInformation(){
                     X Target, Y Target, Z Target, X First, \
                     Y First, Z First, X Last, Y Last, Z Last, \
                     edge, Scan Direction, facet, intensity\n");
-  
+    
+  pOpener.set_file_name(fileName.c_str());
+  pReader = pOpener.open();
+
   pReader->seek(0);
   while(pReader->read_pulse()) {
     gpsTime = pReader->pulse.get_t();

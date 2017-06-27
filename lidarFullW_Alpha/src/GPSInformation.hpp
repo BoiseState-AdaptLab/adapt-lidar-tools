@@ -34,7 +34,7 @@ public:
   GPSInformation();
   
   void setGPSInformation();
-  void writeToFileGPSInformation();
+  void writeToFileGPSInformation(std::string fileName);
 
 };
 

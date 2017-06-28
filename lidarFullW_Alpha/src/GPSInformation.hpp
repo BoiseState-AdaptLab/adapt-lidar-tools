@@ -8,7 +8,6 @@
 #define GPSINFORMATION_HPP_
 
 #include <iostream>
-#include <fstream>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
@@ -31,9 +30,7 @@ private:
   PULSEreader *pReader;
   PULSEscanner scanner;
 
-public:
-  
-
+public:  
   GPSInformation();  
   void setGPSInformation();
   void writeToFileGPSInformation(std::string fileName);

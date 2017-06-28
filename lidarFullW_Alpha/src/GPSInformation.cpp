@@ -109,4 +109,7 @@ void GPSInformation::writeToFileGPSInformation(std::string fileName){
             edge, scanDirection, facet, intensity) ;
     pulseIndex++;
   }
+  fclose(scanout);
+  pReader->close();
+  delete pReader;
 }

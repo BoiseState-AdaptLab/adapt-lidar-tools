@@ -14,7 +14,7 @@
 
 class GPSInformation{
 
-public:
+private:
   //possible parameters
   double gpsTime;
   double xAnchor, yAnchor, zAnchor;
@@ -31,8 +31,10 @@ public:
   PULSEreader *pReader;
   PULSEscanner scanner;
 
-  GPSInformation();
+public:
   
+
+  GPSInformation();  
   void setGPSInformation();
   void writeToFileGPSInformation(std::string fileName);
 

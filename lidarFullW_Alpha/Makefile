@@ -41,7 +41,7 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests \
-        $(BIN)/ScannerInformation_unittests
+        $(BIN)/ScannerInformation_unittests $(BIN)/GPSInformation_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -122,6 +122,7 @@ test: $(TESTS)
 	$(BIN)/CmdLine_unittests
 	$(BIN)/FullWaveformIngestion_unittests
 	$(BIN)/ScannerInformation_unittests
+	$(BIN)/GPSInformation_unittests
 
 # Clean up when done. 
 # Removes all object, library and executable files

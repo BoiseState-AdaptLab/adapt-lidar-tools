@@ -14,6 +14,7 @@
 class GPSInformation{
 
 private:
+public:  
   //possible parameters
   long long gpsIndex;
   double gpsTime;
@@ -28,7 +29,6 @@ private:
   unsigned char intensity;
 
 
-public:  
   GPSInformation();  
   void populateGPS(PULSEreader *pReader, long long index);
   void displayGPSData();

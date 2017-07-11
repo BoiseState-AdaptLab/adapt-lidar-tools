@@ -21,19 +21,6 @@ long long FullWaveformIngestion::getNumberOfPulses(std::string fileName){
   return numberOfPulses;
 }
 
-/* 
-void Ingest(std::string fileName){
-  pOpener.set_file_name(fileName.c_str());
-  pReader = pOpener.open();
-  numberOfPulses = pReader->header.number_of_pulses;
-
-  pReader->seek(0);
-  while(pReader->read_pulse()) {
-
-  }
-}
-*/
-
 /*
 * Calculate the actual coordinate
 * Could be either actual anchor or actual target for x, y and z

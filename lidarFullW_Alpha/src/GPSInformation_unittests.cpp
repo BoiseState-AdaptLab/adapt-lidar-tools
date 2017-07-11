@@ -1,5 +1,5 @@
 /*
- * File name: ScannerInformation_unittests.cpp
+ * File name: GPSInformation_unittests.cpp
  * Created on: 17-June-2017
  * Author: ravi
  *
@@ -28,19 +28,20 @@ class GPSInformationTest: public testing::Test{
 * we calculate the actual anchor, actual target and actual deviation
 * using FullWaveformIngestion functions
 */
-TEST_F(ScannerInformationTest, checkValues){
+TEST_F(GPSInformationTest, checkValues){
 
   // Known GPS information
-  double gpsTime;
-  double xAnchor, yAnchor, zAnchor;
-  double xTarget, yTarget, zTarget;
-  double xDeviation, yDeviation, zDeviation;
-  double xFirst, yFirst, zFirst;
-  double xLast, yLast, zLast;
-  unsigned char edge;
-  unsigned char facet;
-  unsigned char scanDirection;
-  unsigned char intensity;
+  long long TruthGpsIndex;
+  double TruthGpsTime;
+  double TruthXAnchor, TruthYAnchor, TruthZAnchor;
+  double TruthXTarget, TruthYTarget, TruthZTarget;
+  double TruthXDeviation, TurthYDeviation, TruthZDeviation;
+  double TruthXFirst, TurthYFirst, TruthZFirst;
+  double TruthXLast, TurthYLast, TruthZLast;
+  unsigned char TruthEdge;
+  unsigned char TruthFacet;
+  unsigned char TruthScanDirection;
+  unsigned char TruthIntensity;
   
   std::string fileName = "bin/140823_183115_1_clipped_test.pls";
   ASSERT_ANY_THROW (scannerInfo.setScannerInformation(fileName));

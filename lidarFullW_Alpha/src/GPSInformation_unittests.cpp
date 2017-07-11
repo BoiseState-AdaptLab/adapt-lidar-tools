@@ -39,7 +39,7 @@ TEST_F(GPSInformationTest, checkValues){
   double TruthXTarget, TruthYTarget, TruthZTarget;
   // double TruthXDeviation, TurthYDeviation, TruthZDeviation;
   double TruthXFirst, TurthYFirst, TruthZFirst;
-  double TruthXLast, TurthYLast, TruthZLast;
+  double TruthXLast, TruthYLast, TruthZLast;
   unsigned char TruthEdge;
   unsigned char TruthFacet;
   unsigned char TruthScanDirection;

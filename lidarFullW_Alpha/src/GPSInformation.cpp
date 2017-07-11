@@ -60,6 +60,9 @@ void GPSInformation::populateGPS(PULSEreader *pReader, long long index){
     intensity = pReader->pulse.intensity;
 }
 
+/*
+ * Displays all GPS data
+ */
 void GPSInformation::displayGPSData(){
   std::cout << gpsIndex << std::endl;
   std::cout << xAnchor << std::endl;

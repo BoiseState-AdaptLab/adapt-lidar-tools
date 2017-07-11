@@ -34,9 +34,7 @@ int main (int argc, char *argv[]){
     
     FullWaveformIngestion ingester;
     long long int noOfPulses = ingester.getNumberOfPulses(fileName);
-
-    GPSInformation gpsInfo[noOfPulses];
-    
+  
     /*
      * This section reads the wave and GPS file
      */
@@ -44,9 +42,10 @@ int main (int argc, char *argv[]){
     PULSEreader *pReader;
     pOpener.set_file_name(fileName.c_str());
     pReader = pOpener.open();
+
+    GPSInformation gpsInfo[noOfPulses];
     long long pulseIndex = 0;
 
-    pReader->seek(0);
     while(pReader->read_pulse()) {
       gpsInfo[pulseIndex].populateGPS(pReader, pulseIndex);
 

@@ -8,5 +8,18 @@ stored in a separate Waves file that must be in the same directory and have the
 same base name as the *.pls file, but have the ending *.wvs.
 
 ## Products
+### AR
+raw amplitude data
+### AE
+Estimated amplitude using Gaussian fitting
+### Full Wave Half Maximum (fwhm)
+Estimated width
 ### Elevation
-Description of what Elevation is
+Height on Z axis
+### Peaks
+Number of peaks
+### Back Scatter Cross Section
+### Rise time
+leading edge
+### Total Energy
+Total energy fromthe estimated wave form

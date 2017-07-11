@@ -27,8 +27,8 @@ class GPSInformationTest: public testing::Test{
 };
 
 /*
-* Given the true values of the actual anchor, target and deviation,
-* we read the oulse file and compare the scanned values to the true values
+* Given the true values of the GPS file we read the pulse file and compare 
+* the scanned values to the true values
 */
 TEST_F(GPSInformationTest, checkValues){
 
@@ -52,15 +52,13 @@ TEST_F(GPSInformationTest, checkValues){
   /*
    * This section reads the wave and GPS file
    */
-  //FullWaveformIngestion ingester;
-  //long long int noOfPulses = ingester.getNumberOfPulses(fileNameCorrect);
-  GPSInformation gpsInfo;
+  GPSInformation gpsInfo;   // Create a GPS object
 
-  PULSEreadOpener pOpener;
-  PULSEreader *pReader;
+  PULSEreadOpener pOpener;  // Create a pulse read opener object
+  PULSEreader *pReader;     // Create a pulse reader object
   pOpener.set_file_name(fileNameCorrect.c_str());
   pReader = pOpener.open();
-  long long pulseIndex = 0;
+  long long pulseIndex = 0; // Keep track of the index
 
   if(pReader->read_pulse()) {
     gpsInfo.populateGPS(pReader, pulseIndex);
@@ -86,7 +84,7 @@ TEST_F(GPSInformationTest, checkValues){
     TurthYFirst = 4767921.375796; 
     TruthZFirst = 2093.580011;
     TruthXLast = 516210.627993; 
-    TurthYLast = 4767922.675509; 
+    TruthYLast = 4767922.675509; 
     TruthZLast = 2084.933649;
     TruthEdge = 0;
     TruthScanDirection = 0;
@@ -105,7 +103,7 @@ TEST_F(GPSInformationTest, checkValues){
     ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.0000005);
     ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000003);
     ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
-    ASSERT_NEAR (TurthYLast, gpsInfo.yLast, 0.000002);
+    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.000002);
     ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
     ASSERT_EQ (TruthEdge, gpsInfo.edge);
     ASSERT_EQ (TruthFacet, gpsInfo.facet);
@@ -136,7 +134,7 @@ TEST_F(GPSInformationTest, checkValues){
     TurthYFirst = 4767921.735659; 
     TruthZFirst = 2093.231562;
     TruthXLast = 516210.233309; 
-    TurthYLast = 4767923.03879; 
+    TruthYLast = 4767923.03879; 
     TruthZLast = 2084.586298;
     TruthEdge = 0;
     TruthScanDirection = 0;
@@ -155,7 +153,7 @@ TEST_F(GPSInformationTest, checkValues){
     ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.000001  );
     ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000005);
     ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
-    ASSERT_NEAR (TurthYLast, gpsInfo.yLast, 0.000002);
+    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.000002);
     ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
     ASSERT_EQ (TruthEdge, gpsInfo.edge);
     ASSERT_EQ (TruthFacet, gpsInfo.facet);
@@ -186,7 +184,7 @@ TEST_F(GPSInformationTest, checkValues){
     TurthYFirst = 4767922.014231; 
     TruthZFirst = 2093.322687;
     TruthXLast = 516209.920748; 
-    TurthYLast = 4767923.320612; 
+    TruthYLast = 4767923.320612; 
     TruthZLast = 2084.678522;
     TruthEdge = 0;
     TruthScanDirection = 0;
@@ -205,7 +203,7 @@ TEST_F(GPSInformationTest, checkValues){
     ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.000002);
     ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.000002);
     ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
-    ASSERT_NEAR (TurthYLast, gpsInfo.yLast, 0.0000002);
+    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.0000002);
     ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
     ASSERT_EQ (TruthEdge, gpsInfo.edge);
     ASSERT_EQ (TruthFacet, gpsInfo.facet);

@@ -26,16 +26,20 @@ int main (int argc, char *argv[]){
   }
   else{
     std::string fileName = cmdLineArgs.getInputFileName();
+    
+    // Write Scanner information to a file
     ScannerInformation scannerInfo;
     scannerInfo.setScannerInformation(fileName);
     scannerInfo.getScannerInformation();
     
     FullWaveformIngestion ingester;
-
     long long int noOfPulses = ingester.getNumberOfPulses(fileName);
 
     GPSInformation gpsInfo[noOfPulses];
     
+    /*
+     * This section reads the wave and GPS file
+     */
     PULSEreadOpener pOpener;
     PULSEreader *pReader;
     pOpener.set_file_name(fileName.c_str());

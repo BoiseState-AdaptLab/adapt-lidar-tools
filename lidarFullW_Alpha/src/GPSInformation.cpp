@@ -10,6 +10,7 @@
 //Default constructor
 GPSInformation::GPSInformation(){
   // enter default values
+  gpsIndex = 0;
   xAnchor = 0;
   yAnchor = 0;
   zAnchor = 0;
@@ -29,49 +30,12 @@ GPSInformation::GPSInformation(){
 }
 
 
-void GPSInformation::setGPSInformation(){
-
-  gpsTime = pReader->pulse.get_t();
-  // Compute anchor, target and direction
-  pReader->pulse.compute_anchor_and_target_and_dir();
-  xAnchor = pReader->pulse.get_anchor_x();
-  yAnchor = pReader->pulse.get_anchor_y();
-  zAnchor = pReader->pulse.get_anchor_z();
-  xTarget = pReader->pulse.get_target_x();
-  yTarget = pReader->pulse.get_target_y();
-  zTarget = pReader->pulse.get_target_z();
-  // Compute first and last returning Values
-  pReader->pulse.compute_first_and_last();
-  xFirst = pReader->pulse.get_first_x();
-  yFirst = pReader->pulse.get_first_y();
-  zFirst = pReader->pulse.get_first_z();
-  xLast = pReader->pulse.get_last_x();
-  yLast = pReader->pulse.get_last_y();
-  zLast = pReader->pulse.get_last_z();
-
-  edge = pReader->pulse.edge_of_scan_line;
-  scanDirection = pReader->pulse.scan_direction;
-  facet = pReader->pulse.mirror_facet,
-  intensity = pReader->pulse.intensity;
-}
-
 /*
- * Writes all GPS information to a csv file
+ * Populate all the GPS data
  */
-void GPSInformation::writeToFileGPSInformation(std::string fileName){
-  long long pulseIndex = 0;
-  FILE *scanout;
-  scanout = fopen("gps.csv", "w");
-  fprintf(scanout, "Pulse Index, GPS Time, X Anchor, Y Anchor,  Z Anchor, \
-                    X Target, Y Target, Z Target, X First, \
-                    Y First, Z First, X Last, Y Last, Z Last, \
-                    edge, Scan Direction, facet, intensity\n");
-    
-  pOpener.set_file_name(fileName.c_str());
-  pReader = pOpener.open();
-
-  pReader->seek(0);
-  while(pReader->read_pulse()) {
+void GPSInformation::populateGPS(PULSEreader *pReader, long long index){
+  
+    gpsIndex = index;
     gpsTime = pReader->pulse.get_t();
     
     pReader->pulse.compute_anchor_and_target_and_dir();
@@ -94,22 +58,23 @@ void GPSInformation::writeToFileGPSInformation(std::string fileName){
     scanDirection = pReader->pulse.scan_direction;
     facet = pReader->pulse.mirror_facet,
     intensity = pReader->pulse.intensity;
-    
-    fprintf(scanout, "%lld,%.8lf,   \
-                      %lf,%lf,%lf,  \
-                      %lf,%lf,%lf,  \
-                      %lf,%lf,%lf,  \
-                      %lf,%lf, %lf, \
-                      %d,%d,%d,%d,\n", 
-            pulseIndex, gpsTime, 
-            xAnchor, yAnchor, zAnchor, 
-            xTarget, yTarget, zTarget,
-            xFirst, yFirst, zFirst,
-            xLast, yLast, zLast, 
-            edge, scanDirection, facet, intensity) ;
-    pulseIndex++;
-  }
-  fclose(scanout);
-  pReader->close();
-  delete pReader;
+}
+
+void GPSInformation::displayGPSData(){
+  std::cout << gpsIndex << std::endl;
+  std::cout << xAnchor << std::endl;
+  std::cout << zAnchor << std::endl;
+  std::cout << xTarget << std::endl;
+  std::cout << yTarget << std::endl;
+  std::cout << zTarget << std::endl;
+  std::cout << xFirst << std::endl;
+  std::cout << yFirst << std::endl;
+  std::cout << zFirst << std::endl;
+  std::cout << xLast << std::endl;
+  std::cout << yLast << std::endl;
+  std::cout << zLast << std::endl;
+  std::cout << edge << std::endl;
+  std::cout << facet << std::endl;
+  std::cout << scanDirection << std::endl;
+  std::cout << intensity << std::endl;
 }

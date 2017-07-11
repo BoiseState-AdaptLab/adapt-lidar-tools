@@ -15,6 +15,7 @@ class GPSInformation{
 
 private:
   //possible parameters
+  long long gpsIndex;
   double gpsTime;
   double xAnchor, yAnchor, zAnchor;
   double xTarget, yTarget, zTarget;
@@ -26,15 +27,11 @@ private:
   unsigned char scanDirection;
   unsigned char intensity;
 
-  PULSEreadOpener pOpener;
-  PULSEreader *pReader;
-  PULSEscanner scanner;
 
 public:  
   GPSInformation();  
-  void setGPSInformation();
-  void writeToFileGPSInformation(std::string fileName);
-
+  void populateGPS(PULSEreader *pReader, long long index);
+  void displayGPSData();
 };
 
 #endif /* GPSINFORMATION_HPP_ */

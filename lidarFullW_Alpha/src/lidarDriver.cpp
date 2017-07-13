@@ -9,6 +9,7 @@
 #include "CmdLine.hpp"
 #include "ScannerInformation.hpp"
 #include "GPSInformation.hpp"
+#include "AmplitudeData.hpp"
 #include "FullWaveformIngestion.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
@@ -40,20 +41,24 @@ int main (int argc, char *argv[]){
      */
     PULSEreadOpener pOpener;
     PULSEreader *pReader;
+    WAVESsampling *sampling;
     pOpener.set_file_name(fileName.c_str());
     pReader = pOpener.open();
 
-    GPSInformation gpsInfo[noOfPulses];
+    GPSInformation gpsInfo;
+    AmplitudeData ad;
     long long pulseIndex = 0;
 
     while(pReader->read_pulse()) {
-      gpsInfo[pulseIndex].populateGPS(pReader, pulseIndex);
+      std::cout << "Index is: " << pulseIndex << std::endl;
+      
+      gpsInfo.populateGPS(pReader);
+      gpsInfo.displayGPSData();
+
+      ad.populateAmplitudeData(pReader, sampling);
+      ad.displayAmplitudeData();
 
       pulseIndex++;
-    }
-
-    for(int i=0; i<noOfPulses; i++){
-      gpsInfo[i].displayGPSData();
     }
 
   return 0;

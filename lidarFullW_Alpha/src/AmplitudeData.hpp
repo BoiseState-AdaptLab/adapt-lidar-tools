@@ -17,7 +17,8 @@ class AmplitudeData{
 private:
 public:  
   //possible parameters
-  std::vector<I32> data;
+  std::vector<I32> outgoingWave;
+  std::vector<I32> returningWave;
 
   AmplitudeData();  
   void populateAmplitudeData(PULSEreader *pReader, WAVESsampling *sampling);

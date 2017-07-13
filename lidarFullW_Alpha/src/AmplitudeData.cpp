@@ -17,15 +17,16 @@ AmplitudeData::AmplitudeData(){
 /*
  * Populate all the GPS data
  */
-void AmplitudeData::populateAmplitudeData(WAVESsampling *sampling){
-  returnCount = 0;
-  for(i = 0; i < pReader->waves->get_number_of_samplings() && returnCount < 1; i++){
+void AmplitudeData::populateAmplitudeData(PULSEreader *pReader, WAVESsampling *sampling){
+  int returnCount = 0;
+  int maxCount = 120;
+  for(int i = 0; i < pReader->waves->get_number_of_samplings() && returnCount < 1; i++){
     sampling = pReader->waves->get_sampling(i);
 
-    for(j = 0; j < sampling->get_number_of_segments(); j++ ){
+    for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
       sampling->set_active_segment(j);
         
-        for(k = 0; k < maxCount; k++){
+        for(int k = 0; k < maxCount; k++){
           
           if(k >= sampling->get_number_of_samples()){
               data.push_back(0);
@@ -43,5 +44,7 @@ void AmplitudeData::populateAmplitudeData(WAVESsampling *sampling){
  * Displays all GPS data
  */
 void AmplitudeData::displayAmplitudeData(){
-
+  for(int i = 0; i<data.size(); i++){
+    std::cout << data[i] << std::endl;
+  }
 }

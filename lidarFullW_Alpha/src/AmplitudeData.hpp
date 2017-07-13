@@ -8,6 +8,7 @@
 #define AMPLITUDEDATA_HPP_
 
 #include <iostream>
+#include <vector>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
@@ -17,10 +18,9 @@ private:
 public:  
   //possible parameters
   std::vector<I32> data;
-;
 
   AmplitudeData();  
-  void populateAmplitudeData(WAVESsampling *sampling);
+  void populateAmplitudeData(PULSEreader *pReader, WAVESsampling *sampling);
   void displayAmplitudeData();
 };
 

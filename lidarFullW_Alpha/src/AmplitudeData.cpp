@@ -1,0 +1,47 @@
+/*
+ * File name: AmplitudeData.cpp
+ * Created on: 12-July-2017
+ * Author: ravi
+ */
+
+#include <iostream>
+#include "AmplitudeData.hpp"
+
+//Default constructor
+AmplitudeData::AmplitudeData(){
+  // enter default values
+
+}
+
+
+/*
+ * Populate all the GPS data
+ */
+void AmplitudeData::populateAmplitudeData(WAVESsampling *sampling){
+  returnCount = 0;
+  for(i = 0; i < pReader->waves->get_number_of_samplings() && returnCount < 1; i++){
+    sampling = pReader->waves->get_sampling(i);
+
+    for(j = 0; j < sampling->get_number_of_segments(); j++ ){
+      sampling->set_active_segment(j);
+        
+        for(k = 0; k < maxCount; k++){
+          
+          if(k >= sampling->get_number_of_samples()){
+              data.push_back(0);
+          } 
+          else{
+              data.push_back(sampling->get_sample(k));
+          }
+        }
+    }
+
+  }
+}
+
+/*
+ * Displays all GPS data
+ */
+void AmplitudeData::displayAmplitudeData(){
+
+}

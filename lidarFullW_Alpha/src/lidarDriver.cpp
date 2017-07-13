@@ -47,6 +47,8 @@ int main (int argc, char *argv[]){
 
     GPSInformation gpsInfo;
     AmplitudeData ad;
+    int maxCount = 120;
+    int returnCount = 0;
     long long pulseIndex = 0;
 
     while(pReader->read_pulse()) {
@@ -55,7 +57,25 @@ int main (int argc, char *argv[]){
       gpsInfo.populateGPS(pReader);
       gpsInfo.displayGPSData();
 
-      ad.populateAmplitudeData(pReader, sampling);
+      for(int i = 0; i < pReader->waves->get_number_of_samplings() && returnCount < 1; i++){
+        sampling = pReader->waves->get_sampling(i);
+
+        for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+          sampling->set_active_segment(j);
+            
+            for(int k = 0; k < maxCount; k++){
+              
+              if(k >= sampling->get_number_of_samples()){
+                  ad.data.push_back(0);
+              } 
+              else{
+                  ad.data.push_back(sampling->get_sample(k));
+              }
+            }
+        }
+
+      }
+
       ad.displayAmplitudeData();
 
       pulseIndex++;

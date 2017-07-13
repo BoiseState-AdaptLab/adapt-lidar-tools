@@ -33,7 +33,6 @@ class GPSInformationTest: public testing::Test{
 TEST_F(GPSInformationTest, checkValues){
 
   // Known GPS information
-  long long TruthGpsIndex;
   double TruthGpsTime;
   double TruthXAnchor, TruthYAnchor, TruthZAnchor;
   double TruthXTarget, TruthYTarget, TruthZTarget;
@@ -60,16 +59,15 @@ TEST_F(GPSInformationTest, checkValues){
   pReader = pOpener.open();
   long long pulseIndex = 0; // Keep track of the index
 
-  if(pReader->read_pulse()) {
-    gpsInfo.populateGPS(pReader, pulseIndex);
-    pulseIndex++;
- 
   /****************************************************************************
   * 
   * Begin index = 0 tests
   * 
   ****************************************************************************/
-    TruthGpsIndex = 0;
+  if(pReader->read_pulse()) {
+    gpsInfo.populateGPS(pReader);
+    pulseIndex++;
+ 
     TruthGpsTime = 66689.303202;
     TruthXAnchor = 516324.56; 
     TruthYAnchor = 4767809.865;
@@ -91,7 +89,6 @@ TEST_F(GPSInformationTest, checkValues){
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_EQ (TruthGpsIndex, gpsInfo.gpsIndex);
     ASSERT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
     ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
     ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
@@ -116,10 +113,9 @@ TEST_F(GPSInformationTest, checkValues){
   * 
   ****************************************************************************/
   if(pReader->read_pulse()) {
-    gpsInfo.populateGPS(pReader, pulseIndex);
+    gpsInfo.populateGPS(pReader);
     pulseIndex++;
  
-    TruthGpsIndex = 1;
     TruthGpsTime = 66689.303202;
     TruthXAnchor = 516324.56; 
     TruthYAnchor = 4767809.865;
@@ -141,7 +137,6 @@ TEST_F(GPSInformationTest, checkValues){
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_EQ (TruthGpsIndex, gpsInfo.gpsIndex);
     ASSERT_NEAR (TruthGpsTime, gpsInfo.gpsTime, 0.000005);
     ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
     ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
@@ -166,10 +161,9 @@ TEST_F(GPSInformationTest, checkValues){
   * 
   ****************************************************************************/
   if(pReader->read_pulse()) {
-    gpsInfo.populateGPS(pReader, pulseIndex);
+    gpsInfo.populateGPS(pReader);
     pulseIndex++;
  
-    TruthGpsIndex = 2;
     TruthGpsTime = 66689.303207;
     TruthXAnchor = 516324.56; 
     TruthYAnchor = 4767809.865;
@@ -191,7 +185,6 @@ TEST_F(GPSInformationTest, checkValues){
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_EQ (TruthGpsIndex, gpsInfo.gpsIndex);
     ASSERT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
     ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
     ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
@@ -216,10 +209,9 @@ TEST_F(GPSInformationTest, checkValues){
   * 
   ****************************************************************************/
   if(pReader->read_pulse()) {
-    gpsInfo.populateGPS(pReader, pulseIndex);
+    gpsInfo.populateGPS(pReader);
     pulseIndex++;
  
-    TruthGpsIndex = 3;
     TruthGpsTime = 66689.30321;
     TruthXAnchor = 516324.561; 
     TruthYAnchor = 4767809.865;
@@ -234,14 +226,13 @@ TEST_F(GPSInformationTest, checkValues){
     TurthYFirst = 4767922.309939; 
     TruthZFirst = 2093.267389;
     TruthXLast = 516209.586749; 
-    TurthYLast = 4767923.619501; 
+    TruthYLast = 4767923.619501; 
     TruthZLast = 2084.624262;
     TruthEdge = 0;
     TruthScanDirection = 0;
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_EQ (TruthGpsIndex, gpsInfo.gpsIndex);
     ASSERT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
     ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
     ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
@@ -253,7 +244,7 @@ TEST_F(GPSInformationTest, checkValues){
     ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.0000004);
     ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000002);
     ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.0000003);
-    ASSERT_NEAR (TurthYLast, gpsInfo.yLast, 0.0000004);
+    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.0000004);
     ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.0000003);
     ASSERT_EQ (TruthEdge, gpsInfo.edge);
     ASSERT_EQ (TruthFacet, gpsInfo.facet);

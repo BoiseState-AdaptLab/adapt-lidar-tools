@@ -104,7 +104,8 @@ lidarDriver: $(BIN)/lidarDriver
 $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/CmdLine.o \
                     $(USER_DIR)/ScannerInformation.o \
                     $(USER_DIR)/GPSInformation.o \
-                    $(USER_DIR)/FullWaveformIngestion.o
+                    $(USER_DIR)/FullWaveformIngestion.o \
+                    $(USER_DIR)/AmplitudeData.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 

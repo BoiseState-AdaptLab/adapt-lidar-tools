@@ -10,7 +10,6 @@
 //Default constructor
 GPSInformation::GPSInformation(){
   // enter default values
-  gpsIndex = 0;
   xAnchor = 0;
   yAnchor = 0;
   zAnchor = 0;
@@ -33,9 +32,8 @@ GPSInformation::GPSInformation(){
 /*
  * Populate all the GPS data
  */
-void GPSInformation::populateGPS(PULSEreader *pReader, long long index){
+void GPSInformation::populateGPS(PULSEreader *pReader){
   
-    gpsIndex = index;
     gpsTime = pReader->pulse.get_t();
     
     pReader->pulse.compute_anchor_and_target_and_dir();
@@ -64,7 +62,6 @@ void GPSInformation::populateGPS(PULSEreader *pReader, long long index){
  * Displays all GPS data
  */
 void GPSInformation::displayGPSData(){
-  std::cout << gpsIndex << std::endl;
   std::cout << xAnchor << std::endl;
   std::cout << zAnchor << std::endl;
   std::cout << xTarget << std::endl;

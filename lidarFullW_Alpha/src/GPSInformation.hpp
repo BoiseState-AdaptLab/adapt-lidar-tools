@@ -16,7 +16,6 @@ class GPSInformation{
 private:
 public:  
   //possible parameters
-  long long gpsIndex;
   double gpsTime;
   double xAnchor, yAnchor, zAnchor;
   double xTarget, yTarget, zTarget;
@@ -30,7 +29,7 @@ public:
 
 
   GPSInformation();  
-  void populateGPS(PULSEreader *pReader, long long index);
+  void populateGPS(PULSEreader *pReader);
   void displayGPSData();
 };
 

@@ -44,7 +44,11 @@ void AmplitudeData::populateAmplitudeData(PULSEreader *pReader, WAVESsampling *s
  * Displays all GPS data
  */
 void AmplitudeData::displayAmplitudeData(){
-  for(int i = 0; i<data.size(); i++){
-    std::cout << data[i] << std::endl;
+  for(int i = 0, j = 1; i<data.size(); i++, j++){
+    std::cout << data[i] << " ";
+    if(j == 60){
+      j = 0;
+      std::cout << "\n" ;
+    }
   }
 }

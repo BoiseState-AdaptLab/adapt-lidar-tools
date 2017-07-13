@@ -47,39 +47,45 @@ int main (int argc, char *argv[]){
 
     GPSInformation gpsInfo;
     AmplitudeData ad;
-    int maxCount = 120;
-    int returnCount = 0;
+    int maxCount = 60;
     long long pulseIndex = 0;
 
-    while(pReader->read_pulse()) {
-      std::cout << "Index is: " << pulseIndex << std::endl;
-      
-      gpsInfo.populateGPS(pReader);
-      gpsInfo.displayGPSData();
+    
+      while(pReader->read_pulse()){
+        std::cout << "\nIndex is: " << pulseIndex << std::endl;
+        
+        gpsInfo.populateGPS(pReader);
+        gpsInfo.displayGPSData();
+        if(pReader->read_waves()){
+          for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
+            sampling = pReader->waves->get_sampling(i);
 
-      for(int i = 0; i < pReader->waves->get_number_of_samplings() && returnCount < 1; i++){
-        sampling = pReader->waves->get_sampling(i);
-
-        for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
-          sampling->set_active_segment(j);
-            
-            for(int k = 0; k < maxCount; k++){
-              
-              if(k >= sampling->get_number_of_samples()){
-                  ad.data.push_back(0);
-              } 
-              else{
-                  ad.data.push_back(sampling->get_sample(k));
-              }
+            for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+              sampling->set_active_segment(j);
+                
+                for(int k = 0; k < maxCount; k++){
+                  
+                  if(k >= sampling->get_number_of_samples()){
+                      ad.data.push_back(0);
+                  } 
+                  else{
+                      ad.data.push_back(sampling->get_sample(k));
+                  }
+                }
             }
+
+          }
+
+
+          pulseIndex++;
         }
-
+        
+        else{
+          /* No data??? */
+          std::cout <<"NO DATA!\n" << std::endl;
+        }
       }
-
-      ad.displayAmplitudeData();
-
-      pulseIndex++;
-    }
+  ad.displayAmplitudeData();
 
   return 0;
   }

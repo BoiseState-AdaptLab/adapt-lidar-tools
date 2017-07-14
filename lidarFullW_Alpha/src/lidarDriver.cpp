@@ -47,6 +47,7 @@ int main (int argc, char *argv[]){
 
     GPSInformation gpsInfo;
     AmplitudeData ad;
+
     int maxCount = 60;
     long long pulseIndex = 0;
 
@@ -56,47 +57,22 @@ int main (int argc, char *argv[]){
         
         gpsInfo.populateGPS(pReader);
         gpsInfo.displayGPSData();
-        
+
+        //Read the waves
         if(pReader->read_waves()){
-          for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
-            sampling = pReader->waves->get_sampling(i);
 
-            for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
-              sampling->set_active_segment(j);
-                
-                for(int k = 0; k < maxCount; k++){
-                  if(sampling->get_type() == PULSEWAVES_OUTGOING){
-                    if(k >= sampling->get_number_of_samples()){
-                      ad.outgoingWave.push_back(0);
-                    } 
-                    else{
-                      ad.outgoingWave.push_back(sampling->get_sample(k));
-                    }
-                  }
-                  else if(sampling->get_type() == PULSEWAVES_RETURNING){
-                    if(k >= sampling->get_number_of_samples()){
-                      ad.returningWave.push_back(0);
-                    } 
-                    else{
-                      ad.returningWave.push_back(sampling->get_sample(k));
-                    }
-                  }
-                }
-            }
-
-          }
-
-
-          pulseIndex++;
+          //Populate wave data
+          ad.populateAmplitude(pReader, sampling, maxCount, pulseIndex);
         }
-        
+
+        //No waves
         else{
-          /* No data??? */
           std::cout <<"NO DATA!\n" << std::endl;
         }
+        
+        pulseIndex++;
       }
-  ad.displayAmplitudeData();
-
-  return 0;
+    ad.displayAmplitudeData();
+    return 0;
   }
 }

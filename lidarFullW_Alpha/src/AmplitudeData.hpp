@@ -21,7 +21,8 @@ public:
   std::vector<I32> returningWave;
 
   AmplitudeData();  
-  void populateAmplitudeData(PULSEreader *pReader, WAVESsampling *sampling);
+  void populateAmplitude(PULSEreader *pReader, WAVESsampling *sampling, \
+                         int maxCount, long long pulseIndex);
   void displayAmplitudeData();
 };
 

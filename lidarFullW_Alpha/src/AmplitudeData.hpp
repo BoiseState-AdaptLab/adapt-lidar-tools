@@ -19,18 +19,19 @@ public:
   //possible parameters
   std::vector<I32> waveData;
 
-  std::vector<int> outgoingFirstDifference;
-  std::vector<int> outgoingSecondDifference;
-
-  std::vector<int> returningFirstDifference;
-  std::vector<int> returningSecondDifference;
+  std::vector<int> firstDifference;
+  std::vector<int> secondDifference;
+  std::vector<int> peaks;
 
 
   AmplitudeData();  
   void populate(PULSEreader *pReader, WAVESsampling *sampling, \
                          int maxCount, long long pulseIndex);
   void displayData();
-  void calculateFirstAndSecondDifference();
+  void calculateFirstDifference();
+  void calculateSecondDifference();
+
+  void countPeaks();
 
 
 };

@@ -33,46 +33,40 @@ void AmplitudeData::populate(PULSEreader *pReader, WAVESsampling *sampling,
   }              
 }
 
-/**
-void AmplitudeData::calculateFirstAndSecondDifference(){
-  int first, second, third;
-  double firstDifference1, firstDifference2, secondDifference;
-  for(int i = 0; i< outgoingWave.size(); i++){
-    if(outgoingWave.size()-i == 3){
+
+void AmplitudeData::calculateFirstDifference(){
+  int first, second;
+  int fDiff;
+  for(int i = 1; i< waveData.size(); i++){
+    if(i% 60 ==0 || i%61 ==0){
     }
     else{
-      first = outgoingWave.at(i);
-      second = outgoingWave.at(i+1);
-      third = outgoingWave.at(i+2);
+      first = waveData[i];
+      second = waveData[i+1];
 
-      firstDifference1 = second - first;
-      firstDifference2 = third - second;
-      secondDifference = firstDifference2-firstDifference1;
+      fDiff = second - first;
 
-
-      outgoingFirstDifference.push_back(firstDifference1);
-      outgoingFirstDifference.push_back(firstDifference2);
-      outgoingSecondDifference.push_back(secondDifference);
-    }
-  }
-  for(int i = 0; i< returningWave.size(); i++){
-    if(outgoingWave.size()-i == 3){
-    }
-    else{
-      first = returningWave.at(i);
-      second = returningWave.at(i+1);
-      third = returningWave.at(i+2);
-
-      firstDifference1 = second - first;
-      firstDifference2 = third - second;
-
-      returningFirstDifference.push_back(firstDifference1);
-      returningFirstDifference.push_back(firstDifference2);
-      returningSecondDifference.push_back(secondDifference);
+      firstDifference.push_back(fDiff);
     }
   }
 }
-*/
+
+void AmplitudeData::calculateSecondDifference(){
+  int first, second;
+  int sDiff;
+  for(int i = 0; i< firstDifference.size(); i++){
+    if(i% 58 ==0 || i%59 ==0 ){
+    }
+    else{
+      first = firstDifference[i];
+      second = firstDifference[i+1];
+
+      sDiff = second - first;
+
+      secondDifference.push_back(sDiff);
+    }
+  }
+}
 
 
 
@@ -84,6 +78,22 @@ void AmplitudeData::displayData(){
   for(int i = 0, j = 1; i<waveData.size(); i++, j++){
     std::cout << waveData[i] << " ";
     if(j == 61){
+      j = 0;
+      std::cout << std::endl ;
+    }
+  }
+  std::cout << "First Diff\n";
+  for(int i =0, j=1; i<firstDifference.size(); i++, j++){
+    std::cout << firstDifference[i] << " ";
+    if(j == 59){
+      j = 0;
+      std::cout << std::endl ;
+    }
+  }
+  std::cout << "\nSecond Diff\n";
+  for(int i =0, j=1; i<secondDifference.size(); i++, j++){
+    std::cout << secondDifference[i] << " ";
+    if(j == 58){
       j = 0;
       std::cout << std::endl ;
     }

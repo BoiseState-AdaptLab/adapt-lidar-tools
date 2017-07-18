@@ -2,7 +2,8 @@
 # Makefile to run unit tests and create a driver
 # for a lidar data processing program
 #
-# Author: ravishankar@u.boisestate.edu
+# Original Author: olschanowsky
+# Modified by: ravishankar
 # Date  : 18 May 2017
 # ------------------------------------------------
 

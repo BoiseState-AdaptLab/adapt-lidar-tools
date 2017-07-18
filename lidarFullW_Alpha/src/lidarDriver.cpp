@@ -51,7 +51,6 @@ int main (int argc, char *argv[]){
 
     int maxCount = 60;
     long long pulseIndex = 0; // Index
-
     
     while(pReader->read_pulse()){
       std::cout << "\nIndex is: " << pulseIndex << std::endl;
@@ -63,9 +62,8 @@ int main (int argc, char *argv[]){
       if(pReader->read_waves()){
         for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
           sampling = pReader->waves->get_sampling(i);
-          
 
-          //Based on the type of data, populate data
+          //Based on the type of wave, populate data
           if(sampling->get_type() == PULSEWAVES_OUTGOING){
             outgoingWave.populate(pReader, sampling, maxCount, pulseIndex);
 
@@ -87,10 +85,13 @@ int main (int argc, char *argv[]){
       
       pulseIndex++;
     }
+    outgoingWave.calculateFirstDifference();
+    outgoingWave.calculateSecondDifference();
     std::cout << "Out Wave: \n" << std::endl;
     outgoingWave.displayData();
     std::cout << "\nIn Wave: \n" << std::endl;
     returningWave.displayData();
+
     return 0;
   }
 }

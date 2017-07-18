@@ -46,34 +46,51 @@ int main (int argc, char *argv[]){
     pReader = pOpener.open();
 
     GPSInformation gpsInfo;
-    AmplitudeData ad;
+    AmplitudeData outgoingWave;
+    AmplitudeData returningWave;
 
     int maxCount = 60;
-    long long pulseIndex = 0;
+    long long pulseIndex = 0; // Index
 
     
-      while(pReader->read_pulse()){
-        std::cout << "\nIndex is: " << pulseIndex << std::endl;
-        
-        gpsInfo.populateGPS(pReader);
-        gpsInfo.displayGPSData();
+    while(pReader->read_pulse()){
+      std::cout << "\nIndex is: " << pulseIndex << std::endl;
+      
+      gpsInfo.populateGPS(pReader);
+      gpsInfo.displayGPSData();
 
-        //Read the waves
-        if(pReader->read_waves()){
+      //Read the waves
+      if(pReader->read_waves()){
+        for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
+          sampling = pReader->waves->get_sampling(i);
+          
 
-          //Populate wave data
-          ad.populateAmplitude(pReader, sampling, maxCount, pulseIndex);
+          //Based on the type of data, populate data
+          if(sampling->get_type() == PULSEWAVES_OUTGOING){
+            outgoingWave.populate(pReader, sampling, maxCount, pulseIndex);
+
+          }
+          else if(sampling->get_type() == PULSEWAVES_RETURNING){
+            returningWave.populate(pReader, sampling, maxCount, pulseIndex);
+          }
+          else{
+            std::cout << "Unknown type: " << sampling->get_type() \
+                      << std::endl;
+          }
         }
-
-        //No waves
-        else{
-          std::cout <<"NO DATA!\n" << std::endl;
-        }
-        
-        pulseIndex++;
       }
-      ad.calculateFirstAndSecondDifference();
-    ad.displayAmplitudeData();
+
+      //No waves
+      else{
+        std::cout <<"NO DATA!\n" << std::endl;
+      }
+      
+      pulseIndex++;
+    }
+    std::cout << "Out Wave: \n" << std::endl;
+    outgoingWave.displayData();
+    std::cout << "\nIn Wave: \n" << std::endl;
+    returningWave.displayData();
     return 0;
   }
 }

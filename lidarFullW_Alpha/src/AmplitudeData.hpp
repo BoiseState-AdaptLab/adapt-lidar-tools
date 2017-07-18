@@ -17,8 +17,7 @@ class AmplitudeData{
 private:
 public:  
   //possible parameters
-  std::vector<I32> outgoingWave;
-  std::vector<I32> returningWave;
+  std::vector<I32> waveData;
 
   std::vector<int> outgoingFirstDifference;
   std::vector<int> outgoingSecondDifference;
@@ -28,9 +27,9 @@ public:
 
 
   AmplitudeData();  
-  void populateAmplitude(PULSEreader *pReader, WAVESsampling *sampling, \
+  void populate(PULSEreader *pReader, WAVESsampling *sampling, \
                          int maxCount, long long pulseIndex);
-  void displayAmplitudeData();
+  void displayData();
   void calculateFirstAndSecondDifference();
 
 

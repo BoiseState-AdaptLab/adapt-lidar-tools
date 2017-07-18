@@ -35,10 +35,10 @@ void AmplitudeData::populate(PULSEreader *pReader, WAVESsampling *sampling,
 
 
 void AmplitudeData::calculateFirstDifference(){
-  int first, second;
-  int fDiff;
-  for(int i = 1; i< waveData.size(); i++){
-    if(i% 60 ==0 || i%61 ==0){
+  int first, second, fDiff;
+  for(int i = 0; i< waveData.size(); i++){
+    if(i == 0 || i%60 ==0 || i%61==0){
+      continue;
     }
     else{
       first = waveData[i];
@@ -55,7 +55,8 @@ void AmplitudeData::calculateSecondDifference(){
   int first, second;
   int sDiff;
   for(int i = 0; i< firstDifference.size(); i++){
-    if(i% 58 ==0 || i%59 ==0 ){
+    if(i == 0 || i% 58 ==0 || i%59 ==0){
+      continue;
     }
     else{
       first = firstDifference[i];
@@ -83,7 +84,7 @@ void AmplitudeData::displayData(){
     }
   }
   std::cout << "First Diff\n";
-  for(int i =0, j=1; i<firstDifference.size(); i++, j++){
+  for(int i = 0, j=1; i<firstDifference.size(); i++, j++){
     std::cout << firstDifference[i] << " ";
     if(j == 59){
       j = 0;
@@ -91,7 +92,7 @@ void AmplitudeData::displayData(){
     }
   }
   std::cout << "\nSecond Diff\n";
-  for(int i =0, j=1; i<secondDifference.size(); i++, j++){
+  for(int i = 0, j=1; i<secondDifference.size(); i++, j++){
     std::cout << secondDifference[i] << " ";
     if(j == 58){
       j = 0;

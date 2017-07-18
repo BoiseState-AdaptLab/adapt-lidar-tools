@@ -63,6 +63,45 @@ void AmplitudeData::populateAmplitude(PULSEreader *pReader, \
   }
 }
 
+void AmplitudeData::calculateFirstAndSecondDifference(){
+  int first, second, third;
+  double firstDifference1, firstDifference2, secondDifference1, secondDifference2;
+  for(int i = 0; i< outgoingWave.size(); i++){
+    if(outgoingWave.size()-i == 3){
+    }
+    else{
+      first = outgoingWave.at(i);
+      second = outgoingWave.at(i+1);
+      third = outgoingWave.at(i+2);
+
+      firstDifference1 = second - first;
+      firstDifference2 = third - second;
+
+
+      outgoingFirstDifference.push_back(firstDifference1);
+      outgoingFirstDifference.push_back(firstDifference2);
+    }
+  }
+  for(int i = 0; i< returningWave.size(); i++){
+    if(outgoingWave.size()-i == 3){
+    }
+    else{
+      first = returningWave.at(i);
+      second = returningWave.at(i+1);
+      third = returningWave.at(i+2);
+
+      firstDifference1 = second - first;
+      firstDifference2 = third - second;
+
+
+      returningFirstDifference.push_back(firstDifference1);
+      outgoingFirstDifference.push_back(firstDifference2);
+    }
+  }
+}
+
+
+
 /*
  * Displays all wave data
  */

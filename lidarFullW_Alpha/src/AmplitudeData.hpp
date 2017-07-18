@@ -20,10 +20,20 @@ public:
   std::vector<I32> outgoingWave;
   std::vector<I32> returningWave;
 
+  std::vector<int> outgoingFirstDifference;
+  std::vector<int> outgoingSecondDifference;
+
+  std::vector<int> returningFirstDifference;
+  std::vector<int> returningSecondDifference;
+
+
   AmplitudeData();  
   void populateAmplitude(PULSEreader *pReader, WAVESsampling *sampling, \
                          int maxCount, long long pulseIndex);
   void displayAmplitudeData();
+  void calculateFirstAndSecondDifference();
+
+
 };
 
 #endif /* AMPLITUDEDATA_HPP_ */

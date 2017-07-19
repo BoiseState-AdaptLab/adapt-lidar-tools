@@ -36,9 +36,8 @@ void AmplitudeData::populate(PULSEreader *pReader, WAVESsampling *sampling,
 
 void AmplitudeData::calculateFirstDifference(){
   int first, second, fDiff;
-  for(int i = 0; i< waveData.size(); i++){
-    if(i == 0 || i%60 ==0 || i%61==0){
-      continue;
+  for(int i = 1; i< waveData.size(); i++){
+    if(i % 60 == 0 || i % 61 == 0){
     }
     else{
       first = waveData[i];
@@ -55,7 +54,7 @@ void AmplitudeData::calculateSecondDifference(){
   int first, second;
   int sDiff;
   for(int i = 0; i< firstDifference.size(); i++){
-    if(i == 0 || i% 58 ==0 || i%59 ==0){
+    if(i > 0 && (i% 58 == 0)){
       continue;
     }
     else{

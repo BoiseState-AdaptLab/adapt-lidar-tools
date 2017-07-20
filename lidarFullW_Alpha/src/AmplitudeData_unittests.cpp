@@ -18,6 +18,9 @@ class AmplitudeDataTest: public testing::Test{
   protected:
 
   AmplitudeData ad;
+  I32[61] truthWaveData;
+  std::string fileName=  "etc/140823_183115_1_clipped_test.pls";
+
   std::vector<I32> waveData;
   std::vector<int> firstDifference;
   std::vector<int> secondDifference;
@@ -34,7 +37,6 @@ class AmplitudeDataTest: public testing::Test{
 */
 TEST_F(AmplitudeDataTest, outgoingWave){
 
-  std::string fileName=  "etc/140823_183115_1_clipped_test.pls";
 
   /*
    * This section reads the wave file
@@ -52,7 +54,7 @@ TEST_F(AmplitudeDataTest, outgoingWave){
   * Begin tests
   * 
   ****************************************************************************/
-  I32[61] truthWaveData = {0,2,2,2,3,2,2,8,28,70,128,177,192,167,118,68,31,12,
+  truthWaveData = {0,2,2,2,3,2,2,8,28,70,128,177,192,167,118,68,31,12,
                            5,4,5,5,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
   while(pReader->read_pulse()){

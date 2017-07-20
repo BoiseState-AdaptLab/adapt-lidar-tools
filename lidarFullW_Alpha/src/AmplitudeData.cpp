@@ -33,7 +33,9 @@ void AmplitudeData::populate(PULSEreader *pReader, WAVESsampling *sampling,
   }              
 }
 
-
+/*
+ * Calculate the first diferences
+ */
 void AmplitudeData::calculateFirstDifference(){
   int first, second, fDiff, count = 0;
   for(int i = 0; i< waveData.size(); i++){
@@ -42,33 +44,33 @@ void AmplitudeData::calculateFirstDifference(){
 
     fDiff = second - first;
 
-    firstDifference.push_back(fDiff);
-    if(first >6 && second >6)
-        
+    firstDifference.push_back(fDiff);        
     count++;
 
-    if(count == 58){      
+    if(count == 59){      
         count = 0;
-        i = i+3;
+        i = i+2;
     }
   }
 }
 
+/*
+ * Calculate the second diferences
+ */
 void AmplitudeData::calculateSecondDifference(){
-  int first, second;
-  int sDiff;
-  for(int i = 0; i< firstDifference.size(); i++){
-    if(i > 0 && (i% 58 == 0)){
-      continue;
-    }
-    else{
-      first = firstDifference[i];
-      second = firstDifference[i+1];
+  int first, second, sDiff, count =0;
+  for(int i = 0; i< firstDifference.size(); i++){  
+    first = firstDifference[i];
+    second = firstDifference[i+1];
+    sDiff = second - first;
 
-      sDiff = second - first;
-
-      secondDifference.push_back(sDiff);
+    secondDifference.push_back(sDiff);
+    count++;
+    if (count == 58){
+      count = 0;
+      i = i+1;
     }
+  
   }
 }
 
@@ -77,7 +79,7 @@ void AmplitudeData::calculateSecondDifference(){
  */
 void AmplitudeData::countPeaks(){
     for(int i = 0; i<firstDifference.size()-1; i++){
-      if(firstDifference[i]] > 0 && firstDifference[i+1] < 0){
+      if(firstDifference[i] > 0 && firstDifference[i+1] < 0){
 
       }
     }
@@ -91,7 +93,7 @@ void AmplitudeData::countPeaks(){
 void AmplitudeData::displayData(){
   std::cout << "Wave: \n" << std::endl;
   int count = 0;
-  for(int i = 0, j = 1; i<waveData.size(); i++, j++){
+  for(int i = 0; i<waveData.size(); i++){
     std::cout << waveData[i] << " ";
     count++;
     if(count == 61){
@@ -100,15 +102,15 @@ void AmplitudeData::displayData(){
     }
   }
   std::cout << "First Diff\n";
-  for(int i = 0, j=1; i<firstDifference.size(); i++, j++){
+  for(int i = 0, j = 1; i<firstDifference.size(); i++, j++){
     std::cout << firstDifference[i] << " ";
-    if(j == 58){
+    if(j == 59){
       j = 0;
       std::cout << std::endl ;
     }
   }
   std::cout << "\nSecond Diff\n";
-  for(int i = 0, j=1; i<secondDifference.size(); i++, j++){
+  for(int i = 0, j = 1; i<secondDifference.size(); i++, j++){
     std::cout << secondDifference[i] << " ";
     if(j == 58){
       j = 0;

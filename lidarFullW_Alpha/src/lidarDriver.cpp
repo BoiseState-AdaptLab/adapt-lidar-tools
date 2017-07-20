@@ -89,6 +89,9 @@ int main (int argc, char *argv[]){
     outgoingWave.calculateSecondDifference();
     std::cout << "Out Wave: \n" << std::endl;
     outgoingWave.displayData();
+
+    returningWave.calculateFirstDifference();
+    returningWave.calculateSecondDifference();
     std::cout << "\nIn Wave: \n" << std::endl;
     returningWave.displayData();
 

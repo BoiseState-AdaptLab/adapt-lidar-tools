@@ -62,7 +62,7 @@ void AmplitudeData::calculateSecondDifference(){
   for(int i = 0; i< firstDifference.size(); i++){  
     first = firstDifference[i];
     second = firstDifference[i+1];
-    sDiff = second - first;
+    sDiff = std::abs(second - first); //Absolute value
 
     secondDifference.push_back(sDiff);
     count++;

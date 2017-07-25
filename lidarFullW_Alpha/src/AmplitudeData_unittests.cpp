@@ -15,25 +15,13 @@
 
 
 class AmplitudeDataTest: public testing::Test{
+  public:  
+  AmplitudeData outgoingWave;
+  AmplitudeData returningWave;
   protected:
 
   // function to set up space used by all tests
   virtual void SetUp(){
-  }
-
-};
-
-/*
-* Given the true values of the GPS file we read the pulse file and compare 
-* the scanned values to the true values
-*/
-TEST_F(AmplitudeDataTest, outgoingWave){
-
-  /****************************************************************************
-  * 
-  * This section reads the wave file
-  * 
-  ****************************************************************************/
   
   std::string fileName=  "etc/140823_183115_1_clipped_test.pls";
   PULSEreadOpener pOpener;  // Create a pulse read opener object
@@ -43,11 +31,6 @@ TEST_F(AmplitudeDataTest, outgoingWave){
   pReader = pOpener.open();
   int maxCount = 60;
   long long pulseIndex = 0; // Keep track of the index
-
-
-  AmplitudeData outgoingWave;
-  AmplitudeData returningWave;
-
 
   //Populate the wave data
   while(pReader->read_pulse()){
@@ -79,6 +62,21 @@ TEST_F(AmplitudeDataTest, outgoingWave){
     
     pulseIndex++;
   }
+  }
+
+};
+
+/*
+* Given the true values of the GPS file we read the pulse file and compare 
+* the scanned values to the true values
+*/
+TEST_F(AmplitudeDataTest, outgoingWave){
+
+  /****************************************************************************
+  * 
+  * This section reads the wave file
+  * 
+  ****************************************************************************/
 
   /****************************************************************************
   * 

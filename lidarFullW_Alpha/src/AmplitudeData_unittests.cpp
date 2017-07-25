@@ -16,75 +16,70 @@
 
 class AmplitudeDataTest: public testing::Test{
   public:  
-  AmplitudeData outgoingWave;
-  AmplitudeData returningWave;
+    AmplitudeData outgoingWave;
+    AmplitudeData returningWave;
+
   protected:
 
-  // function to set up space used by all tests
+  //Function to set up space used by all tests
   virtual void SetUp(){
-  
-  std::string fileName=  "etc/140823_183115_1_clipped_test.pls";
-  PULSEreadOpener pOpener;  // Create a pulse read opener object
-  PULSEreader *pReader;     // Create a pulse reader object
-  WAVESsampling *sampling;  // Create a wave sampling object
-  pOpener.set_file_name(fileName.c_str());
-  pReader = pOpener.open();
-  int maxCount = 60;
-  long long pulseIndex = 0; // Keep track of the index
 
-  //Populate the wave data
-  while(pReader->read_pulse()){
+    //Read the wave file
+    std::string fileName=  "etc/140823_183115_1_clipped_test.pls";
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    WAVESsampling *sampling;  // Create a wave sampling object
+    pOpener.set_file_name(fileName.c_str());
+    pReader = pOpener.open();
+    int maxCount = 60;
+    long long pulseIndex = 0; // Keep track of the index
 
-    //Read the waves
-    if(pReader->read_waves()){
-      for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
-        sampling = pReader->waves->get_sampling(i);
+    //Populate the wave data
+    while(pReader->read_pulse()){
 
-        //Based on the type of wave, populate data
-        if(sampling->get_type() == PULSEWAVES_OUTGOING){
-          outgoingWave.populate(pReader, sampling, maxCount, pulseIndex);
+      //Read the waves
+      if(pReader->read_waves()){
+        for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
+          sampling = pReader->waves->get_sampling(i);
 
-        }
-        else if(sampling->get_type() == PULSEWAVES_RETURNING){
-          returningWave.populate(pReader, sampling, maxCount, pulseIndex);
-        }
-        else{
-          std::cout << "Unknown type: " << sampling->get_type() \
-                    << std::endl;
+          //Based on the type of wave, populate data
+          if(sampling->get_type() == PULSEWAVES_OUTGOING){
+            outgoingWave.populate(pReader, sampling, maxCount, pulseIndex);
+
+          }
+          else if(sampling->get_type() == PULSEWAVES_RETURNING){
+            returningWave.populate(pReader, sampling, maxCount, pulseIndex);
+          }
+          else{
+            std::cout << "Unknown type: " << sampling->get_type() \
+                      << std::endl;
+          }
         }
       }
+
+      //No waves
+      else{
+        std::cout <<"NO DATA!\n" << std::endl;
+      }
+      
+      pulseIndex++;
     }
 
-    //No waves
-    else{
-      std::cout <<"NO DATA!\n" << std::endl;
-    }
-    
-    pulseIndex++;
+    outgoingWave.calculateFirstDifference();
+    outgoingWave.calculateSecondDifference();
+    returningWave.calculateFirstDifference();
+    returningWave.calculateSecondDifference();
   }
-  }
-
 };
 
-/*
-* Given the true values of the GPS file we read the pulse file and compare 
-* the scanned values to the true values
-*/
-TEST_F(AmplitudeDataTest, outgoingWave){
+/******************************************************************************
+* 
+* Test outgoing wave data
+* 
+******************************************************************************/
+TEST_F(AmplitudeDataTest, outgoingWaveData){
 
-  /****************************************************************************
-  * 
-  * This section reads the wave file
-  * 
-  ****************************************************************************/
-
-  /****************************************************************************
-  * 
-  * Test outgoing wave data
-  * 
-  ****************************************************************************/
-
-  I32 truthOutgoingWaveData [244] = {0,2,2,2,3,2,2,8,28,70,128,177,192,167,118,
+  I32 truthOutgoingWaveData[244] = {0,2,2,2,3,2,2,8,28,70,128,177,192,167,118,
                      68,31,12,5,4,5,5,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                      1,1,2,1,2,2,3,8,24,63,121,173,194,173,126,74,35,14,5,
@@ -96,34 +91,47 @@ TEST_F(AmplitudeDataTest, outgoingWave){
                      3,3,3,2,2,2,3,6,21,59,115,168,192,176,130,79,39,16,7,
                      6,6,7,6,3,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  //Test size
+ ASSERT_EQ(244,outgoingWave.waveData.size());
+
+  //Test data
   for(int i = 0; i<=243; i++){
     ASSERT_EQ(truthOutgoingWaveData[i], outgoingWave.waveData[i]);
   }
+}
 
-  /****************************************************************************
-  * 
-  * Test returning wave data
-  * 
-  ****************************************************************************/
-  I32 truthReturningWaveData [122] = {1,2,2,2,1,1,1,1,1,1,0,0,1,9,35,88,155,212,
+/******************************************************************************
+* 
+* Test returning wave data
+* 
+******************************************************************************/
+TEST_F(AmplitudeDataTest, returningWaveData){
+
+  I32 truthReturningWaveData[122] = {1,2,2,2,1,1,1,1,1,1,0,0,1,9,35,88,155,212,
                     240,237,200,145,87,42,18,12,13,14,15,15,14,13,10,8,8,8,8,7,
                     6,6,4,4,4,3,4,5,6,4,4,3,2,2,1,1,0,1,2,3,4,4,2,
                     2,1,2,2,3,2,2,1,1,3,2,2,3,5,19,58,121,186,228,238,214,164,
                     106,58,26,13,10,12,15,17,17,16,13,10,7,6,7,6,6,4,6,6,6,5,6,
                     6,6,6,5,4,4,2,2,1,2,2,1,2,2,2,2};
+  //Test size
+  ASSERT_EQ(122,returningWave.waveData.size()); 
 
-  for(int i = 0; i<=122; i++){
+  //Test data
+  for(int i = 0; i<=121; i++){
     EXPECT_EQ(truthReturningWaveData[i], returningWave.waveData[i]);
   }
+}
 
-  /****************************************************************************
-  * 
-  * Test first difference
-  * 
-  ****************************************************************************/
-int truthFirstDifferenceOutgoingWave [236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,
-                  -49,-50,-37,-19,-7,-1,1,0,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,
-                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+/******************************************************************************
+* 
+* Test first difference of outgoing wave
+* 
+******************************************************************************/
+TEST_F(AmplitudeDataTest, outgoingWavefirstDifference){
+
+  int truthFirstDiffOutgoingWave[236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,-49,
+                  -50,-37,-19,-7,-1,1,0,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                   1,-1,1,0,1,5,16,39,58,52,21,-21,-47,-52,-39,-21,-9,-2,1,1,-1,
                   -2,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                   0,0,0,0,0,0,0,0,0,
@@ -133,8 +141,83 @@ int truthFirstDifferenceOutgoingWave [236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,
                   0,-1,0,0,1,3,15,38,56,53,24,-16,-46,-51,-40,-23,-9,-1,0,1,-1,
                   -3,-2,-1,0,0,1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                   0,0,0,0,0,0,0,0,0};
-  for(int i = 0; i<=236; i++){
-    ASSERT_EQ(truthFirstDifferenceOutgoingWave[i],
-              outgoingWave.firstDifference[i]);
+  //Test size
+  ASSERT_EQ(236,outgoingWave.firstDifference.size()); 
+
+  //Test data
+  for(int i = 0; i<=235; i++){
+    ASSERT_EQ(truthFirstDiffOutgoingWave[i],outgoingWave.firstDifference[i]);
+  }
+}
+
+/******************************************************************************
+* 
+* Test first difference of returning wave
+* 
+******************************************************************************/
+TEST_F(AmplitudeDataTest, returningWavefirstDifference){
+
+  int truthFirstDiffReturningWave[118] = {0,0,-1,0,0,0,0,0,-1,0,1,8,26,53,67,
+                  57,28,-3,-37,-55,-58,-45,-24,-6,1,1,1,0,-1,-1,-3,-2,0,0,0,-1,
+                  -1,0,-2,0,0,-1,1,1,1,-2,0,-1,-1,0,-1,0,-1,1,1,1,1,0,-2,
+                  1,0,1,-1,0,-1,0,2,-1,0,1,2,14,39,63,65,42,10,-24,-50,-58,-48,
+                  -32,-13,-3,2,3,2,0,-1,-3,-3,-3,-1,1,-1,0,-2,2,0,0,-1,1,0,0,0,
+                  -1,-1,0,-2,0,-1,1,0,-1,1,0,0,0};
+  //Test size
+  ASSERT_EQ(118,returningWave.firstDifference.size()); 
+
+  //Test data
+  for(int i = 0; i<=117; i++){
+    ASSERT_EQ(truthFirstDiffReturningWave[i],returningWave.firstDifference[i]);
+  }
+}
+
+/******************************************************************************
+* 
+* Test second difference of outgoing wave
+* 
+******************************************************************************/
+TEST_F(AmplitudeDataTest, outgoingWaveSecondDifference){
+
+  int truthSecondDiffOutgoingWave[232] = {0,1,2,1,6,14,22,16,9,34,40,24,1,13,
+                  18,12,6,2,1,2,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  2,2,1,1,4,11,23,19,6,31,42,26,5,13,18,12,7,3,0,2,1,1,0,1,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,
+                  1,0,2,1,5,11,23,19,5,28,41,30,6,14,18,11,8,3,0,1,2,0,1,1,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,
+                  1,1,0,1,2,12,23,18,3,29,40,30,5,11,17,14,8,1,1,2,2,1,1,1,0,1,
+                  2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0};
+  //Test size
+  ASSERT_EQ(232,outgoingWave.secondDifference.size()); 
+
+  //Test data
+  for(int i = 0; i<=231; i++){
+    ASSERT_EQ(truthSecondDiffOutgoingWave[i],outgoingWave.secondDifference[i]);
+  }
+}
+
+/******************************************************************************
+* 
+* Test second difference of returning wave
+* 
+******************************************************************************/
+TEST_F(AmplitudeDataTest, returningWaveSecondDifference){
+
+  int truthSecondDiffReturnWave[116] = {0,1,1,0,0,0,0,1,1,1,7,18,27,14,10,29,
+                  31,34,18,3,13,21,18,7,0,0,1,1,0,2,1,2,0,0,1,0,1,2,2,0,1,2,0,
+                  0,3,2,1,0,1,1,1,1,2,0,0,0,1,2,
+                  1,1,2,1,1,1,2,3,1,1,1,12,25,24,2,23,32,34,26,8,10,16,19,10,5,
+                  1,1,2,1,2,0,0,2,2,2,1,2,4,2,0,1,2,1,0,0,1,0,1,2,2,1,2,1,1,2,
+                  1,0,0};
+  //Test size
+  ASSERT_EQ(116,returningWave.secondDifference.size()); 
+
+  //Test data
+  for(int i = 0; i<=115; i++){
+    ASSERT_EQ(truthSecondDiffReturnWave[i],returningWave.secondDifference[i]);
   }
 }

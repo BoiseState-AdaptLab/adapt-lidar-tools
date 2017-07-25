@@ -18,7 +18,6 @@
 class GPSInformationTest: public testing::Test{
   protected:
 
-  GPSInformation gps;
 
   // function to set up space used by all tests
   virtual void SetUp(){

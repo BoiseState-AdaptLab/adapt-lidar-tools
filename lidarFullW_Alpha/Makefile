@@ -43,7 +43,8 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests \
         $(BIN)/ScannerInformation_unittests $(BIN)/GPSInformation_unittests \
-	$(BINE)/WaveformGaussianFitting_unittests
+	      $(BIN)/AmplitudeData_unittests
+#	      $(BIN)/WaveformGaussianFitting_unittests 
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -95,6 +96,9 @@ $(USER_DIR)/ScannerInformation.o: $(USER_DIR)/ScannerInformation.cpp
 $(USER_DIR)/GPSInformation.o: $(USER_DIR)/GPSInformation.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
+$(USER_DIR)/AmplitudeData.o: $(USER_DIR)/AmplitudeData.cpp
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+
 # Builds all object files
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
@@ -126,7 +130,8 @@ test: $(TESTS)
 	$(BIN)/FullWaveformIngestion_unittests
 	$(BIN)/ScannerInformation_unittests
 	$(BIN)/GPSInformation_unittests
-	$(BINE)/WaveformGaussianFitting_unittests
+	$(BIN)/AmplitudeData_unittests
+#	$(BIN)/WaveformGaussianFitting_unittests
 
 # Clean up when done. 
 # Removes all object, library and executable files

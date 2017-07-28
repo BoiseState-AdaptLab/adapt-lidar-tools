@@ -74,6 +74,22 @@ void AmplitudeData::calculateSecondDifference(){
   }
 }
 
+
+/*
+ * Calculate smooth second difference
+ */
+void AmplitudeData::calculateSmoothSecondDiference(){
+  int first, second third, fourth fifth;
+  for(int i = 0; i< secondDifference.size(); i++){
+    if(i == 0 || i == 1 ){
+      smoothSecondDifference.push_back(secondDifference[i]);
+    }
+  }
+
+
+}
+
+
 /*
  * Check if values change from +ve to -ve
  */
@@ -117,4 +133,47 @@ void AmplitudeData::displayData(){
       std::cout << std::endl ;
     }
   }
+}
+
+
+void AmplitudeData::swap(int a, int b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+void AmplitudeData::sort(int a, int b) {
+    if (a > b) {
+        swap(a,b);
+    }
+}
+
+int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
+    // makes a < b and c < d
+    sort(a, b);
+    sort(c, d);
+
+    // eleminate the lowest
+    if (c < a) {
+        swap(b, d);
+        c = a;
+    }
+
+    // gets e in
+    a = e;
+
+    // makes a < b
+    sort(a, b);
+
+    // eliminate another lowest
+    // remaing: a,b,d
+    if (a < c) {
+        swap(b, d);
+        a = c;
+    }
+
+    if(a<d){
+      return d;
+    }
+    else return a;
 }

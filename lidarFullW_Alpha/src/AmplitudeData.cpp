@@ -79,10 +79,9 @@ void AmplitudeData::calculateSecondDifference(){
  * Calculate smooth second difference
  */
 void AmplitudeData::calculateSmoothSecondDiference(){
-  int first, second third, fourth fifth;
+  int first, second, third, fourth, fifth;
   for(int i = 0; i< secondDifference.size(); i++){
     if(i == 0 || i == 1 ){
-      smoothSecondDifference.push_back(secondDifference[i]);
     }
   }
 

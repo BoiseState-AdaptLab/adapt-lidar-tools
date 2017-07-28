@@ -21,6 +21,8 @@ public:
 
   std::vector<int> firstDifference;
   std::vector<int> secondDifference;
+  std::vector<int> smoothSecondDifference;
+  
   std::vector<int> peaks;
 
 
@@ -30,8 +32,13 @@ public:
   void displayData();
   void calculateFirstDifference();
   void calculateSecondDifference();
+  void calculateSmoothSecondDiference();
 
   void countPeaks();
+
+  void swap(int a, int b);
+  void sort(int a, int b);
+  int medianOfFive(int a, int b, int c, int d, int e);
 
 
 };

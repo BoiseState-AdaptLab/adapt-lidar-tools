@@ -229,9 +229,12 @@ TEST_F(AmplitudeDataTest, returningWaveSecondDifference){
 ******************************************************************************/
 TEST_F(AmplitudeDataTest, smoothingReturningWaveSecondDifference){
 
-  int truthSmoothSecondDiffReturnWave[116] = {1,1,1,1,1,1,1,1,1,1,1,12,12,23,
-                  24,24,26,26,26,16,16,10,10,10,5,2,1,1,1,1,1,2,2,2,2,2,2,2,2,
-                  2,1,1,1,1,0,0,1,1,1,2,2,1,1,1,1,1,0,0};
+  int truthSmoothSecondDiffReturnWave[116] = {0,1,0,0,0,0,0,1,1,1,7,14,14,18,
+                  27,29,29,29,18,18,18,13,13,7,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,2,
+                  1,0,1,2,1,1,1,1,1,1,1,1,1,0,0,0,1,2,
+                  1,1,1,1,1,1,1,1,1,1,1,12,12,23,24,24,26,26,26,16,16,10,10,10,
+                  5,2,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,0,0,1,1,1,2,2,1,1,1,
+                  1,1,0,0};
   //Test size
   ASSERT_EQ(116,returningWave.smoothSecondDifference.size()); 
 

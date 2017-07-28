@@ -5,6 +5,7 @@
  */
 
 #include <iostream>
+#include <cmath>
 #include "AmplitudeData.hpp"
 
 //Default constructor
@@ -149,30 +150,58 @@ void AmplitudeData::sort(int a, int b) {
 
 int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
     // makes a < b and c < d
-    sort(a, b);
-    sort(c, d);
-
+    //
+    int temp;
+    //sort a,b
+    if(a > b){
+      temp =a;
+      a =b;
+      b=temp;
+    }  
+    // sort c,d
+    if(c > d){
+      temp =c;
+      c =d;
+      d=temp;
+    }  
     // eleminate the lowest
-    if (c < a) {
-        swap(b, d);
-        c = a;
+    if (a > c) {
+      temp = a;
+      a = c;
+      c = temp;
     }
-
     // gets e in
     a = e;
-
-    // makes a < b
-    sort(a, b);
-
-    // eliminate another lowest
-    // remaing: a,b,d
-    if (a < c) {
-        swap(b, d);
-        a = c;
+    //sort a,b
+    if(a > b){
+      temp =a;
+      a =b;
+      b=temp;
+    }  
+    // sort c,d
+    if(c > d){
+      temp =c;
+      c =d;
+      d=temp;
+    }  
+    // eleminate the lowest
+    if (a > c) {
+      temp = a;
+      a = c;
+      c = temp;
     }
 
-    if(a<d){
-      return d;
-    }
-    else return a;
+    // sort b,c
+    if(b > c){
+      temp =b;
+      b =c;
+      c=temp;
+    }  
+  
+    if(b<d){
+     return b; 
+   }
+   return d;
+    
+    
 }

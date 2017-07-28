@@ -27,8 +27,7 @@ public:
 
 
   AmplitudeData();  
-  void populate(PULSEreader *pReader, WAVESsampling *sampling, \
-                         int maxCount, long long pulseIndex);
+  void populate(WAVESsampling *sampling, int maxCount, long long pulseIndex);
   void displayData();
   void calculateFirstDifference();
   void calculateSecondDifference();
@@ -36,8 +35,6 @@ public:
 
   void countPeaks();
 
-  void swap(int a, int b);
-  void sort(int a, int b);
   int medianOfFive(int a, int b, int c, int d, int e);
 
 

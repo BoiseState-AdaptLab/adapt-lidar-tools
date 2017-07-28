@@ -44,11 +44,11 @@ class AmplitudeDataTest: public testing::Test{
 
           //Based on the type of wave, populate data
           if(sampling->get_type() == PULSEWAVES_OUTGOING){
-            outgoingWave.populate(pReader, sampling, maxCount, pulseIndex);
+            outgoingWave.populate(sampling, maxCount, pulseIndex);
 
           }
           else if(sampling->get_type() == PULSEWAVES_RETURNING){
-            returningWave.populate(pReader, sampling, maxCount, pulseIndex);
+            returningWave.populate(sampling, maxCount, pulseIndex);
           }
           else{
             std::cout << "Unknown type: " << sampling->get_type() \
@@ -222,7 +222,11 @@ TEST_F(AmplitudeDataTest, returningWaveSecondDifference){
   }
 }
 
-
+/******************************************************************************
+* 
+* Test the medianOfFive function
+* 
+******************************************************************************/
 TEST_F(AmplitudeDataTest, medianOfFive){
 
   int a,b,c,d,e;
@@ -231,51 +235,51 @@ TEST_F(AmplitudeDataTest, medianOfFive){
   c = 3;
   d = 4;
   e = 5;
-
   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  
   a = 5;
   b = 4;
   c = 3;
   d = 2;
   e = 1;
-
   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  
   a = 1;
   b = 1;
   c = 1;
   d = 1;
   e = 1;
-
   EXPECT_EQ(1,returningWave.medianOfFive(a,b,c,d,e));
+  
   a = 1;
   b = 5;
   c = 1;
   d = 3;
   e = 5;
-
   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  
   a = 5;
   b = 1;
   c = 4;
   d = 3;
   e = 2;
-
   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  
+  a = 1;
+  b = 1;
+  c = 3;
+  d = 5;
+  e = 5;
+  EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  
   a = 1;
   b = 2;
-  c = 3;
+  c = 4;
   d = 4;
   e = 5;
-
-  EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
-  a = 1;
-  b = 2;
-  c = 3;
-  d = 4;
-  e = 5;
-
-  EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  EXPECT_EQ(4,returningWave.medianOfFive(a,b,c,d,e));
 }
+
 /******************************************************************************
 * 
 * Test smoothing of second difference of returning wave

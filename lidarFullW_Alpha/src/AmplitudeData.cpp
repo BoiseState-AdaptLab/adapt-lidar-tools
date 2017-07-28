@@ -18,7 +18,7 @@ AmplitudeData::AmplitudeData(){
 /*
  * Populate all the Wave data
  */
-void AmplitudeData::populate(PULSEreader *pReader, WAVESsampling *sampling, 
+void AmplitudeData::populate(WAVESsampling *sampling, 
                               int maxCount, long long pulseIndex){
   waveData.push_back(pulseIndex);
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
@@ -135,22 +135,11 @@ void AmplitudeData::displayData(){
   }
 }
 
-
-void AmplitudeData::swap(int a, int b) {
-    int temp = a;
-    a = b;
-    b = temp;
-}
-
-void AmplitudeData::sort(int a, int b) {
-    if (a > b) {
-        swap(a,b);
-    }
-}
-
+/*
+ * Find the median of five values
+ */
 int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
     // makes a < b and c < d
-    //
     int temp;
     //sort a,b
     if(a > b){
@@ -164,12 +153,13 @@ int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
       c =d;
       d=temp;
     }  
-    // eleminate the lowest
+    // eliminate the lowest
     if (a > c) {
       temp = a;
       a = c;
       c = temp;
     }
+
     // gets e in
     a = e;
     //sort a,b
@@ -201,7 +191,5 @@ int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
     if(b<d){
      return b; 
    }
-   return d;
-    
-    
+   return d;    
 }

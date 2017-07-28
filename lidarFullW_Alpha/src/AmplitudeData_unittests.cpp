@@ -236,11 +236,11 @@ TEST_F(AmplitudeDataTest, smoothingReturningWaveSecondDifference){
                   5,2,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,0,0,1,1,1,2,2,1,1,1,
                   1,1,0,0};
   //Test size
-  ASSERT_EQ(116,returningWave.smoothSecondDifference.size()); 
+  EXPECT_EQ(116,returningWave.smoothSecondDifference.size()); 
 
   //Test data
   for(int i = 0; i<=115; i++){
-    ASSERT_EQ(truthSmoothSecondDiffReturnWave[i],
+    EXPECT_EQ(truthSmoothSecondDiffReturnWave[i],
               returningWave.smoothSecondDifference[i]);
   }
 }

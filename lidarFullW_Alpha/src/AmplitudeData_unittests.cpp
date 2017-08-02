@@ -67,8 +67,12 @@ class AmplitudeDataTest: public testing::Test{
 
     outgoingWave.calculateFirstDifference();
     outgoingWave.calculateSecondDifference();
+    outgoingWave.calculateSmoothSecondDifference();
+
     returningWave.calculateFirstDifference();
     returningWave.calculateSecondDifference();
+    returningWave.calculateSmoothSecondDifference();
+
   }
 };
 
@@ -278,6 +282,13 @@ TEST_F(AmplitudeDataTest, medianOfFive){
   d = 4;
   e = 5;
   EXPECT_EQ(4,returningWave.medianOfFive(a,b,c,d,e));
+
+  a = 1;
+  b = 1;
+  c = 2;
+  d = 1;
+  e = 0;
+  EXPECT_EQ(1,returningWave.medianOfFive(a,b,c,d,e));
 }
 
 /******************************************************************************

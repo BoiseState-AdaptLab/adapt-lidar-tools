@@ -31,7 +31,7 @@ public:
   void displayData();
   void calculateFirstDifference();
   void calculateSecondDifference();
-  void calculateSmoothSecondDiference();
+  void calculateSmoothSecondDifference();
 
   void countPeaks();
 

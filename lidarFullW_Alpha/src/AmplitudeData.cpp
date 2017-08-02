@@ -79,13 +79,32 @@ void AmplitudeData::calculateSecondDifference(){
 /*
  * Calculate smooth second difference
  */
-void AmplitudeData::calculateSmoothSecondDiference(){
+void AmplitudeData::calculateSmoothSecondDifference(){
   int first, second, third, fourth, fifth;
+  int median;
+  int count = 1;  //Keeps track of the number of 
   for(int i = 0; i< secondDifference.size(); i++){
-    if(i == 0 || i == 1 ){
+    if(count == 1 || count == 2){
+      smoothSecondDifference.push_back(secondDifference[i]);
+      count++;
+      continue;
     }
-  }
+    first = secondDifference[i-2];
+    second = secondDifference[i-1];
+    third = secondDifference[i];
+    fourth = secondDifference[i+1];
+    fifth = secondDifference[i+2];
+    median = medianOfFive(first, second, third, fourth, fifth);
+    smoothSecondDifference.push_back(median);
+    count++;
+    if(count == 57){
+      smoothSecondDifference.push_back(secondDifference[i+1]);
+      smoothSecondDifference.push_back(secondDifference[i+2]);
+      i = i+2;
+      count = 1;
+    }
 
+  }
 
 }
 
@@ -104,20 +123,79 @@ void AmplitudeData::countPeaks(){
 
 
 /*
+ * Find the median of five values
+ */
+int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
+  // makes a < b and c < d
+  int temp;
+  //sort a,b
+  if(a > b){
+    temp =a;
+    a =b;
+    b=temp;
+  }  
+  // sort c,d
+  if(c > d){
+    temp =c;
+    c =d;
+    d=temp;
+  }  
+  // eliminate the lowest
+  if (a > c) {
+    temp = a;
+    a = c;
+    c = temp;
+  }
+
+  // gets e in
+  a = e;
+  //sort a,b
+  if(a > b){
+    temp =a;
+    a =b;
+    b=temp;
+  }  
+  // sort c,d
+  if(c > d){
+    temp =c;
+    c =d;
+    d=temp;
+  }  
+  // eliminate the lowest
+  if (a > c) {
+    temp = a;
+    a = c;
+    c = temp;
+  }
+
+  // sort b,c
+  if(b > c){
+    temp =b;
+    b =c;
+    c=temp;
+  }  
+
+  if(b<d){
+   return b; 
+ }
+ return d;
+}
+
+/*
  * Displays all wave data
  */
 void AmplitudeData::displayData(){
   std::cout << "Wave: \n" << std::endl;
-  int count = 0;
+  int count = 1;
   for(int i = 0; i<waveData.size(); i++){
     std::cout << waveData[i] << " ";
     count++;
-    if(count == 61){
+    if(count == 62){
       count = 0;
       std::cout << std::endl ;
     }
   }
-  std::cout << "First Diff\n";
+  std::cout << "\nFirst diff\n";
   for(int i = 0, j = 1; i<firstDifference.size(); i++, j++){
     std::cout << firstDifference[i] << " ";
     if(j == 59){
@@ -125,71 +203,28 @@ void AmplitudeData::displayData(){
       std::cout << std::endl ;
     }
   }
-  std::cout << "\nSecond Diff\n";
-  for(int i = 0, j = 1; i<secondDifference.size(); i++, j++){
+
+  std::cout << "\nSecond diff\n";
+  count = 1;  
+  for(int i = 0; i<secondDifference.size(); i++){
     std::cout << secondDifference[i] << " ";
-    if(j == 58){
-      j = 0;
+    
+    if(count == 58){
+      count = 0;
       std::cout << std::endl ;
     }
+    count++;
   }
-}
 
-/*
- * Find the median of five values
- */
-int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
-    // makes a < b and c < d
-    int temp;
-    //sort a,b
-    if(a > b){
-      temp =a;
-      a =b;
-      b=temp;
-    }  
-    // sort c,d
-    if(c > d){
-      temp =c;
-      c =d;
-      d=temp;
-    }  
-    // eliminate the lowest
-    if (a > c) {
-      temp = a;
-      a = c;
-      c = temp;
+  std::cout << "\nSmooth second diff\n";
+  count = 1;
+  for(int i = 0; i<smoothSecondDifference.size(); i++){
+    std::cout << smoothSecondDifference[i] << " ";
+    if(count == 58){
+      count = 0;
+      std::cout << std::endl ;
     }
+    count++;
+  }
 
-    // gets e in
-    a = e;
-    //sort a,b
-    if(a > b){
-      temp =a;
-      a =b;
-      b=temp;
-    }  
-    // sort c,d
-    if(c > d){
-      temp =c;
-      c =d;
-      d=temp;
-    }  
-    // eleminate the lowest
-    if (a > c) {
-      temp = a;
-      a = c;
-      c = temp;
-    }
-
-    // sort b,c
-    if(b > c){
-      temp =b;
-      b =c;
-      c=temp;
-    }  
-  
-    if(b<d){
-     return b; 
-   }
-   return d;    
 }

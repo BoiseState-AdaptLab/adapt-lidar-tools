@@ -65,11 +65,11 @@ int main (int argc, char *argv[]){
 
           //Based on the type of wave, populate data
           if(sampling->get_type() == PULSEWAVES_OUTGOING){
-            outgoingWave.populate(pReader, sampling, maxCount, pulseIndex);
+            outgoingWave.populate(sampling, maxCount, pulseIndex);
 
           }
           else if(sampling->get_type() == PULSEWAVES_RETURNING){
-            returningWave.populate(pReader, sampling, maxCount, pulseIndex);
+            returningWave.populate(sampling, maxCount, pulseIndex);
           }
           else{
             std::cout << "Unknown type: " << sampling->get_type() \
@@ -87,11 +87,13 @@ int main (int argc, char *argv[]){
     }
     outgoingWave.calculateFirstDifference();
     outgoingWave.calculateSecondDifference();
+    outgoingWave.calculateSmoothSecondDifference();
     std::cout << "Out Wave: \n" << std::endl;
     outgoingWave.displayData();
 
     returningWave.calculateFirstDifference();
     returningWave.calculateSecondDifference();
+    returningWave.calculateSmoothSecondDifference();
     std::cout << "\nIn Wave: \n" << std::endl;
     returningWave.displayData();
 

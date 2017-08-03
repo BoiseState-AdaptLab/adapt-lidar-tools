@@ -22,18 +22,23 @@ public:
   std::vector<int> firstDifference;
   std::vector<int> secondDifference;
   std::vector<int> smoothSecondDifference;
+  std::vector<int> smoothSecondDifferencePeaks;
   
-  std::vector<int> peaks;
+  std::vector<int> firstDifferencePeaks;
 
 
   AmplitudeData();  
   void populate(WAVESsampling *sampling, int maxCount, long long pulseIndex);
-  void displayData();
+  
   void calculateFirstDifference();
   void calculateSecondDifference();
   void calculateSmoothSecondDifference();
 
-  void countPeaks();
+  void caclulateFirstDifferencePeaks();
+  void calculateSmoothSecondDifferencePeaks();
+
+  void displayData();
+  void displayPeaksAndLocations();
 
   int medianOfFive(int a, int b, int c, int d, int e);
 

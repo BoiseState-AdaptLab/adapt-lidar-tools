@@ -110,15 +110,31 @@ void AmplitudeData::calculateSmoothSecondDifference(){
 
 
 /*
- * Check if values change from +ve to -ve
+ * Calculate the smooth second difference peaks
  */
-void AmplitudeData::countPeaks(){
-    for(int i = 0; i<firstDifference.size()-1; i++){
-      if(firstDifference[i] > 0 && firstDifference[i+1] < 0){
-
+void AmplitudeData::calculateSmoothSecondDifferencePeaks(){
+  int count = 1;
+  int noOfPeaks = 0;
+    for(int i = 0; i<smoothSecondDifference.size(); i++){
+      if(count == 1 && smoothSecondDifference[i] > 
+                    smoothSecondDifference[i+1] < 0){
+        smoothSecondDifferencePeaks.push_back(i+3);
+        noOfPeaks++;
+        count++;
+      }
+      else if(count == 58 && smoothSecondDifference[i] > 
+                             smoothSecondDifference[i-1]){
+        smoothSecondDifferencePeaks.push_back(i+3);
+        noOfPeaks++;
+        count = 1;
+      }
+      else if(smoothSecondDifference[i] >= smoothSecondDifference[i+1]
+              && smoothSecondDifference[i] > smoothSecondDifference[i-1]){
+        smoothSecondDifferencePeaks.push_back(i+3);        
+        noOfPeaks++;
+        count++;
       }
     }
-
 }
 
 
@@ -225,6 +241,19 @@ void AmplitudeData::displayData(){
       std::cout << std::endl ;
     }
     count++;
+  }
+
+}
+
+/*
+ *Display the peak amplitude and the location of the original wave
+ */
+void AmplitudeData::displayPeaksAndLocations(){
+  for(int i = 0; i<smoothSecondDifferencePeaks.size(); i++){
+    if(waveData[smoothSecondDifferencePeaks[i]] >= 4){
+      std::cout << "Peak: " << waveData[smoothSecondDifferencePeaks[i]] << 
+            " found at location: " << smoothSecondDifferencePeaks[i] << std::endl;
+    }
   }
 
 }

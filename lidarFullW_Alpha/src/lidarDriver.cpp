@@ -96,6 +96,8 @@ int main (int argc, char *argv[]){
     returningWave.calculateSmoothSecondDifference();
     std::cout << "\nIn Wave: \n" << std::endl;
     returningWave.displayData();
+    returningWave.calculateSmoothSecondDifferencePeaks();
+    returningWave.displayPeaksAndLocations();
 
     return 0;
   }

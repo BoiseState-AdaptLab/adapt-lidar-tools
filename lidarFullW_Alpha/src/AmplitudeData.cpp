@@ -39,7 +39,7 @@ void AmplitudeData::populate(WAVESsampling *sampling,
  */
 void AmplitudeData::calculateFirstDifference(){
   int first, second, fDiff, count = 0;
-  for(int i = 0; i< waveData.size(); i++){
+  for(int i = 0; i< (int)waveData.size(); i++){
     first = waveData[i+1];
     second = waveData[i+2];
 
@@ -60,7 +60,7 @@ void AmplitudeData::calculateFirstDifference(){
  */
 void AmplitudeData::calculateSecondDifference(){
   int first, second, sDiff, count =0;
-  for(int i = 0; i< firstDifference.size(); i++){  
+  for(int i = 0; i< (int)firstDifference.size(); i++){  
     first = firstDifference[i];
     second = firstDifference[i+1];
     sDiff = std::abs(second - first); //Absolute value
@@ -83,7 +83,7 @@ void AmplitudeData::calculateSmoothSecondDifference(){
   int first, second, third, fourth, fifth;
   int median;
   int count = 1;  //Keeps track of the number of 
-  for(int i = 0; i< secondDifference.size(); i++){
+  for(int i = 0; i< (int)secondDifference.size(); i++){
     if(count == 1 || count == 2){
       smoothSecondDifference.push_back(secondDifference[i]);
       count++;
@@ -110,31 +110,63 @@ void AmplitudeData::calculateSmoothSecondDifference(){
 
 
 /*
- * Calculate the smooth second difference peaks
+ * Take in a vector and calculate its peaks
  */
-void AmplitudeData::calculateSmoothSecondDifferencePeaks(){
+void AmplitudeData::findPeaks(std::vector<int> data){
+  
+  const int NOISE = 3; //Level up to and including which peaks will be excluded
+  int wideStart = -1;  //The start of any current wide peak
+
+ /* Sign of gradient
+  * =  1 for increasing
+  * =  0 for level AND PREVIOUSLY INCREASING (so potential wide peak)
+  * = -1 for decreasing OR level, but previously decreasing
+  * A sharp peak is identified by grad=1 -> grad=-1
+  * A wide  peak is identified by grad=0 -> grad=-1
+  */ int grad = -1;
+
   int count = 1;
-  int noOfPeaks = 0;
-    for(int i = 0; i<smoothSecondDifference.size(); i++){
-      if(count == 1 && smoothSecondDifference[i] > 
-                    smoothSecondDifference[i+1] < 0){
-        smoothSecondDifferencePeaks.push_back(i+3);
-        noOfPeaks++;
-        count++;
+  for(int i = 0; i<(int)data.size()-1; i++){
+    //First index represents the pulse index
+    if(count == 1){
+      i = i+1;
+      count = count + 1;
+    }
+
+    //Only possibility of a peak
+    if(data[i+1] < data[i]){
+      //Sharp peak
+      if(grad == 1 && data[i] > NOISE){
+        firstDifferencePeaks.push_back(data[i]);    //Peak value
+        firstDifferencePeaksLocation.push_back(i);  //Peak location
       }
-      else if(count == 58 && smoothSecondDifference[i] > 
-                             smoothSecondDifference[i-1]){
-        smoothSecondDifferencePeaks.push_back(i+3);
-        noOfPeaks++;
-        count = 1;
+      //Wide peak
+      else if(grad == 0 && data[i] > NOISE){
+        firstDifferencePeaks.push_back(data[wideStart]);
+        firstDifferencePeaksLocation.push_back(wideStart);
       }
-      else if(smoothSecondDifference[i] >= smoothSecondDifference[i+1]
-              && smoothSecondDifference[i] > smoothSecondDifference[i-1]){
-        smoothSecondDifferencePeaks.push_back(i+3);        
-        noOfPeaks++;
-        count++;
+      count++;
+      grad = -1;
+    }
+    //Start of a wide peak
+    else if (data[i+1] == data[i]){
+      count++;
+      if(grad == 1){
+        wideStart = i;  //Index where the wide peak begins
+        grad = 0;
       }
     }
+    else{
+      grad = 1;
+      count++;
+    }
+
+    //Keep track of the returning wave index
+    if (count == 60){
+      count = 1;  
+    }
+
+  }
 }
 
 
@@ -146,15 +178,15 @@ int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
   int temp;
   //sort a,b
   if(a > b){
-    temp =a;
-    a =b;
-    b=temp;
+    temp = a;
+    a = b;
+    b = temp;
   }  
   // sort c,d
   if(c > d){
-    temp =c;
-    c =d;
-    d=temp;
+    temp = c;
+    c = d;
+    d = temp;
   }  
   // eliminate the lowest
   if (a > c) {
@@ -167,15 +199,15 @@ int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
   a = e;
   //sort a,b
   if(a > b){
-    temp =a;
-    a =b;
-    b=temp;
+    temp = a;
+    a = b;
+    b = temp;
   }  
   // sort c,d
   if(c > d){
-    temp =c;
-    c =d;
-    d=temp;
+    temp = c;
+    c = d;
+    d = temp;
   }  
   // eliminate the lowest
   if (a > c) {
@@ -186,9 +218,9 @@ int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
 
   // sort b,c
   if(b > c){
-    temp =b;
-    b =c;
-    c=temp;
+    temp = b;
+    b = c;
+    c =temp;
   }  
 
   if(b<d){
@@ -200,10 +232,10 @@ int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
 /*
  * Displays all wave data
  */
-void AmplitudeData::displayData(){
+void AmplitudeData::displayWaveData(){
   std::cout << "Wave: \n" << std::endl;
   int count = 1;
-  for(int i = 0; i<waveData.size(); i++){
+  for(int i = 0; i<(int)waveData.size(); i++){
     std::cout << waveData[i] << " ";
     count++;
     if(count == 62){
@@ -212,7 +244,7 @@ void AmplitudeData::displayData(){
     }
   }
   std::cout << "\nFirst diff\n";
-  for(int i = 0, j = 1; i<firstDifference.size(); i++, j++){
+  for(int i = 0, j = 1; i<(int)firstDifference.size(); i++, j++){
     std::cout << firstDifference[i] << " ";
     if(j == 59){
       j = 0;
@@ -222,7 +254,7 @@ void AmplitudeData::displayData(){
 
   std::cout << "\nSecond diff\n";
   count = 1;  
-  for(int i = 0; i<secondDifference.size(); i++){
+  for(int i = 0; i<(int)secondDifference.size(); i++){
     std::cout << secondDifference[i] << " ";
     
     if(count == 58){
@@ -234,7 +266,7 @@ void AmplitudeData::displayData(){
 
   std::cout << "\nSmooth second diff\n";
   count = 1;
-  for(int i = 0; i<smoothSecondDifference.size(); i++){
+  for(int i = 0; i<(int)smoothSecondDifference.size(); i++){
     std::cout << smoothSecondDifference[i] << " ";
     if(count == 58){
       count = 0;
@@ -249,11 +281,8 @@ void AmplitudeData::displayData(){
  *Display the peak amplitude and the location of the original wave
  */
 void AmplitudeData::displayPeaksAndLocations(){
-  for(int i = 0; i<smoothSecondDifferencePeaks.size(); i++){
-    if(waveData[smoothSecondDifferencePeaks[i]] >= 4){
-      std::cout << "Peak: " << waveData[smoothSecondDifferencePeaks[i]] << 
-            " found at location: " << smoothSecondDifferencePeaks[i] << std::endl;
-    }
+  for(int i = 0; i<(int)firstDifferencePeaks.size(); i++){
+    std::cout << "Peak: " << firstDifferencePeaks[i] << 
+          " found at location: " << firstDifferencePeaksLocation[i] << std::endl;    
   }
-
 }

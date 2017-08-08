@@ -25,6 +25,9 @@ public:
   std::vector<int> smoothSecondDifferencePeaks;
   
   std::vector<int> firstDifferencePeaks;
+  std::vector<int> firstDifferencePeaksLocation;
+
+
 
 
   AmplitudeData();  
@@ -35,9 +38,9 @@ public:
   void calculateSmoothSecondDifference();
 
   void caclulateFirstDifferencePeaks();
-  void calculateSmoothSecondDifferencePeaks();
+  void findPeaks(std::vector<int> data);
 
-  void displayData();
+  void displayWaveData();
   void displayPeaksAndLocations();
 
   int medianOfFive(int a, int b, int c, int d, int e);

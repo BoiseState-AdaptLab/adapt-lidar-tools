@@ -53,10 +53,10 @@ int main (int argc, char *argv[]){
     long long pulseIndex = 0; // Index
     
     while(pReader->read_pulse()){
-      std::cout << "\nIndex is: " << pulseIndex << std::endl;
+      // std::cout << "\nIndex is: " << pulseIndex << std::endl;
       
       gpsInfo.populateGPS(pReader);
-      gpsInfo.displayGPSData();
+      // gpsInfo.displayGPSData();
 
       //Read the waves
       if(pReader->read_waves()){
@@ -88,16 +88,18 @@ int main (int argc, char *argv[]){
     outgoingWave.calculateFirstDifference();
     outgoingWave.calculateSecondDifference();
     outgoingWave.calculateSmoothSecondDifference();
-    std::cout << "Out Wave: \n" << std::endl;
-    outgoingWave.displayData();
+    // std::cout << "Out Wave: \n" << std::endl;
+    // outgoingWave.displayWaveData();
 
     returningWave.calculateFirstDifference();
     returningWave.calculateSecondDifference();
     returningWave.calculateSmoothSecondDifference();
-    std::cout << "\nIn Wave: \n" << std::endl;
-    returningWave.displayData();
-    returningWave.calculateSmoothSecondDifferencePeaks();
-    returningWave.displayPeaksAndLocations();
+    // std::cout << "\nIn Wave: \n" << std::endl;
+    // returningWave.displayWaveData();
+    returningWave.findPeaks(returningWave.waveData);
+
+    // returningWave.displayPeaksAndLocations();
+
 
     return 0;
   }

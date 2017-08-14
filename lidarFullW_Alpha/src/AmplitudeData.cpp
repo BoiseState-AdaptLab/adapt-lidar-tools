@@ -137,13 +137,13 @@ void AmplitudeData::findPeaks(std::vector<int> data){
     if(data[i+1] < data[i]){
       //Sharp peak
       if(grad == 1 && data[i] > NOISE){
-        firstDifferencePeaks.push_back(data[i]);    //Peak value
-        firstDifferencePeaksLocation.push_back(i);  //Peak location
+        peaks.push_back(data[i]);    //Peak value
+        peaksLocation.push_back(i);  //Peak location
       }
       //Wide peak
       else if(grad == 0 && data[i] > NOISE){
-        firstDifferencePeaks.push_back(data[wideStart]);
-        firstDifferencePeaksLocation.push_back(wideStart);
+        peaks.push_back(data[wideStart]);
+        peaksLocation.push_back(wideStart);
       }
       count++;
       grad = -1;
@@ -281,8 +281,8 @@ void AmplitudeData::displayWaveData(){
  *Display the peak amplitude and the location of the original wave
  */
 void AmplitudeData::displayPeaksAndLocations(){
-  for(int i = 0; i<(int)firstDifferencePeaks.size(); i++){
-    std::cout << "Peak: " << firstDifferencePeaks[i] << 
-          " found at location: " << firstDifferencePeaksLocation[i] << std::endl;    
+  for(int i = 0; i<(int)peaks.size(); i++){
+    std::cout << "Peak: " << peaks[i] << 
+          " found at location: " << peaksLocation[i] << std::endl;    
   }
 }

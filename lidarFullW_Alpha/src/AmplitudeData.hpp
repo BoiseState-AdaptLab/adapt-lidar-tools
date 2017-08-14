@@ -24,8 +24,8 @@ public:
   std::vector<int> smoothSecondDifference;
   std::vector<int> smoothSecondDifferencePeaks;
   
-  std::vector<int> firstDifferencePeaks;
-  std::vector<int> firstDifferencePeaksLocation;
+  std::vector<int> peaks;
+  std::vector<int> peaksLocation;
 
 
 

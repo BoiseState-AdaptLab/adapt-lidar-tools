@@ -72,6 +72,8 @@ class AmplitudeDataTest: public testing::Test{
     returningWave.calculateFirstDifference();
     returningWave.calculateSecondDifference();
     returningWave.calculateSmoothSecondDifference();
+    returningWave.findPeaks(returningWave.waveData);
+
 
   }
 };
@@ -312,4 +314,25 @@ TEST_F(AmplitudeDataTest, smoothingReturningWaveSecondDifference){
     EXPECT_EQ(truthSmoothSecondDiffReturnWave[i],
               returningWave.smoothSecondDifference[i]);
   }
+}
+
+/******************************************************************************
+* 
+* Test findPeaks() method on returning wave data
+* 
+******************************************************************************/
+TEST_F(AmplitudeDataTest, findPeaks){
+
+  int truthPeaks[8] = {240,15,6,238,17,7,6,6};
+  int truthPeaksLocation[8] = {18,28,46,80,90,97,101,105};
+
+  //Test size
+  EXPECT_EQ(8,returningWave.peaks.size()); 
+
+  //Test data
+  for(int i = 0; i<=7; i++){
+    EXPECT_EQ(truthPeaks[i],
+              returningWave.peaks[i]);
+  }
+
 }

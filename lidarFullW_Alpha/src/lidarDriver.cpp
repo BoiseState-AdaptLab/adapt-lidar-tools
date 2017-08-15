@@ -96,10 +96,10 @@ int main (int argc, char *argv[]){
     returningWave.calculateSmoothSecondDifference();
     // std::cout << "\nIn Wave: \n" << std::endl;
     // returningWave.displayWaveData();
+    
     returningWave.findPeaks(returningWave.waveData);
-
+    // returningWave.writePeaksToFile();
     // returningWave.displayPeaksAndLocations();
-
 
     return 0;
   }

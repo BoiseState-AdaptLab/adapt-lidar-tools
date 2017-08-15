@@ -1,5 +1,5 @@
 /*
- * File name: AmplitudeData_unittests.cpp
+ * File name: WaveData_unittests.cpp
  * Created on: 18-July-2017
  * Author: ravi
  *
@@ -9,15 +9,15 @@
  */
 
 #include "gtest/gtest.h"
-#include "AmplitudeData.hpp"
+#include "WaveData.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
 
-class AmplitudeDataTest: public testing::Test{
+class WaveDataTest: public testing::Test{
   public:  
-    AmplitudeData outgoingWave;
-    AmplitudeData returningWave;
+    WaveData outgoingWave;
+    WaveData returningWave;
 
   protected:
 
@@ -83,7 +83,7 @@ class AmplitudeDataTest: public testing::Test{
 * Test outgoing wave data
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, outgoingWaveData){
+TEST_F(WaveDataTest, outgoingWaveData){
 
   I32 truthOutgoingWaveData[244] = {0,2,2,2,3,2,2,8,28,70,128,177,192,167,118,
                      68,31,12,5,4,5,5,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -111,7 +111,7 @@ TEST_F(AmplitudeDataTest, outgoingWaveData){
 * Test returning wave data
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, returningWaveData){
+TEST_F(WaveDataTest, returningWaveData){
 
   I32 truthReturningWaveData[122] = {1,2,2,2,1,1,1,1,1,1,0,0,1,9,35,88,155,212,
                     240,237,200,145,87,42,18,12,13,14,15,15,14,13,10,8,8,8,8,7,
@@ -133,7 +133,7 @@ TEST_F(AmplitudeDataTest, returningWaveData){
 * Test first difference of outgoing wave
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, outgoingWavefirstDifference){
+TEST_F(WaveDataTest, outgoingWavefirstDifference){
 
   int truthFirstDiffOutgoingWave[236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,-49,
                   -50,-37,-19,-7,-1,1,0,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -161,7 +161,7 @@ TEST_F(AmplitudeDataTest, outgoingWavefirstDifference){
 * Test first difference of returning wave
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, returningWavefirstDifference){
+TEST_F(WaveDataTest, returningWavefirstDifference){
 
   int truthFirstDiffReturningWave[118] = {0,0,-1,0,0,0,0,0,-1,0,1,8,26,53,67,
                   57,28,-3,-37,-55,-58,-45,-24,-6,1,1,1,0,-1,-1,-3,-2,0,0,0,-1,
@@ -183,7 +183,7 @@ TEST_F(AmplitudeDataTest, returningWavefirstDifference){
 * Test second difference of outgoing wave
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, outgoingWaveSecondDifference){
+TEST_F(WaveDataTest, outgoingWaveSecondDifference){
 
   int truthSecondDiffOutgoingWave[232] = {0,1,2,1,6,14,22,16,9,34,40,24,1,13,
                   18,12,6,2,1,2,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -211,7 +211,7 @@ TEST_F(AmplitudeDataTest, outgoingWaveSecondDifference){
 * Test second difference of returning wave
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, returningWaveSecondDifference){
+TEST_F(WaveDataTest, returningWaveSecondDifference){
 
   int truthSecondDiffReturnWave[116] = {0,1,1,0,0,0,0,1,1,1,7,18,27,14,10,29,
                   31,34,18,3,13,21,18,7,0,0,1,1,0,2,1,2,0,0,1,0,1,2,2,0,1,2,0,
@@ -233,7 +233,7 @@ TEST_F(AmplitudeDataTest, returningWaveSecondDifference){
 * Test the medianOfFive function
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, medianOfFive){
+TEST_F(WaveDataTest, medianOfFive){
 
   int a,b,c,d,e;
   a = 1;
@@ -298,7 +298,7 @@ TEST_F(AmplitudeDataTest, medianOfFive){
 * Test smoothing of second difference of returning wave
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, smoothingReturningWaveSecondDifference){
+TEST_F(WaveDataTest, smoothingReturningWaveSecondDifference){
 
   int truthSmoothSecondDiffReturnWave[116] = {0,1,0,0,0,0,0,1,1,1,7,14,14,18,
                   27,29,29,29,18,18,18,13,13,7,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,2,
@@ -321,7 +321,7 @@ TEST_F(AmplitudeDataTest, smoothingReturningWaveSecondDifference){
 * Test findPeaks() method on returning wave data
 * 
 ******************************************************************************/
-TEST_F(AmplitudeDataTest, findPeaks){
+TEST_F(WaveDataTest, findPeaks){
 
   int truthPeaks[8] = {240,15,6,238,17,7,6,6};
   int truthPeaksLocation[8] = {18,28,46,80,90,97,101,105};

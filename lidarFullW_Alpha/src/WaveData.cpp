@@ -1,16 +1,16 @@
 /*
- * File name: AmplitudeData.cpp
+ * File name: WaveData.cpp
  * Created on: 12-July-2017
  * Author: ravi
  */
 
 #include <iostream>
 #include <cmath>
-#include "AmplitudeData.hpp"
+#include "WaveData.hpp"
 #include <fstream>
 
 //Default constructor
-AmplitudeData::AmplitudeData(){
+WaveData::WaveData(){
   // enter default values
 
 }
@@ -19,7 +19,7 @@ AmplitudeData::AmplitudeData(){
 /*
  * Populate all the Wave data
  */
-void AmplitudeData::populate(WAVESsampling *sampling, 
+void WaveData::populate(WAVESsampling *sampling, 
                               int maxCount, long long pulseIndex){
   waveData.push_back(pulseIndex);
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
@@ -38,7 +38,7 @@ void AmplitudeData::populate(WAVESsampling *sampling,
 /*
  * Calculate the first diferences
  */
-void AmplitudeData::calculateFirstDifference(){
+void WaveData::calculateFirstDifference(){
   int first, second, fDiff, count = 0;
   for(int i = 0; i< (int)waveData.size(); i++){
     first = waveData[i+1];
@@ -59,7 +59,7 @@ void AmplitudeData::calculateFirstDifference(){
 /*
  * Calculate the second diferences
  */
-void AmplitudeData::calculateSecondDifference(){
+void WaveData::calculateSecondDifference(){
   int first, second, sDiff, count =0;
   for(int i = 0; i< (int)firstDifference.size(); i++){  
     first = firstDifference[i];
@@ -80,7 +80,7 @@ void AmplitudeData::calculateSecondDifference(){
 /*
  * Calculate smooth second difference
  */
-void AmplitudeData::calculateSmoothSecondDifference(){
+void WaveData::calculateSmoothSecondDifference(){
   int first, second, third, fourth, fifth;
   int median;
   int count = 1;  //Keeps track of the number of 
@@ -113,7 +113,7 @@ void AmplitudeData::calculateSmoothSecondDifference(){
 /*
  * Take in a vector and calculate its peaks
  */
-void AmplitudeData::findPeaks(std::vector<int> data){
+void WaveData::findPeaks(std::vector<int> data){
   
   const int NOISE = 3; //Level up to and including which peaks will be excluded
   int wideStart = -1;  //The start of any current wide peak
@@ -174,7 +174,7 @@ void AmplitudeData::findPeaks(std::vector<int> data){
 /*
  * Find the median of five values
  */
-int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
+int WaveData::medianOfFive(int a, int b, int c, int d, int e){
   // makes a < b and c < d
   int temp;
   //sort a,b
@@ -233,7 +233,7 @@ int AmplitudeData::medianOfFive(int a, int b, int c, int d, int e){
 /*
  * Displays all wave data
  */
-void AmplitudeData::displayWaveData(){
+void WaveData::displayWaveData(){
   std::cout << "Wave: \n" << std::endl;
   int count = 1;
   for(int i = 0; i<(int)waveData.size(); i++){
@@ -279,9 +279,9 @@ void AmplitudeData::displayWaveData(){
 }
 
 /*
- *Display the peak amplitude and the location of the original wave
+ *Display the peak Wave and the location of the original wave
  */
-void AmplitudeData::displayPeaksAndLocations(){
+void WaveData::displayPeaksAndLocations(){
   for(int i = 0; i<(int)peaks.size(); i++){
     std::cout << "Peak: " << peaks[i] << 
           " found at location: " << peaksLocation[i] << std::endl;    
@@ -291,7 +291,7 @@ void AmplitudeData::displayPeaksAndLocations(){
 /*
  *Write peaks to file
  */
-void AmplitudeData::writePeaksToFile(){
+void WaveData::writePeaksToFile(){
   std::ofstream outfile;
   outfile.open("peaksAndLocations.csv");
   outfile << "Peak Index" << ",";

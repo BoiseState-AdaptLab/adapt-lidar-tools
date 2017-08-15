@@ -1,18 +1,18 @@
 /*
- * File name: AmplitudeData.hpp
+ * File name: WaveData.hpp
  * Created on: 12-July-2017
  * Author: ravi
  */
 
-#ifndef AMPLITUDEDATA_HPP_
-#define AMPLITUDEDATA_HPP_
+#ifndef WAVEDATA_HPP_
+#define WAVEDATA_HPP_
 
 #include <iostream>
 #include <vector>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
-class AmplitudeData{
+class WaveData{
 
 private:
 public:  
@@ -29,7 +29,7 @@ public:
 
 
 
-  AmplitudeData();  
+  WaveData();  
   void populate(WAVESsampling *sampling, int maxCount, long long pulseIndex);
   
   void calculateFirstDifference();
@@ -49,4 +49,4 @@ public:
 
 };
 
-#endif /* AMPLITUDEDATA_HPP_ */
+#endif /* WAVEDATA_HPP_ */

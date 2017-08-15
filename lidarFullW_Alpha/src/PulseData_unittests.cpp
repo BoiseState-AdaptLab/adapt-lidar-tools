@@ -17,7 +17,7 @@
 class PulseDataTest: public testing::Test{
   public:  
     std::vector<PulseData> pulses;
-    PulseData pd;
+    PulseData* pd;
 
   protected:
 
@@ -39,25 +39,29 @@ class PulseDataTest: public testing::Test{
 
       //Read the waves
       if(pReader->read_waves()){
-        for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
+        pd = new PulseData();
+        for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){          
           sampling = pReader->waves->get_sampling(i);          
+
           //Based on the type of wave, populate data
           if(sampling->get_type() == PULSEWAVES_OUTGOING){
+
           /* Data is being populated from the 140823_183115_1_clipped_test.pls 
            * file located in the etc folder. The tests located further below 
            * checks the known values against the values that are being read 
            * from the .pls file
            */
-            pd.populateOutgoing(sampling, maxCount, pulseIndex);
+            pd->populateOutgoing(sampling, maxCount, pulseIndex);
 
           }
           else if(sampling->get_type() == PULSEWAVES_RETURNING){
+            
           /* Data is being populated from the 140823_183115_1_clipped_test.pls 
            * file located in the etc folder. The tests located further below 
            * checks the known values against the values that are being read 
            * from the .pls file
            */            
-            pd.populateReturning(sampling, maxCount, pulseIndex);
+            pd->populateReturning(sampling, maxCount, pulseIndex);
           }
           else{
             std::cout << "Unknown type: " << sampling->get_type() \
@@ -69,7 +73,7 @@ class PulseDataTest: public testing::Test{
       else{
         std::cout <<"NO DATA!\n" << std::endl;
       }
-      pulses.push_back(pd);
+      pulses.push_back(*pd);
       pulseIndex++;
     }
 
@@ -119,9 +123,9 @@ TEST_F(PulseDataTest, outgoingWaveData0){
 ******************************************************************************/
 TEST_F(PulseDataTest, outgoingWaveData1){
 
-  I32 truthOutgoingWaveData[61] = {1,1,2,1,2,2,3,8,24,63,121,173,194,173,126,74,35,14,5,
-                     3,4,5,4,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  I32 truthOutgoingWaveData[61] = {1,1,2,1,2,2,3,8,24,63,121,173,194,173,126,74,
+                     35,14,5,3,4,5,4,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                      
   //Test size
  ASSERT_EQ(61,pulses[1].outgoingWave.size());
@@ -139,9 +143,9 @@ TEST_F(PulseDataTest, outgoingWaveData1){
 ******************************************************************************/
 TEST_F(PulseDataTest, outgoingWaveData2){
 
-  I32 truthOutgoingWaveData[61] = {2,6,5,5,5,3,2,6,21,59,116,168,192,175,128,75,36,15,5,
-                    3,4,5,5,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  I32 truthOutgoingWaveData[61] = {2,6,5,5,5,3,2,6,21,59,116,168,192,175,128,75,
+                    36,15,5,3,4,5,5,3,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                      
   //Test size
  ASSERT_EQ(61,pulses[2].outgoingWave.size());
@@ -159,9 +163,9 @@ TEST_F(PulseDataTest, outgoingWaveData2){
 ******************************************************************************/
 TEST_F(PulseDataTest, outgoingWaveData3){
 
-  I32 truthOutgoingWaveData[61] = {3,3,3,2,2,2,3,6,21,59,115,168,192,176,130,79,39,16,7,
-                    6,6,7,6,3,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  I32 truthOutgoingWaveData[61] = {3,3,3,2,2,2,3,6,21,59,115,168,192,176,130,79,
+                    39,16,7,6,6,7,6,3,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                      
   //Test size
  ASSERT_EQ(61,pulses[3].outgoingWave.size());
@@ -184,11 +188,11 @@ TEST_F(PulseDataTest, returningWaveData1){
                     240,237,200,145,87,42,18,12,13,14,15,15,14,13,10,8,8,8,8,7,
                     6,6,4,4,4,3,4,5,6,4,4,3,2,2,1,1,0,1,2,3,4,4,2};
   //Test size
-  ASSERT_EQ(61,pulses[1].outgoingWave.size()); 
+  ASSERT_EQ(61,pulses[1].returningWave.size()); 
 
   //Test data
   for(int i = 0; i<=60; i++){
-    EXPECT_EQ(truthReturningWaveData[i], pulses[1].outgoingWave[i]);
+    EXPECT_EQ(truthReturningWaveData[i], pulses[1].returningWave[i]);
   }
 }
 
@@ -199,45 +203,45 @@ TEST_F(PulseDataTest, returningWaveData1){
 ******************************************************************************/
 TEST_F(PulseDataTest, returningWaveData2){
 
-  I32 truthReturningWaveData[61] = {2,1,2,2,3,2,2,1,1,3,2,2,3,5,19,58,121,186,228,238,214,164,
-                    106,58,26,13,10,12,15,17,17,16,13,10,7,6,7,6,6,4,6,6,6,5,6,
-                    6,6,6,5,4,4,2,2,1,2,2,1,2,2,2,2};
+  I32 truthReturningWaveData[61] = {2,1,2,2,3,2,2,1,1,3,2,2,3,5,19,58,121,186,
+                    228,238,214,164,106,58,26,13,10,12,15,17,17,16,13,10,7,6,7,
+                    6,6,4,6,6,6,5,6,6,6,6,5,4,4,2,2,1,2,2,1,2,2,2,2};
   //Test size
-  ASSERT_EQ(61,pulses[2].outgoingWave.size()); 
+  ASSERT_EQ(61,pulses[2].returningWave.size()); 
 
   //Test data
   for(int i = 0; i<=60; i++){
-    EXPECT_EQ(truthReturningWaveData[i], pulses[2].outgoingWave[i]);
+    EXPECT_EQ(truthReturningWaveData[i], pulses[2].returningWave[i]);
   }
 }
 
-// /******************************************************************************
-// * 
-// * Test first difference of outgoing wave
-// * 
-// ******************************************************************************/
-// TEST_F(PulseDataTest, outgoingWavefirstDifference){
+/******************************************************************************
+* 
+* Test first difference of outgoing wave
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, outgoingWavefirstDifference){
 
-//   int truthFirstDiffOutgoingWave[236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,-49,
-//                   -50,-37,-19,-7,-1,1,0,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   1,-1,1,0,1,5,16,39,58,52,21,-21,-47,-52,-39,-21,-9,-2,1,1,-1,
-//                   -2,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0,0,0,0,0,0,0,0,
-//                   -1,0,0,-2,-1,4,15,38,57,52,24,-17,-47,-53,-39,-21,-10,-2,1,1,
-//                   0,-2,-2,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0,0,0,0,0,0,0,0,0,
-//                   0,-1,0,0,1,3,15,38,56,53,24,-16,-46,-51,-40,-23,-9,-1,0,1,-1,
-//                   -3,-2,-1,0,0,1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0,0,0,0,0,0,0,0};
-//   //Test size
-//   ASSERT_EQ(236,outgoingWave.firstDifference.size()); 
+  int truthFirstDiffOutgoingWave[236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,-49,
+                  -50,-37,-19,-7,-1,1,0,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  1,-1,1,0,1,5,16,39,58,52,21,-21,-47,-52,-39,-21,-9,-2,1,1,-1,
+                  -2,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,
+                  -1,0,0,-2,-1,4,15,38,57,52,24,-17,-47,-53,-39,-21,-10,-2,1,1,
+                  0,-2,-2,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0,0,
+                  0,-1,0,0,1,3,15,38,56,53,24,-16,-46,-51,-40,-23,-9,-1,0,1,-1,
+                  -3,-2,-1,0,0,1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                  0,0,0,0,0,0,0,0,0};
+  //Test size
+  ASSERT_EQ(236,outgoingWave.firstDifference.size()); 
 
-//   //Test data
-//   for(int i = 0; i<=235; i++){
-//     ASSERT_EQ(truthFirstDiffOutgoingWave[i],outgoingWave.firstDifference[i]);
-//   }
-// }
+  //Test data
+  for(int i = 0; i<=235; i++){
+    ASSERT_EQ(truthFirstDiffOutgoingWave[i],outgoingWave.firstDifference[i]);
+  }
+}
 
 // /******************************************************************************
 // * 

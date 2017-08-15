@@ -32,10 +32,7 @@ int main (int argc, char *argv[]){
     // Write Scanner information to a file
     ScannerInformation scannerInfo;
     scannerInfo.setScannerInformation(fileName);
-    scannerInfo.getScannerInformation();
-    
-    FullWaveformIngestion ingester;
-    long long int noOfPulses = ingester.getNumberOfPulses(fileName);
+    scannerInfo.getScannerInformation();  
   
     /*
      * This section opens the pls file and gets it ready
@@ -53,7 +50,8 @@ int main (int argc, char *argv[]){
     long long pulseIndex = 0; // Index
 
     //Holds all the pulses with outgoing and returning wave data
-    std::vector<PulseData> pulses;  
+    std::vector<PulseData> pulses;
+    PulseData* pd;  //Pointer to a PulseData obj that can be added to pulses
     
     while(pReader->read_pulse()){
       // std::cout << "\nIndex is: " << pulseIndex << std::endl;
@@ -61,20 +59,19 @@ int main (int argc, char *argv[]){
       gpsInfo.populateGPS(pReader);
       // gpsInfo.displayGPSData();
 
-      pulses.push_back(pulseIndex);
-
       //Read the waves
       if(pReader->read_waves()){
+        pd = new PulseData(); //Initialize a new pointer at each pulseIndex
         for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
           sampling = pReader->waves->get_sampling(i);
 
           //Based on the type of wave, populate data
           if(sampling->get_type() == PULSEWAVES_OUTGOING){
-            pulses[pulseIndex].populateOutgoing(sampling, maxCount, pulseIndex);
+            pd->populateOutgoing(sampling, maxCount, pulseIndex);
 
           }
           else if(sampling->get_type() == PULSEWAVES_RETURNING){
-            pulses[pulseIndex].populateReturning(sampling, maxCount, pulseIndex);
+            pd->populateReturning(sampling, maxCount, pulseIndex);
           }
           else{
             std::cout << "Unknown type: " << sampling->get_type() \
@@ -87,7 +84,7 @@ int main (int argc, char *argv[]){
       else{
         std::cout <<"NO DATA!\n" << std::endl;
       }
-      
+      pulses.push_back(*pd);
       pulseIndex++;
     }
 

@@ -55,7 +55,7 @@ class PulseDataTest: public testing::Test{
 
           }
           else if(sampling->get_type() == PULSEWAVES_RETURNING){
-            
+
           /* Data is being populated from the 140823_183115_1_clipped_test.pls 
            * file located in the etc folder. The tests located further below 
            * checks the known values against the values that are being read 
@@ -217,30 +217,23 @@ TEST_F(PulseDataTest, returningWaveData2){
 
 /******************************************************************************
 * 
-* Test first difference of outgoing wave
+* Test if pulses have a reurning wave
 * 
 ******************************************************************************/
-TEST_F(PulseDataTest, outgoingWavefirstDifference){
+TEST_F(PulseDataTest, hasReturningWave){
+  
+  //If pulses[index]returningWave.size() > 1, then it contains data
+  ASSERT_FALSE(pulses[1].returningWave.size() <= 0);
+  ASSERT_FALSE(pulses[2].returningWave.size() <= 0); 
+  ASSERT_TRUE(pulses[1].returningWave.size() == 61);
+  ASSERT_TRUE(pulses[2].returningWave.size() == 61); 
 
-  int truthFirstDiffOutgoingWave[236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,-49,
-                  -50,-37,-19,-7,-1,1,0,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                  1,-1,1,0,1,5,16,39,58,52,21,-21,-47,-52,-39,-21,-9,-2,1,1,-1,
-                  -2,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                  0,0,0,0,0,0,0,0,0,
-                  -1,0,0,-2,-1,4,15,38,57,52,24,-17,-47,-53,-39,-21,-10,-2,1,1,
-                  0,-2,-2,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                  0,0,0,0,0,0,0,0,0,0,
-                  0,-1,0,0,1,3,15,38,56,53,24,-16,-46,-51,-40,-23,-9,-1,0,1,-1,
-                  -3,-2,-1,0,0,1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                  0,0,0,0,0,0,0,0,0};
-  //Test size
-  ASSERT_EQ(236,outgoingWave.firstDifference.size()); 
+  //No data
+  ASSERT_TRUE(pulses[0].returningWave.size() == 0); 
+  ASSERT_TRUE(pulses[3].returningWave.size() == 0); 
+  ASSERT_FALSE(pulses[0].returningWave.size() >= 1); 
+  ASSERT_FALSE(pulses[3].returningWave.size() >= 1); 
 
-  //Test data
-  for(int i = 0; i<=235; i++){
-    ASSERT_EQ(truthFirstDiffOutgoingWave[i],outgoingWave.firstDifference[i]);
-  }
 }
 
 // /******************************************************************************

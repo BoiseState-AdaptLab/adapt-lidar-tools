@@ -335,7 +335,7 @@ TEST_F(AmplitudeDataTest, findPeaks){
               returningWave.peaks[i]);
   }
 
-  //Test peak location data
+  //Test peak's location data
   for(int i = 0; i<=7; i++){
     EXPECT_EQ(truthPeaksLocation[i],
               returningWave.peaksLocation[i]);

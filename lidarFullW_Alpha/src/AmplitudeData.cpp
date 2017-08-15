@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cmath>
 #include "AmplitudeData.hpp"
+#include <fstream>
 
 //Default constructor
 AmplitudeData::AmplitudeData(){
@@ -284,5 +285,19 @@ void AmplitudeData::displayPeaksAndLocations(){
   for(int i = 0; i<(int)peaks.size(); i++){
     std::cout << "Peak: " << peaks[i] << 
           " found at location: " << peaksLocation[i] << std::endl;    
+  }
+}
+
+/*
+ *Write peaks to file
+ */
+void AmplitudeData::writePeaksToFile(){
+  std::ofstream outfile;
+  outfile.open("peaksAndLocations.csv");
+  outfile << "Peak Index" << ",";
+  outfile << "Peak Value"<< "\n";
+  for(int i = 0; i<(int)peaks.size(); i++){
+    outfile << peaksLocation[i] << ",";
+    outfile << peaks[i] << "\n";
   }
 }

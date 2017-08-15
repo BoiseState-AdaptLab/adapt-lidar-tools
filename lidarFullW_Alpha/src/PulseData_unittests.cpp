@@ -98,7 +98,7 @@ TEST_F(PulseDataTest, numberOfPulses){
 
 /******************************************************************************
 * 
-* Test outgoing wave data at index 0
+* Test outgoing wave data at pulse index 0
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, outgoingWaveData0){
@@ -118,7 +118,7 @@ TEST_F(PulseDataTest, outgoingWaveData0){
 
 /******************************************************************************
 * 
-* Test outgoing wave data at index 1
+* Test outgoing wave data at pulse index 1
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, outgoingWaveData1){
@@ -138,7 +138,7 @@ TEST_F(PulseDataTest, outgoingWaveData1){
 
 /******************************************************************************
 * 
-* Test outgoing wave data at index 2
+* Test outgoing wave data at pulse index 2
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, outgoingWaveData2){
@@ -158,7 +158,7 @@ TEST_F(PulseDataTest, outgoingWaveData2){
 
 /******************************************************************************
 * 
-* Test outgoing wave data at index 3
+* Test outgoing wave data at pulse index 3
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, outgoingWaveData3){
@@ -199,7 +199,7 @@ TEST_F(PulseDataTest, hasReturningWave){
 
 /******************************************************************************
 * 
-* Test returning wave data at index 1
+* Test returning wave data at pulse index 1
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, returningWaveData1){
@@ -218,7 +218,7 @@ TEST_F(PulseDataTest, returningWaveData1){
 
 /******************************************************************************
 * 
-* Test returning wave data at index 2
+* Test returning wave data at pulse index 2
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, returningWaveData2){
@@ -272,7 +272,7 @@ TEST_F(PulseDataTest, returningWavefirstDifference2){
 
 /*****************************************************************************
 * 
-* Test second difference of returning wave at index 1
+* Test second difference of returning wave at pulse index 1
 * 
 *****************************************************************************/
 TEST_F(PulseDataTest, returningWaveSecondDifference1){
@@ -290,7 +290,7 @@ TEST_F(PulseDataTest, returningWaveSecondDifference1){
 
 /*****************************************************************************
 * 
-* Test second difference of returning wave at index 2
+* Test second difference of returning wave at pulse index 2
 * 
 *****************************************************************************/
 TEST_F(PulseDataTest, returningWaveSecondDifference2){
@@ -312,7 +312,6 @@ TEST_F(PulseDataTest, returningWaveSecondDifference2){
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, medianOfFive){
-
   PulseData pd;
 
   int a,b,c,d,e;
@@ -373,52 +372,129 @@ TEST_F(PulseDataTest, medianOfFive){
   EXPECT_EQ(1,pd.medianOfFive(a,b,c,d,e));
 }
 
-// /******************************************************************************
-// * 
-// * Test smoothing of second difference of returning wave
-// * 
-// ******************************************************************************/
-// TEST_F(PulseDataTest, smoothingReturningWaveSecondDifference){
+/******************************************************************************
+* 
+* Test smoothing of second difference of returning wave at pulse index 1
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, smoothReturningWaveSecondDifference1){
 
-//   int truthSmoothSecondDiffReturnWave[116] = {0,1,0,0,0,0,0,1,1,1,7,14,14,18,
-//                   27,29,29,29,18,18,18,13,13,7,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,2,
-//                   1,0,1,2,1,1,1,1,1,1,1,1,1,0,0,0,1,2,
-//                   1,1,1,1,1,1,1,1,1,1,1,12,12,23,24,24,26,26,26,16,16,10,10,10,
-//                   5,2,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,1,1,1,0,0,1,1,1,2,2,1,1,1,
-//                   1,1,0,0};
-//   //Test size
-//   EXPECT_EQ(116,returningWave.smoothSecondDifference.size()); 
+  int truthSmoothSecondDiffReturnWave[58] = {0,1,0,0,0,0,0,1,1,1,7,14,14,18,
+                  27,29,29,29,18,18,18,13,13,7,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,2,
+                  1,0,1,2,1,1,1,1,1,1,1,1,1,0,0,0,1,2};
+  //Test size
+  EXPECT_EQ(58,pulses[1].smoothSecondDifference.size()); 
 
-//   //Test data
-//   for(int i = 0; i<=115; i++){
-//     EXPECT_EQ(truthSmoothSecondDiffReturnWave[i],
-//               returningWave.smoothSecondDifference[i]);
-//   }
-// }
+  //Test data
+  for(int i = 0; i<=57; i++){
+    EXPECT_EQ(truthSmoothSecondDiffReturnWave[i],
+              pulses[1].smoothSecondDifference[i]);
+  }
+}
 
-// /******************************************************************************
-// * 
-// * Test findPeaks() method on returning wave data
-// * 
-// ******************************************************************************/
-// TEST_F(PulseDataTest, findPeaks){
+/******************************************************************************
+* 
+* Test smoothing of second difference of returning wave at pulse index 2
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, smoothReturningWaveSecondDifference2){
+  int truthSmoothSecondDiffReturnWave[58] = {1,1,1,1,1,1,1,1,1,1,1,12,12,23,24,
+                  24,26,26,26,16,16,10,10,10,5,2,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,
+                  1,1,1,0,0,1,1,1,2,2,1,1,1,1,1,0,0};
+  //Test size
+  EXPECT_EQ(58,pulses[2].smoothSecondDifference.size()); 
 
-//   int truthPeaks[8] = {240,15,6,238,17,7,6,6};
-//   int truthPeaksLocation[8] = {18,28,46,80,90,97,101,105};
+  //Test data
+  for(int i = 0; i<=57; i++){
+    EXPECT_EQ(truthSmoothSecondDiffReturnWave[i],
+              pulses[2].smoothSecondDifference[i]);
+  }
+}
 
-//   //Test size
-//   EXPECT_EQ(8,returningWave.peaks.size()); 
+/******************************************************************************
+* 
+* Test findPeaks() method on returning wave data at pulse index 1
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, findPeaksOfReturningWave1){
+  int truthPeaks[3] = {240,15,6};
+  int truthPeaksLocation[3] = {18,28,46};
+  
+  //Test size
+  EXPECT_EQ(3,pulses[1].peaks.size()); 
 
-//   //Test peaks data
-//   for(int i = 0; i<=7; i++){
-//     EXPECT_EQ(truthPeaks[i],
-//               returningWave.peaks[i]);
-//   }
+  //Test peaks data
+  for(int i = 0; i<=2; i++){
+    EXPECT_EQ(truthPeaks[i],
+              pulses[1].peaks[i]);
+    EXPECT_EQ(truthPeaksLocation[i],
+          pulses[1].peaksLocation[i]);
+  }
+}
 
-//   //Test peak's location data
-//   for(int i = 0; i<=7; i++){
-//     EXPECT_EQ(truthPeaksLocation[i],
-//               returningWave.peaksLocation[i]);
-//   }
+/******************************************************************************
+* 
+* Test findPeaks() method on returning wave data at pulse index 2
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, findPeaksOfReturningWave2){
+  int truthPeaks[5] = {238,17,7,6,6};
+  int truthPeaksLocation[5] = {19,29,36,40,44};
 
-// }
+  //Test size
+  EXPECT_EQ(5,pulses[2].peaks.size()); 
+
+  //Test peaks data
+  for(int i = 0; i<=4; i++){
+    EXPECT_EQ(truthPeaks[i],
+              pulses[2].peaks[i]);
+    EXPECT_EQ(truthPeaksLocation[i],
+          pulses[2].peaksLocation[i]);
+  }
+}
+
+/******************************************************************************
+* 
+* Test findPeaks() method on the smooth second difference of the returning wave 
+* data at pulse index 1
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference1){
+  //TODO
+  int truthPeaks[3] = {240,15,6};
+  int truthPeaksLocation[3] = {18,28,46};
+  
+  //Test size
+  EXPECT_EQ(3,pulses[1].peaks.size()); 
+
+  //Test peaks data
+  for(int i = 0; i<=2; i++){
+    EXPECT_EQ(truthPeaks[i],
+              pulses[1].peaks[i]);
+    EXPECT_EQ(truthPeaksLocation[i],
+          pulses[1].peaksLocation[i]);
+  }
+}
+
+/******************************************************************************
+* 
+* Test findPeaks() method on the smooth second difference of the returning wave 
+* data at pulse index 2
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference){
+  //TODO
+  int truthPeaks[5] = {238,17,7,6,6};
+  int truthPeaksLocation[5] = {19,29,36,40,44};
+
+  //Test size
+  EXPECT_EQ(5,pulses[2].peaks.size()); 
+
+  //Test peaks data
+  for(int i = 0; i<=4; i++){
+    EXPECT_EQ(truthPeaks[i],
+              pulses[2].peaks[i]);
+    EXPECT_EQ(truthPeaksLocation[i],
+          pulses[2].peaksLocation[i]);
+  }
+}

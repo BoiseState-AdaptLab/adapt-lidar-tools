@@ -9,7 +9,7 @@
 #include "CmdLine.hpp"
 #include "ScannerInformation.hpp"
 #include "GPSInformation.hpp"
-#include "WaveData.hpp"
+#include "PulseData.hpp"
 #include "FullWaveformIngestion.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
@@ -46,8 +46,8 @@ int main (int argc, char *argv[]){
     pReader = pOpener.open();
 
     GPSInformation gpsInfo;
-    WaveData outgoingWave;
-    WaveData returningWave;
+    PulseData outgoingWave;
+    PulseData returningWave;
 
     int maxCount = 60;
     long long pulseIndex = 0; // Index

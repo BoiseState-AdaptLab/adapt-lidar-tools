@@ -1,5 +1,5 @@
 /*
- * File name: WaveData_unittests.cpp
+ * File name: PulseData_unittests.cpp
  * Created on: 18-July-2017
  * Author: ravi
  *
@@ -9,15 +9,15 @@
  */
 
 #include "gtest/gtest.h"
-#include "WaveData.hpp"
+#include "PulseData.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
 
-class WaveDataTest: public testing::Test{
+class PulseDataTest: public testing::Test{
   public:  
-    WaveData outgoingWave;
-    WaveData returningWave;
+    PulseData outgoingWave;
+    PulseData returningWave;
 
   protected:
 
@@ -83,7 +83,7 @@ class WaveDataTest: public testing::Test{
 * Test outgoing wave data
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, outgoingWaveData){
+TEST_F(PulseDataTest, outgoingWaveData){
 
   I32 truthOutgoingWaveData[244] = {0,2,2,2,3,2,2,8,28,70,128,177,192,167,118,
                      68,31,12,5,4,5,5,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -111,7 +111,7 @@ TEST_F(WaveDataTest, outgoingWaveData){
 * Test returning wave data
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, returningWaveData){
+TEST_F(PulseDataTest, returningWaveData){
 
   I32 truthReturningWaveData[122] = {1,2,2,2,1,1,1,1,1,1,0,0,1,9,35,88,155,212,
                     240,237,200,145,87,42,18,12,13,14,15,15,14,13,10,8,8,8,8,7,
@@ -133,7 +133,7 @@ TEST_F(WaveDataTest, returningWaveData){
 * Test first difference of outgoing wave
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, outgoingWavefirstDifference){
+TEST_F(PulseDataTest, outgoingWavefirstDifference){
 
   int truthFirstDiffOutgoingWave[236] = {0,0,1,-1,0,6,20,42,58,49,15,-25,-49,
                   -50,-37,-19,-7,-1,1,0,-2,-1,-1,-1,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -161,7 +161,7 @@ TEST_F(WaveDataTest, outgoingWavefirstDifference){
 * Test first difference of returning wave
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, returningWavefirstDifference){
+TEST_F(PulseDataTest, returningWavefirstDifference){
 
   int truthFirstDiffReturningWave[118] = {0,0,-1,0,0,0,0,0,-1,0,1,8,26,53,67,
                   57,28,-3,-37,-55,-58,-45,-24,-6,1,1,1,0,-1,-1,-3,-2,0,0,0,-1,
@@ -183,7 +183,7 @@ TEST_F(WaveDataTest, returningWavefirstDifference){
 * Test second difference of outgoing wave
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, outgoingWaveSecondDifference){
+TEST_F(PulseDataTest, outgoingWaveSecondDifference){
 
   int truthSecondDiffOutgoingWave[232] = {0,1,2,1,6,14,22,16,9,34,40,24,1,13,
                   18,12,6,2,1,2,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -211,7 +211,7 @@ TEST_F(WaveDataTest, outgoingWaveSecondDifference){
 * Test second difference of returning wave
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, returningWaveSecondDifference){
+TEST_F(PulseDataTest, returningWaveSecondDifference){
 
   int truthSecondDiffReturnWave[116] = {0,1,1,0,0,0,0,1,1,1,7,18,27,14,10,29,
                   31,34,18,3,13,21,18,7,0,0,1,1,0,2,1,2,0,0,1,0,1,2,2,0,1,2,0,
@@ -233,7 +233,7 @@ TEST_F(WaveDataTest, returningWaveSecondDifference){
 * Test the medianOfFive function
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, medianOfFive){
+TEST_F(PulseDataTest, medianOfFive){
 
   int a,b,c,d,e;
   a = 1;
@@ -298,7 +298,7 @@ TEST_F(WaveDataTest, medianOfFive){
 * Test smoothing of second difference of returning wave
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, smoothingReturningWaveSecondDifference){
+TEST_F(PulseDataTest, smoothingReturningWaveSecondDifference){
 
   int truthSmoothSecondDiffReturnWave[116] = {0,1,0,0,0,0,0,1,1,1,7,14,14,18,
                   27,29,29,29,18,18,18,13,13,7,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,2,
@@ -321,7 +321,7 @@ TEST_F(WaveDataTest, smoothingReturningWaveSecondDifference){
 * Test findPeaks() method on returning wave data
 * 
 ******************************************************************************/
-TEST_F(WaveDataTest, findPeaks){
+TEST_F(PulseDataTest, findPeaks){
 
   int truthPeaks[8] = {240,15,6,238,17,7,6,6};
   int truthPeaksLocation[8] = {18,28,46,80,90,97,101,105};

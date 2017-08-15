@@ -43,7 +43,7 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests \
         $(BIN)/ScannerInformation_unittests $(BIN)/GPSInformation_unittests \
-	      $(BIN)/WaveData_unittests
+	      $(BIN)/PulseData_unittests
 #	      $(BIN)/WaveformGaussianFitting_unittests 
 
 # All Google Test headers.  Usually you shouldn't change this
@@ -96,7 +96,7 @@ $(USER_DIR)/ScannerInformation.o: $(USER_DIR)/ScannerInformation.cpp
 $(USER_DIR)/GPSInformation.o: $(USER_DIR)/GPSInformation.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(USER_DIR)/WaveData.o: $(USER_DIR)/WaveData.cpp
+$(USER_DIR)/PulseData.o: $(USER_DIR)/PulseData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds all object files
@@ -110,7 +110,7 @@ $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/CmdLine.o \
                     $(USER_DIR)/ScannerInformation.o \
                     $(USER_DIR)/GPSInformation.o \
                     $(USER_DIR)/FullWaveformIngestion.o \
-                    $(USER_DIR)/WaveData.o
+                    $(USER_DIR)/PulseData.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
@@ -130,7 +130,7 @@ test: $(TESTS)
 	$(BIN)/FullWaveformIngestion_unittests
 	$(BIN)/ScannerInformation_unittests
 	$(BIN)/GPSInformation_unittests
-	$(BIN)/WaveData_unittests
+	$(BIN)/PulseData_unittests
 #	$(BIN)/WaveformGaussianFitting_unittests
 
 # Clean up when done. 

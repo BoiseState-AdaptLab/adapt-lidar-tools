@@ -1,18 +1,18 @@
 /*
- * File name: WaveData.hpp
+ * File name: PulseData.hpp
  * Created on: 12-July-2017
  * Author: ravi
  */
 
-#ifndef WAVEDATA_HPP_
-#define WAVEDATA_HPP_
+#ifndef PULSEDATA_HPP_
+#define PULSEDATA_HPP_
 
 #include <iostream>
 #include <vector>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
-class WaveData{
+class PulseData{
 
 private:
 public:  
@@ -29,7 +29,7 @@ public:
 
 
 
-  WaveData();  
+  PulseData();  
   void populate(WAVESsampling *sampling, int maxCount, long long pulseIndex);
   
   void calculateFirstDifference();
@@ -39,7 +39,7 @@ public:
   void caclulateFirstDifferencePeaks();
   void findPeaks(std::vector<int> data);
 
-  void displayWaveData();
+  void displayPulseData();
   void displayPeaksAndLocations();
 
   void writePeaksToFile();
@@ -49,4 +49,4 @@ public:
 
 };
 
-#endif /* WAVEDATA_HPP_ */
+#endif /* PULSEDATA_HPP_ */

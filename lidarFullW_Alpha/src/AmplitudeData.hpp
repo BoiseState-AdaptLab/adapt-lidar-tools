@@ -42,6 +42,8 @@ public:
   void displayWaveData();
   void displayPeaksAndLocations();
 
+  void writePeaksToFile();
+
   int medianOfFive(int a, int b, int c, int d, int e);
 
 

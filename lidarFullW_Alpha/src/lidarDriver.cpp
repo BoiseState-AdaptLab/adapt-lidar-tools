@@ -6,6 +6,7 @@
  
 #include <iostream>
 #include <iomanip>
+#include <vector>
 #include "CmdLine.hpp"
 #include "ScannerInformation.hpp"
 #include "GPSInformation.hpp"
@@ -37,7 +38,8 @@ int main (int argc, char *argv[]){
     long long int noOfPulses = ingester.getNumberOfPulses(fileName);
   
     /*
-     * This section reads the wave and GPS file
+     * This section opens the pls file and gets it ready
+     * to be read
      */
     PULSEreadOpener pOpener;
     PULSEreader *pReader;
@@ -45,18 +47,21 @@ int main (int argc, char *argv[]){
     pOpener.set_file_name(fileName.c_str());
     pReader = pOpener.open();
 
-    GPSInformation gpsInfo;
-    PulseData outgoingWave;
-    PulseData returningWave;
+    GPSInformation gpsInfo; //This object holds the GPS information
 
     int maxCount = 60;
     long long pulseIndex = 0; // Index
+
+    //Holds all the pulses with outgoing and returning wave data
+    std::vector<PulseData> pulses;  
     
     while(pReader->read_pulse()){
       // std::cout << "\nIndex is: " << pulseIndex << std::endl;
       
       gpsInfo.populateGPS(pReader);
       // gpsInfo.displayGPSData();
+
+      pulses.push_back(pulseIndex);
 
       //Read the waves
       if(pReader->read_waves()){
@@ -65,11 +70,11 @@ int main (int argc, char *argv[]){
 
           //Based on the type of wave, populate data
           if(sampling->get_type() == PULSEWAVES_OUTGOING){
-            outgoingWave.populate(sampling, maxCount, pulseIndex);
+            pulses[pulseIndex].populateOutgoing(sampling, maxCount, pulseIndex);
 
           }
           else if(sampling->get_type() == PULSEWAVES_RETURNING){
-            returningWave.populate(sampling, maxCount, pulseIndex);
+            pulses[pulseIndex].populateReturning(sampling, maxCount, pulseIndex);
           }
           else{
             std::cout << "Unknown type: " << sampling->get_type() \
@@ -85,21 +90,25 @@ int main (int argc, char *argv[]){
       
       pulseIndex++;
     }
-    outgoingWave.calculateFirstDifference();
-    outgoingWave.calculateSecondDifference();
-    outgoingWave.calculateSmoothSecondDifference();
-    // std::cout << "Out Wave: \n" << std::endl;
-    // outgoingWave.displayWaveData();
 
-    returningWave.calculateFirstDifference();
-    returningWave.calculateSecondDifference();
-    returningWave.calculateSmoothSecondDifference();
-    // std::cout << "\nIn Wave: \n" << std::endl;
-    // returningWave.displayWaveData();
+    std::cout << "Total no of pulses: " << pulses.size();
+
+
+    // outgoingWave.calculateFirstDifference();
+    // outgoingWave.calculateSecondDifference();
+    // outgoingWave.calculateSmoothSecondDifference();
+    // // std::cout << "Out Wave: \n" << std::endl;
+    // // outgoingWave.displayWaveData();
+
+    // returningWave.calculateFirstDifference();
+    // returningWave.calculateSecondDifference();
+    // returningWave.calculateSmoothSecondDifference();
+    // // std::cout << "\nIn Wave: \n" << std::endl;
+    // // returningWave.displayWaveData();
     
-    returningWave.findPeaks(returningWave.waveData);
-    returningWave.writePeaksToFile();
-    // returningWave.displayPeaksAndLocations();
+    // returningWave.findPeaks(returningWave.waveData);
+    // returningWave.writePeaksToFile();
+    // // returningWave.displayPeaksAndLocations();
 
     return 0;
   }

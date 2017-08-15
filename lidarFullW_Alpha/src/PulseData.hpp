@@ -17,7 +17,9 @@ class PulseData{
 private:
 public:  
   //possible parameters
-  std::vector<I32> waveData;
+  std::vector<I32> outgoingWave;
+  std::vector<I32> returningWave;
+
 
   std::vector<int> firstDifference;
   std::vector<int> secondDifference;
@@ -30,7 +32,10 @@ public:
 
 
   PulseData();  
-  void populate(WAVESsampling *sampling, int maxCount, long long pulseIndex);
+  void populateOutgoing(WAVESsampling *sampling, int maxCount, 
+                        long long pulseIndex);
+  void populateReturning(WAVESsampling *sampling, int maxCount, 
+                        long long pulseIndex);
   
   void calculateFirstDifference();
   void calculateSecondDifference();

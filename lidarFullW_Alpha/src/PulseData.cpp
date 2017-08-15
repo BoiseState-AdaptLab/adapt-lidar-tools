@@ -17,32 +17,51 @@ PulseData::PulseData(){
 
 
 /*
- * Populate all the Wave data
+ * Populate outgoing wave data
  */
-void PulseData::populate(WAVESsampling *sampling, 
+void PulseData::populateOutgoing(WAVESsampling *sampling, 
                               int maxCount, long long pulseIndex){
-  waveData.push_back(pulseIndex);
+  outgoingWave.push_back(pulseIndex);
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
     sampling->set_active_segment(j);                  
     for(int k = 0; k < maxCount; k++){
       if(k >= sampling->get_number_of_samples()){
-        waveData.push_back(0);
+        outgoingWave.push_back(0);
       } 
       else{
-        waveData.push_back(sampling->get_sample(k));
+        outgoingWave.push_back(sampling->get_sample(k));
       }                    
     }
   }              
 }
 
 /*
- * Calculate the first diferences
+ * Populate returning wave data
+ */
+void PulseData::populateReturning(WAVESsampling *sampling, 
+                              int maxCount, long long pulseIndex){
+  returningWave.push_back(pulseIndex);
+  for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+    sampling->set_active_segment(j);                  
+    for(int k = 0; k < maxCount; k++){
+      if(k >= sampling->get_number_of_samples()){
+        returningWave.push_back(0);
+      } 
+      else{
+        returningWave.push_back(sampling->get_sample(k));
+      }                    
+    }
+  }              
+}
+
+/*
+ * Calculate the first differences
  */
 void PulseData::calculateFirstDifference(){
   int first, second, fDiff, count = 0;
-  for(int i = 0; i< (int)waveData.size(); i++){
-    first = waveData[i+1];
-    second = waveData[i+2];
+  for(int i = 0; i< (int)returningWave.size(); i++){
+    first = returningWave[i+1];
+    second = returningWave[i+2];
 
     fDiff = second - first;
 
@@ -234,16 +253,28 @@ int PulseData::medianOfFive(int a, int b, int c, int d, int e){
  * Displays all wave data
  */
 void PulseData::displayPulseData(){
-  std::cout << "Wave: \n" << std::endl;
+  std::cout << "Outgoing Wave:\n" << std::endl;
   int count = 1;
-  for(int i = 0; i<(int)waveData.size(); i++){
-    std::cout << waveData[i] << " ";
+  for(int i = 0; i<(int)outgoingWave.size(); i++){
+    std::cout << outgoingWave[i] << " ";
     count++;
     if(count == 62){
       count = 0;
       std::cout << std::endl ;
     }
   }
+
+  std::cout << "\nReturning Wave:\n" << std::endl;
+  count = 1;
+  for(int i = 0; i<(int)returningWave.size(); i++){
+    std::cout << returningWave[i] << " ";
+    count++;
+    if(count == 62){
+      count = 0;
+      std::cout << std::endl ;
+    }
+  }
+
   std::cout << "\nFirst diff\n";
   for(int i = 0, j = 1; i<(int)firstDifference.size(); i++, j++){
     std::cout << firstDifference[i] << " ";

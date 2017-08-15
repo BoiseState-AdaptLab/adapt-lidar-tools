@@ -176,6 +176,26 @@ TEST_F(PulseDataTest, outgoingWaveData3){
   }
 }
 
+/******************************************************************************
+* 
+* Test if pulses have a returning wave
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, hasReturningWave){
+  
+  //If pulses[index]returningWave.size() > 1, then it contains data
+  ASSERT_FALSE(pulses[1].returningWave.size() <= 0);
+  ASSERT_FALSE(pulses[2].returningWave.size() <= 0); 
+  ASSERT_TRUE(pulses[1].returningWave.size() == 61);
+  ASSERT_TRUE(pulses[2].returningWave.size() == 61); 
+
+  //No data
+  ASSERT_TRUE(pulses[0].returningWave.size() == 0); 
+  ASSERT_TRUE(pulses[3].returningWave.size() == 0); 
+  ASSERT_FALSE(pulses[0].returningWave.size() >= 1); 
+  ASSERT_FALSE(pulses[3].returningWave.size() >= 1); 
+
+}
 
 /******************************************************************************
 * 
@@ -202,7 +222,6 @@ TEST_F(PulseDataTest, returningWaveData1){
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, returningWaveData2){
-
   I32 truthReturningWaveData[61] = {2,1,2,2,3,2,2,1,1,3,2,2,3,5,19,58,121,186,
                     228,238,214,164,106,58,26,13,10,12,15,17,17,16,13,10,7,6,7,
                     6,6,4,6,6,6,5,6,6,6,6,5,4,4,2,2,1,2,2,1,2,2,2,2};
@@ -217,161 +236,142 @@ TEST_F(PulseDataTest, returningWaveData2){
 
 /******************************************************************************
 * 
-* Test if pulses have a reurning wave
+* Test first difference of returning wave at pulse index 1
 * 
 ******************************************************************************/
-TEST_F(PulseDataTest, hasReturningWave){
-  
-  //If pulses[index]returningWave.size() > 1, then it contains data
-  ASSERT_FALSE(pulses[1].returningWave.size() <= 0);
-  ASSERT_FALSE(pulses[2].returningWave.size() <= 0); 
-  ASSERT_TRUE(pulses[1].returningWave.size() == 61);
-  ASSERT_TRUE(pulses[2].returningWave.size() == 61); 
+TEST_F(PulseDataTest, returningWavefirstDifference1){
+  int truthFirstDiffReturningWave[59] = {0,0,-1,0,0,0,0,0,-1,0,1,8,26,53,67,57,
+                  28,-3,-37,-55,-58,-45,-24,-6,1,1,1,0,-1,-1,-3,-2,0,0,0,-1,-1,
+                  0,-2,0,0,-1,1,1,1,-2,0,-1,-1,0,-1,0,-1,1,1,1,1,0,-2};
+  //Test size
+  ASSERT_EQ(59,pulses[1].firstDifference.size()); 
 
-  //No data
-  ASSERT_TRUE(pulses[0].returningWave.size() == 0); 
-  ASSERT_TRUE(pulses[3].returningWave.size() == 0); 
-  ASSERT_FALSE(pulses[0].returningWave.size() >= 1); 
-  ASSERT_FALSE(pulses[3].returningWave.size() >= 1); 
-
+  //Test data
+  for(int i = 0; i<=58; i++){
+    ASSERT_EQ(truthFirstDiffReturningWave[i],pulses[1].firstDifference[i]);
+  }
 }
 
-// /******************************************************************************
-// * 
-// * Test first difference of returning wave
-// * 
-// ******************************************************************************/
-// TEST_F(PulseDataTest, returningWavefirstDifference){
+/******************************************************************************
+* 
+* Test first difference of returning wave at pulse index 2
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, returningWavefirstDifference2){
+  int truthFirstDiffReturningWave[59] = {1,0,1,-1,0,-1,0,2,-1,0,1,2,14,39,63,65,
+                  42,10,-24,-50,-58,-48,-32,-13,-3,2,3,2,0,-1,-3,-3,-3,-1,1,-1,
+                  0,-2,2,0,0,-1,1,0,0,0,-1,-1,0,-2,0,-1,1,0,-1,1,0,0,0};
+  //Test size
+  ASSERT_EQ(59,pulses[2].firstDifference.size()); 
 
-//   int truthFirstDiffReturningWave[118] = {0,0,-1,0,0,0,0,0,-1,0,1,8,26,53,67,
-//                   57,28,-3,-37,-55,-58,-45,-24,-6,1,1,1,0,-1,-1,-3,-2,0,0,0,-1,
-//                   -1,0,-2,0,0,-1,1,1,1,-2,0,-1,-1,0,-1,0,-1,1,1,1,1,0,-2,
-//                   1,0,1,-1,0,-1,0,2,-1,0,1,2,14,39,63,65,42,10,-24,-50,-58,-48,
-//                   -32,-13,-3,2,3,2,0,-1,-3,-3,-3,-1,1,-1,0,-2,2,0,0,-1,1,0,0,0,
-//                   -1,-1,0,-2,0,-1,1,0,-1,1,0,0,0};
-//   //Test size
-//   ASSERT_EQ(118,returningWave.firstDifference.size()); 
+  //Test data
+  for(int i = 0; i<=58; i++){
+    ASSERT_EQ(truthFirstDiffReturningWave[i],pulses[2].firstDifference[i]);
+  }
+}
 
-//   //Test data
-//   for(int i = 0; i<=117; i++){
-//     ASSERT_EQ(truthFirstDiffReturningWave[i],returningWave.firstDifference[i]);
-//   }
-// }
+/*****************************************************************************
+* 
+* Test second difference of returning wave at index 1
+* 
+*****************************************************************************/
+TEST_F(PulseDataTest, returningWaveSecondDifference1){
+  int truthSecondDiffReturnWave[58] = {0,1,1,0,0,0,0,1,1,1,7,18,27,14,10,29,
+                  31,34,18,3,13,21,18,7,0,0,1,1,0,2,1,2,0,0,1,0,1,2,2,0,1,2,0,
+                  0,3,2,1,0,1,1,1,1,2,0,0,0,1,2};
+  //Test size
+  ASSERT_EQ(58,pulses[1].secondDifference.size()); 
 
-// /******************************************************************************
-// * 
-// * Test second difference of outgoing wave
-// * 
-// ******************************************************************************/
-// TEST_F(PulseDataTest, outgoingWaveSecondDifference){
+  //Test data
+  for(int i = 0; i<=57; i++){
+    ASSERT_EQ(truthSecondDiffReturnWave[i],pulses[1].secondDifference[i]);
+  }
+}
 
-//   int truthSecondDiffOutgoingWave[232] = {0,1,2,1,6,14,22,16,9,34,40,24,1,13,
-//                   18,12,6,2,1,2,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   2,2,1,1,4,11,23,19,6,31,42,26,5,13,18,12,7,3,0,2,1,1,0,1,0,
-//                   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0,0,
-//                   1,0,2,1,5,11,23,19,5,28,41,30,6,14,18,11,8,3,0,1,2,0,1,1,0,0,
-//                   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0,
-//                   1,1,0,1,2,12,23,18,3,29,40,30,5,11,17,14,8,1,1,2,2,1,1,1,0,1,
-//                   2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-//                   0,0};
-//   //Test size
-//   ASSERT_EQ(232,outgoingWave.secondDifference.size()); 
+/*****************************************************************************
+* 
+* Test second difference of returning wave at index 2
+* 
+*****************************************************************************/
+TEST_F(PulseDataTest, returningWaveSecondDifference2){
+  int truthSecondDiffReturnWave[58] = {1,1,2,1,1,1,2,3,1,1,1,12,25,24,2,23,32,
+                  34,26,8,10,16,19,10,5,1,1,2,1,2,0,0,2,2,2,1,2,4,2,0,1,2,1,0,0,
+                  1,0,1,2,2,1,2,1,1,2,1,0,0};
+  //Test size
+  ASSERT_EQ(58,pulses[2].secondDifference.size()); 
 
-//   //Test data
-//   for(int i = 0; i<=231; i++){
-//     ASSERT_EQ(truthSecondDiffOutgoingWave[i],outgoingWave.secondDifference[i]);
-//   }
-// }
+  //Test data
+  for(int i = 0; i<=57; i++){
+    ASSERT_EQ(truthSecondDiffReturnWave[i],pulses[2].secondDifference[i]);
+  }
+}
 
-// *****************************************************************************
-// * 
-// * Test second difference of returning wave
-// * 
-// *****************************************************************************
-// TEST_F(PulseDataTest, returningWaveSecondDifference){
+/******************************************************************************
+* 
+* Test the medianOfFive function
+* 
+******************************************************************************/
+TEST_F(PulseDataTest, medianOfFive){
 
-//   int truthSecondDiffReturnWave[116] = {0,1,1,0,0,0,0,1,1,1,7,18,27,14,10,29,
-//                   31,34,18,3,13,21,18,7,0,0,1,1,0,2,1,2,0,0,1,0,1,2,2,0,1,2,0,
-//                   0,3,2,1,0,1,1,1,1,2,0,0,0,1,2,
-//                   1,1,2,1,1,1,2,3,1,1,1,12,25,24,2,23,32,34,26,8,10,16,19,10,5,
-//                   1,1,2,1,2,0,0,2,2,2,1,2,4,2,0,1,2,1,0,0,1,0,1,2,2,1,2,1,1,2,
-//                   1,0,0};
-//   //Test size
-//   ASSERT_EQ(116,returningWave.secondDifference.size()); 
+  PulseData pd;
 
-//   //Test data
-//   for(int i = 0; i<=115; i++){
-//     ASSERT_EQ(truthSecondDiffReturnWave[i],returningWave.secondDifference[i]);
-//   }
-// }
-
-// /******************************************************************************
-// * 
-// * Test the medianOfFive function
-// * 
-// ******************************************************************************/
-// TEST_F(PulseDataTest, medianOfFive){
-
-//   int a,b,c,d,e;
-//   a = 1;
-//   b = 2;
-//   c = 3;
-//   d = 4;
-//   e = 5;
-//   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  int a,b,c,d,e;
+  a = 1;
+  b = 2;
+  c = 3;
+  d = 4;
+  e = 5;
+  EXPECT_EQ(3,pd.medianOfFive(a,b,c,d,e));
   
-//   a = 5;
-//   b = 4;
-//   c = 3;
-//   d = 2;
-//   e = 1;
-//   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  a = 5;
+  b = 4;
+  c = 3;
+  d = 2;
+  e = 1;
+  EXPECT_EQ(3,pd.medianOfFive(a,b,c,d,e));
   
-//   a = 1;
-//   b = 1;
-//   c = 1;
-//   d = 1;
-//   e = 1;
-//   EXPECT_EQ(1,returningWave.medianOfFive(a,b,c,d,e));
+  a = 1;
+  b = 1;
+  c = 1;
+  d = 1;
+  e = 1;
+  EXPECT_EQ(1,pd.medianOfFive(a,b,c,d,e));
   
-//   a = 1;
-//   b = 5;
-//   c = 1;
-//   d = 3;
-//   e = 5;
-//   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  a = 1;
+  b = 5;
+  c = 1;
+  d = 3;
+  e = 5;
+  EXPECT_EQ(3,pd.medianOfFive(a,b,c,d,e));
   
-//   a = 5;
-//   b = 1;
-//   c = 4;
-//   d = 3;
-//   e = 2;
-//   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  a = 5;
+  b = 1;
+  c = 4;
+  d = 3;
+  e = 2;
+  EXPECT_EQ(3,pd.medianOfFive(a,b,c,d,e));
   
-//   a = 1;
-//   b = 1;
-//   c = 3;
-//   d = 5;
-//   e = 5;
-//   EXPECT_EQ(3,returningWave.medianOfFive(a,b,c,d,e));
+  a = 1;
+  b = 1;
+  c = 3;
+  d = 5;
+  e = 5;
+  EXPECT_EQ(3,pd.medianOfFive(a,b,c,d,e));
   
-//   a = 1;
-//   b = 2;
-//   c = 4;
-//   d = 4;
-//   e = 5;
-//   EXPECT_EQ(4,returningWave.medianOfFive(a,b,c,d,e));
+  a = 1;
+  b = 2;
+  c = 4;
+  d = 4;
+  e = 5;
+  EXPECT_EQ(4,pd.medianOfFive(a,b,c,d,e));
 
-//   a = 1;
-//   b = 1;
-//   c = 2;
-//   d = 1;
-//   e = 0;
-//   EXPECT_EQ(1,returningWave.medianOfFive(a,b,c,d,e));
-// }
+  a = 1;
+  b = 1;
+  c = 2;
+  d = 1;
+  e = 0;
+  EXPECT_EQ(1,pd.medianOfFive(a,b,c,d,e));
+}
 
 // /******************************************************************************
 // * 

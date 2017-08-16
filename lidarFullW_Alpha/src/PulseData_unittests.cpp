@@ -16,7 +16,7 @@
 
 class PulseDataTest: public testing::Test{
   public:  
-    std::vector<PulseData> pulses;
+    std::vector<PulseData*> pulses;
     PulseData* pd;
 
   protected:
@@ -73,7 +73,7 @@ class PulseDataTest: public testing::Test{
       else{
         std::cout <<"NO DATA!\n" << std::endl;
       }
-      pulses.push_back(*pd);
+      pulses.push_back(pd);
       pulseIndex++;
     }
 

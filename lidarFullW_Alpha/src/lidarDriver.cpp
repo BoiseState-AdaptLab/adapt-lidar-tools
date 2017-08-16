@@ -50,7 +50,7 @@ int main (int argc, char *argv[]){
     long long pulseIndex = 0; // Index
 
     //Holds all the pulses with outgoing and returning wave data
-    std::vector<PulseData> pulses;
+    std::vector<PulseData*> pulses;
     PulseData* pd;  //Pointer to a PulseData obj that can be added to pulses
     
     while(pReader->read_pulse()){
@@ -84,7 +84,7 @@ int main (int argc, char *argv[]){
       else{
         std::cout <<"NO DATA!\n" << std::endl;
       }
-      pulses.push_back(*pd);
+      pulses.push_back(pd);
       pulseIndex++;
     }
 

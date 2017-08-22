@@ -78,10 +78,10 @@ class PulseDataTest: public testing::Test{
     }
 
     for(int i = 0; i < (int)pulses.size(); i++){
-      pulses[i].calculateFirstDifference();
-      pulses[i].calculateSecondDifference();
-      pulses[i].calculateSmoothSecondDifference();
-      pulses[i].findPeaks(pulses[i].returningWave);
+      pulses[i]->calculateFirstDifference();
+      pulses[i]->calculateSecondDifference();
+      pulses[i]->calculateSmoothSecondDifference();
+      pulses[i]->findPeaks(pulses[i]->returningWave);
     }
 
   }
@@ -108,11 +108,11 @@ TEST_F(PulseDataTest, outgoingWaveData0){
                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                      
   //Test size
- ASSERT_EQ(61,pulses[0].outgoingWave.size());
+ ASSERT_EQ(61,pulses[0]->outgoingWave.size());
 
   //Test data
   for(int i = 0; i<=60; i++){
-    ASSERT_EQ(truthOutgoingWaveData[i], pulses[0].outgoingWave[i]);
+    ASSERT_EQ(truthOutgoingWaveData[i], pulses[0]->outgoingWave[i]);
   }
 }
 
@@ -128,11 +128,11 @@ TEST_F(PulseDataTest, outgoingWaveData1){
                      0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                      
   //Test size
- ASSERT_EQ(61,pulses[1].outgoingWave.size());
+ ASSERT_EQ(61,pulses[1]->outgoingWave.size());
 
   //Test data
   for(int i = 0; i<=60; i++){
-    ASSERT_EQ(truthOutgoingWaveData[i], pulses[1].outgoingWave[i]);
+    ASSERT_EQ(truthOutgoingWaveData[i], pulses[1]->outgoingWave[i]);
   }
 }
 
@@ -148,11 +148,11 @@ TEST_F(PulseDataTest, outgoingWaveData2){
                     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                      
   //Test size
- ASSERT_EQ(61,pulses[2].outgoingWave.size());
+ ASSERT_EQ(61,pulses[2]->outgoingWave.size());
 
   //Test data
   for(int i = 0; i<=60; i++){
-    ASSERT_EQ(truthOutgoingWaveData[i], pulses[2].outgoingWave[i]);
+    ASSERT_EQ(truthOutgoingWaveData[i], pulses[2]->outgoingWave[i]);
   }
 }
 
@@ -168,11 +168,11 @@ TEST_F(PulseDataTest, outgoingWaveData3){
                     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                      
   //Test size
- ASSERT_EQ(61,pulses[3].outgoingWave.size());
+ ASSERT_EQ(61,pulses[3]->outgoingWave.size());
 
   //Test data
   for(int i = 0; i<=60; i++){
-    ASSERT_EQ(truthOutgoingWaveData[i], pulses[3].outgoingWave[i]);
+    ASSERT_EQ(truthOutgoingWaveData[i], pulses[3]->outgoingWave[i]);
   }
 }
 
@@ -184,16 +184,16 @@ TEST_F(PulseDataTest, outgoingWaveData3){
 TEST_F(PulseDataTest, hasReturningWave){
   
   //If pulses[index]returningWave.size() > 1, then it contains data
-  ASSERT_FALSE(pulses[1].returningWave.size() <= 0);
-  ASSERT_FALSE(pulses[2].returningWave.size() <= 0); 
-  ASSERT_TRUE(pulses[1].returningWave.size() == 61);
-  ASSERT_TRUE(pulses[2].returningWave.size() == 61); 
+  ASSERT_FALSE(pulses[1]->returningWave.size() <= 0);
+  ASSERT_FALSE(pulses[2]->returningWave.size() <= 0); 
+  ASSERT_TRUE(pulses[1]->returningWave.size() == 61);
+  ASSERT_TRUE(pulses[2]->returningWave.size() == 61); 
 
   //No data
-  ASSERT_TRUE(pulses[0].returningWave.size() == 0); 
-  ASSERT_TRUE(pulses[3].returningWave.size() == 0); 
-  ASSERT_FALSE(pulses[0].returningWave.size() >= 1); 
-  ASSERT_FALSE(pulses[3].returningWave.size() >= 1); 
+  ASSERT_TRUE(pulses[0]->returningWave.size() == 0); 
+  ASSERT_TRUE(pulses[3]->returningWave.size() == 0); 
+  ASSERT_FALSE(pulses[0]->returningWave.size() >= 1); 
+  ASSERT_FALSE(pulses[3]->returningWave.size() >= 1); 
 
 }
 
@@ -208,11 +208,11 @@ TEST_F(PulseDataTest, returningWaveData1){
                     240,237,200,145,87,42,18,12,13,14,15,15,14,13,10,8,8,8,8,7,
                     6,6,4,4,4,3,4,5,6,4,4,3,2,2,1,1,0,1,2,3,4,4,2};
   //Test size
-  ASSERT_EQ(61,pulses[1].returningWave.size()); 
+  ASSERT_EQ(61,pulses[1]->returningWave.size()); 
 
   //Test data
   for(int i = 0; i<=60; i++){
-    EXPECT_EQ(truthReturningWaveData[i], pulses[1].returningWave[i]);
+    EXPECT_EQ(truthReturningWaveData[i], pulses[1]->returningWave[i]);
   }
 }
 
@@ -226,11 +226,11 @@ TEST_F(PulseDataTest, returningWaveData2){
                     228,238,214,164,106,58,26,13,10,12,15,17,17,16,13,10,7,6,7,
                     6,6,4,6,6,6,5,6,6,6,6,5,4,4,2,2,1,2,2,1,2,2,2,2};
   //Test size
-  ASSERT_EQ(61,pulses[2].returningWave.size()); 
+  ASSERT_EQ(61,pulses[2]->returningWave.size()); 
 
   //Test data
   for(int i = 0; i<=60; i++){
-    EXPECT_EQ(truthReturningWaveData[i], pulses[2].returningWave[i]);
+    EXPECT_EQ(truthReturningWaveData[i], pulses[2]->returningWave[i]);
   }
 }
 
@@ -244,11 +244,11 @@ TEST_F(PulseDataTest, returningWavefirstDifference1){
                   28,-3,-37,-55,-58,-45,-24,-6,1,1,1,0,-1,-1,-3,-2,0,0,0,-1,-1,
                   0,-2,0,0,-1,1,1,1,-2,0,-1,-1,0,-1,0,-1,1,1,1,1,0,-2};
   //Test size
-  ASSERT_EQ(59,pulses[1].firstDifference.size()); 
+  ASSERT_EQ(59,pulses[1]->firstDifference.size()); 
 
   //Test data
   for(int i = 0; i<=58; i++){
-    ASSERT_EQ(truthFirstDiffReturningWave[i],pulses[1].firstDifference[i]);
+    ASSERT_EQ(truthFirstDiffReturningWave[i],pulses[1]->firstDifference[i]);
   }
 }
 
@@ -262,11 +262,11 @@ TEST_F(PulseDataTest, returningWavefirstDifference2){
                   42,10,-24,-50,-58,-48,-32,-13,-3,2,3,2,0,-1,-3,-3,-3,-1,1,-1,
                   0,-2,2,0,0,-1,1,0,0,0,-1,-1,0,-2,0,-1,1,0,-1,1,0,0,0};
   //Test size
-  ASSERT_EQ(59,pulses[2].firstDifference.size()); 
+  ASSERT_EQ(59,pulses[2]->firstDifference.size()); 
 
   //Test data
   for(int i = 0; i<=58; i++){
-    ASSERT_EQ(truthFirstDiffReturningWave[i],pulses[2].firstDifference[i]);
+    ASSERT_EQ(truthFirstDiffReturningWave[i],pulses[2]->firstDifference[i]);
   }
 }
 
@@ -280,11 +280,11 @@ TEST_F(PulseDataTest, returningWaveSecondDifference1){
                   31,34,18,3,13,21,18,7,0,0,1,1,0,2,1,2,0,0,1,0,1,2,2,0,1,2,0,
                   0,3,2,1,0,1,1,1,1,2,0,0,0,1,2};
   //Test size
-  ASSERT_EQ(58,pulses[1].secondDifference.size()); 
+  ASSERT_EQ(58,pulses[1]->secondDifference.size()); 
 
   //Test data
   for(int i = 0; i<=57; i++){
-    ASSERT_EQ(truthSecondDiffReturnWave[i],pulses[1].secondDifference[i]);
+    ASSERT_EQ(truthSecondDiffReturnWave[i],pulses[1]->secondDifference[i]);
   }
 }
 
@@ -298,11 +298,11 @@ TEST_F(PulseDataTest, returningWaveSecondDifference2){
                   34,26,8,10,16,19,10,5,1,1,2,1,2,0,0,2,2,2,1,2,4,2,0,1,2,1,0,0,
                   1,0,1,2,2,1,2,1,1,2,1,0,0};
   //Test size
-  ASSERT_EQ(58,pulses[2].secondDifference.size()); 
+  ASSERT_EQ(58,pulses[2]->secondDifference.size()); 
 
   //Test data
   for(int i = 0; i<=57; i++){
-    ASSERT_EQ(truthSecondDiffReturnWave[i],pulses[2].secondDifference[i]);
+    ASSERT_EQ(truthSecondDiffReturnWave[i],pulses[2]->secondDifference[i]);
   }
 }
 
@@ -383,12 +383,12 @@ TEST_F(PulseDataTest, smoothReturningWaveSecondDifference1){
                   27,29,29,29,18,18,18,13,13,7,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,2,
                   1,0,1,2,1,1,1,1,1,1,1,1,1,0,0,0,1,2};
   //Test size
-  EXPECT_EQ(58,pulses[1].smoothSecondDifference.size()); 
+  EXPECT_EQ(58,pulses[1]->smoothSecondDifference.size()); 
 
   //Test data
   for(int i = 0; i<=57; i++){
     EXPECT_EQ(truthSmoothSecondDiffReturnWave[i],
-              pulses[1].smoothSecondDifference[i]);
+              pulses[1]->smoothSecondDifference[i]);
   }
 }
 
@@ -402,12 +402,12 @@ TEST_F(PulseDataTest, smoothReturningWaveSecondDifference2){
                   24,26,26,26,16,16,10,10,10,5,2,1,1,1,1,1,2,2,2,2,2,2,2,2,2,1,
                   1,1,1,0,0,1,1,1,2,2,1,1,1,1,1,0,0};
   //Test size
-  EXPECT_EQ(58,pulses[2].smoothSecondDifference.size()); 
+  EXPECT_EQ(58,pulses[2]->smoothSecondDifference.size()); 
 
   //Test data
   for(int i = 0; i<=57; i++){
     EXPECT_EQ(truthSmoothSecondDiffReturnWave[i],
-              pulses[2].smoothSecondDifference[i]);
+              pulses[2]->smoothSecondDifference[i]);
   }
 }
 
@@ -421,14 +421,14 @@ TEST_F(PulseDataTest, findPeaksOfReturningWave1){
   int truthPeaksLocation[3] = {18,28,46};
   
   //Test size
-  EXPECT_EQ(3,pulses[1].peaks.size()); 
+  EXPECT_EQ(3,pulses[1]->peaks.size()); 
 
   //Test peaks data
   for(int i = 0; i<=2; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[1].peaks[i]);
+              pulses[1]->peaks[i]);
     EXPECT_EQ(truthPeaksLocation[i],
-          pulses[1].peaksLocation[i]);
+          pulses[1]->peaksLocation[i]);
   }
 }
 
@@ -442,14 +442,14 @@ TEST_F(PulseDataTest, findPeaksOfReturningWave2){
   int truthPeaksLocation[5] = {19,29,36,40,44};
 
   //Test size
-  EXPECT_EQ(5,pulses[2].peaks.size()); 
+  EXPECT_EQ(5,pulses[2]->peaks.size()); 
 
   //Test peaks data
   for(int i = 0; i<=4; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[2].peaks[i]);
+              pulses[2]->peaks[i]);
     EXPECT_EQ(truthPeaksLocation[i],
-          pulses[2].peaksLocation[i]);
+          pulses[2]->peaksLocation[i]);
   }
 }
 
@@ -465,14 +465,14 @@ TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference1){
   int truthPeaksLocation[3] = {18,28,46};
   
   //Test size
-  EXPECT_EQ(3,pulses[1].peaks.size()); 
+  EXPECT_EQ(3,pulses[1]->peaks.size()); 
 
   //Test peaks data
   for(int i = 0; i<=2; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[1].peaks[i]);
+              pulses[1]->peaks[i]);
     EXPECT_EQ(truthPeaksLocation[i],
-          pulses[1].peaksLocation[i]);
+          pulses[1]->peaksLocation[i]);
   }
 }
 
@@ -488,13 +488,13 @@ TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference){
   int truthPeaksLocation[5] = {19,29,36,40,44};
 
   //Test size
-  EXPECT_EQ(5,pulses[2].peaks.size()); 
+  EXPECT_EQ(5,pulses[2]->peaks.size()); 
 
   //Test peaks data
   for(int i = 0; i<=4; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[2].peaks[i]);
+              pulses[2]->peaks[i]);
     EXPECT_EQ(truthPeaksLocation[i],
-          pulses[2].peaksLocation[i]);
+          pulses[2]->peaksLocation[i]);
   }
 }

@@ -88,24 +88,41 @@ int main (int argc, char *argv[]){
       pulseIndex++;
     }
 
-    std::cout << "Total no of pulses: " << pulses.size();
+    std::cout << "Total no of pulses: " << pulses.size() << std::endl;
 
+    for(int i = 0; i < (int)pulses.size(); i++){
+      if(cmdLineArgs.getPeakFlag() == false){
+        pulses[i]->calculateFirstDifference();
+        pulses[i]->calculateSecondDifference();
+        pulses[i]->calculateSmoothSecondDifference();
+        pulses[i]->findPeaks(pulses[i]->smoothSecondDifference);
+      }
+      else{        
+        pulses[i]->findPeaks(pulses[i]->returningWave);
+      }
+    }
 
-    // outgoingWave.calculateFirstDifference();
-    // outgoingWave.calculateSecondDifference();
-    // outgoingWave.calculateSmoothSecondDifference();
-    // // std::cout << "Out Wave: \n" << std::endl;
-    // // outgoingWave.displayWaveData();
+    if(cmdLineArgs.getPeakFlag() == true){
+      std::ofstream outfile;
+      outfile.open("peaksAndLocations.csv");
+      outfile << "Pulse Index" << ",";
+      outfile << "Peak Value & location --->"<< "\n";
+      for(int i = 0; i < (int)pulses.size(); i++){
+        outfile << i << ",";
+        for(int j = 0; j<(int)pulses[i]->peaks.size(); j++){
+          outfile << pulses[i]->peaks[j] << " at ";
+          outfile << pulses[i]->peaksLocation[j] << ",";
+        }
+        outfile << "\n";
+      }
+    }
+    else{
+      std::ofstream outfile;
+      outfile.open("peaksAndLocations.csv");
+      outfile << "Pulse Index" << ",";
+      outfile << "Peak Value & location --->"<< "\n";
+    }
 
-    // returningWave.calculateFirstDifference();
-    // returningWave.calculateSecondDifference();
-    // returningWave.calculateSmoothSecondDifference();
-    // // std::cout << "\nIn Wave: \n" << std::endl;
-    // // returningWave.displayWaveData();
-    
-    // returningWave.findPeaks(returningWave.waveData);
-    // returningWave.writePeaksToFile();
-    // // returningWave.displayPeaksAndLocations();
 
     return 0;
   }

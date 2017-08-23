@@ -310,7 +310,7 @@ void PulseData::displayPulseData(){
 }
 
 /*
- *Display the peak Wave and the location of the original wave
+ * Display the peak Wave and the location of the original wave
  */
 void PulseData::displayPeaksAndLocations(){
   for(int i = 0; i<(int)peaks.size(); i++){
@@ -319,16 +319,16 @@ void PulseData::displayPeaksAndLocations(){
   }
 }
 
-/*
- *Write peaks to file
- */
-void PulseData::writePeaksToFile(){
-  std::ofstream outfile;
-  outfile.open("peaksAndLocations.csv");
-  outfile << "Peak Index" << ",";
-  outfile << "Peak Value"<< "\n";
-  for(int i = 0; i<(int)peaks.size(); i++){
-    outfile << peaksLocation[i] << ",";
-    outfile << peaks[i] << "\n";
-  }
-}
+// /*
+//  * Write peaks to file
+//  */
+// void PulseData::writePeaksToFile(){
+//   std::ofstream outfile;
+//   outfile.open("peaksAndLocations.csv");
+//   outfile << "Pulse Index" << ",";
+//   outfile << "Peak Value & location"<< "\n";
+//   for(int i = 0; i<(int)peaks.size(); i++){
+//     outfile << peaks[i] << ",";
+//     outfile << peaksLocation[i] << "\n";
+//   }
+// }

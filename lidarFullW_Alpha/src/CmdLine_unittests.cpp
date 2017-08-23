@@ -31,6 +31,8 @@ class CmdLineTest : public testing::Test {
   int maxLengthOfArg;
   CmdLine cmd;
   CmdLine cmd2;
+  CmdLine cmd3;
+
 };
 
 
@@ -75,13 +77,23 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
 
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 3;
-  strncpy(commonArgSpace[1],"--file",7);
-  strncpy(commonArgSpace[2],"file",5);
+  strncpy(commonArgSpace[1],"--first",8);
+  strncpy(commonArgSpace[2],"first",6);
   ASSERT_NO_THROW({
     cmd2.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
-  ASSERT_EQ("file",cmd2.getInputFileName());
+  ASSERT_EQ("first",cmd2.getInputFileName());
+
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 3;
+  strncpy(commonArgSpace[1],"--smooth",9);
+  strncpy(commonArgSpace[2],"smooth",7);
+  ASSERT_NO_THROW({
+    cmd3.parse(numberOfArgs, commonArgSpace);
+  });
+  ASSERT_FALSE(cmd3.printUsageMessage);
+  ASSERT_EQ("smooth",cmd3.getInputFileName());
 }
 
 

@@ -91,8 +91,7 @@ std::string CmdLine::getInputFileName(){
 }
 
 /* Function that parses the command line arguments*/
-void CmdLine::parse(int argc,char *argv[])
-{
+void CmdLine::parse(int argc,char *argv[]){
   char optionChar;  /* Option character */
   char *fArg;     /* Argument of the f(file) option character */
 
@@ -106,7 +105,8 @@ void CmdLine::parse(int argc,char *argv[])
   exeName.append(argv[0]);
   static struct option long_options[] =
   {
-      {"file", required_argument, NULL, 'f'},
+      {"first", required_argument, NULL, 'f'},
+      {"smooth", required_argument, NULL, 's'},
       {"help", no_argument, NULL, 'h'},
       {0, 0, 0, 0}
   };
@@ -126,7 +126,13 @@ void CmdLine::parse(int argc,char *argv[])
       case 'f':
         fArg = optarg;
         setInputFileName(fArg);
+        setPeakType(1);
         break;
+      case 's':
+        fArg = optarg;
+        setInputFileName(fArg);
+        setPeakType(0);
+        break;        
       case 'h':
         printUsageMessage = true;
         break;
@@ -144,4 +150,25 @@ void CmdLine::parse(int argc,char *argv[])
   if(optind < argc){
     printUsageMessage = true;
   }
+}
+
+/* Set whether to find peaks using:
+ * first difference -> peakFlag = true
+ *              or
+ * smooth second difference -> peakFlag = false
+ */
+void CmdLine::setPeakType(int tmp){
+  if(tmp == 1){
+    peakFlag = true;
+  }
+  else{
+    peakFlag = false;
+  }
+}
+
+/* 
+ * Return peakFlag value
+ */
+bool CmdLine::getPeakFlag(){
+  return peakFlag;
 }

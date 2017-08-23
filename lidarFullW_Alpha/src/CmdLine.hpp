@@ -21,6 +21,7 @@ private:
   // helpful stuff
   std::string usageMessage;
   std::string exeName;
+  bool peakFlag;
 
 public:
   // help parameter
@@ -37,6 +38,8 @@ public:
   void setInputFileName(char *args);
   void setInputFileName(std::string filename);
   std::string getInputFileName();
+  void setPeakType(int tmp);
+  bool getPeakFlag();
 };
 
 #endif /* CMDLINE_HPP_ */

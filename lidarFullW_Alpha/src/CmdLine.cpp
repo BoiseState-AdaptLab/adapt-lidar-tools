@@ -119,7 +119,7 @@ void CmdLine::parse(int argc,char *argv[]){
    * ":hf:" indicate that option 'h' is without arguments while
    * option 'f' requires arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hf:",
+  while((optionChar = getopt_long (argc, argv, ":hf:s:",
          long_options, &option_index))!= -1){    
     switch(optionChar){
     /*option h show the help information*/
@@ -153,6 +153,7 @@ void CmdLine::parse(int argc,char *argv[]){
 }
 
 /* Set whether to find peaks using:
+ *
  * first difference -> peakFlag = true
  *              or
  * smooth second difference -> peakFlag = false

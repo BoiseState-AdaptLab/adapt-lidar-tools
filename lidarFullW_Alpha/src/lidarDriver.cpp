@@ -102,11 +102,12 @@ int main (int argc, char *argv[]){
       }
     }
 
-    if(cmdLineArgs.getPeakFlag() == true){
-      std::ofstream outfile;
-      outfile.open("peaksAndLocations.csv");
-      outfile << "Pulse Index" << ",";
-      outfile << "Peak Value & location --->"<< "\n";
+    std::ofstream outfile;
+    outfile.open("peaksAndLocations.csv");
+    outfile << "Pulse Index" << ",";
+    outfile << "Peak Value & location --->"<< "\n";
+
+    if(cmdLineArgs.getPeakFlag() == true){  // First difference peaks    
       for(int i = 0; i < (int)pulses.size(); i++){
         outfile << i << ",";
         for(int j = 0; j<(int)pulses[i]->peaks.size(); j++){
@@ -116,11 +117,16 @@ int main (int argc, char *argv[]){
         outfile << "\n";
       }
     }
-    else{
-      std::ofstream outfile;
-      outfile.open("peaksAndLocations.csv");
-      outfile << "Pulse Index" << ",";
-      outfile << "Peak Value & location --->"<< "\n";
+    else{ //Smooth second difference peaks
+      for(int i = 0; i < (int)pulses.size(); i++){
+        outfile << i << ",";
+        for(int j = 0; j<(int)pulses[i]->peaks.size(); j++){
+          outfile << pulses[i]->returningWave[(pulses[i]->peaksLocation[j])+3] 
+                  << " at ";
+          outfile << (pulses[i]->peaksLocation[j])+3 << ",";
+        }
+        outfile << "\n";
+      }
     }
 
 

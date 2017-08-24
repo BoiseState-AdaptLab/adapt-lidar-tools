@@ -157,12 +157,12 @@ void PulseData::findPeaks(std::vector<int> data){
     if(data[i+1] < data[i]){
       //Sharp peak
       if(grad == 1 && data[i] > NOISE){
-        peaks.push_back(data[i]);    //Peak value
+        // peaks.push_back(data[i]);    //Peak value
         peaksLocation.push_back(i);  //Peak location
       }
       //Wide peak
       else if(grad == 0 && data[i] > NOISE){
-        peaks.push_back(data[wideStart]);
+        // peaks.push_back(data[wideStart]);
         peaksLocation.push_back(wideStart);
       }
       count++;
@@ -313,8 +313,8 @@ void PulseData::displayPulseData(){
  * Display the peak Wave and the location of the original wave
  */
 void PulseData::displayPeaksAndLocations(){
-  for(int i = 0; i<(int)peaks.size(); i++){
-    std::cout << "Peak: " << peaks[i] << 
+  for(int i = 0; i<(int)peaksLocation.size(); i++){
+    std::cout << "Peak: " << returningWave[peaksLocation[i]]  << 
           " found at location: " << peaksLocation[i] << std::endl;    
   }
 }

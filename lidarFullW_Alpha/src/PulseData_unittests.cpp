@@ -421,12 +421,12 @@ TEST_F(PulseDataTest, findPeaksOfReturningWave1){
   int truthPeaksLocation[3] = {18,28,46};
   
   //Test size
-  EXPECT_EQ(3,pulses[1]->peaks.size()); 
+  EXPECT_EQ(3,pulses[1]->peaksLocation.size()); 
 
   //Test peaks data
   for(int i = 0; i<=2; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[1]->peaks[i]);
+              pulses[1]->returningWave[pulses[1]->peaksLocation[i]]);
     EXPECT_EQ(truthPeaksLocation[i],
           pulses[1]->peaksLocation[i]);
   }
@@ -442,12 +442,12 @@ TEST_F(PulseDataTest, findPeaksOfReturningWave2){
   int truthPeaksLocation[5] = {19,29,36,40,44};
 
   //Test size
-  EXPECT_EQ(5,pulses[2]->peaks.size()); 
+  EXPECT_EQ(5,pulses[2]->peaksLocation.size()); 
 
   //Test peaks data
   for(int i = 0; i<=4; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[2]->peaks[i]);
+              pulses[2]->returningWave[pulses[2]->peaksLocation[i]]);
     EXPECT_EQ(truthPeaksLocation[i],
           pulses[2]->peaksLocation[i]);
   }
@@ -465,12 +465,12 @@ TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference1){
   int truthPeaksLocation[3] = {18,28,46};
   
   //Test size
-  EXPECT_EQ(3,pulses[1]->peaks.size()); 
+  EXPECT_EQ(3,pulses[1]->peaksLocation.size()); 
 
   //Test peaks data
   for(int i = 0; i<=2; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[1]->peaks[i]);
+              pulses[1]->returningWave[pulses[1]->peaksLocation[i]]);
     EXPECT_EQ(truthPeaksLocation[i],
           pulses[1]->peaksLocation[i]);
   }
@@ -488,12 +488,12 @@ TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference){
   int truthPeaksLocation[5] = {19,29,36,40,44};
 
   //Test size
-  EXPECT_EQ(5,pulses[2]->peaks.size()); 
+  EXPECT_EQ(5,pulses[2]->peaksLocation.size()); 
 
   //Test peaks data
   for(int i = 0; i<=4; i++){
     EXPECT_EQ(truthPeaks[i],
-              pulses[2]->peaks[i]);
+              pulses[2]->returningWave[pulses[2]->peaksLocation[i]]);
     EXPECT_EQ(truthPeaksLocation[i],
           pulses[2]->peaksLocation[i]);
   }

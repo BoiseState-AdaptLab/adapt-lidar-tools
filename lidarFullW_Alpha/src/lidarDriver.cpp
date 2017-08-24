@@ -111,7 +111,8 @@ int main (int argc, char *argv[]){
       for(int i = 0; i < (int)pulses.size(); i++){
         outfile << i << ",";
         for(int j = 0; j<(int)pulses[i]->peaks.size(); j++){
-          outfile << pulses[i]->peaks[j] << " at ";
+          outfile << pulses[i]->returningWave[pulses[i]->peaksLocation[j]] 
+                  << " at ";
           outfile << pulses[i]->peaksLocation[j] << ",";
         }
         outfile << "\n";

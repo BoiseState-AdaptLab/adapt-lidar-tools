@@ -110,7 +110,7 @@ int main (int argc, char *argv[]){
     if(cmdLineArgs.getPeakFlag() == true){  // First difference peaks    
       for(int i = 0; i < (int)pulses.size(); i++){
         outfile << i << ",";
-        for(int j = 0; j<(int)pulses[i]->peaks.size(); j++){
+        for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++){
           outfile << pulses[i]->returningWave[pulses[i]->peaksLocation[j]] 
                   << " at ";
           outfile << pulses[i]->peaksLocation[j] << ",";
@@ -121,7 +121,7 @@ int main (int argc, char *argv[]){
     else{ //Smooth second difference peaks
       for(int i = 0; i < (int)pulses.size(); i++){
         outfile << i << ",";
-        for(int j = 0; j<(int)pulses[i]->peaks.size(); j++){
+        for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++){
           outfile << pulses[i]->returningWave[(pulses[i]->peaksLocation[j])+3] 
                   << " at ";
           outfile << (pulses[i]->peaksLocation[j])+3 << ",";

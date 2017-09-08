@@ -143,9 +143,10 @@ void PulseData::findPeaks(std::vector<int> data){
   * = -1 for decreasing OR level, but previously decreasing
   * A sharp peak is identified by grad=1 -> grad=-1
   * A wide  peak is identified by grad=0 -> grad=-1
-  */ int grad = -1;
+  */ 
+  int grad = -1;
 
-  int count = 1;
+  int count = 1;  //Keep track of the index
   for(int i = 0; i<(int)data.size()-1; i++){
     //First index represents the pulse index
     if(count == 1){
@@ -181,7 +182,7 @@ void PulseData::findPeaks(std::vector<int> data){
       count++;
     }
 
-    //Keep track of the returning wave index
+    //Reset the index
     if (count == 60){
       count = 1;  
     }

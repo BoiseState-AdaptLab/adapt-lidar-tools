@@ -21,6 +21,10 @@ private:
   // helpful stuff
   std::string usageMessage;
   std::string exeName;
+  
+  /* If peakFlag == true, use first difference to find peaks
+   * else, use smooth second difference
+   */
   bool peakFlag;
 
 public:
@@ -38,7 +42,6 @@ public:
   void setInputFileName(char *args);
   void setInputFileName(std::string filename);
   std::string getInputFileName();
-  void setPeakType(int tmp);
   bool getPeakFlag();
 };
 

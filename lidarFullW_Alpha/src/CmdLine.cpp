@@ -62,12 +62,16 @@ void CmdLine::setInputFileName(char *args){
 void CmdLine::setUsageMessage()
 {
   std::stringstream buffer;
-  buffer <<"\nUsage:   " << exeName <<" [-option argument]+" << std::endl;
-  buffer <<"Option:  " << "-f  ../src/fileName.pls" << std::endl;
-  buffer <<"Help:    " << "-h" << std::endl;
-  buffer <<"Example: " << exeName
-            << " -f ../src/140823_183115_1_clipped_test.pls\n"
-            <<std::endl;
+  buffer << "\nUsage: " << std::endl;
+  buffer << "       pathToExecutable [-option argument]+" << std::endl;
+  buffer << "\nOption:  " << std::endl;
+  buffer << "       -f  pathToFile.pls" 
+         << "  (first difference to find peaks)" << std::endl;
+  buffer << "       -s  pathToFile.pls" 
+         << "  (smooth second difference to find peaks)" << std::endl;
+  buffer << "       -h" << std::endl;
+  buffer << "\nExample: " << std::endl;
+  buffer << "       pathToExecutable -f ../src/140823_183115_1_clipped_test.pls\n" << std::endl;
   usageMessage.append(buffer.str());
 }
 
@@ -92,8 +96,8 @@ std::string CmdLine::getInputFileName(){
 
 /* Function that parses the command line arguments*/
 void CmdLine::parse(int argc,char *argv[]){
-  char optionChar;  /* Option character */
-  char *fArg;     /* Argument of the f(file) option character */
+  char optionChar;  //Option character
+  char *fArg;     //Argument of the option character
 
   /* If the program is run without any command line arguments, display
    * the correct program usage and quit.*/
@@ -103,6 +107,7 @@ void CmdLine::parse(int argc,char *argv[]){
   }
 
   exeName.append(argv[0]);
+
   static struct option long_options[] =
   {
       {"first", required_argument, NULL, 'f'},
@@ -115,23 +120,23 @@ void CmdLine::parse(int argc,char *argv[]){
   /* getopt_long stores the option index here. */
   int option_index = 0;
 
-  /* Use function getopt_long to get the arguments with the option.
-   * ":hf:" indicate that option 'h' is without arguments while
-   * option 'f' requires arguments
+  /* Using getopt_long to get the arguments with an option.
+   * ":hf:s:" indicate that option 'h' is without arguments while
+   * option 'f' and 's' require arguments
    */
   while((optionChar = getopt_long (argc, argv, ":hf:s:",
          long_options, &option_index))!= -1){    
     switch(optionChar){
     /*option h show the help information*/
-      case 'f':
+      case 'f': //Find peaks using first difference
         fArg = optarg;
         setInputFileName(fArg);
-        setPeakType(1);
+        peakFlag = true;
         break;
-      case 's':
+      case 's': //Find peaks using smooth second difference
         fArg = optarg;
         setInputFileName(fArg);
-        setPeakType(0);
+        peakFlag = false;
         break;        
       case 'h':
         printUsageMessage = true;
@@ -149,21 +154,6 @@ void CmdLine::parse(int argc,char *argv[]){
   // For non option input
   if(optind < argc){
     printUsageMessage = true;
-  }
-}
-
-/* Set whether to find peaks using:
- *
- * first difference -> peakFlag = true
- *              or
- * smooth second difference -> peakFlag = false
- */
-void CmdLine::setPeakType(int tmp){
-  if(tmp == 1){
-    peakFlag = true;
-  }
-  else{
-    peakFlag = false;
   }
 }
 

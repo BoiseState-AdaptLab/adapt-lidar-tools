@@ -167,7 +167,13 @@ void PulseData::findPeaks(std::vector<int> data){
       //Wide peak
       else if(grad == 0 && data[i] > NOISE){
         // peaks.push_back(data[wideStart]);
-        peaksLocation.push_back(wideStart);
+        if ((i - wideStart) % 2 == 0) {
+          peaksLocation.push_back(wideStart);
+        }
+        else {
+          peaksLocation.push_back(wideStart/2);
+        }
+        
       }
       count++;
       grad = -1;

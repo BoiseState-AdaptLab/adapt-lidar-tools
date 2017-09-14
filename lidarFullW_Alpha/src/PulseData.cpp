@@ -171,7 +171,7 @@ void PulseData::findPeaks(std::vector<int> data){
           peaksLocation.push_back(wideStart);
         }
         else {
-          peaksLocation.push_back(wideStart/2);
+          peaksLocation.push_back(wideStart + ((i - wideStart) / 2));
         }
         
       }

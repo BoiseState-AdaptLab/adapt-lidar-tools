@@ -140,4 +140,5 @@ clean:
 	rm -f $(OBJ)/*
 	rm -f $(LIB)/*
 	rm -f $(USER_DIR)/*.o
+	rm -f *.csv
 	

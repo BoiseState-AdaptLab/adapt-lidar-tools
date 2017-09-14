@@ -18,15 +18,15 @@
 
 using namespace std;
 
-int main (int argc, char *argv[]){
+int main (int argc, char *argv[]) {
 
   CmdLine cmdLineArgs;
   cmdLineArgs.parse(argc,argv);
   
-  if(cmdLineArgs.printUsageMessage == true){
+  if(cmdLineArgs.printUsageMessage == true) {
     std::cout << cmdLineArgs.getUsageMessage() << std::endl;
   }
-  else{
+  else {
     std::string fileName = cmdLineArgs.getInputFileName();
     
     // Write Scanner information to a file
@@ -53,27 +53,27 @@ int main (int argc, char *argv[]){
     std::vector<PulseData*> pulses;
     PulseData* pd;  //Pointer to a PulseData obj that can be added to pulses
     
-    while(pReader->read_pulse()){
+    while(pReader->read_pulse()) {
       // std::cout << "\nIndex is: " << pulseIndex << std::endl;
       
       gpsInfo.populateGPS(pReader);
       // gpsInfo.displayGPSData();
 
       //Read the waves
-      if(pReader->read_waves()){
+      if(pReader->read_waves()) {
         pd = new PulseData(); //Initialize a new pointer at each pulseIndex
         for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
           sampling = pReader->waves->get_sampling(i);
 
           //Based on the type of wave, populate data
-          if(sampling->get_type() == PULSEWAVES_OUTGOING){
+          if(sampling->get_type() == PULSEWAVES_OUTGOING) {
             pd->populateOutgoing(sampling, maxCount, pulseIndex);
 
           }
-          else if(sampling->get_type() == PULSEWAVES_RETURNING){
+          else if(sampling->get_type() == PULSEWAVES_RETURNING) {
             pd->populateReturning(sampling, maxCount, pulseIndex);
           }
-          else{
+          else {
             std::cout << "Unknown type: " << sampling->get_type() \
                       << std::endl;
           }
@@ -81,7 +81,7 @@ int main (int argc, char *argv[]){
       }
 
       //No waves
-      else{
+      else {
         std::cout <<"NO DATA!\n" << std::endl;
       }
       pulses.push_back(pd);
@@ -90,13 +90,15 @@ int main (int argc, char *argv[]){
 
     std::cout << "Total no of pulses: " << pulses.size() << std::endl;
 
-    for(int i = 0; i < (int)pulses.size(); i++){
+    for(int i = 0; i < (int)pulses.size(); i++) {
+      //Smooth second difference peaks
       if(cmdLineArgs.getPeakFlag() == false){
         pulses[i]->calculateFirstDifference();
         pulses[i]->calculateSecondDifference();
         pulses[i]->calculateSmoothSecondDifference();
         pulses[i]->findPeaks(pulses[i]->smoothSecondDifference);
       }
+      //First difference peaks(peaks calulated based on original data)
       else{        
         pulses[i]->findPeaks(pulses[i]->returningWave);
       }
@@ -104,27 +106,26 @@ int main (int argc, char *argv[]){
 
     std::ofstream outfile;
     outfile.open("peaksAndLocations.csv");
-    outfile << "Pulse Index" << ",";
-    outfile << "Peak Value & location --->"<< "\n";
+    outfile << "Pulse_index Peak_location Peak_value -->" << "\n";
 
-    if(cmdLineArgs.getPeakFlag() == true){  // First difference peaks    
-      for(int i = 0; i < (int)pulses.size(); i++){
-        outfile << i << ",";
-        for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++){
+    if(cmdLineArgs.getPeakFlag() == true) {  //First difference peaks    
+      for(int i = 0; i < (int)pulses.size(); i++) {
+        outfile << i << " ";
+        for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++) {
+          outfile << pulses[i]->peaksLocation[j] << " ";
           outfile << pulses[i]->returningWave[pulses[i]->peaksLocation[j]] 
-                  << " at ";
-          outfile << pulses[i]->peaksLocation[j] << ",";
+                  << " ";
         }
         outfile << "\n";
       }
     }
-    else{ //Smooth second difference peaks
-      for(int i = 0; i < (int)pulses.size(); i++){
-        outfile << i << ",";
-        for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++){
-          outfile << pulses[i]->returningWave[(pulses[i]->peaksLocation[j])+3] 
-                  << " at ";
-          outfile << (pulses[i]->peaksLocation[j])+3 << ",";
+    else { //Smooth second difference peaks
+      for(int i = 0; i < (int)pulses.size(); i++) {
+        outfile << i << " ";
+        for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++) {
+          outfile << (pulses[i]->peaksLocation[j]) + 3 << " ";
+          outfile << pulses[i]->returningWave[(pulses[i]->peaksLocation[j])
+                                              + 3] << " ";          
         }
         outfile << "\n";
       }

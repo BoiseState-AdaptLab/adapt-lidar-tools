@@ -133,8 +133,11 @@ void PulseData::calculateSmoothSecondDifference(){
  * Take in a vector and calculate its peaks
  */
 void PulseData::findPeaks(std::vector<int> data){
-  
-  const int NOISE = 3; //Level up to and including which peaks will be excluded
+  /* Level up to and including which peaks will be excluded
+   * For the unaltered wave, noise = 16
+   * for the scond derivative of the wave, noise = 3
+   */  
+  const int NOISE = 16; 
   int wideStart = -1;  //The start of any current wide peak
 
  /* Sign of gradient

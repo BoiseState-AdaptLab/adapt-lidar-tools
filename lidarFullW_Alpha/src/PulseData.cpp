@@ -139,6 +139,7 @@ void PulseData::findPeaks(std::vector<int> data){
    */  
   const int NOISE = 16; 
   int wideStart = -1;  //The start of any current wide peak
+  int noOfWidePeaks = 0;
 
  /* Sign of gradient
   * =  1 for increasing
@@ -160,20 +161,13 @@ void PulseData::findPeaks(std::vector<int> data){
     //Only possibility of a peak
     if(data[i+1] < data[i]){
       //Sharp peak
-      if(grad == 1 && data[i] > NOISE){
-        // peaks.push_back(data[i]);    //Peak value
+      if(grad == 1 && data[i] > NOISE){      
         peaksLocation.push_back(i);  //Peak location
       }
       //Wide peak
-      else if(grad == 0 && data[i] > NOISE){
-        // peaks.push_back(data[wideStart]);
-        if ((i - wideStart) % 2 == 0) {
-          peaksLocation.push_back(wideStart);
-        }
-        else {
-          peaksLocation.push_back(wideStart + (((i - wideStart) / 2) + 1));
-        }
-        
+      else if(grad == 0 && data[i] > NOISE){        
+        noOfWidePeaks = (i - wideStart) + 1;
+        peaksLocation.push_back(wideStart + (noOfWidePeaks / 2));        
       }
       count++;
       grad = -1;
@@ -328,17 +322,3 @@ void PulseData::displayPeaksAndLocations(){
           " found at location: " << peaksLocation[i] << std::endl;    
   }
 }
-
-// /*
-//  * Write peaks to file
-//  */
-// void PulseData::writePeaksToFile(){
-//   std::ofstream outfile;
-//   outfile.open("peaksAndLocations.csv");
-//   outfile << "Pulse Index" << ",";
-//   outfile << "Peak Value & location"<< "\n";
-//   for(int i = 0; i<(int)peaks.size(); i++){
-//     outfile << peaks[i] << ",";
-//     outfile << peaksLocation[i] << "\n";
-//   }
-// }

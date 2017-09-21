@@ -41,7 +41,9 @@ public:
   void calculateSmoothSecondDifference();
 
   void caclulateFirstDifferencePeaks();
-  void findPeaks(std::vector<int> data, int n); //n = user defined noise level
+
+  //n = user defined noise level
+  void findPeaks(std::vector<int> data, int nLevel, int maxCount); 
 
   void displayPulseData();
   void displayPeaksAndLocations();

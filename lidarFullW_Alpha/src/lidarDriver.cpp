@@ -96,11 +96,11 @@ int main (int argc, char *argv[]) {
         pulses[i]->calculateFirstDifference();
         pulses[i]->calculateSecondDifference();
         pulses[i]->calculateSmoothSecondDifference();
-        pulses[i]->findPeaks(pulses[i]->smoothSecondDifference);
+        pulses[i]->findPeaks(pulses[i]->smoothSecondDifference, 3);
       }
       //First difference peaks(peaks calulated based on original data)
       else{        
-        pulses[i]->findPeaks(pulses[i]->returningWave);
+        pulses[i]->findPeaks(pulses[i]->returningWave, 6);
       }
     }
 

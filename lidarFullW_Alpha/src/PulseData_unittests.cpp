@@ -81,7 +81,7 @@ class PulseDataTest: public testing::Test{
       pulses[i]->calculateFirstDifference();
       pulses[i]->calculateSecondDifference();
       pulses[i]->calculateSmoothSecondDifference();
-      pulses[i]->findPeaks(pulses[i]->returningWave);
+      pulses[i]->findPeaks(pulses[i]->returningWave, 6);
     }
 
   }
@@ -417,14 +417,14 @@ TEST_F(PulseDataTest, smoothReturningWaveSecondDifference2){
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, findPeaksOfReturningWave1){
-  int truthPeaks[3] = {240,15,6};
-  int truthPeaksLocation[3] = {18,28,46};
+  int truthPeaks[3] = {240,15};
+  int truthPeaksLocation[3] = {18,29};
   
   //Test size
-  EXPECT_EQ(3,pulses[1]->peaksLocation.size()); 
+  EXPECT_EQ(2,pulses[1]->peaksLocation.size()); 
 
   //Test peaks data
-  for(int i = 0; i<=2; i++){
+  for(int i = 0; i<=1; i++){
     EXPECT_EQ(truthPeaks[i],
               pulses[1]->returningWave[pulses[1]->peaksLocation[i]]);
     EXPECT_EQ(truthPeaksLocation[i],
@@ -438,14 +438,14 @@ TEST_F(PulseDataTest, findPeaksOfReturningWave1){
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, findPeaksOfReturningWave2){
-  int truthPeaks[5] = {238,17,7,6,6};
-  int truthPeaksLocation[5] = {19,29,36,40,44};
+  int truthPeaks[5] = {238,17,7};
+  int truthPeaksLocation[5] = {19,30,36};
 
   //Test size
-  EXPECT_EQ(5,pulses[2]->peaksLocation.size()); 
+  EXPECT_EQ(3,pulses[2]->peaksLocation.size()); 
 
   //Test peaks data
-  for(int i = 0; i<=4; i++){
+  for(int i = 0; i<=2; i++){
     EXPECT_EQ(truthPeaks[i],
               pulses[2]->returningWave[pulses[2]->peaksLocation[i]]);
     EXPECT_EQ(truthPeaksLocation[i],

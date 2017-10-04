@@ -42,7 +42,10 @@ public:
 
   void caclulateFirstDifferencePeaks();
 
-  //n = user defined noise level
+  /*
+   * nLevel = user defined noise level
+   * maxCount = total data points/pulse
+   */
   void findPeaks(std::vector<int> data, int nLevel, int maxCount); 
 
   void displayPulseData();

@@ -135,7 +135,7 @@ void PulseData::calculateSmoothSecondDifference(){
 void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
   /* Level up to and including which peaks will be excluded
    * For the unaltered wave, noise = 6
-   * for the scond derivative of the wave, noise = 3
+   * for the second derivative of the wave, noise = 3
    */  
   const int noise = n; 
   int wideStart = -1;  //The start of any current wide peak
@@ -154,10 +154,10 @@ void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
   for(int i = 0; i<(int)data.size()-1; i++){
     
     //To prevent crossover from the previous pulse
-    if(count == 1){
+    if(count == 1 && maxCount == 61){
       i = i+1;
       count = count + 1;
-    }
+    }    
 
 
     //Only possibility of a peak
@@ -187,9 +187,10 @@ void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
       count++;
     }
 
-    //Reset the index
+    //Reset the index& increment i to prevent crossover to the next pulse
     if (count == maxCount) {
-      count = 1;  
+      count = 1;
+      i++;
     }  
 
   }

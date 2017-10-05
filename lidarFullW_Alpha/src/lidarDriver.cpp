@@ -112,9 +112,9 @@ int main (int argc, char *argv[]) {
       for(int i = 0; i < (int)pulses.size(); i++) {
         outfile << i << " ";
         for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++) {
-          outfile << pulses[i]->peaksLocation[j] << " ";
+          outfile << pulses[i]->peaksLocation[j] << ",";
           outfile << pulses[i]->returningWave[pulses[i]->peaksLocation[j]] 
-                  << " ";
+                  << ",";
         }
         outfile << "\n";
       }
@@ -123,7 +123,7 @@ int main (int argc, char *argv[]) {
       for(int i = 0; i < (int)pulses.size(); i++) {
         outfile << i << " ";
         for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++) {
-          outfile << (pulses[i]->peaksLocation[j]) + 3 << " ";
+          outfile << (pulses[i]->peaksLocation[j]) + 3 << ",";
           outfile << pulses[i]->returningWave[(pulses[i]->peaksLocation[j])
                                               + 3] << " ";          
         }

@@ -26,9 +26,9 @@ class PulseDataTest: public testing::Test{
 
     //Read the wave file
     std::string fileName=  "etc/140823_183115_1_clipped_test.pls";
-    PULSEreadOpener pOpener;  //Create a pulse read opener object
-    PULSEreader *pReader;     //Create a pulse reader object
-    WAVESsampling *sampling;  //Create a wave sampling object
+    PULSEreadOpener pOpener;  //Pulse read opener object
+    PULSEreader *pReader;     //Pulse reader object
+    WAVESsampling *sampling;  //Wave sampling object
     pOpener.set_file_name(fileName.c_str());
     pReader = pOpener.open();
     int maxCount = 60;
@@ -81,7 +81,7 @@ class PulseDataTest: public testing::Test{
       pulses[i]->calculateFirstDifference();
       pulses[i]->calculateSecondDifference();
       pulses[i]->calculateSmoothSecondDifference();
-      pulses[i]->findPeaks(pulses[i]->returningWave, 6);
+      pulses[i]->findPeaks(pulses[i]->returningWave, 6, 61);
     }
 
   }
@@ -417,8 +417,8 @@ TEST_F(PulseDataTest, smoothReturningWaveSecondDifference2){
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, findPeaksOfReturningWave1){
-  int truthPeaks[3] = {240,15};
-  int truthPeaksLocation[3] = {18,29};
+  int truthPeaks[2] = {240,15};
+  int truthPeaksLocation[2] = {18,29};
   
   //Test size
   EXPECT_EQ(2,pulses[1]->peaksLocation.size()); 
@@ -438,11 +438,11 @@ TEST_F(PulseDataTest, findPeaksOfReturningWave1){
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, findPeaksOfReturningWave2){
-  int truthPeaks[5] = {238,17,7};
-  int truthPeaksLocation[5] = {19,30,36};
+  int truthPeaks[4] = {238,17,7,7};
+  int truthPeaksLocation[4] = {19,30,34,36};
 
   //Test size
-  EXPECT_EQ(3,pulses[2]->peaksLocation.size()); 
+  EXPECT_EQ(4,pulses[2]->peaksLocation.size()); 
 
   //Test peaks data
   for(int i = 0; i<=2; i++){

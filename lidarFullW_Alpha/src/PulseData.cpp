@@ -130,14 +130,14 @@ void PulseData::calculateSmoothSecondDifference(){
 
 
 /*
- * Take in a vector and noise level and calculate its peaks
+ * Calclate the peaks: given a vector, noise level and max count
  */
 void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
-  /* Level up to and including which peaks will be excluded
+  /* nLevel - The level up to and including which peaks will be excluded
    * For the unaltered wave, noise = 6
    * for the second derivative of the wave, noise = 3
    */  
-  const int noise = n; 
+  int noise = nLevel; 
   int wideStart = -1;  //The start of any current wide peak
   int noOfWidePeaks = 0;
 
@@ -169,6 +169,11 @@ void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
       //Wide peak
       else if(grad == 0 && data[i] > noise){        
         noOfWidePeaks = (i - wideStart) + 1;
+        // TODO: Find the greatest of the wide peaks by regerencing original wave
+/*        int maxPeak = 0;
+        for(int i = 0; i < noOfWidePeaks; i++) {          
+        }
+*/
         peaksLocation.push_back(wideStart + (noOfWidePeaks / 2));        
       }
       count++;

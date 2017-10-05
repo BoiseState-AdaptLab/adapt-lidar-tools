@@ -125,7 +125,7 @@ int main (int argc, char *argv[]) {
         for(int j = 0; j<(int)pulses[i]->peaksLocation.size(); j++) {
           outfile << (pulses[i]->peaksLocation[j]) + 3 << ",";
           outfile << pulses[i]->returningWave[(pulses[i]->peaksLocation[j])
-                                              + 3] << " ";          
+                                              + 3] << ",";          
         }
         outfile << "\n";
       }

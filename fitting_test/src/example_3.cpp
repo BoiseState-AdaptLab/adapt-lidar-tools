@@ -66,19 +66,37 @@ func_df (const gsl_vector * x, void *params, gsl_matrix * J)
   int j;
   size_t i;
   for (i = 0; i < d->n; ++i){
+    double a_sum = 0;
+    double b_sum = 0;
+    double c_sum = 0;
+    double ti = d->t[i];
     for(j=0;j<npeaks;j++){
       double a = gsl_vector_get(x, j*3+0);
       double b = gsl_vector_get(x, j*3+1);
       double c = gsl_vector_get(x, j*3+2);
 
-      double ti = d->t[i];
       double zi = (ti - b) / c;
       double ei = exp(-0.5 * zi * zi);
 
-    gsl_matrix_set(J, i,3*j+ 0, -ei);
-    gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
-    gsl_matrix_set(J, i,3*j+ 2, -(a / c) * ei * zi * zi);
+      a_sum += ei;
+      b_sum += a*(ti-b)*ei*(1/(c*c));
+      c_sum += a*(ti-b)*(ti-b) * ei * (1/(c*c*c));
     }
+    // first derivative wrt a
+    // ei
+    //gsl_matrix_set(J, i,3*j+ 0, -ei);
+    gsl_matrix_set(J, i,0, a_sum);
+
+    // first derivative wrt b
+    // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2) 
+    // a*(ti-b)*ei*(1/(c*c))
+    //gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
+    gsl_matrix_set(J, i,1,b_sum);
+
+    // first derivative wrt c
+    // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
+    gsl_matrix_set(J, i,2,c_sum);
+    
   }
 
   return GSL_SUCCESS;
@@ -209,7 +227,7 @@ int
 main (void)
 {
   const size_t n = 60;  /* number of data points to fit */
-  const size_t p = 9;    /* number of model parameters */
+  const size_t p = 6;    /* number of model parameters */
   const gsl_rng_type * T = gsl_rng_default;
   gsl_vector *f = gsl_vector_alloc(n);
   gsl_vector *x = gsl_vector_alloc(p);
@@ -258,15 +276,12 @@ main (void)
   fdf.params = &fit_data;
 
   /* starting point */
-  gsl_vector_set(x, 0, 1500.0);
-  gsl_vector_set(x, 1, 16.0);
+  gsl_vector_set(x, 0, 240.0);
+  gsl_vector_set(x, 1, 17.0);
   gsl_vector_set(x, 2, 8.0);
-  gsl_vector_set(x, 3, 245.0);
-  gsl_vector_set(x, 4, 21.0);
+  gsl_vector_set(x, 3, 15.0);
+  gsl_vector_set(x, 4, 28.0);
   gsl_vector_set(x, 5, 4.0);
-  gsl_vector_set(x, 6, 90.0);
-  gsl_vector_set(x, 7, 25.0);
-  gsl_vector_set(x, 8, 4.0);
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
   solve_system(x, &fdf, &fdf_params);

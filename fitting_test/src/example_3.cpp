@@ -22,6 +22,7 @@ gaussianSum(const gsl_vector * x,const double t)
 
   int i = 0;
   double value = 0.;
+  // for each identified peak
   for(i=0;i<(x->size/3);i++){
     double a = gsl_vector_get(x,3*i+0);
     double b = gsl_vector_get(x,3*i+1);
@@ -31,12 +32,6 @@ gaussianSum(const gsl_vector * x,const double t)
   }
   return value;
 }
-//double
-//gaussian(const double a, const double b, const double c, const double t)
-//{
-  //const double z = (t - b) / c;
-  //return (a * exp(-0.5 * z * z));
-//}
 
 int
 func_f (const gsl_vector * x, void *params, gsl_vector * f)
@@ -44,6 +39,7 @@ func_f (const gsl_vector * x, void *params, gsl_vector * f)
   struct data *d = (struct data *) params;
   size_t i;
 
+  // for each t
   for (i = 0; i < d->n; ++i)
     {
       double ti = d->t[i];
@@ -65,11 +61,13 @@ func_df (const gsl_vector * x, void *params, gsl_matrix * J)
   int npeaks = x->size/3;
   int j;
   size_t i;
+  // for each value of time
   for (i = 0; i < d->n; ++i){
     double a_sum = 0;
     double b_sum = 0;
     double c_sum = 0;
     double ti = d->t[i];
+    // calculate the sum of the derivatives
     for(j=0;j<npeaks;j++){
       double a = gsl_vector_get(x, j*3+0);
       double b = gsl_vector_get(x, j*3+1);
@@ -78,24 +76,25 @@ func_df (const gsl_vector * x, void *params, gsl_matrix * J)
       double zi = (ti - b) / c;
       double ei = exp(-0.5 * zi * zi);
 
-      a_sum += ei;
-      b_sum += a*(ti-b)*ei*(1/(c*c));
-      c_sum += a*(ti-b)*(ti-b) * ei * (1/(c*c*c));
+      a_sum = (-1)*ei;
+      b_sum = (-1)*a*(ti-b)*ei*(1/(c*c));
+      c_sum = (-1)*a*(ti-b)*(ti-b) * ei * (1/(c*c*c));
+
+      // first derivative wrt a
+      // ei
+      //gsl_matrix_set(J, i,3*j+ 0, -ei);
+      gsl_matrix_set(J, i,3*j+0, a_sum);
+
+      // first derivative wrt b
+      // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2) 
+      // a*(ti-b)*ei*(1/(c*c))
+      //gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
+      gsl_matrix_set(J, i,3*j+1,b_sum);
+
+      // first derivative wrt c
+      // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
+      gsl_matrix_set(J, i,3*j+2,c_sum);
     }
-    // first derivative wrt a
-    // ei
-    //gsl_matrix_set(J, i,3*j+ 0, -ei);
-    gsl_matrix_set(J, i,0, a_sum);
-
-    // first derivative wrt b
-    // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2) 
-    // a*(ti-b)*ei*(1/(c*c))
-    //gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
-    gsl_matrix_set(J, i,1,b_sum);
-
-    // first derivative wrt c
-    // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
-    gsl_matrix_set(J, i,2,c_sum);
     
   }
 

@@ -6,22 +6,105 @@
  *
  */
 #include "GaussianFitting.hpp"
+#include "PulseData.hpp"
+#include "pulsereader.hpp"
+#include "pulsewriter.hpp"
 #include "gtest/gtest.h"
 
 
+
 class GaussianFittingTest: public testing::Test{
+  public:  
+    std::vector<PulseData*> pulses;
+    PulseData* pd;
+
   protected:
 
-  // function to set up space used by all tests
+  //Function to set up space used by all tests
   virtual void SetUp(){
+
+    //Read the wave file
+    std::string fileName=  "etc/140823_183115_1_clipped_test.pls";
+    PULSEreadOpener pOpener;  //Pulse read opener object
+    PULSEreader *pReader;     //Pulse reader object
+    WAVESsampling *sampling;  //Wave sampling object
+    pOpener.set_file_name(fileName.c_str());
+    pReader = pOpener.open();
+    int maxCount = 60;
+    long long pulseIndex = 0; // Keep track of the index
+
+    //Populate the wave data
+    while(pReader->read_pulse()){
+
+      //Read the waves
+      if(pReader->read_waves()){
+        pd = new PulseData();
+        for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){          
+          sampling = pReader->waves->get_sampling(i);          
+
+          //Based on the type of wave, populate data
+          if(sampling->get_type() == PULSEWAVES_OUTGOING){
+
+          /* Data is being populated from the 140823_183115_1_clipped_test.pls 
+           * file located in the etc folder. The tests located further below 
+           * checks the known values against the values that are being read 
+           * from the .pls file
+           */
+            pd->populateOutgoing(sampling, maxCount, pulseIndex);
+
+          }
+          else if(sampling->get_type() == PULSEWAVES_RETURNING){
+
+          /* Data is being populated from the 140823_183115_1_clipped_test.pls 
+           * file located in the etc folder. The tests located further below 
+           * checks the known values against the values that are being read 
+           * from the .pls file
+           */            
+            pd->populateReturning(sampling, maxCount, pulseIndex);
+          }
+          else{
+            std::cout << "Unknown type: " << sampling->get_type() \
+                      << std::endl;
+          }
+        }
+      }
+      //No waves
+      else{
+        std::cout <<"NO DATA!\n" << std::endl;
+      }
+      pulses.push_back(pd);
+      pulseIndex++;
+    }
+
+    for(int i = 0; i < (int)pulses.size(); i++){
+      pulses[i]->calculateFirstDifference();
+      pulses[i]->calculateSecondDifference();
+      pulses[i]->calculateSmoothSecondDifference();
+      pulses[i]->findPeaks(pulses[i]->returningWave, 6, 61);
+    }
+
   }
 
+  GaussianFitting gfit;
 };
 
-/*
-* Gaussian fitting test
-*/
-TEST_F(GaussianFittingTest, testName){
+/******************************************************************************
+* 
+* Test gaussianFitting() method on returning wave data at pulse index 1
+* "2 2 2 1 1 1 1 1 1 0 0 1 9 35 88 155 212 240 237 200 145 87 42 18 12 13 14 
+*  15 15 14 13 10 8 8 8 8 7 6 6 4 4 4 3 4 5 6 4 4 3 2 2 1 1 0 1 2 3 4 4 2"
+* 
+******************************************************************************/
+TEST_F(GaussianFittingTest, gaussianFitting){
+  int truthPeaks[2] = {240,15};
+  int truthPeaksLocation[2] = {18,29};
+  //TODO
+  EXPECT_EQ(2, gfit.getNumPeaks());
+  EXPECT_NO_THROW(gfit.findPeaks(double* amplData, double* timeData, size_t n, /
+                  struct peak* peaks, size_t numPeaks));
+
+
+
   
 }
 

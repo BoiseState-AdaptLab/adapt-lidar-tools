@@ -14,7 +14,24 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
+int getNumPeaks();
 
+void calculateFirstDifference();
+void calculateSecondDifference();
+int medianOfFive(int a, int b, int c, int d, int e);
+void calculateSmoothSecondDifference();
+
+/*
+ * nLevel = user defined noise level
+ * maxCount = total data points/pulse
+ */
+void findPeaks(std::vector<int> data, int nLevel, int maxCount); 
+
+struct peak{
+  double time;
+  double amp;
+  double width;
+}
 
 
 

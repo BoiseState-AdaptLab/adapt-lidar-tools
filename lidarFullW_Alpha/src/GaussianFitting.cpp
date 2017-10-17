@@ -1,3 +1,10 @@
+/*
+ * File name: GaussianFitting.cpp
+ * Created on: 13-October-2017
+ * Author: ravi
+ */
+
+#include "GaussianFitting.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,6 +14,143 @@
 #include <gsl/gsl_multifit_nlinear.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+
+
+/*
+ * Calculate the first differences
+ */
+void GaussianFitting::calculateFirstDifference(){ //TODO
+  int first, second, fDiff, count = 0;
+  for(int i = 0; i< (int)returningWave.size(); i++){
+    first = returningWave[i+1];
+    second = returningWave[i+2];
+
+    fDiff = second - first;
+
+    firstDifference.push_back(fDiff);        
+    count++;
+
+    if(count == 59){      
+        count = 0;
+        i = i+2;
+    }
+  }
+}
+
+
+/*
+ * Calculate the second diferences
+ */
+void GaussianFitting::calculateSecondDifference(){  //TODO
+  int first, second, sDiff, count =0;
+  for(int i = 0; i< (int)firstDifference.size(); i++){  
+    first = firstDifference[i];
+    second = firstDifference[i+1];
+    sDiff = std::abs(second - first); //Absolute value
+
+    secondDifference.push_back(sDiff);
+    count++;
+    if (count == 58){
+      count = 0;
+      i = i+1;
+    }
+  
+  }
+}
+
+
+/*
+ * Find the median of five values
+ */
+int GaussianFitting::medianOfFive(int a, int b, int c, int d, int e){ //TODO
+  // makes a < b and c < d
+  int temp;
+  //sort a,b
+  if(a > b){
+    temp = a;
+    a = b;
+    b = temp;
+  }  
+  // sort c,d
+  if(c > d){
+    temp = c;
+    c = d;
+    d = temp;
+  }  
+  // eliminate the lowest
+  if (a > c) {
+    temp = a;
+    a = c;
+    c = temp;
+  }
+
+  // gets e in
+  a = e;
+  //sort a,b
+  if(a > b){
+    temp = a;
+    a = b;
+    b = temp;
+  }  
+  // sort c,d
+  if(c > d){
+    temp = c;
+    c = d;
+    d = temp;
+  }  
+  // eliminate the lowest
+  if (a > c) {
+    temp = a;
+    a = c;
+    c = temp;
+  }
+
+  // sort b,c
+  if(b > c){
+    temp = b;
+    b = c;
+    c =temp;
+  }  
+
+  if(b<d){
+   return b; 
+ }
+ return d;
+}
+
+
+/*
+ * Calculate smooth second difference
+ */
+void GaussianFitting::calculateSmoothSecondDifference(){  //TODO
+  int first, second, third, fourth, fifth;
+  int median;
+  int count = 1;  //Keeps track of the number of 
+  for(int i = 0; i< (int)secondDifference.size(); i++){
+    if(count == 1 || count == 2){
+      smoothSecondDifference.push_back(secondDifference[i]);
+      count++;
+      continue;
+    }
+    first = secondDifference[i-2];
+    second = secondDifference[i-1];
+    third = secondDifference[i];
+    fourth = secondDifference[i+1];
+    fifth = secondDifference[i+2];
+    median = medianOfFive(first, second, third, fourth, fifth);
+    smoothSecondDifference.push_back(median);
+    count++;
+    if(count == 57){
+      smoothSecondDifference.push_back(secondDifference[i+1]);
+      smoothSecondDifference.push_back(secondDifference[i+2]);
+      i = i+2;
+      count = 1;
+    }
+
+  }
+
+}
+
 
 struct data
 {
@@ -308,3 +452,4 @@ main (void)
 
   return 0;
 }
+

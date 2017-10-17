@@ -483,6 +483,11 @@ TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference1){
 * 
 ******************************************************************************/
 TEST_F(PulseDataTest, findPeaksOfReturningWaveSmoothSecondDifference){
+
+  //                 {2,1,2,2,3,2,2,1,1,3,2,2,3,5,19,58,121,186,
+  //                 228,238,214,164,106,58,26,13,10,12,15,17,17,16,13,10,7,6,7,
+  //                 6,6,4,6,6,6,5,6,6,6,6,5,4,4,2,2,1,2,2,1,2,2,2,2};
+
   //TODO
   int truthPeaks[5] = {238,17,7,6,6};
   int truthPeaksLocation[5] = {19,29,36,40,44};

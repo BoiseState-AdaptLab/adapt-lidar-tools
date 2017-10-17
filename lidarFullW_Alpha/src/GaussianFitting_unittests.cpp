@@ -33,6 +33,9 @@ class GaussianFittingTest: public testing::Test{
     int maxCount = 60;
     long long pulseIndex = 0; // Keep track of the index
 
+
+    // CRO: This loop won't be able to be here either.
+    // We want to stream the data not read it all into memory
     //Populate the wave data
     while(pReader->read_pulse()){
 
@@ -76,6 +79,8 @@ class GaussianFittingTest: public testing::Test{
       pulseIndex++;
     }
 
+    // CRO: This should not be part of setup. Rather they need to 
+    // be called in the unit tests themselves.
     for(int i = 0; i < (int)pulses.size(); i++){
       pulses[i]->calculateFirstDifference();
       pulses[i]->calculateSecondDifference();
@@ -98,10 +103,16 @@ class GaussianFittingTest: public testing::Test{
 TEST_F(GaussianFittingTest, gaussianFitting){
   int truthPeaks[2] = {240,15};
   int truthPeaksLocation[2] = {18,29};
-  //TODO
+  //TODO CRO The test will have an object preader
+  // test should start by doing a readPulse(preader, amplData, timeData, &n)
+  // the return value on readPules should be 0 unless there is an error
   EXPECT_EQ(2, gfit.getNumPeaks());
   EXPECT_NO_THROW(gfit.findPeaks(double* amplData, double* timeData, size_t n, /
                   struct peak* peaks, size_t numPeaks));
+  WaveDescription waveDescription;
+  gfit.fit(pulseData,&waveDescription)
+  // get stuff out of the wave description
+  EXPECT_EQ(truthPeaks[0],wd.getAmp(0))
 
 
 

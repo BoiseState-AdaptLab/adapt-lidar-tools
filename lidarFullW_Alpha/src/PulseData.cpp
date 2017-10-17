@@ -151,8 +151,12 @@ void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
   int grad = -1;
 
   int count = 1;  //Keep track of the index
+  // for each data point
   for(int i = 0; i<(int)data.size()-1; i++){
-    
+   
+    // The following code has not been tested.
+    // It is in place to prevent this from
+    // trying to work across segments 
     //To prevent crossover from the previous pulse
     if(count == 1 && maxCount == 61){
       i = i+1;
@@ -192,6 +196,8 @@ void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
       count++;
     }
 
+
+    // Again for multiple segments - has not been tested
     //Reset the index& increment i to prevent crossover to the next pulse
     if (count == maxCount) {
       count = 1;

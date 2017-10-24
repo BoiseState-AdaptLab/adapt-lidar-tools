@@ -26,7 +26,11 @@ public:
   unsigned char facet;
   unsigned char scanDirection;
   unsigned char intensity;
-
+  struct xyzCoordinates {
+	double xCoordinate;
+	double yCoordinate;
+	double zCoordinate;
+  };
 
   GPSInformation();  
   void populateGPS(PULSEreader *pReader);

@@ -26,6 +26,10 @@ GPSInformation::GPSInformation(){
   facet = 0;
   scanDirection = 0;
   intensity = 0;
+  
+  xyzCoordinates.xCoordinate = 0;
+  xyzCoordinates.yCoordinate = 0;
+  xyzCoordinates.zCoordinate = 0;
 }
 
 
@@ -77,4 +81,21 @@ void GPSInformation::displayGPSData(){
   std::cout << facet << std::endl;
   std::cout << scanDirection << std::endl;
   std::cout << intensity << std::endl;
+}
+
+void GPSInformation::getRealPoint(pulseAxisPoint, axisScale, axisOffset) {
+    realAxisPoint = (pulseAxisPoint * axisScale) + axisOffset;
+    return realAxisPoint;
+}
+
+void GPSInformation::getAxisDerivative(axisTarget, axisAnchor, units) {
+    axisDerivative = (axisTarget - axisAnchor) / units;
+    return axisDerivative;
+}
+
+//Idea for method
+void GPSInformation::getRealPeakCoordinate(x_axis, y_axis, z_axis, PULSEreader *pReader){
+    xyzCoordinates.xCoordinate = getRealPoint(x_axis,pReader.get_scale_x, pReader.get_offset_x);
+    xyzCoordinates.yCoordinate = getRealPoint(y_axis,pReader.get_scale_y, pReader.get_offset_y);
+    xyzCoordinates.zCoordinate = getRealPoint(z_axis,pReader.get_scale_z, pReader.get_offset_z);
 }

@@ -21,6 +21,7 @@ class GPSInformationTest: public testing::Test{
 
   // function to set up space used by all tests
   virtual void SetUp(){
+	//populate with setup declarations that are currently inside 'checkValues' test
   }
 
 };
@@ -250,4 +251,58 @@ TEST_F(GPSInformationTest, checkValues){
     ASSERT_EQ (TruthScanDirection, gpsInfo.scanDirection);
     ASSERT_EQ (TruthIntensity, gpsInfo.intensity);
   }
+
+TEST_F(GPSInformationTest, checkXYZ_offset){
+    //This test will compare the known values of x,y, and z 
+    //offset with the values that are retrieved from the pulse
+    //data.
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_scale){
+    //This test will compare the known values of x, y, and z
+    //scale with the values that are retrieved from the pulse
+    //data.
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_realTargetValues){
+    //This test will compare the real world target values
+    //of x, y, and z that are calculated by the GPSInformation
+    //class to the real world target values that are calculated
+    //by hand.
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_realAnchorValues){
+    //This test will compare the real world anchor values of
+    //x, y, and z that are calculated by the GPSInformation
+    //class to the real world anchor values that are calculated 
+    //by hand.
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_realFirstValues){
+    //This test will compare the real world first values of
+    //x, y, and z that are calcuated by the GPSInformation
+    //class to the real world first values that are calculated
+    //by hand.
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_realLastValues){
+    //This test will compare the real world last values of
+    //x, y, and z that are calculated by the GPSInformation 
+    //class to the real world last values that are calculated 
+    //by hand.
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_realMinimumValues){
+    //This test will compare the real world minimum values of
+    //x, y, and z that are calculated by the GPSInformation
+    //class to the real world minimum values that are calculated
+    //by hand.
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_realMaximumValues){
+    //This test will compare the real world maximum values of
+    //x, y, and z that are calculated by the GPSInformation
+    //class to the real world maximum values that are calculated
+    //by hand.
+ }
 }

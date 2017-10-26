@@ -256,12 +256,35 @@ TEST_F(GPSInformationTest, checkXYZ_offset){
     //This test will compare the known values of x,y, and z 
     //offset with the values that are retrieved from the pulse
     //data.
+    
+    var known_X_offset=1;
+    var known_Y_offset=1;
+    var known_Z_offset=1;
+    var pulse_x_offset=0;
+    var pulse_Y_offset=0;
+    var pulse_Z_offset=0;
+
+    ASSERT_EQ(known_X_offset, pulse_X_offset);
+    ASSERT_EQ(known_Y_offset, pulse_Y_offset);
+    ASSERT_EQ(known_Z_offset, pulse_Z_offset);
  }
 
 TEST_F(GPSInformationTest, checkXYZ_scale){
     //This test will compare the known values of x, y, and z
     //scale with the values that are retrieved from the pulse
     //data.
+    
+    var known_X_scale=.1;
+    var known_Y_scale=.1;
+    var known_Z_scale=.1;
+    var pulse_x_scale=0.0;
+    var pulse_Y_scale=0.0;
+    var pulse_Z_scale=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_scale, pulse_X_scale);
+    ASSERT_DOUBLE_EQ(known_Y_scale, pulse_Y_scale);
+    ASSERT_DOUBLE_EQ(known_Z_scale, pulse_Z_scale);
+
  }
 
 TEST_F(GPSInformationTest, checkXYZ_realTargetValues){
@@ -269,6 +292,18 @@ TEST_F(GPSInformationTest, checkXYZ_realTargetValues){
     //of x, y, and z that are calculated by the GPSInformation
     //class to the real world target values that are calculated
     //by hand.
+
+    var known_X_target=.1;
+    var known_Y_target=.1;
+    var known_Z_target=.1;
+    var pulse_x_target=0.0;
+    var pulse_Y_target=0.0;
+    var pulse_Z_target=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_target, pulse_X_target);
+    ASSERT_DOUBLE_EQ(known_Y_target, pulse_Y_target);
+    ASSERT_DOUBLE_EQ(known_Z_target, pulse_Z_target);
+
  }
 
 TEST_F(GPSInformationTest, checkXYZ_realAnchorValues){
@@ -276,6 +311,18 @@ TEST_F(GPSInformationTest, checkXYZ_realAnchorValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world anchor values that are calculated 
     //by hand.
+
+    var known_X_anchor=.1;
+    var known_Y_anchor=.1;
+    var known_Z_anchor=.1;
+    var pulse_x_anchor=0.0;
+    var pulse_Y_anchor=0.0;
+    var pulse_Z_anchor=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_anchor, pulse_X_anchor);
+    ASSERT_DOUBLE_EQ(known_Y_anchor, pulse_Y_anchor);
+    ASSERT_DOUBLE_EQ(known_Z_anchor, pulse_Z_anchor);
+    
  }
 
 TEST_F(GPSInformationTest, checkXYZ_realFirstValues){
@@ -283,6 +330,18 @@ TEST_F(GPSInformationTest, checkXYZ_realFirstValues){
     //x, y, and z that are calcuated by the GPSInformation
     //class to the real world first values that are calculated
     //by hand.
+
+    var known_X_first=.1;
+    var known_Y_first=.1;
+    var known_Z_first=.1;
+    var pulse_x_first=0.0;
+    var pulse_Y_first=0.0;
+    var pulse_Z_first=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_first, pulse_X_first);
+    ASSERT_DOUBLE_EQ(known_Y_first, pulse_Y_first);
+    ASSERT_DOUBLE_EQ(known_Z_first, pulse_Z_first);
+
  }
 
 TEST_F(GPSInformationTest, checkXYZ_realLastValues){
@@ -290,6 +349,18 @@ TEST_F(GPSInformationTest, checkXYZ_realLastValues){
     //x, y, and z that are calculated by the GPSInformation 
     //class to the real world last values that are calculated 
     //by hand.
+
+    var known_X_last=.1;
+    var known_Y_last=.1;
+    var known_Z_last=.1;
+    var pulse_x_last=0.0;
+    var pulse_Y_last=0.0;
+    var pulse_Z_last=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_last, pulse_X_last);
+    ASSERT_DOUBLE_EQ(known_Y_last, pulse_Y_last);
+    ASSERT_DOUBLE_EQ(known_Z_last, pulse_Z_last);
+
  }
 
 TEST_F(GPSInformationTest, checkXYZ_realMinimumValues){
@@ -297,6 +368,18 @@ TEST_F(GPSInformationTest, checkXYZ_realMinimumValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world minimum values that are calculated
     //by hand.
+
+    var known_X_minimum=.1;
+    var known_Y_minimum=.1;
+    var known_Z_minimum=.1;
+    var pulse_x_minimum=0.0;
+    var pulse_Y_minimum=0.0;
+    var pulse_Z_minimum=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_minimum, pulse_X_minimum);
+    ASSERT_DOUBLE_EQ(known_Y_minimum, pulse_Y_minimum);
+    ASSERT_DOUBLE_EQ(known_Z_minimum, pulse_Z_minimum);
+
  }
 
 TEST_F(GPSInformationTest, checkXYZ_realMaximumValues){
@@ -304,5 +387,17 @@ TEST_F(GPSInformationTest, checkXYZ_realMaximumValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world maximum values that are calculated
     //by hand.
+
+    var known_X_maximum=.1;
+    var known_Y_maximum=.1;
+    var known_Z_maximum=.1;
+    var pulse_x_maximum=0.0;
+    var pulse_Y_maximum=0.0;
+    var pulse_Z_maximum=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_maximum, pulse_X_maximum);
+    ASSERT_DOUBLE_EQ(known_Y_maximum, pulse_Y_maximum);
+    ASSERT_DOUBLE_EQ(known_Z_maximum, pulse_Z_maximum);
+
  }
 }

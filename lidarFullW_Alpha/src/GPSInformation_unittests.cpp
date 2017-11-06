@@ -7,6 +7,8 @@
  * and its corresponding wvs file to be in the etc directory to run
  *
  */
+#include <stdio.h>
+#include <math.h>
 
 #include "gtest/gtest.h"
 #include "FullWaveformIngestion.hpp"
@@ -401,4 +403,30 @@ TEST_F(GPSInformationTest, checkXYZ_realMaximumValues){
     ASSERT_DOUBLE_EQ(known_Z_maximum, pulse_Z_maximum);
 
  }
+
+TEST_F(GPSInformationTest, CheckBoundingBox){
+    //This test will compare the calculated bounding box values
+    //for x, y, and z with the known values
+
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+
+    /*
+     * This section reads the wave and GPS file
+     */
+    GPSInformation gpsInfo;   // Create a GPS object
+
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+
+    int known_x_min= (int) (floor(510706.487) - 10)
+    int known_y_min= (int) (floor(4792924.648) - 10)
+    int known_z_min= (int) (floor(1604.828) - 10)
+    int known_x_max= (int) (ceiling(512412.097) + 10)
+    int known_y_max= (int) (ceiling(4794125.777) + 10)
+    int known_z_max= (int) (ceiling(1927.448) + 10)
+    
+}
+
 

@@ -4,35 +4,32 @@
  * Author: ravi
  */
 
-#include "PulseData.hpp"
-#include "pulsereader.hpp"
-#include "pulsewriter.hpp"
-#include "ScanData.hpp"
+#include "LidarVolume.hpp"
 #include <math.h>
 
 //Default constructor
 LidarVolume::LidarVolume(){
   //initialize to zero
-  double bb_x_min = 0;
-  double bb_y_min = 0;
-  double bb_z_min = 0;
-  double bb_x_max = 0;
-  double bb_y_max = 0;
-  double bb_z_max = 0;
+  bb_x_min = 0;
+  bb_y_min = 0;
+  bb_z_min = 0;
+  bb_x_max = 0;
+  bb_y_max = 0;
+  bb_z_max = 0;
 
-  int i_min = 0;
-  int j_min = 0;
-  int k_min = 0;
-  int i_max = 0;
-  int j_max = 0;
-  int k_max = 0;
+  i_min = 0;
+  j_min = 0;
+  k_min = 0;
+  i_max = 0;
+  j_max = 0;
+  k_max = 0;
 
-  int x_extent = 0;
-  int y_extent = 0;
-  int z_extent = 0;
+  x_extent = 0;
+  y_extent = 0;
+  z_extent = 0;
 }
 
-void LidarVolume::CalculateBoundingBox(PULSEreader* pReader){
+void LidarVolume::CalculateBoundingBox(PULSEreader *pReader){
   bb_x_min = pReader->header.min_x;
   bb_y_min = pReader->header.min_y;
   bb_z_min = pReader->header.min_z;

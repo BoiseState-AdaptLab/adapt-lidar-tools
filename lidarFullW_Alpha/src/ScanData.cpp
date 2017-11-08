@@ -1,12 +1,12 @@
 #include "PulseData.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
-#include "WaveReader.hpp"
+#include "ScanData.hpp"
 
 /*
  * Hides the reading of PulseWaves
  */
-void WaveReader::readWaves(std::string fileName){
+void ScanData::readWaves(std::string fileName){
   PULSEreadOpener pOpener;  //Pulse read opener object
   PULSEreader *pReader;     //Pulse reader object
   WAVESsampling *sampling;  //Wave sampling object

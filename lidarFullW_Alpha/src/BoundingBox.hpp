@@ -7,11 +7,12 @@ public:
   double bb_x_min;
   double bb_y_min;
   double bb_z_min;
+  
   double bb_x_max;
   double bb_y_max;
   double bb_z_max;
 
-  
+
 
 
 #endif /* BOUNDINGBOX_HPP_ */

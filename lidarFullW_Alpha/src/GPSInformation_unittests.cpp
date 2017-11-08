@@ -7,8 +7,6 @@
  * and its corresponding wvs file to be in the etc directory to run
  *
  */
-#include <stdio.h>
-#include <math.h>
 
 #include "gtest/gtest.h"
 #include "FullWaveformIngestion.hpp"

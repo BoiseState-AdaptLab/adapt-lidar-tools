@@ -7,6 +7,8 @@
 #ifndef LIDARVOLUME_HPP_
 #define LIDARVOLUME_HPP_
 
+#include <math.h>
+
 #include <iostream>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
@@ -17,12 +19,12 @@ class LidarVolume{
     //The min and max fields describing the boundary box(bb) that includes the 
     //first & last points of the sampled parts of the returning waveforms of 
     //all pulses
-    double bb_x_min;
-    double bb_y_min;
-    double bb_z_min;
-    double bb_x_max;
-    double bb_y_max;
-    double bb_z_max;
+    int pulse_bb_x_min;
+    int pulse_bb_y_min;
+    int pulse_bb_z_min;
+    int pulse_bb_x_max;
+    int pulse_bb_y_max;
+    int pulse_bb_z_max;
 
     //floor of the bb_mins
     int i_min;
@@ -33,16 +35,16 @@ class LidarVolume{
     int j_max;
     int k_max;
 
-    //extent = i,j,k maxes - mins
-    int x_extent;
-    int y_extent;
-    int z_extent;
+    //extent of x, y, and z as calculated from the pulse data (max - min)
+    int pulse_x_extent;
+    int pulse_y_extent;
+    int pulse_z_extent;
 
     LidarVolume();
 
     //Read and store the mins and maxes from the header, calculate and store the
     //i, j,k values and the extents
-    void CalculateBoundingBox(PULSEreader *pReader);
+    void calculateBoundingBox(PULSEreader *pReader);
 };
 
 

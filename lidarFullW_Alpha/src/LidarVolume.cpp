@@ -7,15 +7,16 @@
 #include "LidarVolume.hpp"
 #include <math.h>
 
+
 //Default constructor
 LidarVolume::LidarVolume(){
   //initialize to zero
-  bb_x_min = 0;
-  bb_y_min = 0;
-  bb_z_min = 0;
-  bb_x_max = 0;
-  bb_y_max = 0;
-  bb_z_max = 0;
+  pulse_bb_x_min = 0;
+  pulse_bb_y_min = 0;
+  pulse_bb_z_min = 0;
+  pulse_bb_x_max = 0;
+  pulse_bb_y_max = 0;
+  pulse_bb_z_max = 0;
 
   i_min = 0;
   j_min = 0;
@@ -24,27 +25,32 @@ LidarVolume::LidarVolume(){
   j_max = 0;
   k_max = 0;
 
-  x_extent = 0;
-  y_extent = 0;
-  z_extent = 0;
+  pulse_x_extent = 0;
+  pulse_y_extent = 0;
+  pulse_z_extent = 0;
 }
 
-void LidarVolume::CalculateBoundingBox(PULSEreader *pReader){
-  bb_x_min = pReader->header.min_x;
-  bb_y_min = pReader->header.min_y;
-  bb_z_min = pReader->header.min_z;
-  bb_x_max = pReader->header.min_x;
-  bb_y_max = pReader->header.min_y;
-  bb_z_max = pReader->header.min_z;
+void LidarVolume::calculateBoundingBox(PULSEreader *pReader){
+  //std::cout << pReader->header.min_x << std::endl;
+  //std::cout << pReader->header.min_x << std::endl;
+  //std::cout << pReader->header.min_x << std::endl;
+  
 
-  i_min = floor(bb_x_min) - 10;
-  j_min = floor(bb_y_min) - 10;
-  k_min = floor(bb_z_min) - 10;
-  i_max = ceil(bb_x_max) + 10;
-  j_max = ceil(bb_y_max) + 10;
-  k_max = ceil(bb_z_max) + 10;
+  pulse_bb_x_min = (floor(pReader->header.min_x) - 10);
+  pulse_bb_y_min = (floor(pReader->header.min_y) - 10);
+  pulse_bb_z_min = (floor(pReader->header.min_z) - 10);
+  pulse_bb_x_max = (ceil(pReader->header.max_x) + 10);
+  pulse_bb_y_max = (ceil(pReader->header.max_y) + 10);
+  pulse_bb_z_max = (ceil(pReader->header.max_z) + 10);
 
-  x_extent = i_max - i_min;
-  y_extent = j_max - j_min;
-  z_extent = k_max - k_min;
+  //i_min = floor(bb_x_min) - 10;
+  //j_min = floor(bb_y_min) - 10;
+ // k_min = floor(bb_z_min) - 10;
+ // i_max = ceil(bb_x_max) + 10;
+ // j_max = ceil(bb_y_max) + 10;
+ // k_max = ceil(bb_z_max) + 10;
+
+  pulse_x_extent = pulse_bb_x_max - pulse_bb_x_min;
+  pulse_y_extent = pulse_bb_y_max - pulse_bb_y_min;
+  pulse_z_extent = pulse_bb_z_max - pulse_bb_z_min;
 }

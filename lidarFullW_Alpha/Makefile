@@ -42,9 +42,8 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests \
-        $(BIN)/ScannerInformation_unittests $(BIN)/GPSInformation_unittests \
-	      $(BIN)/PulseData_unittests
-#	      $(BIN)/WaveformGaussianFitting_unittests 
+        $(BIN)/GPSInformation_unittests $(BIN)/PulseData_unittests \
+        $(BIN)/LidarVolume_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -90,13 +89,13 @@ $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
 $(USER_DIR)/FullWaveformIngestion.o: $(USER_DIR)/FullWaveformIngestion.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(USER_DIR)/ScannerInformation.o: $(USER_DIR)/ScannerInformation.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
-
 $(USER_DIR)/GPSInformation.o: $(USER_DIR)/GPSInformation.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(USER_DIR)/PulseData.o: $(USER_DIR)/PulseData.cpp
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+
+$(USER_DIR)/LidarVolume.o: $(USER_DIR)/LidarVolume.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds all object files
@@ -107,10 +106,7 @@ $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 lidarDriver: $(BIN)/lidarDriver
 
 $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/CmdLine.o \
-                    $(USER_DIR)/ScannerInformation.o \
-                    $(USER_DIR)/GPSInformation.o \
-                    $(USER_DIR)/FullWaveformIngestion.o \
-                    $(USER_DIR)/PulseData.o
+               $(USER_DIR)/GPSInformation.o $(USER_DIR)/PulseData.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
@@ -128,10 +124,10 @@ $(USER_DIR)/lidarDriver.o: $(USER_DIR)/lidarDriver.cpp
 test: $(TESTS)
 	$(BIN)/CmdLine_unittests
 	$(BIN)/FullWaveformIngestion_unittests
-	$(BIN)/ScannerInformation_unittests
 	$(BIN)/GPSInformation_unittests
+	$(BIN)/LidarVolume_unittests
 	$(BIN)/PulseData_unittests
-#	$(BIN)/WaveformGaussianFitting_unittests
+
 
 # Clean up when done. 
 # Removes all object, library and executable files

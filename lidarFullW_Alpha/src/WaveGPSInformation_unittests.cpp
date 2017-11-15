@@ -10,7 +10,7 @@
 
 #include "gtest/gtest.h"
 #include "FullWaveformIngestion.hpp"
-#include "GPSInformation.hpp"
+#include "WaveGPSInformation.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
@@ -30,7 +30,7 @@ class GPSInformationTest: public testing::Test{
 * Given the true values of the GPS file we read the pulse file and compare 
 * the scanned values to the true values
 */
-TEST_F(GPSInformationTest, checkValues){
+TEST_F(WaveGPSInformationTest, checkValues){
 
   // Known GPS information
   double TruthGpsTime;
@@ -51,7 +51,7 @@ TEST_F(GPSInformationTest, checkValues){
   /*
    * This section reads the wave and GPS file
    */
-  GPSInformation gpsInfo;   // Create a GPS object
+  WaveGPSInformation gpsInfo;   // Create a GPS object
 
   PULSEreadOpener pOpener;  // Create a pulse read opener object
   PULSEreader *pReader;     // Create a pulse reader object
@@ -252,3 +252,153 @@ TEST_F(GPSInformationTest, checkValues){
     ASSERT_EQ (TruthIntensity, gpsInfo.intensity);
   }
 }
+
+TEST_F(WaveGPSInformationTest, checkXYZ_offset){
+    //This test will compare the known values of x,y, and z 
+    //offset with the values that are retrieved from the pulse
+    //data.
+    
+    double known_X_offset=.1;
+    double known_Y_offset=.1;
+    double known_Z_offset=.1;
+    double pulse_X_offset=0.0;
+    double pulse_Y_offset=0.0;
+    double pulse_Z_offset=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_offset, pulse_X_offset);
+    ASSERT_DOUBLE_EQ(known_Y_offset, pulse_Y_offset);
+    ASSERT_DOUBLE_EQ(known_Z_offset, pulse_Z_offset);
+ }
+
+TEST_F(WaveGPSInformationTest, checkXYZ_scale){
+    //This test will compare the known values of x, y, and z
+    //scale with the values that are retrieved from the pulse
+    //data.
+    
+    double known_X_scale=.1;
+    double known_Y_scale=.1;
+    double known_Z_scale=.1;
+    double pulse_X_scale=0.0;
+    double pulse_Y_scale=0.0;
+    double pulse_Z_scale=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_scale, pulse_X_scale);
+    ASSERT_DOUBLE_EQ(known_Y_scale, pulse_Y_scale);
+    ASSERT_DOUBLE_EQ(known_Z_scale, pulse_Z_scale);
+
+ }
+
+TEST_F(WaveGPSInformationTest, checkXYZ_realTargetValues){
+    //This test will compare the real world target values
+    //of x, y, and z that are calculated by the GPSInformation
+    //class to the real world target values that are calculated
+    //by hand.
+
+    double known_X_target=.1;
+    double known_Y_target=.1;
+    double known_Z_target=.1;
+    double pulse_X_target=0.0;
+    double pulse_Y_target=0.0;
+    double pulse_Z_target=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_target, pulse_X_target);
+    ASSERT_DOUBLE_EQ(known_Y_target, pulse_Y_target);
+    ASSERT_DOUBLE_EQ(known_Z_target, pulse_Z_target);
+
+ }
+
+TEST_F(WaveGPSInformationTest, checkXYZ_realAnchorValues){
+    //This test will compare the real world anchor values of
+    //x, y, and z that are calculated by the GPSInformation
+    //class to the real world anchor values that are calculated 
+    //by hand.
+
+    double known_X_anchor=.1;
+    double known_Y_anchor=.1;
+    double known_Z_anchor=.1;
+    double pulse_X_anchor=0.0;
+    double pulse_Y_anchor=0.0;
+    double pulse_Z_anchor=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_anchor, pulse_X_anchor);
+    ASSERT_DOUBLE_EQ(known_Y_anchor, pulse_Y_anchor);
+    ASSERT_DOUBLE_EQ(known_Z_anchor, pulse_Z_anchor);
+    
+ }
+
+TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
+    //This test will compare the real world first values of
+    //x, y, and z that are calcuated by the GPSInformation
+    //class to the real world first values that are calculated
+    //by hand.
+
+    double known_X_first=.1;
+    double known_Y_first=.1;
+    double known_Z_first=.1;
+    double pulse_X_first=0.0;
+    double pulse_Y_first=0.0;
+    double pulse_Z_first=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_first, pulse_X_first);
+    ASSERT_DOUBLE_EQ(known_Y_first, pulse_Y_first);
+    ASSERT_DOUBLE_EQ(known_Z_first, pulse_Z_first);
+
+ }
+
+TEST_F(WaveGPSInformationTest, checkXYZ_realLastValues){
+    //This test will compare the real world last values of
+    //x, y, and z that are calculated by the GPSInformation 
+    //class to the real world last values that are calculated 
+    //by hand.
+
+    double known_X_last=.1;
+    double known_Y_last=.1;
+    double known_Z_last=.1;
+    double pulse_X_last=0.0;
+    double pulse_Y_last=0.0;
+    double pulse_Z_last=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_last, pulse_X_last);
+    ASSERT_DOUBLE_EQ(known_Y_last, pulse_Y_last);
+    ASSERT_DOUBLE_EQ(known_Z_last, pulse_Z_last);
+
+ }
+
+TEST_F(GPSInformationTest, checkXYZ_realMinimumValues){
+    //This test will compare the real world minimum values of
+    //x, y, and z that are calculated by the GPSInformation
+    //class to the real world minimum values that are calculated
+    //by hand.
+
+    double known_X_minimum=.1;
+    double known_Y_minimum=.1;
+    double known_Z_minimum=.1;
+    double pulse_X_minimum=0.0;
+    double pulse_Y_minimum=0.0;
+    double pulse_Z_minimum=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_minimum, pulse_X_minimum);
+    ASSERT_DOUBLE_EQ(known_Y_minimum, pulse_Y_minimum);
+    ASSERT_DOUBLE_EQ(known_Z_minimum, pulse_Z_minimum);
+
+ }
+
+TEST_F(WaveGPSInformationTest, checkXYZ_realMaximumValues){
+    //This test will compare the real world maximum values of
+    //x, y, and z that are calculated by the GPSInformation
+    //class to the real world maximum values that are calculated
+    //by hand.
+
+    double known_X_maximum=.1;
+    double known_Y_maximum=.1;
+    double known_Z_maximum=.1;
+    double pulse_X_maximum=0.0;
+    double pulse_Y_maximum=0.0;
+    double pulse_Z_maximum=0.0;
+
+    ASSERT_DOUBLE_EQ(known_X_maximum, pulse_X_maximum);
+    ASSERT_DOUBLE_EQ(known_Y_maximum, pulse_Y_maximum);
+    ASSERT_DOUBLE_EQ(known_Z_maximum, pulse_Z_maximum);
+
+ }
+

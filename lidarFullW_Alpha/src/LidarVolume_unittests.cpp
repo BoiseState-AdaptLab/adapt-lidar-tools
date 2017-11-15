@@ -97,9 +97,9 @@ TEST_F(LidarVolumeTest, CheckBoundingBox1){
 
 TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){
     //This test will compare the calculated bounding box values
-    //for x, y, and z with the known values
+    //for x, y, and z with the known values for nayani's pulse wave
 
-    std::string fileNameCorrect =  "140823_152426_2.pls"; //to be changed to nayani's .pls file
+    std::string fileNameCorrect =  "140823_152426_2.pls"; 
 
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
@@ -128,12 +128,12 @@ TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){
     int known_z_extent= known_z_max - known_z_min;
 
     
-    ASSERT_EQ(known_x_min,lidarVolume.pulse_bb_x_min);
-    ASSERT_EQ(known_y_min,lidarVolume.pulse_bb_y_min);
-    ASSERT_EQ(known_z_min,lidarVolume.pulse_bb_z_min);
-    ASSERT_EQ(known_x_max,lidarVolume.pulse_bb_x_max);
-    ASSERT_EQ(known_y_max,lidarVolume.pulse_bb_y_max);
-    ASSERT_EQ(known_z_max,lidarVolume.pulse_bb_z_max);
+    ASSERT_EQ(known_x_min,lidarVolume.pulse_bb_i_min);
+    ASSERT_EQ(known_y_min,lidarVolume.pulse_bb_j_min);
+    ASSERT_EQ(known_z_min,lidarVolume.pulse_bb_k_min);
+    ASSERT_EQ(known_x_max,lidarVolume.pulse_bb_i_max);
+    ASSERT_EQ(known_y_max,lidarVolume.pulse_bb_j_max);
+    ASSERT_EQ(known_z_max,lidarVolume.pulse_bb_k_max);
     
     ASSERT_EQ(known_x_extent,lidarVolume.pulse_x_extent);
     ASSERT_EQ(known_y_extent,lidarVolume.pulse_y_extent);

@@ -1,14 +1,14 @@
 /*
- * File name: GPSInformation.cpp
+ * File name: WaveGPSInformation.cpp
  * Created on: 20-June-2017
  * Author: ravi
  */
 
 #include <iostream>
-#include "GPSInformation.hpp"
+#include "WaveGPSInformation.hpp"
 
 //Default constructor
-GPSInformation::GPSInformation(){
+WaveGPSInformation::WaveGPSInformation(){
   // enter default values
   xAnchor = 0;
   yAnchor = 0;
@@ -36,7 +36,7 @@ GPSInformation::GPSInformation(){
 /*
  * Populate all the GPS data
  */
-void GPSInformation::populateGPS(PULSEreader *pReader){
+void WaveGPSInformation::populateGPS(PULSEreader *pReader){
   
     gpsTime = pReader->pulse.get_t();
     
@@ -65,7 +65,7 @@ void GPSInformation::populateGPS(PULSEreader *pReader){
 /*
  * Displays all GPS data
  */
-void GPSInformation::displayGPSData(){
+void WaveGPSInformation::displayGPSData(){
   std::cout << xAnchor << std::endl;
   std::cout << zAnchor << std::endl;
   std::cout << xTarget << std::endl;
@@ -83,18 +83,18 @@ void GPSInformation::displayGPSData(){
   std::cout << intensity << std::endl;
 }
 /*
-void GPSInformation::getRealPoint(pulseAxisPoint, axisScale, axisOffset) {
+void WaveGPSInformation::getRealPoint(pulseAxisPoint, axisScale, axisOffset) {
     realAxisPoint = (pulseAxisPoint * axisScale) + axisOffset;
     return realAxisPoint;
 }
 
-void GPSInformation::getAxisDerivative(axisTarget, axisAnchor, units) {
+void WaveGPSInformation::getAxisDerivative(axisTarget, axisAnchor, units) {
     axisDerivative = (axisTarget - axisAnchor) / units;
     return axisDerivative;
 }
 
 //Idea for method
-void GPSInformation::getRealPeakCoordinate(x_axis, y_axis, z_axis, PULSEreader *pReader){
+void WaveGPSInformation::getRealPeakCoordinate(x_axis, y_axis, z_axis, PULSEreader *pReader){
     xyzCoordinates.xCoordinate = getRealPoint(x_axis,pReader.get_scale_x, pReader.get_offset_x);
     xyzCoordinates.yCoordinate = getRealPoint(y_axis,pReader.get_scale_y, pReader.get_offset_y);
     xyzCoordinates.zCoordinate = getRealPoint(z_axis,pReader.get_scale_z, pReader.get_offset_z);

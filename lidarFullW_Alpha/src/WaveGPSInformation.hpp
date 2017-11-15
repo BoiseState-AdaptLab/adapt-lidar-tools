@@ -1,17 +1,17 @@
 /*
- * File name: GPSInformation.hpp
+ * File name: WaveGPSInformation.hpp
  * Created on: 20-June-2017
  * Author: ravi
  */
 
-#ifndef GPSINFORMATION_HPP_
-#define GPSINFORMATION_HPP_
+#ifndef WAVEGPSINFORMATION_HPP_
+#define WAVEGPSINFORMATION_HPP_
 
 #include <iostream>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 
-class GPSInformation{
+class WaveGPSInformation{
 
 private:
 public:  
@@ -33,9 +33,9 @@ public:
     double zCoordinate;
   };
 
-  GPSInformation();  
+  WaveGPSInformation();  
   void populateGPS(PULSEreader *pReader);
   void displayGPSData();
 };
 
-#endif /* GPSINFORMATION_HPP_ */
+#endif /* WAVEGPSINFORMATION_HPP_ */

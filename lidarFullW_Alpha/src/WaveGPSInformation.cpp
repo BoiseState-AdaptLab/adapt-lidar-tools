@@ -82,10 +82,54 @@ void WaveGPSInformation::displayGPSData(){
   std::cout << scanDirection << std::endl;
   std::cout << intensity << std::endl;
 }
+
+
+void WaveGPSInformation::calculateDeviations() {
+    xDeviation = (xTarget - xAnchor) / 1000;
+    yDeviation = (yTarget - yAnchor) / 1000;
+    zDeviation = (zTarget - zAnchor) / 1000;
+}
 /*
+//method of calculating real values of x, y, z discussed in 11/9 meeting
+void WaveGPSInformation::calculateOurxyz() {
+    our_x = xAnchor + (firstT + t) * xDeviation;
+    our_y = yAnchor + (firstT + t) * yDeviation;
+    our_z = zAnchor + (firstT + t) * zDeviation;
+}
+
+//method of calculating real x, y, z values as demonstrated in pdf from Nayani
+//this method will calculate the real value of any xyz point passed with its respective scale and offset
 void WaveGPSInformation::getRealPoint(pulseAxisPoint, axisScale, axisOffset) {
     realAxisPoint = (pulseAxisPoint * axisScale) + axisOffset;
     return realAxisPoint;
+}
+
+//method of calculating real x, y, z values as demonstrated in pdf from Nayani
+//this method will calculate the real value of xyz anchor, target, first, last, min and max values
+void WaveGPSInformation::calculateRealValues() {
+    realTarget_x = (xTarget * xScale) + xOffset;
+    realTarget_y = (yTarget * yScale) + yOffset;
+    realTarget_z = (zTarget * zScale) + zOffset;
+    
+    realAnchor_x = (xAnchor * xScale) + xOffset;
+    realAnchor_y = (yAnchor * yScale) + yOffset;
+    realAnchor_z = (zAnchor * zScale) + zOffset;
+    
+    realMin_x = (xMin * xScale) + xOffset;
+    realMin_y = (yMin * yScale) + yOffset;
+    realMin_z = (zMin * zScale) + zOffset;
+    
+    realMax_x = (xMax * xScale) + xOffset;
+    realMax_y = (yMax * yScale) + yOffset;
+    realMax_z = (zMax * zScale) + zOffset;
+    
+    realFirst_x = (xFirst * xScale) + xOffset;
+    realFirst_y = (yFirst * yScale) + yOffset;
+    realFirst_z = (zFirst * zScale) + zOffset;
+    
+    realLast_x = (xLast * xScale) + xOffset;
+    realLast_y = (yLast * yScale) + yOffset;
+    realLast_z = (zLast * zScale) + zOffset;
 }
 
 void WaveGPSInformation::getAxisDerivative(axisTarget, axisAnchor, units) {

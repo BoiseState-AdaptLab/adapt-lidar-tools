@@ -27,6 +27,15 @@ public:
   unsigned char scanDirection;
   unsigned char intensity;
   
+  double xOffset, yOffset, zOffset;
+  double xScale, yScale, zScale;
+  double xRealAnchor, yRealAnchor, zRealAnchor;
+  double xRealTarget, yRealTarget, zRealTarget;
+  double xRealFirst, yRealFirst, zRealFirst;
+  double xRealLast, yRealLast, zRealLast;
+  double xRealMin, yRealMin, zRealMin;
+  double xRealMax, yRealMax, zRealMax;
+  
   struct xyzCoordinates {
     double xCoordinate;
     double yCoordinate;

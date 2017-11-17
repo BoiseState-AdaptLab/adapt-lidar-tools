@@ -2,6 +2,7 @@
  * File name: LidarVolume.cpp
  * Created on: 08-November-2017
  * Author: ravi
+  * Modified by: Nicholas Chapa
  */
 
 #include "LidarVolume.hpp"
@@ -30,11 +31,7 @@ LidarVolume::LidarVolume(){
   pulse_z_extent = 0;
 }
 
-void LidarVolume::calculateBoundingBox(PULSEreader *pReader){
-  //std::cout << pReader->header.min_x << std::endl;
-  //std::cout << pReader->header.min_x << std::endl;
-  //std::cout << pReader->header.min_x << std::endl;
-  
+void LidarVolume::calculateBoundingBox(PULSEreader *pReader){  
 
   pulse_bb_x_min = pReader->header.min_x;
   pulse_bb_y_min = pReader->header.min_y;

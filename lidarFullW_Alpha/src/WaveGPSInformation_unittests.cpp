@@ -2,6 +2,8 @@
  * File name: GPSInformation_unittests.cpp
  * Created on: 17-June-2017
  * Author: ravi
+ 
+  * Modified by: Nicholas Chapa
  *
  * This test requres the sample 140823_183115_1_clipped_test.pls file 
  * and its corresponding wvs file to be in the etc directory to run
@@ -257,17 +259,23 @@ TEST_F(WaveGPSInformationTest, checkXYZ_offset){
     //This test will compare the known values of x,y, and z 
     //offset with the values that are retrieved from the pulse
     //data.
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
     
     double known_X_offset=.1;
     double known_Y_offset=.1;
     double known_Z_offset=.1;
-    double pulse_X_offset=0.0;
-    double pulse_Y_offset=0.0;
-    double pulse_Z_offset=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_offset, pulse_X_offset);
-    ASSERT_DOUBLE_EQ(known_Y_offset, pulse_Y_offset);
-    ASSERT_DOUBLE_EQ(known_Z_offset, pulse_Z_offset);
+    ASSERT_DOUBLE_EQ(known_X_offset, gpsInfo.xOffset);
+    ASSERT_DOUBLE_EQ(known_Y_offset, gpsInfo.yOffset);
+    ASSERT_DOUBLE_EQ(known_Z_offset, gpsInfo.zOffset);
  }
 
 TEST_F(WaveGPSInformationTest, checkXYZ_scale){
@@ -275,16 +283,23 @@ TEST_F(WaveGPSInformationTest, checkXYZ_scale){
     //scale with the values that are retrieved from the pulse
     //data.
     
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
+    
     double known_X_scale=.1;
     double known_Y_scale=.1;
     double known_Z_scale=.1;
-    double pulse_X_scale=0.0;
-    double pulse_Y_scale=0.0;
-    double pulse_Z_scale=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_scale, pulse_X_scale);
-    ASSERT_DOUBLE_EQ(known_Y_scale, pulse_Y_scale);
-    ASSERT_DOUBLE_EQ(known_Z_scale, pulse_Z_scale);
+    ASSERT_DOUBLE_EQ(known_X_scale, gpsInfo.xScale);
+    ASSERT_DOUBLE_EQ(known_Y_scale, gpsInfo.yScale);
+    ASSERT_DOUBLE_EQ(known_Z_scale, gpsInfo.zScale);
 
  }
 
@@ -293,17 +308,24 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realTargetValues){
     //of x, y, and z that are calculated by the GPSInformation
     //class to the real world target values that are calculated
     //by hand.
+    
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
 
     double known_X_target=.1;
     double known_Y_target=.1;
     double known_Z_target=.1;
-    double pulse_X_target=0.0;
-    double pulse_Y_target=0.0;
-    double pulse_Z_target=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_target, pulse_X_target);
-    ASSERT_DOUBLE_EQ(known_Y_target, pulse_Y_target);
-    ASSERT_DOUBLE_EQ(known_Z_target, pulse_Z_target);
+    ASSERT_DOUBLE_EQ(known_X_target, gpsInfo.xRealTarget);
+    ASSERT_DOUBLE_EQ(known_Y_target, gpsInfo.yRealTarget);
+    ASSERT_DOUBLE_EQ(known_Z_target, gpsInfo.zRealTarget);
 
  }
 
@@ -312,17 +334,24 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realAnchorValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world anchor values that are calculated 
     //by hand.
+    
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
 
     double known_X_anchor=.1;
     double known_Y_anchor=.1;
     double known_Z_anchor=.1;
-    double pulse_X_anchor=0.0;
-    double pulse_Y_anchor=0.0;
-    double pulse_Z_anchor=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_anchor, pulse_X_anchor);
-    ASSERT_DOUBLE_EQ(known_Y_anchor, pulse_Y_anchor);
-    ASSERT_DOUBLE_EQ(known_Z_anchor, pulse_Z_anchor);
+    ASSERT_DOUBLE_EQ(known_X_anchor, gpsInfo.xRealAnchor);
+    ASSERT_DOUBLE_EQ(known_Y_anchor, gpsInfo.yRealAnchor);
+    ASSERT_DOUBLE_EQ(known_Z_anchor, gpsInfo.zRealAnchor);
     
  }
 
@@ -331,17 +360,24 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
     //x, y, and z that are calcuated by the GPSInformation
     //class to the real world first values that are calculated
     //by hand.
+    
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
 
     double known_X_first=.1;
     double known_Y_first=.1;
     double known_Z_first=.1;
-    double pulse_X_first=0.0;
-    double pulse_Y_first=0.0;
-    double pulse_Z_first=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_first, pulse_X_first);
-    ASSERT_DOUBLE_EQ(known_Y_first, pulse_Y_first);
-    ASSERT_DOUBLE_EQ(known_Z_first, pulse_Z_first);
+    ASSERT_DOUBLE_EQ(known_X_first, gpsInfo.xRealFirst);
+    ASSERT_DOUBLE_EQ(known_Y_first, gpsInfo.yRealFirst);
+    ASSERT_DOUBLE_EQ(known_Z_first, gpsInfo.zRealFirst);
 
  }
 
@@ -350,17 +386,24 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realLastValues){
     //x, y, and z that are calculated by the GPSInformation 
     //class to the real world last values that are calculated 
     //by hand.
+    
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
 
     double known_X_last=.1;
     double known_Y_last=.1;
     double known_Z_last=.1;
-    double pulse_X_last=0.0;
-    double pulse_Y_last=0.0;
-    double pulse_Z_last=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_last, pulse_X_last);
-    ASSERT_DOUBLE_EQ(known_Y_last, pulse_Y_last);
-    ASSERT_DOUBLE_EQ(known_Z_last, pulse_Z_last);
+    ASSERT_DOUBLE_EQ(known_X_last, gpsInfo.xRealLast);
+    ASSERT_DOUBLE_EQ(known_Y_last, gpsInfo.yRealLast);
+    ASSERT_DOUBLE_EQ(known_Z_last, gpsInfo.zRealLast);
 
  }
 
@@ -369,17 +412,24 @@ TEST_F(GPSInformationTest, checkXYZ_realMinimumValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world minimum values that are calculated
     //by hand.
+    
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
 
     double known_X_minimum=.1;
     double known_Y_minimum=.1;
     double known_Z_minimum=.1;
-    double pulse_X_minimum=0.0;
-    double pulse_Y_minimum=0.0;
-    double pulse_Z_minimum=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_minimum, pulse_X_minimum);
-    ASSERT_DOUBLE_EQ(known_Y_minimum, pulse_Y_minimum);
-    ASSERT_DOUBLE_EQ(known_Z_minimum, pulse_Z_minimum);
+    ASSERT_DOUBLE_EQ(known_X_minimum, gpsInfo.xRealMin);
+    ASSERT_DOUBLE_EQ(known_Y_minimum, gpsInfo.yRealMin);
+    ASSERT_DOUBLE_EQ(known_Z_minimum, gpsInfo.zRealMin);
 
  }
 
@@ -388,17 +438,24 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realMaximumValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world maximum values that are calculated
     //by hand.
+    
+    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+    
+    WaveGPSInformation gpsInfo;
+    PULSEreadOpener pOpener;  // Create a pulse read opener object
+    PULSEreader *pReader;     // Create a pulse reader object
+    pOpener.set_file_name(fileNameCorrect.c_str());
+    pReader = pOpener.open();
+    
+    gpsInfo.populateGPS(pReader);
 
     double known_X_maximum=.1;
     double known_Y_maximum=.1;
     double known_Z_maximum=.1;
-    double pulse_X_maximum=0.0;
-    double pulse_Y_maximum=0.0;
-    double pulse_Z_maximum=0.0;
 
-    ASSERT_DOUBLE_EQ(known_X_maximum, pulse_X_maximum);
-    ASSERT_DOUBLE_EQ(known_Y_maximum, pulse_Y_maximum);
-    ASSERT_DOUBLE_EQ(known_Z_maximum, pulse_Z_maximum);
+    ASSERT_DOUBLE_EQ(known_X_maximum, gpsInfo.xRealMax);
+    ASSERT_DOUBLE_EQ(known_Y_maximum, gpsInfo.yRealMax);
+    ASSERT_DOUBLE_EQ(known_Z_maximum, gpsInfo.zRealMax);
 
  }
 

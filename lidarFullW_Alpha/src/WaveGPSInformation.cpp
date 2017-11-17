@@ -2,6 +2,7 @@
  * File name: WaveGPSInformation.cpp
  * Created on: 20-June-2017
  * Author: ravi
+  * Modified by: Nicholas Chapa
  */
 
 #include <iostream>
@@ -27,18 +28,48 @@ WaveGPSInformation::WaveGPSInformation(){
   scanDirection = 0;
   intensity = 0;
   
+  xOffset = 0;
+  yOffset = 0;
+  zOffset = 0;
+  xScale = 0;
+  yScale = 0;
+  zScale = 0;
+  xRealAnchor = 0;
+  yRealAnchor = 0;
+  zRealAnchor = 0;
+  xRealTarget = 0;
+  yRealTarget = 0;
+  zRealTarget = 0;
+  xRealFirst = 0;
+  yRealFirst = 0;
+  zRealFirst = 0;
+  xRealLast = 0;
+  yRealLast = 0;
+  zRealLast = 0;
+  xRealMin = 0;
+  yRealMin = 0;
+  zRealMin = 0;
+  xRealMax = 0;
+  yRealMax = 0;
+  zRealMax = 0;
+  
   //xyzCoordinates.xCoordinate = 0;
   //xyzCoordinates.yCoordinate = 0;
   //xyzCoordinates.zCoordinate = 0;
 }
 
 
-/*
- * Populate all the GPS data
- */
+ //Populate all the GPS data
 void WaveGPSInformation::populateGPS(PULSEreader *pReader){
   
     gpsTime = pReader->pulse.get_t();
+    
+    //xScale = pReader->header.x_scale_factor;
+    //yScale = pReader->header.x_scale_factor;
+    //zScale = pReader->header.x_scale_factor;
+    //xOffset = pReader->header.x_offset;
+    //yOffset = pReader->header.x_offset;
+    //zOffset = pReader->header.x_offset;
     
     pReader->pulse.compute_anchor_and_target_and_dir();
     xAnchor = pReader->pulse.get_anchor_x();
@@ -84,7 +115,7 @@ void WaveGPSInformation::displayGPSData(){
 }
 
 
-void WaveGPSInformation::calculateDeviations() {
+void WaveGPSInformation::calculateTargetDeviations() {
     xDeviation = (xTarget - xAnchor) / 1000;
     yDeviation = (yTarget - yAnchor) / 1000;
     zDeviation = (zTarget - zAnchor) / 1000;
@@ -132,9 +163,6 @@ void WaveGPSInformation::calculateRealValues() {
     realLast_z = (zLast * zScale) + zOffset;
 }
 
-void WaveGPSInformation::getAxisDerivative(axisTarget, axisAnchor, units) {
-    axisDerivative = (axisTarget - axisAnchor) / units;
-    return axisDerivative;
 }
 
 //Idea for method

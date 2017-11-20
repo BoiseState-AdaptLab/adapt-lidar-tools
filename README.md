@@ -7,8 +7,8 @@ Contains code/project notes/ and Data for GEO+CS lidar data processing
 git submodule init
 git submodule update
 ```
-* Go to the `lidarFullW_Alpha/deps/PulseWaves/src` folder. Edit `pulsefilter.cpp` and `pulsetransform.cpp` to replace any instances of `atoill` with `atoll`.
-* From the same folder, run make `libpulsewaves.a`. If the make was succesfull, you're good to go. 
+* From the `lidarFullW_Alpha/deps/PulseWaves/src` folder, edit `pulsefilter.cpp` and `pulsetransform.cpp` to replace any instances of `atoill` with `atoll`.
+* From the same folder, run make `libpulsewaves.a`. If the make is succesfull, you're good to go. 
 
 ### To run
 From `lidarDataProcessing/lidarFullW_Alpha/`,

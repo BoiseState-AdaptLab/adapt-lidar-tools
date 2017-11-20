@@ -45,6 +45,7 @@ public:
   WaveGPSInformation();  
   void populateGPS(PULSEreader *pReader);
   void displayGPSData();
+  void calculateTargetDeviations(); 
 };
 
 #endif /* WAVEGPSINFORMATION_HPP_ */

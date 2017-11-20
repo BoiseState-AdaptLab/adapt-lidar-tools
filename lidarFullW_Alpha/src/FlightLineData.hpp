@@ -46,7 +46,7 @@ public:
   FlightLineData();
   
   void setFlightLineData(std::string fileName);
-  void getFlightLineData();
+  void FlightLineDataToCSV();
 };
 
 #endif /* FLIGHTLINEDATAUNITTESTS_HPP_ */

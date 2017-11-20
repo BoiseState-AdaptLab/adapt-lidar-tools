@@ -43,12 +43,12 @@ void FlightLineData::setFlightLineData(std::string fileName){
     throw "Unable to Open File" + fileName;
   }
   //bounding box x,y & z mins and maxes
-  x_min = pReader->header.min_x;
-  y_min = pReader->header.min_y;
-  z_min = pReader->header.min_z;
-  x_max = pReader->header.max_x;
-  y_max = pReader->header.max_y;
-  z_max = pReader->header.max_z;
+  bb_x_min = pReader->header.min_x;
+  bb_y_min = pReader->header.min_y;
+  bb_z_min = pReader->header.min_z;
+  bb_x_max = pReader->header.max_x;
+  bb_y_max = pReader->header.max_y;
+  bb_z_max = pReader->header.max_z;
     
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {

@@ -25,19 +25,19 @@ public:
   int pulse_bb_y_max;
   int pulse_bb_z_max;  
 
-  int scannerId; 
-  double waveLength;
-  double outgoingPulseWidth;
-  int scanPattern;
-  int numberOfMirrorFacets;
-  double scanFrequency;
-  double scanAngleMin;
-  double scanAngleMax;
-  double pulseFrequency;
-  double beamDiameterAtExitAperture;
-  double beamDivergence;
-  double minimalRange;
-  double maximalRange;
+  int scanner_id; 
+  double wave_length;
+  double outgoing_pulse_width;
+  int scan_pattern;
+  int number_of_mirror_facets;
+  double scan_frequency;
+  double scan_angle_min;
+  double scan_angle_max;
+  double pulse_frequency;
+  double beam_diameter_at_exit_aperture;
+  double beam_divergence;
+  double minimal_range;
+  double maximal_range;
 
   PULSEreadOpener pOpener;
   PULSEreader *pReader;

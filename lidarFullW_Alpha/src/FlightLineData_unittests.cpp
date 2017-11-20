@@ -50,19 +50,19 @@ TEST_F(FlightLineDataTest, testHeaderValues){
   std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
   ASSERT_NO_THROW (fld.setFlightLineData(fileNameCorrect));
  
-  ASSERT_EQ (TruthFlightLineDataId, fld.FlightLineDataId);
-  ASSERT_DOUBLE_EQ (TruthWaveLength, fld.waveLength);
-  ASSERT_NEAR (TruthOutgoingPulseWidth, fld.outgoingPulseWidth,
+  ASSERT_EQ (truth_scanner_id, fld.scanner_id);
+  ASSERT_DOUBLE_EQ (TruthWaveLength, fld.wave_length);
+  ASSERT_NEAR (TruthOutgoingPulseWidth, fld.outgoing_pulse_width,
               0.0000005);
-  ASSERT_EQ (TruthScanPattern, fld.scanPattern);
-  ASSERT_EQ (TruthNumberOfMirrorFacets, fld.numberOfMirrorFacets);
-  ASSERT_NEAR (TruthScanFrequency, fld.scanFrequency, 0.000001);
-  ASSERT_NEAR (TruthScanAngleMin, fld.scanAngleMin, 0.0000001);
-  ASSERT_NEAR (TruthScanAngleMax, fld.scanAngleMax, 0.0000005);
-  ASSERT_DOUBLE_EQ (TruthPulseFrequency, fld.pulseFrequency);
+  ASSERT_EQ (TruthScanPattern, fld.scan_pattern);
+  ASSERT_EQ (TruthNumberOfMirrorFacets, fld.number_of_mirror_facets);
+  ASSERT_NEAR (TruthScanFrequency, fld.scan_frequency, 0.000001);
+  ASSERT_NEAR (TruthScanAngleMin, fld.scan_angle_min, 0.0000001);
+  ASSERT_NEAR (TruthScanAngleMax, fld.scan_angle_max, 0.0000005);
+  ASSERT_DOUBLE_EQ (TruthPulseFrequency, fld.pulse_frequency);
   ASSERT_DOUBLE_EQ (TruthBeamDiameterAtExitAperture, 
-                   fld.beamDiameterAtExitAperture);
-  ASSERT_NEAR (TruthBeamDivergence, fld.beamDivergence, 0.01);
-  ASSERT_NEAR (TruthMinimalRange, fld.minimalRange, 0.00001);
-  ASSERT_NEAR (TruthMaximalRange, fld.maximalRange, 0.000001);
+                   fld.beam_diameter_at_exit_aperture);
+  ASSERT_NEAR (TruthBeamDivergence, fld.beam_divergence, 0.01);
+  ASSERT_NEAR (TruthMinimalRange, fld.minimal_range, 0.00001);
+  ASSERT_NEAR (TruthMaximalRange, fld.maximal_range, 0.000001);
 }

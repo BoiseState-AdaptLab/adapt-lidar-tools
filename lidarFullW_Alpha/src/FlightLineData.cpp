@@ -16,19 +16,19 @@ FlightLineData::FlightLineData(){
   pulse_bb_x_max = 0;
   pulse_bb_y_max = 0;
   pulse_bb_z_max = 0;
-  scannerId  = 0; 
-  waveLength = 0;
-  outgoingPulseWidth  = 0;
-  scanPattern  = 0;
-  numberOfMirrorFacets  = 0;
-  scanFrequency  = 0;
-  scanAngleMin  = 0;
-  scanAngleMax  = 0;
-  pulseFrequency  = 0;
-  beamDiameterAtExitAperture  = 0;
-  beamDivergence  = 0;
-  minimalRange  = 0;
-  maximalRange  = 0;
+  scanner_id  = 0; 
+  wave_length = 0;
+  outgoing_pulse_width  = 0;
+  scan_pattern  = 0;
+  number_of_mirror_facets  = 0;
+  scan_frequency  = 0;
+  scan_angle_min  = 0;
+  scan_angle_max  = 0;
+  pulse_frequency  = 0;
+  beam_diameter_at_exit_aperture  = 0;
+  beam_divergence  = 0;
+  minimal_range  = 0;
+  maximal_range  = 0;
 }
 
 
@@ -52,19 +52,19 @@ void FlightLineData::setFlightLineData(std::string fileName){
     
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
-    scannerId = i; 
-    waveLength = scanner.wave_length;
-    outgoingPulseWidth = scanner.outgoing_pulse_width;
-    scanPattern = scanner.scan_pattern;
-    numberOfMirrorFacets = scanner.number_of_mirror_facets;
-    scanFrequency = scanner.scan_frequency;
-    scanAngleMin = scanner.scan_angle_min;
-    scanAngleMax = scanner.scan_angle_max;
-    pulseFrequency = scanner.pulse_frequency;
-    beamDiameterAtExitAperture = scanner.beam_diameter_at_exit_aperture;
-    beamDivergence = scanner.beam_divergence;
-    minimalRange = scanner.minimal_range;
-    maximalRange = scanner.maximal_range;
+    scanner_id = i; 
+    wave_length = scanner.wave_length;
+    outgoing_pulse_width = scanner.outgoing_pulse_width;
+    scan_pattern = scanner.scan_pattern;
+    number_of_mirror_facets = scanner.number_of_mirror_facets;
+    scan_frequency = scanner.scan_frequency;
+    scan_angle_min = scanner.scan_angle_min;
+    scan_angle_max = scanner.scan_angle_max;
+    pulse_frequency = scanner.pulse_frequency;
+    beam_diameter_at_exit_aperture = scanner.beam_diameter_at_exit_aperture;
+    beam_divergence = scanner.beam_divergence;
+    minimal_range = scanner.minimal_range;
+    maximal_range = scanner.maximal_range;
     i++;
   }
 }

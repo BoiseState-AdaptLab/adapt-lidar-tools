@@ -10,12 +10,12 @@
 //Default constructor
 FlightLineData::FlightLineData(){
   // enter default values
-  pulse_bb_x_min = 0;
-  pulse_bb_y_min = 0;
-  pulse_bb_z_min = 0;
-  pulse_bb_x_max = 0;
-  pulse_bb_y_max = 0;
-  pulse_bb_z_max = 0;
+  bb_x_min = 0;
+  bb_y_min = 0;
+  bb_z_min = 0;
+  bb_x_max = 0;
+  bb_y_max = 0;
+  bb_z_max = 0;
   scanner_id  = 0; 
   wave_length = 0;
   outgoing_pulse_width  = 0;
@@ -43,12 +43,12 @@ void FlightLineData::setFlightLineData(std::string fileName){
     throw "Unable to Open File" + fileName;
   }
   //bounding box x,y & z mins and maxes
-  pulse_bb_x_min = pReader->header.min_x;
-  pulse_bb_y_min = pReader->header.min_y;
-  pulse_bb_z_min = pReader->header.min_z;
-  pulse_bb_x_max = pReader->header.max_x;
-  pulse_bb_y_max = pReader->header.max_y;
-  pulse_bb_z_max = pReader->header.max_z;
+  x_min = pReader->header.min_x;
+  y_min = pReader->header.min_y;
+  z_min = pReader->header.min_z;
+  x_max = pReader->header.max_x;
+  y_max = pReader->header.max_y;
+  z_max = pReader->header.max_z;
     
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
@@ -91,26 +91,26 @@ void FlightLineData::FlightLineDataToCSV(){
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
 
-    scannerId = i; 
-    waveLength = scanner.wave_length;
-    outgoingPulseWidth = scanner.outgoing_pulse_width;
-    scanPattern = scanner.scan_pattern;
-    numberOfMirrorFacets = scanner.number_of_mirror_facets;
-    scanFrequency = scanner.scan_frequency;
-    scanAngleMin = scanner.scan_angle_min;
-    scanAngleMax = scanner.scan_angle_max;
-    pulseFrequency = scanner.pulse_frequency;
-    beamDiameterAtExitAperture = scanner.beam_diameter_at_exit_aperture;
-    beamDivergence = scanner.beam_divergence;
-    minimalRange = scanner.minimal_range;
-    maximalRange = scanner.maximal_range;
+    scanner_id = i; 
+    wave_length = scanner.wave_length;
+    outgoing_pulse_width = scanner.outgoing_pulse_width;
+    scan_pattern = scanner.scan_pattern;
+    number_of_mirror_facets = scanner.number_of_mirror_facets;
+    scan_frequency = scanner.scan_frequency;
+    scan_angle_min = scanner.scan_angle_min;
+    scan_angle_max = scanner.scan_angle_max;
+    pulse_frequency = scanner.pulse_frequency;
+    beam_diameter_at_exit_aperture = scanner.beam_diameter_at_exit_aperture;
+    beam_divergence = scanner.beam_divergence;
+    minimal_range = scanner.minimal_range;
+    maximal_range = scanner.maximal_range;
 
     fprintf(scanout, "%d,%lf,%lf,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-            scannerId, waveLength, outgoingPulseWidth, 
-            scanPattern, numberOfMirrorFacets, scanFrequency, 
-            scanAngleMin, scanAngleMax, pulseFrequency, 
-            beamDiameterAtExitAperture, beamDivergence, 
-            minimalRange, maximalRange);
+            scanner_id, wave_length, outgoing_pulse_width, 
+            scan_pattern, number_of_mirror_facets, scan_frequency, 
+            scan_angle_min, scan_angle_max, pulse_frequency, 
+            beam_diameter_at_exit_aperture, beam_divergence, 
+            minimal_range, maximal_range);
     i++;
   }
   fclose(scanout);

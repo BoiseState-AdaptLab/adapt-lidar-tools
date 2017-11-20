@@ -32,8 +32,6 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
 
     
-    WaveGPSInformation gpsInfo;   // Create a GPS object
-
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
@@ -59,9 +57,9 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
     ASSERT_EQ(known_y_max,lidarVolume.pulse_bb_j_max);
     ASSERT_EQ(known_x_max,lidarVolume.pulse_bb_k_max);
     
-    ASSERT_EQ(known_x_extent,lidarVolume.pulse_x_extant);
-    ASSERT_EQ(known_x_extent,lidarVolume.pulse_y_extant);
-    ASSERT_EQ(known_x_extent,lidarVolume.pulse_z_extant);
+    ASSERT_EQ(known_x_extent,lidarVolume.pulse_x_extent);
+    ASSERT_EQ(known_y_extent,lidarVolume.pulse_y_extent);
+    ASSERT_EQ(known_z_extent,lidarVolume.pulse_z_extent);
     
 
     //pulseheader.hpp is insided fullalpha/deps/wavething/inc

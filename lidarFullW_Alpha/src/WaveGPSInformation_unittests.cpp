@@ -10,20 +10,21 @@
  *
  */
 
-#include "gtest/gtest.h"
 #include "FullWaveformIngestion.hpp"
 #include "WaveGPSInformation.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
+#include "gtest/gtest.h"
 
 
-class GPSInformationTest: public testing::Test{
+class WaveGPSInformationTest: public testing::Test{
   protected:
 
 
   // function to set up space used by all tests
   virtual void SetUp(){
-	//populate with setup declarations that are currently inside 'checkValues' test
+  //populate with setup declarations that are 
+  //currently inside 'checkValues' test
   }
 
 };
@@ -204,7 +205,7 @@ TEST_F(WaveGPSInformationTest, checkValues){
     ASSERT_EQ (TruthFacet, gpsInfo.facet);
     ASSERT_EQ (TruthScanDirection, gpsInfo.scanDirection);
     ASSERT_EQ (TruthIntensity, gpsInfo.intensity);
-}
+  }
   /****************************************************************************
   * 
   * Begin index = 3 tests
@@ -407,7 +408,7 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realLastValues){
 
  }
 
-TEST_F(GPSInformationTest, checkXYZ_realMinimumValues){
+TEST_F(WaveGPSInformationTest, checkXYZ_realMinimumValues){
     //This test will compare the real world minimum values of
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world minimum values that are calculated

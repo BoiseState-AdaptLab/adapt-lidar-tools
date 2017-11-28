@@ -125,12 +125,12 @@ $(USER_DIR)/lidarDriver.o: $(USER_DIR)/lidarDriver.cpp
 
 # Runs all tests
 test: $(TESTS)
-	$(BIN)/CmdLine_unittests
-	$(BIN)/FullWaveformIngestion_unittests
-	$(BIN)/FlightLineData_unittests
-	$(BIN)/WaveGPSInformation_unittests
-	$(BIN)/LidarVolume_unittests
-	$(BIN)/PulseData_unittests
+	-$(BIN)/CmdLine_unittests
+	-$(BIN)/FullWaveformIngestion_unittests
+	-$(BIN)/FlightLineData_unittests
+	-$(BIN)/WaveGPSInformation_unittests
+	-$(BIN)/LidarVolume_unittests
+	-$(BIN)/PulseData_unittests
 
 
 # Clean up when done. 

@@ -160,8 +160,7 @@ struct data
 };
 
 /* model function: a * exp( -1/2 * [ (t - b) / c ]^2 ) */
-double
-gaussianSum(const gsl_vector * x,const double t)
+double gaussianSum(const gsl_vector * x,const double t)
 {
 
   int i = 0;
@@ -182,8 +181,7 @@ gaussianSum(const gsl_vector * x,const double t)
   //return (a * exp(-0.5 * z * z));
 //}
 
-int
-func_f (const gsl_vector * x, void *params, gsl_vector * f)
+int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 {
   struct data *d = (struct data *) params;
   size_t i;
@@ -201,8 +199,7 @@ func_f (const gsl_vector * x, void *params, gsl_vector * f)
   return GSL_SUCCESS;
 }
 
-int
-func_df (const gsl_vector * x, void *params, gsl_matrix * J)
+int func_df (const gsl_vector * x, void *params, gsl_matrix * J)
 {
   struct data *d = (struct data *) params;
 
@@ -246,8 +243,7 @@ func_df (const gsl_vector * x, void *params, gsl_matrix * J)
   return GSL_SUCCESS;
 }
 
-int
-func_fvv (const gsl_vector * x, const gsl_vector * v,
+int func_fvv (const gsl_vector * x, const gsl_vector * v,
           void *params, gsl_vector * fvv)
 {
   struct data *d = (struct data *) params;
@@ -287,8 +283,7 @@ func_fvv (const gsl_vector * x, const gsl_vector * v,
   return GSL_SUCCESS;
 }
 
-void
-callback(const size_t iter, void *params,
+void callback(const size_t iter, void *params,
          const gsl_multifit_nlinear_workspace *w)
 {
   gsl_vector *f = gsl_multifit_nlinear_residual(w);
@@ -316,8 +311,7 @@ callback(const size_t iter, void *params,
           gsl_blas_dnrm2(f));
 }
 
-void
-solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
+void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
              gsl_multifit_nlinear_parameters *params)
 {
   const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
@@ -367,8 +361,7 @@ solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   gsl_multifit_nlinear_free(work);
 }
 
-int
-main (void)
+int main (void)
 {
   const size_t n = 60;  /* number of data points to fit */
   const size_t p = 6;    /* number of model parameters */

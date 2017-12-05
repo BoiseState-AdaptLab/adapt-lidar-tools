@@ -39,12 +39,23 @@ class LidarVolume{
     int pulse_x_extent;
     int pulse_y_extent;
     int pulse_z_extent;
+    
+    //peaks data read in from GaussianFitting class
+    struct peaks {
+       double time;
+       double amp;
+       double width;
+    }
 
     LidarVolume();
 
     //Read and store the mins and maxes from the header, calculate and store the
     //i, j,k values and the extents
     void calculateBoundingBox(PULSEreader *pReader);
+    void addPeaks(double peakTime, double peakAmp, double peakWidth);
+    void addPeaks(struct peaks& peaks);
+    void getIndexes(double xPulse, double yPulse, double zPulse);
+
 };
 
 

@@ -18,12 +18,12 @@ public:
   //The min and max fields describing the boundary box that includes the 
   //first & last points of the sampled parts of the returning waveforms of 
   //all pulses
-  int bb_x_min;
-  int bb_y_min;
-  int bb_z_min;
-  int bb_x_max;
-  int bb_y_max;
-  int bb_z_max;  
+  double bb_x_min;
+  double bb_y_min;
+  double bb_z_min;
+  double bb_x_max;
+  double bb_y_max;
+  double bb_z_max;  
 
   int scanner_id; 
   double wave_length;

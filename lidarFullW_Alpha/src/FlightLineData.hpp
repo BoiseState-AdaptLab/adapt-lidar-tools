@@ -9,8 +9,10 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
+#include "PulseData.hpp"
 
 class FlightLineData{
 
@@ -42,10 +44,17 @@ public:
   FlightLineData();
   void setFlightLineData(std::string fileName);
   void FlightLineDataToCSV();
+  void getNextPulse(PulseData* pd);;
+
+  std::vector<int> outgoing_time;
+  std::vector<int> outgoing_wave;
+  std::vector<int> returning_time;
+  std::vector<int> returning_wave;
 
 private:
   PULSEreadOpener pOpener;
   PULSEreader *pReader;
+  WAVESsampling *sampling;
   PULSEscanner scanner;
 
 };

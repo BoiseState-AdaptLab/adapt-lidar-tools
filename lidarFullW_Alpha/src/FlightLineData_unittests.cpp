@@ -6,6 +6,7 @@
 
 #include "gtest/gtest.h"
 #include "FlightLineData.hpp"
+#include "PulseData.hpp"
 
 
 class FlightLineDataTest: public testing::Test{
@@ -115,7 +116,8 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
 }
 
 /*******************************************************************************
- * 
+*
+*  
 *******************************************************************************/
 TEST_F(FlightLineDataTest, testGetNextPulse){
 

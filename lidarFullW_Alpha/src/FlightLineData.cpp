@@ -67,6 +67,22 @@ void FlightLineData::setFlightLineData(std::string fileName){
     maximal_range = scanner.maximal_range;
     i++;
   }
+  
+  //Initialize the pReader to read the pulse and the wave
+  //If no data, throw an exception and exit
+  try{
+    if(pReader->read_waves()){
+      pReader->read_pulse();
+    }
+    else{
+      throw -1;
+    }
+  }
+  catch(int e){
+        std::cout << "CRITICAL ERROR! No data!\n";
+        exit(EXIT_FAILURE);
+  }
+
 }
 
 /*
@@ -116,4 +132,75 @@ void FlightLineData::FlightLineDataToCSV(){
   fclose(scanout);
   pReader->close();
   delete pReader;
+}
+
+void FlightLineData::getNextPulse(PulseData *pd){
+  outgoing_time.clear();
+  outgoing_wave.clear();
+  returning_time.clear();
+  returning_wave.clear();
+
+  double pulse_outgoing_start_time;
+  double pulse_returning_start_time;
+  double segment_time;
+
+  for(int i = 0; i < pReader->waves->get_number_of_samplings(); i++){
+    sampling = pReader->waves->get_sampling(i);
+
+    //If the first sampling is not outgoing, irrecoverable error, exit. 
+    try{
+      if(sampling->get_type() != PULSEWAVES_OUTGOING) {
+        throw -1;
+      }
+    }
+    catch(int e){
+      std::cout << "CRITICAL ERROR! Must be an outgoing wave!\n";
+      exit(EXIT_FAILURE);
+    }
+  }
+
+    //Populate outgoing wave dat
+    printf("Outgoing\n");
+    for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+        sampling->set_active_segment(j);            
+        //set the start time of the outgoing pulse and keep track of the times
+        if(j == 0){            
+          pulse_outgoing_start_time = sampling->get_duration_from_anchor_for_segment();
+          segment_time = sampling->get_duration_from_anchor_for_segment();
+        }
+        else{
+          segment_time = sampling->get_duration_from_anchor_for_segment();
+        }
+        for(int k = 0; k < sampling->get_number_of_samples(); k++){
+          outgoing_time.push_back(segment_time);
+          outgoing_wave.push_back(sampling->get_sample(k));
+          segment_time++;
+        }
+    } 
+    // only continue if this is an incoming pulse
+    if(pReader->read_pulse()) {
+
+      if(sampling->get_type() != PULSEWAVES_RETURNING) {
+        return;
+      }
+      //pd->populateReturning(sampling, maxCount, pulseIndex);
+      //returningWave.push_back(pulseIndex);
+      printf("Returning\n");
+      for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+        sampling->set_active_segment(j);
+        //set the start time of the returning pulse and keep track of the times
+        if(j == 0){            
+          pulse_returning_start_time = sampling->get_duration_from_anchor_for_segment();
+          segment_time = sampling->get_duration_from_anchor_for_segment();
+        }
+        else{
+          segment_time = sampling->get_duration_from_anchor_for_segment();
+        }
+        for(int k = 0; k < sampling->get_number_of_samples(); k++){
+          returning_time.push_back(segment_time);
+          returning_wave.push_back(sampling->get_sample(k));
+        }
+      } 
+    }
+    pReader->read_pulse();
 }

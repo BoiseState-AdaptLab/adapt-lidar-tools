@@ -76,14 +76,6 @@ class PulseDataTest: public testing::Test{
       pulses.push_back(pd);
       pulseIndex++;
     }
-
-
-
-
-
-
-
-
   }
 };
 
@@ -233,10 +225,10 @@ TEST_F(PulseDataTest, returningWaveData2){
     EXPECT_EQ(truthReturningWaveData[i], pulses[2]->returningWave[i]);
   }
 }
-ASSERT_EQ(59,pulses[1]->firstDifference.size()); 
 
-  //Test data
-  for(int i = 0; i<=58; i++){
-    ASSERT_EQ(truthFirstDiffReturningWave[i],pulses[1]->firstDifference[i]);
-  }
-}
+
+
+
+
+
+

@@ -42,12 +42,12 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   bb_y_max = ld_yMax;
   bb_z_max = ld_zMax;
 
-  bb_i_min = (int)(floor(bb_x_min))- 10;
-  bb_j_min = (int)(floor(bb_y_min))- 10;
-  bb_k_min = (int)(floor(bb_z_min))- 10;
-  bb_i_max = (int)(ceil(bb_x_max))+ 10;
-  bb_j_max = (int)(ceil(bb_y_max))+ 10;
-  bb_k_max = (int)(ceil(bb_z_max))+ 10;
+  bb_i_min = (int)(floor(bb_x_min)- 10);
+  bb_j_min = (int)(floor(bb_y_min)- 10);
+  bb_k_min = (int)(floor(bb_z_min)- 10);
+  bb_i_max = (int)(ceil(bb_x_max)+ 10);
+  bb_j_max = (int)(ceil(bb_y_max)+ 10);
+  bb_k_max = (int)(ceil(bb_z_max)+ 10);
 
   i_extent = bb_i_max - bb_i_min;
   j_extent = bb_j_max - bb_j_min;

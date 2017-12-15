@@ -31,6 +31,32 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
 
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
 
+<<<<<<< HEAD
+
+    LidarVolume lidarVolume;
+    // values that will be read from the FlightLineData
+    double known_bb_x_min= 516209.586;
+    double known_bb_y_min= 4767921.375;
+    double known_bb_z_min= 2084.585;
+    double known_bb_x_max= 516211.942;
+    double known_bb_y_max= 4767923.621;
+    double known_bb_z_max= 2093.581;
+
+    lidarVolume.setBoundingBox(known_bb_x_min, known_bb_x_max,
+                               known_bb_y_min, known_bb_y_max,
+                               known_bb_z_min, known_bb_z_max);
+
+    int known_i_min= (int) (floor(516209.586) - 10);
+    int known_j_min= (int) (floor(4767921.375) - 10);
+    int known_k_min= (int) (floor(2084.585) - 10);
+    int known_i_max= (int) (ceil(516211.942) + 10);
+    int known_j_max= (int) (ceil(4767923.621) + 10);
+    int known_k_max= (int) (ceil(2093.581) + 10);
+
+    int known_i_extent= known_i_max - known_i_min;
+    int known_j_extent= known_j_max - known_j_min;
+    int known_k_extent= known_k_max - known_k_min;
+>>>>>>> da7d7535260543d24e70301a8299673d5e5868cf
     
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
@@ -82,6 +108,7 @@ TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){
       std::cout << "the file does not exist" << std::endl;
     }
     
+<<<<<<< HEAD
     //lidarVolume.calculateBoundingBox(pReader);
     
     
@@ -92,6 +119,29 @@ TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){
     int known_x_max= (int) (ceil(512412.097) + 10);
     int known_y_max= (int) (ceil(4794125.777) + 10);
     int known_z_max= (int) (ceil(1927.448) + 10);
+=======
+    LidarVolume lidarVolume;
+
+    // values that will be read from the FlightLineData
+    double known_bb_x_min=510706.487;
+    double known_bb_y_min=4792924.648;
+    double known_bb_z_min=1604.828;
+    double known_bb_x_max=512412.097;
+    double known_bb_y_max=4794125.777;
+    double known_bb_z_max=1927.448;
+
+    lidarVolume.setBoundingBox(known_bb_x_min, known_bb_x_max,
+                               known_bb_y_min, known_bb_y_max,
+                               known_bb_z_min, known_bb_z_max);
+
+
+    int known_i_min= (int) (floor(510706.487) - 10);
+    int known_j_min= (int) (floor(4792924.648) - 10);
+    int known_k_min= (int) (floor(1604.828) - 10);
+    int known_i_max= (int) (ceil(512412.097) + 10);
+    int known_j_max= (int) (ceil(4794125.777) + 10);
+    int known_k_max= (int) (ceil(1927.448) + 10);
+>>>>>>> da7d7535260543d24e70301a8299673d5e5868cf
    
 
     int known_x_extent= known_x_max - known_x_min;

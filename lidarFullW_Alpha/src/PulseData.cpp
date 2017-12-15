@@ -46,7 +46,7 @@ void PulseData::displayPulseData(std::ostream *outStream){
   *outStream << "\nReturning Wave:\n" << std::endl;
   *outStream << "\tindices:\n" << std::endl;
   for(int i = 0; i<(int)returningIdx->size(); i++){
-    *outStream << returningWave->at(i) << " ";
+    *outStream << returningIdx->at(i) << " ";
   }
   *outStream << "\tamplitudes:\n" << std::endl;
   for(int i = 0; i<(int)returningWave->size(); i++){

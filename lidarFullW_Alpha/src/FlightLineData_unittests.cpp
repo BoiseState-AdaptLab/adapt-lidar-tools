@@ -116,7 +116,8 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
 }
 
 /*******************************************************************************
- * 
+*
+*  
 *******************************************************************************/
 TEST_F(FlightLineDataTest, testGetNextPulse){
 

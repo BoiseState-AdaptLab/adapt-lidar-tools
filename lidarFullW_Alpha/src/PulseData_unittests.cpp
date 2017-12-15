@@ -22,6 +22,8 @@ class PulseDataTest: public testing::Test{
 TEST_F(PulseDataTest, testSetterGetter){
 
     PulseData pulseData;
+    std::string realStream;
+    std::string streamData;
 
     std::vector<int> indexArrayOut;
     std::vector<int> waveArrayOut;
@@ -40,17 +42,23 @@ TEST_F(PulseDataTest, testSetterGetter){
     indexArrayIn.push_back(1);
     indexArrayIn.push_back(2);
 
-    indexArrayIn.push_back(76);
-    indexArrayIn.push_back(65);
-    indexArrayIn.push_back(43);
+    waveArrayIn.push_back(76);
+    waveArrayIn.push_back(65);
+    waveArrayIn.push_back(43);
 
     pulseData.setOutgoing(&indexArrayOut, &waveArrayOut);
     pulseData.setReturning(&indexArrayIn, &waveArrayIn);
     
     std::ostringstream stream;
     pulseData.displayPulseData(&stream);
+    
+    streamData = stream.str();
+
+    realStream = "Outgoing:\n\n\tindices:\n\n0 1 2 \tamplitudes:\n\n34 45 67 \nReturning Wave:\n\n\tindices:\n\n0 1 2 \tamplitudes:\n\n76 65 43 ";
+    
 
     // testing for string will go here    
+    ASSERT_EQ( streamData, realStream);
 }
 
 

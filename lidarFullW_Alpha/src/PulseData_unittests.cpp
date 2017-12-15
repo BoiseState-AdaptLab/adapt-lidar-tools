@@ -1,13 +1,13 @@
 //PulseData_unittest.cpp
 //Created 12/15/2017
 //Author: Nicholas Chapa
-
+#include <string>
+#include <iostream>
+#include <sstream>
 #include "gtest/gtest.h"
 #include "PulseData.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
-#include <iostream>
-#include <sstream>
 
 class PulseDataTest: public testing::Test{
   public:
@@ -22,8 +22,6 @@ class PulseDataTest: public testing::Test{
 TEST_F(PulseDataTest, testSetterGetter){
 
     PulseData pulseData;
-    std::ostream stream();
-    stream.rdbuf(std::cout.rdbuf());
 
     std::vector<int> indexArrayOut;
     std::vector<int> waveArrayOut;
@@ -49,8 +47,10 @@ TEST_F(PulseDataTest, testSetterGetter){
     pulseData.setOutgoing(&indexArrayOut, &waveArrayOut);
     pulseData.setReturning(&indexArrayIn, &waveArrayIn);
     
-    pulseData.displayPulseData(stream);
-    
+    std::ostringstream stream;
+    pulseData.displayPulseData(&stream);
+
+    // testing for string will go here    
 }
 
 

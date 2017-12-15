@@ -31,25 +31,25 @@ void PulseData::setReturning(std::vector<int> *idxArray,
 /*
  * Displays all wave data
  */
-void PulseData::displayPulseData(std::ostream outStream){
+void PulseData::displayPulseData(std::ostream *outStream){
 
-  outStream << "Outgoing:\n" << std::endl;
-  outStream << "\tindices:\n" << std::endl;
+  *outStream << "Outgoing:\n" << std::endl;
+  *outStream << "\tindices:\n" << std::endl;
   for(int i = 0; i<(int)outgoingIdx->size(); i++){
-    outStream << outgoingIdx->at(i) << " ";
+    *outStream << outgoingIdx->at(i) << " ";
   }
-  outStream << "\tamplitudes:\n" << std::endl;
+  *outStream << "\tamplitudes:\n" << std::endl;
   for(int i = 0; i<(int)outgoingWave->size(); i++){
-    outStream << outgoingWave->at(i) << " ";
+    *outStream << outgoingWave->at(i) << " ";
   }
 
-  outStream << "\nReturning Wave:\n" << std::endl;
-  outStream << "\tindices:\n" << std::endl;
+  *outStream << "\nReturning Wave:\n" << std::endl;
+  *outStream << "\tindices:\n" << std::endl;
   for(int i = 0; i<(int)returningIdx->size(); i++){
-    outStream << returningWave->at(i) << " ";
+    *outStream << returningWave->at(i) << " ";
   }
-  outStream << "\tamplitudes:\n" << std::endl;
+  *outStream << "\tamplitudes:\n" << std::endl;
   for(int i = 0; i<(int)returningWave->size(); i++){
-    outStream << returningWave->at(i) << " ";
+    *outStream << returningWave->at(i) << " ";
   }
 }

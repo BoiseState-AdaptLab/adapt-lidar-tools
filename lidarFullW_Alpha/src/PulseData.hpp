@@ -21,7 +21,7 @@ private:
 
 public:  
   PulseData();  
-  void displayPulseData(std::ostream outStream);
+  void displayPulseData(std::ostream *outStream);
   void setOutgoing(std::vector<int> *idxArray,
                    std::vector<int> *waveArray);
   void setReturning(std::vector<int> *idxArray,

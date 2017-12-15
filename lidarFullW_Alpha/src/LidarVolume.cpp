@@ -55,7 +55,9 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 }
 
 void LidarVolume::allocateMemory(){
-  //TODO: Allocate memory for bounding box data, check with cathie
+
+  // we are going to allocate a 3D array of space that will hold peak 
+  // information (we don't know how many per voxel)
 }
 
 

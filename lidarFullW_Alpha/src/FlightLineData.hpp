@@ -39,14 +39,15 @@ public:
   double minimal_range;
   double maximal_range;
 
+  FlightLineData();
+  void setFlightLineData(std::string fileName);
+  void FlightLineDataToCSV();
+
+private:
   PULSEreadOpener pOpener;
   PULSEreader *pReader;
   PULSEscanner scanner;
 
-  FlightLineData();
-  
-  void setFlightLineData(std::string fileName);
-  void FlightLineDataToCSV();
 };
 
 #endif /* FLIGHTLINEDATAUNITTESTS_HPP_ */

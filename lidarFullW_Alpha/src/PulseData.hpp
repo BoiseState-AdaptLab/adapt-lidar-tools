@@ -9,21 +9,22 @@
 
 #include <iostream>
 #include <vector>
-#include "pulsereader.hpp"
-#include "pulsewriter.hpp"
 
 class PulseData{
 
 private:
+
+  std::vector<I32> *outgoingIdx;
+  std::vector<I32> *outgoingWave;
+  std::vector<I32> *returningIdx;
+  std::vector<I32> *returningWave;
+
 public:  
-  std::vector<I32> outgoingWave;
-  std::vector<I32> returningWave;
   PulseData();  
-  void populateOutgoing(WAVESsampling *sampling, int maxCount, 
-                        long long pulseIndex);
-  void populateReturning(WAVESsampling *sampling, int maxCount, 
-                        long long pulseIndex);
+
   void displayPulseData();
+  void setOutgoing(std::vector<I32> *idxArray, std::vector<I32> *waveArray);
+  void setReturning(std::vector<I32> *idxArray, std::vector<I32> *waveArray);
 
 };
 

@@ -43,9 +43,7 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests\
         $(BIN)/FlightLineData_unittests $(BIN)/WaveGPSInformation_unittests\
-        $(BIN)/PulseData_unittests 
-
-#$(BIN)/LidarVolume_unittests
+        $(BIN)/PulseData_unittests $(BIN)/LidarVolume_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -131,9 +129,9 @@ test: $(TESTS)
 	-$(BIN)/FullWaveformIngestion_unittests
 	-$(BIN)/FlightLineData_unittests
 	-$(BIN)/WaveGPSInformation_unittests
+	-$(BIN)/LidarVolume_unittests
 	-$(BIN)/PulseData_unittests
 
-	#-$(BIN)/LidarVolume_unittests
 
 # Clean up when done. 
 # Removes all object, library and executable files

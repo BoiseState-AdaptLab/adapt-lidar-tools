@@ -37,7 +37,7 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
     
-    lidarVolume.calculateBoundingBox(pReader);
+    //lidarVolume.calculateBoundingBox(pReader);
 
     int known_x_min= (int) (floor(516209.586) - 10);
     int known_y_min= (int) (floor(4767921.375) - 10);
@@ -82,7 +82,7 @@ TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){
       std::cout << "the file does not exist" << std::endl;
     }
     
-    lidarVolume.calculateBoundingBox(pReader);
+    //lidarVolume.calculateBoundingBox(pReader);
     
     
 

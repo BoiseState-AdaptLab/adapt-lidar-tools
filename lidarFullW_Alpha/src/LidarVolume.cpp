@@ -62,21 +62,21 @@ void LidarVolume::allocateMemory(){
 }
 
 void LidarVolume::addPeaks(struct peaks& peaks) {
-  lvPeaks.time = peaks.time;
-  lvPeaks.amp = peaks.amp;
-  lvPeaks.width = peaks.width;
+  //lvPeaks.time = peaks.time;
+  //lvPeaks.amp = peaks.amp;
+  //lvPeaks.width = peaks.width;
 }
 
 void LidarVolume::addPeaks(double peakTime, double peakAmp, double peakWidth){
   //TODO: Add vector of peaks to lidar volume
-  lvPeaks.time = peakTime;
-  lvPeaks.amp = peakAmp;
-  lvPeaks.width = peakWidth;
+  //lvPeaks.time = peakTime;
+  //lvPeaks.amp = peakAmp;
+  //lvPeaks.width = peakWidth;
 }
 
 void LidarVolume::getIndexes(double xPulse, double yPulse, double zPulse){
-  i_pulse = floor(xPulse - pulse_bb_x_min);
-  j_pulse = floor(yPulse - pulse_bb_y_min);
-  k_pulse = floor(zPulse - pulse_bb_z_min);
+  int i_pulse = floor(xPulse - pulse_bb_x_min);
+  int j_pulse = floor(yPulse - pulse_bb_y_min);
+  int k_pulse = floor(zPulse - pulse_bb_z_min);
 }
 

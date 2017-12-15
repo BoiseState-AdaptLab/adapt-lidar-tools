@@ -45,16 +45,19 @@ class LidarVolume{
        double time;
        double amp;
        double width;
-    }
+    };
 
     LidarVolume();
 
     //Read and store the mins and maxes from the header, calculate and store the
     //i, j,k values and the extents
-    void calculateBoundingBox(PULSEreader *pReader);
+   // void calculateBoundingBox(PULSEreader *pReader);
+    void calculateBoundingBox(double ld_xMin, double ld_yMin, double ld_zMin, double ld_xMax, double ld_yMax, double ld_zMax);
     void addPeaks(double peakTime, double peakAmp, double peakWidth);
     void addPeaks(struct peaks& peaks);
     void getIndexes(double xPulse, double yPulse, double zPulse);
+    void allocateMemory();
+
 
 };
 

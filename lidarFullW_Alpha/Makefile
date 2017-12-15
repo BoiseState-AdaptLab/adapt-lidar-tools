@@ -42,7 +42,7 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests\
-        $(BIN)/FlightLineData_unittests $(BIN)/WaveGPSInformation_unittests\
+         $(BIN)/FlightLineData_unittests $(BIN)/WaveGPSInformation_unittests\
         $(BIN)/PulseData_unittests $(BIN)/LidarVolume_unittests
 
 # All Google Test headers.  Usually you shouldn't change this

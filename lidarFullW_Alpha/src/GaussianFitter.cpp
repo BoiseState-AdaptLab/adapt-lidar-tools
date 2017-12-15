@@ -4,153 +4,7 @@
  * Author: ravi
  */
 
-#include "GaussianFitting.hpp"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_multifit_nlinear.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
-
-
-/*
- * Calculate the first differences
- */
-void GaussianFitting::calculateFirstDifference(){ //TODO
-  int first, second, fDiff, count = 0;
-  for(int i = 0; i< (int)returningWave.size(); i++){
-    first = returningWave[i+1];
-    second = returningWave[i+2];
-
-    fDiff = second - first;
-
-    firstDifference.push_back(fDiff);        
-    count++;
-
-    if(count == 59){      
-        count = 0;
-        i = i+2;
-    }
-  }
-}
-
-
-/*
- * Calculate the second diferences
- */
-void GaussianFitting::calculateSecondDifference(){  //TODO
-  int first, second, sDiff, count =0;
-  for(int i = 0; i< (int)firstDifference.size(); i++){  
-    first = firstDifference[i];
-    second = firstDifference[i+1];
-    sDiff = std::abs(second - first); //Absolute value
-
-    secondDifference.push_back(sDiff);
-    count++;
-    if (count == 58){
-      count = 0;
-      i = i+1;
-    }
-  
-  }
-}
-
-
-/*
- * Find the median of five values
- */
-int GaussianFitting::medianOfFive(int a, int b, int c, int d, int e){ //TODO
-  // makes a < b and c < d
-  int temp;
-  //sort a,b
-  if(a > b){
-    temp = a;
-    a = b;
-    b = temp;
-  }  
-  // sort c,d
-  if(c > d){
-    temp = c;
-    c = d;
-    d = temp;
-  }  
-  // eliminate the lowest
-  if (a > c) {
-    temp = a;
-    a = c;
-    c = temp;
-  }
-
-  // gets e in
-  a = e;
-  //sort a,b
-  if(a > b){
-    temp = a;
-    a = b;
-    b = temp;
-  }  
-  // sort c,d
-  if(c > d){
-    temp = c;
-    c = d;
-    d = temp;
-  }  
-  // eliminate the lowest
-  if (a > c) {
-    temp = a;
-    a = c;
-    c = temp;
-  }
-
-  // sort b,c
-  if(b > c){
-    temp = b;
-    b = c;
-    c =temp;
-  }  
-
-  if(b<d){
-   return b; 
- }
- return d;
-}
-
-
-/*
- * Calculate smooth second difference
- */
-void GaussianFitting::calculateSmoothSecondDifference(){  //TODO
-  int first, second, third, fourth, fifth;
-  int median;
-  int count = 1;  //Keeps track of the number of 
-  for(int i = 0; i< (int)secondDifference.size(); i++){
-    if(count == 1 || count == 2){
-      smoothSecondDifference.push_back(secondDifference[i]);
-      count++;
-      continue;
-    }
-    first = secondDifference[i-2];
-    second = secondDifference[i-1];
-    third = secondDifference[i];
-    fourth = secondDifference[i+1];
-    fifth = secondDifference[i+2];
-    median = medianOfFive(first, second, third, fourth, fifth);
-    smoothSecondDifference.push_back(median);
-    count++;
-    if(count == 57){
-      smoothSecondDifference.push_back(secondDifference[i+1]);
-      smoothSecondDifference.push_back(secondDifference[i+2]);
-      i = i+2;
-      count = 1;
-    }
-
-  }
-
-}
-
+#include "GaussianFitter.hpp"
 
 struct data
 {
@@ -174,12 +28,6 @@ double gaussianSum(const gsl_vector * x,const double t)
   }
   return value;
 }
-//double
-//gaussian(const double a, const double b, const double c, const double t)
-//{
-  //const double z = (t - b) / c;
-  //return (a * exp(-0.5 * z * z));
-//}
 
 int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 {
@@ -361,16 +209,27 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   gsl_multifit_nlinear_free(work);
 }
 
-int main (void)
-{
-  const size_t n = 60;  /* number of data points to fit */
-  const size_t p = 6;    /* number of model parameters */
+struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int>idxData){
+
+  struct peaks results;
+  results.count = 0;
+  results.peakList = NULL;
+
+  // figure out how many items there are in the ampData
+  size_t n = ampData.size();
+
+  // figure out how many peaks there are in the data
+  size_t peakCount = countPeaks(ampData);
+  size_t p = peakCount*3;
+  results.peakList = (struct peak*) malloc(sizeof(struct peak)*peakCount);
+
+  // allocate space for fitting
   const gsl_rng_type * T = gsl_rng_default;
   gsl_vector *f = gsl_vector_alloc(n);
   gsl_vector *x = gsl_vector_alloc(p);
   gsl_multifit_nlinear_fdf fdf;
   gsl_multifit_nlinear_parameters fdf_params =
-    gsl_multifit_nlinear_default_parameters();
+                                  gsl_multifit_nlinear_default_parameters();
   struct data fit_data;
   gsl_rng * r;
   size_t i;
@@ -382,28 +241,14 @@ int main (void)
   fit_data.y = (double*)malloc(n * sizeof(double));
   fit_data.n = n;
 
-  /* This is just for testing so here is the data from our test file*/
-  //char input[] = "2 2 2 1 1 1 1 1 1 0 0 1 9 35 88 155 212 240 237 200 145 87 42 18 12 13 14 15 15 14 13 10 8 8 8 8 7 6 6 4 4 4 3 4 5 6 4 4 3 2 2 1 1 0 1 2 3 4 4 2";
-  char input[] = "2 2 2 1 1 1 1 1 1 0 0 1 9 35 88 155 212 240 237 200 145 87 42 18 12 13 14 15 15 14 13 10 8 8 8 8 7 6 6 4 4 4 3 4 5 6 4 4 3 2 2 1 1 0 1 2 3 4 4 2";
-  char* ptr;
-  ptr = strtok (input," ");
-  i=0;
-  while (ptr != NULL){
-    if(i>n){
-      fprintf(stderr,"exceeded n in reading data\n");
-      return 1;
-    }
-    double t = (double)i;
-    double y0 = atof(ptr);
-    fprintf(stderr,"%f\n",y0);
-
-    fit_data.t[i] = t;
-    fit_data.y[i] = y0;
+  // copy the data to a format
+  for(i=0;i<ampData.size();i++){
+    fit_data.t[i] = (double)idxData[i];
+    fit_data.y[i] = (double)ampData[i];
     i++;
-    ptr = strtok (NULL," ");
   }
 
-  /* define function to be minimized */
+  // define function to be minimized 
   fdf.f = func_f;
   fdf.df = func_df;
   fdf.fvv = func_fvv;
@@ -412,18 +257,17 @@ int main (void)
   fdf.p = p;
   fdf.params = &fit_data;
 
-  /* starting point */
-  gsl_vector_set(x, 0, 240.0);
-  gsl_vector_set(x, 1, 17.0);
-  gsl_vector_set(x, 2, 8.0);
-  gsl_vector_set(x, 3, 15.0);
-  gsl_vector_set(x, 4, 28.0);
-  gsl_vector_set(x, 5, 4.0);
+  // this is a guess starting point
+  for(i=0; i< peakCount; i++){
+    gsl_vector_set(x, i*3+0, 1);
+    gsl_vector_set(x, i*3+1, 1);
+    gsl_vector_set(x, i*3+2, 1);
+  }
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
   solve_system(x, &fdf, &fdf_params);
 
-  /* print data and model */
+  // print data and model 
   {
     double A = gsl_vector_get(x, 0);
     double B = gsl_vector_get(x, 1);
@@ -443,6 +287,95 @@ int main (void)
   gsl_vector_free(x);
   gsl_rng_free(r);
 
-  return 0;
+  return results;
+}
+
+std::vector<int> GaussianFitting::calculateFirstDifference(
+                                                std::vector<int> ampData){ 
+  int first, second, fDiff, count = 0;
+  std::vector<int> firstDifference;
+
+  for(int i = 0; i< (int)ampData.size(); i++){
+    first = ampData[i+1];
+    second = ampData[i+2];
+
+    fDiff = second - first;
+
+    firstDifference.push_back(fDiff);
+    count++;
+
+    if(count == 59){
+        count = 0;
+        i = i+2;
+    }
+  }
+}
+
+std::vector<int> guessPeaks(std::vector<int> data){
+
+  /* Level up to and including which peaks will be excluded
+   * For the unaltered wave, noise = 16
+   * for the scond derivative of the wave, noise = 3
+   */  
+  const int NOISE = 16; 
+  int wideStart = -1;  //The start of any current wide peak
+
+ /* Sign of gradient
+  * =  1 for increasing
+  * =  0 for level AND PREVIOUSLY INCREASING (so potential wide peak)
+  * = -1 for decreasing OR level, but previously decreasing
+  * A sharp peak is identified by grad=1 -> grad=-1
+  * A wide  peak is identified by grad=0 -> grad=-1
+  */ 
+  int grad = -1;
+
+  int count = 1;  //Keep track of the index
+  for(int i = 0; i<(int)data.size()-1; i++){
+    //First index represents the pulse index
+    if(count == 1){
+      i = i+1;
+      count = count + 1;
+    }
+
+    //Only possibility of a peak
+    if(data[i+1] < data[i]){
+      //Sharp peak
+      if(grad == 1 && data[i] > NOISE){
+        // peaks.push_back(data[i]);    //Peak value
+        peaksLocation.push_back(i);  //Peak location
+      }
+      //Wide peak
+      else if(grad == 0 && data[i] > NOISE){
+        // peaks.push_back(data[wideStart]);
+        if ((i - wideStart) % 2 == 0) {
+          peaksLocation.push_back(wideStart);
+        }
+        else {
+          peaksLocation.push_back(wideStart + (((i - wideStart) / 2) + 1));
+        }
+        
+      }
+      count++;
+      grad = -1;
+    }
+    //Start of a wide peak
+    else if (data[i+1] == data[i]){
+      count++;
+      if(grad == 1){
+        wideStart = i;  //Index where the wide peak begins
+        grad = 0;
+      }
+    }
+    else{
+      grad = 1;
+      count++;
+    }
+
+    //Reset the index
+    if (count == 60){
+      count = 1;  
+    }
+
+  }
 }
 

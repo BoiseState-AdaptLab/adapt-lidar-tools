@@ -77,6 +77,13 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # Builds a/all test/s.  
 # A test should link with either gtest.a or gtest_main.a, 
 # depending on whether it defines its own main() function.
+
+
+$(BIN)/GaussianFitter_unittests: $(USER_DIR)/GaussianFitter.o $(USER_DIR)/GaussianFitter_unittests.o  \
+                    $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
+            $(PULSE_DIR)/lib -lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
+
 $(BIN)/FlightLineData_unittests: $(USER_DIR)/FlightLineData_unittests.o $(USER_DIR)/FlightLineData.o $(USER_DIR)/PulseData.o \
                     $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
@@ -105,6 +112,9 @@ $(USER_DIR)/PulseData.o: $(USER_DIR)/PulseData.cpp
 
 $(USER_DIR)/LidarVolume.o: $(USER_DIR)/LidarVolume.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+
+$(USER_DIR)/GaussianFitter.o: $(USER_DIR)/GaussianFitter.cpp
+	$(CXX) -g -fpermissive -c -o $@ $^ -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
 
 # Builds all object files
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp

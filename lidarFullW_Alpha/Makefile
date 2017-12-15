@@ -43,7 +43,7 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests\
         $(BIN)/FlightLineData_unittests $(BIN)/WaveGPSInformation_unittests\
-        $(BIN)/PulseData_unittests #$(BIN)/LidarVolume_unittests
+        $(BIN)/PulseData_unittests $(BIN)/LidarVolume_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -98,8 +98,8 @@ $(USER_DIR)/WaveGPSInformation.o: $(USER_DIR)/WaveGPSInformation.cpp
 $(USER_DIR)/PulseData.o: $(USER_DIR)/PulseData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-#$(USER_DIR)/LidarVolume.o: $(USER_DIR)/LidarVolume.cpp
-#	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+$(USER_DIR)/LidarVolume.o: $(USER_DIR)/LidarVolume.cpp
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds all object files
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
@@ -129,7 +129,7 @@ test: $(TESTS)
 	-$(BIN)/FullWaveformIngestion_unittests
 	-$(BIN)/FlightLineData_unittests
 	-$(BIN)/WaveGPSInformation_unittests
-#	-$(BIN)/LidarVolume_unittests
+	-$(BIN)/LidarVolume_unittests
 	-$(BIN)/PulseData_unittests
 
 

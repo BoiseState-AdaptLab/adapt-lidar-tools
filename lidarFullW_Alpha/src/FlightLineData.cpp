@@ -176,7 +176,9 @@ void FlightLineData::getNextPulse(PulseData *pd){
           outgoing_wave.push_back(sampling->get_sample(k));
           segment_time++;
         }
-    } 
+    }
+    pd->setOutgoing(&outgoing_time, &outgoing_wave); 
+    
     // only continue if this is an incoming pulse
     if(pReader->read_pulse()) {
 
@@ -202,5 +204,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
         }
       } 
     }
+    pd->setReturning(&returning_time, &returning_wave);
     pReader->read_pulse();
 }

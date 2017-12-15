@@ -1,5 +1,5 @@
 /*
- * File name: GaussianFitting.cpp
+ * File name: GaussianFitter.cpp
  * Created on: 13-October-2017
  * Author: ravi
  */
@@ -219,7 +219,9 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int
   size_t n = ampData.size();
 
   // figure out how many peaks there are in the data
-  size_t peakCount = countPeaks(ampData);
+  std::vector<int> guesses = guessPeaks(ampData);
+  size_t peakCount = guesses.size();
+
   size_t p = peakCount*3;
   results.peakList = (struct peak*) malloc(sizeof(struct peak)*peakCount);
 
@@ -290,7 +292,7 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int
   return results;
 }
 
-std::vector<int> GaussianFitting::calculateFirstDifference(
+std::vector<int> GaussianFitter::calculateFirstDifferences(
                                                 std::vector<int> ampData){ 
   int first, second, fDiff, count = 0;
   std::vector<int> firstDifference;
@@ -311,7 +313,10 @@ std::vector<int> GaussianFitting::calculateFirstDifference(
   }
 }
 
-std::vector<int> guessPeaks(std::vector<int> data){
+std::vector<int> GaussianFitter::guessPeaks(std::vector<int> ampData){
+
+  std::vector<int> data = calculateFirstDifferences(ampData);
+  std::vector<int> peaksLocation;
 
   /* Level up to and including which peaks will be excluded
    * For the unaltered wave, noise = 16

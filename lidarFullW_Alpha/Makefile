@@ -79,10 +79,8 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # depending on whether it defines its own main() function.
 
 
-$(BIN)/GaussianFitter_unittests: $(USER_DIR)/GaussianFitter.o $(USER_DIR)/GaussianFitter_unittests.o  \
-                    $(LIB)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
-            $(PULSE_DIR)/lib -lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
+$(BIN)/GaussianFitter_unittests: $(USER_DIR)/GaussianFitter.o $(USER_DIR)/GaussianFitter_unittests.o  $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
 
 $(BIN)/FlightLineData_unittests: $(USER_DIR)/FlightLineData_unittests.o $(USER_DIR)/FlightLineData.o $(USER_DIR)/PulseData.o \
                     $(LIB)/gtest_main.a
@@ -95,6 +93,9 @@ $(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o \
             $(PULSE_DIR)/lib -lpulsewaves
 
 # Builds specific object files
+$(USER_DIR)/GaussianFitter_unittests.o: $(USER_DIR)/GaussianFitter_unittests.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I/home/CATHERINEOLSCHAN/tools/include  -c -o $@ $^ 
+
 $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
 

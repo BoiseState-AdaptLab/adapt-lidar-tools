@@ -11,7 +11,6 @@
 class FlightLineDataTest: public testing::Test{
   protected:
 
-  FlightLineData fld;
 
   // function to set up space used by all tests
   virtual void SetUp(){
@@ -26,6 +25,8 @@ class FlightLineDataTest: public testing::Test{
 * 
 ****************************************************************************/
 TEST_F(FlightLineDataTest, testFunctionStart){
+
+  FlightLineData fld;
 
   std::string incorrect_file_name1 = "bin/140823_183115_1_clipped_test.pls";
   ASSERT_ANY_THROW (fld.setFlightLineData(incorrect_file_name1));
@@ -44,6 +45,8 @@ TEST_F(FlightLineDataTest, testFunctionStart){
 * 
 ****************************************************************************/
 TEST_F(FlightLineDataTest, testBoundaryMinsAndMaxes){
+
+  FlightLineData fld;
 
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
   ASSERT_NO_THROW (fld.setFlightLineData(file_name));  
@@ -74,6 +77,9 @@ TEST_F(FlightLineDataTest, testBoundaryMinsAndMaxes){
 * 
 ****************************************************************************/
 TEST_F(FlightLineDataTest, testInstrumentInformation){
+
+  FlightLineData fld;
+
   // Known FlightLineData
   int known_scanner_id = 1;
   double known_wave_length = 1064;
@@ -107,3 +113,20 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
   ASSERT_NEAR (known_minimal_range, fld.minimal_range, 0.00001);
   ASSERT_NEAR (known_maximal_range, fld.maximal_range, 0.000001);
 }
+
+/*******************************************************************************
+ * 
+*******************************************************************************/
+TEST_F(FlightLineDataTest, testGetNextPulse){
+
+  FlightLineData fld;
+
+  std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
+  ASSERT_NO_THROW (fld.setFlightLineData(file_name));  
+
+  PulseData pd;
+  
+  EXPECT_NO_THROW(fld.getNextPulse(&pd));
+
+}
+

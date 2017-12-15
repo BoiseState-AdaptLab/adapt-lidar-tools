@@ -9,53 +9,40 @@
 
 #include <math.h>
 
-#include <iostream>
-#include "pulsereader.hpp"
-#include "pulsewriter.hpp"
-
 class LidarVolume{
 
   public:
     //The min and max fields describing the boundary box(bb) that includes the 
     //first & last points of the sampled parts of the returning waveforms of 
     //all pulses
-    double pulse_bb_x_min;
-    double pulse_bb_y_min;
-    double pulse_bb_z_min;
-    double pulse_bb_x_max;
-    double pulse_bb_y_max;
-    double pulse_bb_z_max;
+    double bb_x_min;
+    double bb_y_min;
+    double bb_z_min;
+    double bb_x_max;
+    double bb_y_max;
+    double bb_z_max;
 
-    //floor of the bb_mins
-    int pulse_bb_i_min;
-    int pulse_bb_j_min;
-    int pulse_bb_k_min;
-    //ceil of the bb_maxes
-    int pulse_bb_i_max;
-    int pulse_bb_j_max;
-    int pulse_bb_k_max;
+    // integer mins
+    int bb_i_min;
+    int bb_j_min;
+    int bb_k_min;
+    // integer maxes
+    int bb_i_max;
+    int bb_j_max;
+    int bb_k_max;
 
     //extent of x, y, and z as calculated from the pulse data (max - min)
-    int pulse_x_extent;
-    int pulse_y_extent;
-    int pulse_z_extent;
+    int i_extent;
+    int j_extent;
+    int k_extent;
     
-    //peaks data read in from GaussianFitting class
-    struct peaks {
-       double time;
-       double amp;
-       double width;
-    };
-
     LidarVolume();
 
     //Read and store the mins and maxes from the header, calculate and store the
     //i, j,k values and the extents
-   // void calculateBoundingBox(PULSEreader *pReader);
-    void calculateBoundingBox(double ld_xMin, double ld_yMin, double ld_zMin, double ld_xMax, double ld_yMax, double ld_zMax);
-    void addPeaks(double peakTime, double peakAmp, double peakWidth);
-    void addPeaks(struct peaks& peaks);
-    void getIndexes(double xPulse, double yPulse, double zPulse);
+    // void calculateBoundingBox(PULSEreader *pReader);
+    void calculateBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
+                              double ld_yMax, double ld_zMin, double ld_zMax);
     void allocateMemory();
 
 

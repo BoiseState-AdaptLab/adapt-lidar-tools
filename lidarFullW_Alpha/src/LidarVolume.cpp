@@ -31,27 +31,27 @@ LidarVolume::LidarVolume(){
   
 }
 
-void LidarVolume::calculateBoundingBox(double ld_xMin, double ld_yMin,
-                                       double ld_zMin, double ld_xMax,
-                                       double ld_yMax, double ld_zMax){  
+void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
+                                       double ld_yMin, double ld_yMax,
+                                       double ld_zMin, double ld_zMax){  
 
-  pulse_bb_x_min = ld_xMin;
-  pulse_bb_y_min = ld_yMin;
-  pulse_bb_z_min = ld_zMin;
-  pulse_bb_x_max = ld_xMax;
-  pulse_bb_y_max = ld_yMax;
-  pulse_bb_z_max = ld_zMax;
+  bb_x_min = ld_xMin;
+  bb_y_min = ld_yMin;
+  bb_z_min = ld_zMin;
+  bb_x_max = ld_xMax;
+  bb_y_max = ld_yMax;
+  bb_z_max = ld_zMax;
 
-  pulse_bb_i_min = (int) floor(pulse_bb_x_min) - 10;
-  pulse_bb_j_min = (int) floor(pulse_bb_y_min) - 10;
-  pulse_bb_k_min = (int) floor(pulse_bb_z_min) - 10;
-  pulse_bb_i_max = (int) ceil(pulse_bb_x_max) + 10;
-  pulse_bb_j_max = (int) ceil(pulse_bb_y_max) + 10;
-  pulse_bb_k_max = (int) ceil(pulse_bb_z_max) + 10;
+  bb_i_min = (int)(floor(bb_x_min))- 10;
+  bb_j_min = (int)(floor(bb_y_min))- 10;
+  bb_k_min = (int)(floor(bb_z_min))- 10;
+  bb_i_max = (int)(ceil(bb_x_max))+ 10;
+  bb_j_max = (int)(ceil(bb_y_max))+ 10;
+  bb_k_max = (int)(ceil(bb_z_max))+ 10;
 
-  pulse_x_extent = pulse_bb_i_max - pulse_bb_i_min;
-  pulse_y_extent = pulse_bb_j_max - pulse_bb_j_min;
-  pulse_z_extent = pulse_bb_k_max - pulse_bb_k_min;
+  i_extent = bb_i_max - bb_i_min;
+  j_extent = bb_j_max - bb_j_min;
+  k_extent = bb_k_max - bb_k_min;
 }
 
 void LidarVolume::allocateMemory(){

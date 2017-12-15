@@ -10,7 +10,7 @@
 class PulsDataTest: public testing::Test{
   public:
     
-}
+};
 
 
 

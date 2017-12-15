@@ -11,328 +11,45 @@
 
 //Default constructor
 PulseData::PulseData(){
-  // enter default values
+}
 
+void PulseData::setOutgoing(std::vector<int> *idxArray,
+                            std::vector<int> *waveArray){
+
+  outgoingIdx = idxArray;
+  outgoingWave = waveArray;
+}
+
+void PulseData::setReturning(std::vector<int> *idxArray, 
+                             std::vector<int> *waveArray){
+  returningIdx = idxArray;
+  returningWave = waveArray;
 }
 
 
-/*
- * Populate outgoing wave data
- */
-void PulseData::populateOutgoing(WAVESsampling *sampling, 
-                              int maxCount, long long pulseIndex){
-  outgoingWave.push_back(pulseIndex);
-  for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
-    sampling->set_active_segment(j);                  
-    for(int k = 0; k < maxCount; k++){
-      if(k >= sampling->get_number_of_samples()){
-        outgoingWave.push_back(0);
-      } 
-      else{
-        outgoingWave.push_back(sampling->get_sample(k));
-      }                    
-    }
-  }              
-}
-
-/*
- * Populate returning wave data
- */
-void PulseData::populateReturning(WAVESsampling *sampling, 
-                              int maxCount, long long pulseIndex){
-  returningWave.push_back(pulseIndex);
-  for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
-    sampling->set_active_segment(j);                  
-    for(int k = 0; k < maxCount; k++){
-      if(k >= sampling->get_number_of_samples()){
-        returningWave.push_back(0);
-      } 
-      else{
-        returningWave.push_back(sampling->get_sample(k));
-      }                    
-    }
-  }              
-}
-
-/*
- * Calculate the first differences
- */
-void PulseData::calculateFirstDifference(){
-  int first, second, fDiff, count = 0;
-  for(int i = 0; i< (int)returningWave.size(); i++){
-    first = returningWave[i+1];
-    second = returningWave[i+2];
-
-    fDiff = second - first;
-
-    firstDifference.push_back(fDiff);        
-    count++;
-
-    if(count == 59){      
-        count = 0;
-        i = i+2;
-    }
-  }
-}
-
-/*
- * Calculate the second diferences
- */
-void PulseData::calculateSecondDifference(){
-  int first, second, sDiff, count =0;
-  for(int i = 0; i< (int)firstDifference.size(); i++){  
-    first = firstDifference[i];
-    second = firstDifference[i+1];
-    sDiff = std::abs(second - first); //Absolute value
-
-    secondDifference.push_back(sDiff);
-    count++;
-    if (count == 58){
-      count = 0;
-      i = i+1;
-    }
-  
-  }
-}
-
-
-/*
- * Calculate smooth second difference
- */
-void PulseData::calculateSmoothSecondDifference(){
-  int first, second, third, fourth, fifth;
-  int median;
-  int count = 1;  //Keeps track of the number of 
-  for(int i = 0; i< (int)secondDifference.size(); i++){
-    if(count == 1 || count == 2){
-      smoothSecondDifference.push_back(secondDifference[i]);
-      count++;
-      continue;
-    }
-    first = secondDifference[i-2];
-    second = secondDifference[i-1];
-    third = secondDifference[i];
-    fourth = secondDifference[i+1];
-    fifth = secondDifference[i+2];
-    median = medianOfFive(first, second, third, fourth, fifth);
-    smoothSecondDifference.push_back(median);
-    count++;
-    if(count == 57){
-      smoothSecondDifference.push_back(secondDifference[i+1]);
-      smoothSecondDifference.push_back(secondDifference[i+2]);
-      i = i+2;
-      count = 1;
-    }
-
-  }
-
-}
-
-
-/*
- * Calclate the peaks: given a vector, noise level and max count
- */
-void PulseData::findPeaks(std::vector<int> data, int nLevel, int maxCount){
-  /* nLevel - The level up to and including which peaks will be excluded
-   * For the unaltered wave, noise = 6
-   * for the second derivative of the wave, noise = 3
-   */  
-  int noise = nLevel; 
-  int wideStart = -1;  //The start of any current wide peak
-  int noOfWidePeaks = 0;
-
- /* Sign of gradient
-  * =  1 for increasing
-  * =  0 for level and previously increasing (potential wide peak(plateau))
-  * = -1 for decreasing OR level, but previously decreasing
-  * A sharp peak is identified by grad=1 -> grad=-1
-  * A wide  peak is identified by grad=0 -> grad=-1
-  */ 
-  int grad = -1;
-
-  int count = 1;  //Keep track of the index
-  // for each data point
-  for(int i = 0; i<(int)data.size()-1; i++){
-   
-    // The following code has not been tested.
-    // It is in place to prevent this from
-    // trying to work across segments 
-    //To prevent crossover from the previous pulse
-    if(count == 1 && maxCount == 61){
-      i = i+1;
-      count = count + 1;
-    }    
-
-
-    //Only possibility of a peak
-    if(data[i+1] < data[i]){
-      //Sharp peak
-      if(grad == 1 && data[i] > noise){      
-        peaksLocation.push_back(i);  //Peak location
-      }
-      //Wide peak
-      else if(grad == 0 && data[i] > noise){        
-        noOfWidePeaks = (i - wideStart) + 1;
-        // TODO: Find the greatest of the wide peaks by regerencing original wave
-/*        int maxPeak = 0;
-        for(int i = 0; i < noOfWidePeaks; i++) {          
-        }
-*/
-        peaksLocation.push_back(wideStart + (noOfWidePeaks / 2));        
-      }
-      count++;
-      grad = -1;
-    }
-    //Start of a wide peak
-    else if (data[i+1] == data[i]){
-      count++;
-      if(grad == 1){
-        wideStart = i;  //Index where the wide peak begins
-        grad = 0;
-      }
-    }
-    else{
-      grad = 1;
-      count++;
-    }
-
-
-    // Again for multiple segments - has not been tested
-    //Reset the index& increment i to prevent crossover to the next pulse
-    if (count == maxCount) {
-      count = 1;
-      i++;
-    }  
-
-  }
-}
-
-
-/*
- * Find the median of five values
- */
-int PulseData::medianOfFive(int a, int b, int c, int d, int e){
-  // makes a < b and c < d
-  int temp;
-  //sort a,b
-  if(a > b){
-    temp = a;
-    a = b;
-    b = temp;
-  }  
-  // sort c,d
-  if(c > d){
-    temp = c;
-    c = d;
-    d = temp;
-  }  
-  // eliminate the lowest
-  if (a > c) {
-    temp = a;
-    a = c;
-    c = temp;
-  }
-
-  // gets e in
-  a = e;
-  //sort a,b
-  if(a > b){
-    temp = a;
-    a = b;
-    b = temp;
-  }  
-  // sort c,d
-  if(c > d){
-    temp = c;
-    c = d;
-    d = temp;
-  }  
-  // eliminate the lowest
-  if (a > c) {
-    temp = a;
-    a = c;
-    c = temp;
-  }
-
-  // sort b,c
-  if(b > c){
-    temp = b;
-    b = c;
-    c =temp;
-  }  
-
-  if(b<d){
-   return b; 
- }
- return d;
-}
 
 /*
  * Displays all wave data
  */
-void PulseData::displayPulseData(){
-  std::cout << "Outgoing Wave:\n" << std::endl;
-  int count = 1;
-  for(int i = 0; i<(int)outgoingWave.size(); i++){
-    std::cout << outgoingWave[i] << " ";
-    count++;
-    if(count == 62){
-      count = 0;
-      std::cout << std::endl ;
-    }
+void PulseData::displayPulseData(std::ostream *outStream){
+
+  *outStream << "Outgoing:\n" << std::endl;
+  *outStream << "\tindices:\n" << std::endl;
+  for(int i = 0; i<(int)outgoingIdx->size(); i++){
+    *outStream << outgoingIdx->at(i) << " ";
+  }
+  *outStream << "\tamplitudes:\n" << std::endl;
+  for(int i = 0; i<(int)outgoingWave->size(); i++){
+    *outStream << outgoingWave->at(i) << " ";
   }
 
-  std::cout << "\nReturning Wave:\n" << std::endl;
-  count = 1;
-  for(int i = 0; i<(int)returningWave.size(); i++){
-    std::cout << returningWave[i] << " ";
-    count++;
-    if(count == 62){
-      count = 0;
-      std::cout << std::endl ;
-    }
+  *outStream << "\nReturning Wave:\n" << std::endl;
+  *outStream << "\tindices:\n" << std::endl;
+  for(int i = 0; i<(int)returningIdx->size(); i++){
+    *outStream << returningIdx->at(i) << " ";
   }
-
-  std::cout << "\nFirst diff\n";
-  for(int i = 0, j = 1; i<(int)firstDifference.size(); i++, j++){
-    std::cout << firstDifference[i] << " ";
-    if(j == 59){
-      j = 0;
-      std::cout << std::endl ;
-    }
-  }
-
-  std::cout << "\nSecond diff\n";
-  count = 1;  
-  for(int i = 0; i<(int)secondDifference.size(); i++){
-    std::cout << secondDifference[i] << " ";
-    
-    if(count == 58){
-      count = 0;
-      std::cout << std::endl ;
-    }
-    count++;
-  }
-
-  std::cout << "\nSmooth second diff\n";
-  count = 1;
-  for(int i = 0; i<(int)smoothSecondDifference.size(); i++){
-    std::cout << smoothSecondDifference[i] << " ";
-    if(count == 58){
-      count = 0;
-      std::cout << std::endl ;
-    }
-    count++;
-  }
-
-}
-
-/*
- * Display the peak Wave and the location of the original wave
- */
-void PulseData::displayPeaksAndLocations(){
-  for(int i = 0; i<(int)peaksLocation.size(); i++){
-    std::cout << "Peak: " << returningWave[peaksLocation[i]]  << 
-          " found at location: " << peaksLocation[i] << std::endl;    
+  *outStream << "\tamplitudes:\n" << std::endl;
+  for(int i = 0; i<(int)returningWave->size(); i++){
+    *outStream << returningWave->at(i) << " ";
   }
 }

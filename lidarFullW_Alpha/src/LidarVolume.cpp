@@ -60,4 +60,6 @@ void LidarVolume::allocateMemory(){
   // information (we don't know how many per voxel)
 }
 
+void LidarVolume::insertPeak(){
 
+}

@@ -25,12 +25,12 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
 
     LidarVolume lidarVolume;
     // values that will be read from the FlightLineData
-    int known_bb_x_min= 516209.586;
-    int known_bb_y_min= 4767921.375;
-    int known_bb_z_min= 2084.585;
-    int known_bb_x_max= 516211.942;
-    int known_bb_y_max= 4767923.621;
-    int known_bb_z_max= 2093.581;
+    double known_bb_x_min= 516209.586;
+    double known_bb_y_min= 4767921.375;
+    double known_bb_z_min= 2084.585;
+    double known_bb_x_max= 516211.942;
+    double known_bb_y_max= 4767923.621;
+    double known_bb_z_max= 2093.581;
 
     lidarVolume.setBoundingBox(known_bb_x_min, known_bb_x_max,
                                known_bb_y_min, known_bb_y_max,
@@ -65,12 +65,12 @@ TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){
     LidarVolume lidarVolume;
 
     // values that will be read from the FlightLineData
-    int known_bb_x_min=510706.487;
-    int known_bb_y_min=4792924.648;
-    int known_bb_z_min=1604.828;
-    int known_bb_x_max=512412.097;
-    int known_bb_y_max=4794125.777;
-    int known_bb_z_max=1927.448;
+    double known_bb_x_min=510706.487;
+    double known_bb_y_min=4792924.648;
+    double known_bb_z_min=1604.828;
+    double known_bb_x_max=512412.097;
+    double known_bb_y_max=4794125.777;
+    double known_bb_z_max=1927.448;
 
     lidarVolume.setBoundingBox(known_bb_x_min, known_bb_x_max,
                                known_bb_y_min, known_bb_y_max,

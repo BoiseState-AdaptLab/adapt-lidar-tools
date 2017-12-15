@@ -23,6 +23,7 @@ TEST_F(PulseDataTest, testSetterGetter){
 
     PulseData pulseData;
     std::string realStream;
+    std::string streamData;
 
     std::vector<int> indexArrayOut;
     std::vector<int> waveArrayOut;
@@ -50,16 +51,14 @@ TEST_F(PulseDataTest, testSetterGetter){
     
     std::ostringstream stream;
     pulseData.displayPulseData(&stream);
-
-    realStream = "Outgoing:\n\tindices:\n0 1 2 \tamplitudes:\n34 45 67 \nReturning Wave:\n\tindices:\n0 1 2 \tamplitudes:\n76 65 43 ";
     
-    std::string a; 
-    a = "abc";
-    std::string b; 
-    b = "abc";
+    streamData = stream.str();
+
+    realStream = "Outgoing:\n\n\tindices:\n\n0 1 2 \tamplitudes:\n\n34 45 67 \nReturning Wave:\n\n\tindices:\n\n0 1 2 \tamplitudes:\n\n76 65 43 ";
+    
 
     // testing for string will go here    
-    ASSERT_EQ( a, b);
+    ASSERT_EQ( streamData, realStream);
 }
 
 

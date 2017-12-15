@@ -77,6 +77,11 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # Builds a/all test/s.  
 # A test should link with either gtest.a or gtest_main.a, 
 # depending on whether it defines its own main() function.
+$(BIN)/FlightLineData_unittests: $(USER_DIR)/FlightLineData_unittests.o $(USER_DIR)/FlightLineData.o $(USER_DIR)/PulseData.o \
+                    $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
+            $(PULSE_DIR)/lib -lpulsewaves
+
 $(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o \
                     $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\

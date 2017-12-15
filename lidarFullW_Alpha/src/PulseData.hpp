@@ -14,17 +14,18 @@ class PulseData{
 
 private:
 
-  std::vector<I32> *outgoingIdx;
-  std::vector<I32> *outgoingWave;
-  std::vector<I32> *returningIdx;
-  std::vector<I32> *returningWave;
+  std::vector<int> *outgoingIdx;
+  std::vector<int> *outgoingWave;
+  std::vector<int> *returningIdx;
+  std::vector<int> *returningWave;
 
 public:  
   PulseData();  
-
-  void displayPulseData();
-  void setOutgoing(std::vector<I32> *idxArray, std::vector<I32> *waveArray);
-  void setReturning(std::vector<I32> *idxArray, std::vector<I32> *waveArray);
+  void displayPulseData(std::ostream outStream);
+  void setOutgoing(std::vector<int> *idxArray,
+                   std::vector<int> *waveArray);
+  void setReturning(std::vector<int> *idxArray,
+                   std::vector<int> *waveArray);
 
 };
 

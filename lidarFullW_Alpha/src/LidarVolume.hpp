@@ -36,6 +36,23 @@ class LidarVolume{
     int j_extent;
     int k_extent;
     
+    //number of peaks to be saved into 
+    int numOfPeaks;
+    
+    //current position in peaks array
+    int currentPeak;
+    
+    struct peak{
+      double time;
+      double amp;
+      double width;
+    };
+    
+    //array of pointers to structs for peak data
+    peak *peaks;
+    
+    
+    
     LidarVolume();
 
     //Read and store the mins and maxes from the header, calculate and store the
@@ -44,6 +61,8 @@ class LidarVolume{
     void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
                               double ld_yMax, double ld_zMin, double ld_zMax);
     void allocateMemory();
+    void insertPeak(struct peak *pulsePeak);
+    void deallocateMemory();
 
 
 };

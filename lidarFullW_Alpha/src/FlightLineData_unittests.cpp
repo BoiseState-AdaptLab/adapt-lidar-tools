@@ -124,7 +124,7 @@ TEST_F(FlightLineDataTest, testGetNextPulse){
   FlightLineData fld;
 
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
-  ASSERT_NO_THROW (fld.setFlightLineData(file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(file_name));  
 
   PulseData *pd;
   

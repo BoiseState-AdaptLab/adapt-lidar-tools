@@ -217,21 +217,12 @@ void FlightLineData::getNextPulse(PulseData *pd){
     }
     pd->setReturning(&returning_time, &returning_wave);
   }
-  else{
-    //Process the next pulse
-    if(pReader->read_pulse()){
-     next_pulse_exists = true;
-    }
-    else{
-     pReader->read_pulse();
-    }
-  }
 
   //Check if there exists a next pulse
   if(pReader->read_pulse()){
     next_pulse_exists = true;
   }
   else{
-    pReader->read_pulse();
+    next_pulse_exists = false;
   }
 }

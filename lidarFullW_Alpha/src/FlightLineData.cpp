@@ -163,7 +163,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
       }
     }
   catch(int e){
-    std::cout << "CRITICAL ERROR! 
+    std::cout << "CRITICAL ERROR! \
                   The first sampling must be an outgoing wave!\n";
     exit(EXIT_FAILURE);
   }  
@@ -193,7 +193,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
   if(++sampling_number < num_samplings){
     sampling = pReader->waves->get_sampling(sampling_number);
     if(sampling->get_type() != PULSEWAVES_RETURNING) {
-      std::cout << "CRITICAL ERROR! 
+      std::cout << "CRITICAL ERROR! \
                     The second sampling must be a returning wave!\n";
       exit(EXIT_FAILURE);
     }

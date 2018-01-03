@@ -9,6 +9,7 @@
 
 #include "gtest/gtest.h"
 #include "LidarVolume.hpp"
+#include "Peak.hpp"
 
 class LidarVolumeTest: public testing::Test{
 
@@ -101,4 +102,25 @@ TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){
     ASSERT_EQ(known_j_extent,lidarVolume.j_extent);
     ASSERT_EQ(known_k_extent,lidarVolume.k_extent);
     
+}
+
+//this test will add peaks to lidar volume by adding struct pointers to an array
+TEST_F(LidarVolumeTest, allocatePeakMemory){
+    LidarVolume lidarVolume;
+    
+    struct peak{
+      double time;
+      double amp;
+      double width;
+    };
+    
+    peak *myPeak = new peak;
+    peak->time = 12.23;
+    peak->amp = 345.445;
+    peak->width = 23.453;
+    
+    
+    lidarVolume.allocateMemory();
+    lidarVolume.insertPeak(&myPeak);
+    lidarVolume.deallocateMemory();
 }

@@ -40,5 +40,16 @@ int main (int argc, char *argv[]) {
                                   rawData.bb_z_min,rawData.bb_z_max);
   intermediateData.allocateSpace();
 
+  PulseData pd;
+  GaussianFitter fitter;
+  while(rawData.hasNextPulse()){
+    rawData.getNextPulse(&pd);
+    struct peaks peakList = fitter.findPeaks(pd); 
+    for(int i=0;i<peaks.size;i++){
+      intermediateData.addPeak(peaks.peak_list[i]);
+    }
+  }
+  // Lidar Volume is full and complete
+  // Rasterize it
   
 }

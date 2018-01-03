@@ -29,6 +29,11 @@ LidarVolume::LidarVolume(){
   j_extent = 0;
   k_extent = 0;
   
+  currentPeak = 0;
+  numOfPeaks = 5;
+  //peakData = NULL;
+  peaks = 0;
+  
 }
 
 void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
@@ -53,11 +58,39 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   j_extent = bb_j_max - bb_j_min;
   k_extent = bb_k_max - bb_k_min;
 }
-
+/*
+//allocate memory with a 3d array of the data
 void LidarVolume::allocateMemory(){
-
   // we are going to allocate a 3D array of space that will hold peak 
   // information (we don't know how many per voxel)
+  
+  peakData = new double**[numOfPeaks];
+  
+  for(int i=0; i<numOfPeaks; i++){
+  
+  }
+} */
+
+//allcate memory with an array of structs addresses
+void LidarVolume::allocateMemory(){
+  peaks = new peak[numOfPeaks];
+  
+  //for(int i=0; i<numOfPeaks; i++){
+    //peaks[i] = new peak;
+  //}
 }
 
+void LidarVolume::insertPeak(struct peak *pulsePeak){
+  
+  peaks[currentPeak].time = pulsePeak->time;
+  peaks[currentPeak].amp = pulsePeak->amp;
+  peaks[currentPeak].width = pulsePeak->width;
+  
+  currentPeak++;
+}
 
+void LidarVolume::deallocateMemory(){
+   //for(int i=0; i<numOfPeaks; i++) {
+      delete peaks;
+   //}
+}

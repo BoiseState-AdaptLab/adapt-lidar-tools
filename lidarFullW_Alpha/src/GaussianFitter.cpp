@@ -209,7 +209,8 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   gsl_multifit_nlinear_free(work);
 }
 
-struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int>idxData){
+struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
+                                       std::vector<int> idxData){
 
   struct peaks results;
   results.count = 0;
@@ -221,6 +222,7 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int
   // figure out how many peaks there are in the data
   std::vector<int> guesses = guessPeaks(ampData);
   size_t peakCount = guesses.size();
+  fprintf(stderr, "Peak count is %d\n", peakCount);
 
   size_t p = peakCount*3;
   results.peakList = (struct peak*) malloc(sizeof(struct peak)*peakCount);
@@ -234,7 +236,7 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int
                                   gsl_multifit_nlinear_default_parameters();
   struct data fit_data;
   gsl_rng * r;
-  size_t i;
+  int i;
 
   gsl_rng_env_setup ();
   r = gsl_rng_alloc (T);
@@ -247,7 +249,6 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int
   for(i=0;i<ampData.size();i++){
     fit_data.t[i] = (double)idxData[i];
     fit_data.y[i] = (double)ampData[i];
-    i++;
   }
 
   // define function to be minimized 
@@ -261,9 +262,9 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData, std::vector<int
 
   // this is a guess starting point
   for(i=0; i< peakCount; i++){
-    gsl_vector_set(x, i*3+0, 1);
-    gsl_vector_set(x, i*3+1, 1);
-    gsl_vector_set(x, i*3+2, 1);
+    gsl_vector_set(x, i*3+0, ampData[guesses[i]] );
+    gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
+    gsl_vector_set(x, i*3+2, 2);
   }
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
@@ -311,18 +312,19 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
         i = i+2;
     }
   }
+  return firstDifference;
 }
 
-std::vector<int> GaussianFitter::guessPeaks(std::vector<int> ampData){
+std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
 
-  std::vector<int> data = calculateFirstDifferences(ampData);
+  //std::vector<int> data = calculateFirstDifferences(ampData);
   std::vector<int> peaksLocation;
 
   /* Level up to and including which peaks will be excluded
    * For the unaltered wave, noise = 16
    * for the scond derivative of the wave, noise = 3
    */  
-  const int NOISE = 16; 
+  const int NOISE = 6; 
   int wideStart = -1;  //The start of any current wide peak
 
  /* Sign of gradient
@@ -382,5 +384,6 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> ampData){
     }
 
   }
+  return peaksLocation;
 }
 

@@ -44,6 +44,7 @@ public:
   FlightLineData();
   void setFlightLineData(std::string fileName);
   void FlightLineDataToCSV();
+  bool hasNextPulse();
   void getNextPulse(PulseData* pd);;
 
   std::vector<int> outgoing_time;

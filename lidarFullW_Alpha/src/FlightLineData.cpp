@@ -71,8 +71,8 @@ void FlightLineData::setFlightLineData(std::string fileName){
   //Initialize the pReader to read the pulse and the wave
   //If no data, throw an exception and exit
   try{
-    if(pReader->read_waves()){
-      pReader->read_pulse();
+    if(pReader->read_pulse()){
+      pReader->read_waves();
     }
     else{
       throw -1;
@@ -134,6 +134,15 @@ void FlightLineData::FlightLineDataToCSV(){
   delete pReader;
 }
 
+//return true if next pulse exists else false
+bool FlightLineData::hasNextPulse(){
+  if pReader->read_pulse(){
+    return true;
+  }
+  return false;
+}
+
+
 void FlightLineData::getNextPulse(PulseData *pd){
   outgoing_time.clear();
   outgoing_wave.clear();
@@ -158,8 +167,9 @@ void FlightLineData::getNextPulse(PulseData *pd){
       exit(EXIT_FAILURE);
     }
   }
+  
 
-    //Populate outgoing wave dat
+    //Populate outgoing wave data
     printf("Outgoing\n");
     for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
         sampling->set_active_segment(j);            

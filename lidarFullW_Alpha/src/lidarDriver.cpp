@@ -13,7 +13,7 @@
 #include "LidarVolume.hpp"
 #include "PulseData.hpp"
 #include "Peak.hpp"
-#include "GaussianFitter.hpp"
+//#include "GaussianFitter.hpp"
 
 
 int main (int argc, char *argv[]) {
@@ -39,7 +39,7 @@ int main (int argc, char *argv[]) {
   intermediateData.allocateMemory();
 
   PulseData pd;
-  GaussianFitter fitter;
+  //GaussianFitter fitter;
   while(rawData.hasNextPulse()){
     rawData.getNextPulse(&pd);
     // struct peaks peakList = fitter.findPeaks(pd); 

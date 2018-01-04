@@ -1,7 +1,8 @@
 /*
- * File name: PEAK.hpp
+ * File name: Peak.hpp
  * Created on: 13-October-2017
  * Author: ravi
+ * Modified by: olschanowsky
  */
 
 #ifndef PEAK_HPP_

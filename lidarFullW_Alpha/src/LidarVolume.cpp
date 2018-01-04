@@ -2,7 +2,7 @@
  * File name: LidarVolume.cpp
  * Created on: 08-November-2017
  * Author: ravi
-  * Modified by: Nicholas Chapa
+ * Modified by: Nicholas Chapa
  */
 
 #include "LidarVolume.hpp"

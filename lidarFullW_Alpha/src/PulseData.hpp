@@ -14,12 +14,12 @@ class PulseData{
 
 private:
 
+public:  
   std::vector<int> *outgoingIdx;
   std::vector<int> *outgoingWave;
   std::vector<int> *returningIdx;
   std::vector<int> *returningWave;
 
-public:  
   PulseData();  
   void displayPulseData(std::ostream *outStream);
   void setOutgoing(std::vector<int> *idxArray,

@@ -133,6 +133,11 @@ void FlightLineData::FlightLineDataToCSV(){
   delete pReader;
 }
 
+//True if there exists a next pulse, else false
+void FlightLineData::hasNextPulse(){
+  return next_pulse_exists;
+}
+
 
 //Read and populate a single pulse at a time
 void FlightLineData::getNextPulse(PulseData *pd){

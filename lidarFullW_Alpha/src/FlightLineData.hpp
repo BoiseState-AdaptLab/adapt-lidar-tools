@@ -54,6 +54,7 @@ public:
   FlightLineData();
   void setFlightLineData(std::string fileName);
   void FlightLineDataToCSV();
+  bool hasNextPulse();
   void getNextPulse(PulseData* pd);;
 
 

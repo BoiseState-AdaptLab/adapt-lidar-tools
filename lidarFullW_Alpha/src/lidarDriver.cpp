@@ -42,10 +42,10 @@ int main (int argc, char *argv[]) {
   GaussianFitter fitter;
   while(rawData.hasNextPulse()){
     rawData.getNextPulse(&pd);
-    struct peaks peakList = fitter.findPeaks(pd); 
-    for(int i=0;i<peaks.size;i++){
-      intermediateData.addPeak(peaks.peak_list[i]);
-    }
+    // struct peaks peakList = fitter.findPeaks(pd); 
+    // for(int i=0;i<peaks.size;i++){
+    //   intermediateData.addPeak(peaks.peak_list[i]);
+    // }
   }
   std::ostringstream stream;
   pd.displayPulseData(&stream);

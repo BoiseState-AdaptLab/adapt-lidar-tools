@@ -46,10 +46,10 @@ public:
   bool next_pulse_exists;
 
   //Stores pulse data one at a time
-  std::vector<int> outgoing_time;
+  /*std::vector<int> outgoing_time;
   std::vector<int> outgoing_wave;
   std::vector<int> returning_time;
-  std::vector<int> returning_wave;
+  std::vector<int> returning_wave;*/
 
   FlightLineData();
   void setFlightLineData(std::string fileName);

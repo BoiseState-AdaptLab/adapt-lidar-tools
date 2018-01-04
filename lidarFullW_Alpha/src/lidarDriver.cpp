@@ -8,12 +8,11 @@
 #include <iomanip>
 #include <vector>
 #include "CmdLine.hpp"
-#include "ScannerInformation.hpp"
-#include "GPSInformation.hpp"
+#include "FlightLineData.hpp"
+#include "WaveGPSInformation.hpp"
+#include "LidarVolume.hpp"
+#include "Peak.hpp"
 #include "PulseData.hpp"
-#include "FullWaveformIngestion.hpp"
-#include "pulsereader.hpp"
-#include "pulsewriter.hpp"
 
 
 using namespace std;
@@ -49,6 +48,9 @@ int main (int argc, char *argv[]) {
       intermediateData.addPeak(peaks.peak_list[i]);
     }
   }
+  std::ostringstream stream;
+  pd.displayPulseData(&stream);
+  std::cout << stream.str() << '\n';
   // Lidar Volume is full and complete
   // Rasterize it
   

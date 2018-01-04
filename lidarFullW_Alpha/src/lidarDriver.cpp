@@ -39,6 +39,7 @@ int main (int argc, char *argv[]) {
   intermediateData.allocateMemory();
 
   PulseData pd;
+  std::ostringstream stream;
   //GaussianFitter fitter;
   while(rawData.hasNextPulse()){
     rawData.getNextPulse(&pd);
@@ -46,10 +47,9 @@ int main (int argc, char *argv[]) {
     // for(int i=0;i<peaks.size;i++){
     //   intermediateData.addPeak(peaks.peak_list[i]);
     // }
+    pd.displayPulseData(&stream);
+    std::cout << stream.str() << '\n';
   }
-  std::ostringstream stream;
-  pd.displayPulseData(&stream);
-  std::cout << stream.str() << '\n';
   // Lidar Volume is full and complete
   // Rasterize it
   

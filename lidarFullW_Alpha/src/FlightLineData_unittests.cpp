@@ -30,13 +30,13 @@ TEST_F(FlightLineDataTest, testFunctionStart){
   FlightLineData fld;
 
   std::string incorrect_file_name1 = "bin/140823_183115_1_clipped_test.pls";
-  ASSERT_ANY_THROW (fld.setFlightLineData(incorrect_file_name1));
+  EXPECT_ANY_THROW (fld.setFlightLineData(incorrect_file_name1));
 
   std::string incorrect_file_name2 = "etc/140823_183115_1_clipped_test.dat";
-  ASSERT_ANY_THROW (fld.setFlightLineData(incorrect_file_name2));
+  EXPECT_ANY_THROW (fld.setFlightLineData(incorrect_file_name2));
 
   std::string correct_file_name =  "etc/140823_183115_1_clipped_test.pls";
-  ASSERT_NO_THROW (fld.setFlightLineData(correct_file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(correct_file_name));  
 }
 
 
@@ -50,21 +50,21 @@ TEST_F(FlightLineDataTest, testBoundaryMinsAndMaxes){
   FlightLineData fld;
 
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
-  ASSERT_NO_THROW (fld.setFlightLineData(file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(file_name));  
 
-  int known_bb_x_min = 516209;
-  int known_bb_y_min = 4767921;
-  int known_bb_z_min = 2084;
-  int known_bb_x_max = 516211;
-  int known_bb_y_max = 4767923;
-  int known_bb_z_max = 2093;
+  double known_bb_x_min = 516209.586;
+  double known_bb_y_min = 4767921.375;
+  double known_bb_z_min = 2084.585;
+  double known_bb_x_max = 516211.942;
+  double known_bb_y_max = 4767923.621;
+  double known_bb_z_max = 2093.581;
 
-  ASSERT_EQ (known_bb_x_min, fld.bb_x_min);
-  ASSERT_EQ (known_bb_y_min, fld.bb_y_min);
-  ASSERT_EQ (known_bb_z_min, fld.bb_z_min);
-  ASSERT_EQ (known_bb_x_max, fld.bb_x_max);
-  ASSERT_EQ (known_bb_y_max, fld.bb_y_max);
-  ASSERT_EQ (known_bb_z_max, fld.bb_z_max);
+  EXPECT_DOUBLE_EQ (known_bb_x_min, fld.bb_x_min);
+  EXPECT_DOUBLE_EQ (known_bb_y_min, fld.bb_y_min);
+  EXPECT_DOUBLE_EQ (known_bb_z_min, fld.bb_z_min);
+  EXPECT_DOUBLE_EQ (known_bb_x_max, fld.bb_x_max);
+  EXPECT_DOUBLE_EQ (known_bb_y_max, fld.bb_y_max);
+  EXPECT_DOUBLE_EQ (known_bb_z_max, fld.bb_z_max);
 
 
 }
@@ -97,22 +97,22 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
   double known_maximal_range = 1860.605225;
 
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
-  ASSERT_NO_THROW (fld.setFlightLineData(file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(file_name));  
 
-  ASSERT_EQ (known_scanner_id, fld.scanner_id);
-  ASSERT_DOUBLE_EQ (known_wave_length, fld.wave_length);
-  ASSERT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width, 0.0000005);
-  ASSERT_EQ (known_scan_pattern, fld.scan_pattern);
-  ASSERT_EQ (known_numer_of_mirror_facets, fld.number_of_mirror_facets);
-  ASSERT_NEAR (known_scan_frequency, fld.scan_frequency, 0.000001);
-  ASSERT_NEAR (known_scan_angle_min, fld.scan_angle_min, 0.0000001);
-  ASSERT_NEAR (known_scan_angle_max, fld.scan_angle_max, 0.0000005);
-  ASSERT_DOUBLE_EQ (known_pulse_frequency, fld.pulse_frequency);
-  ASSERT_DOUBLE_EQ (known_beam_diameter_at_exit_aperture,
+  EXPECT_EQ (known_scanner_id, fld.scanner_id);
+  EXPECT_DOUBLE_EQ (known_wave_length, fld.wave_length);
+  EXPECT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width, 0.0000005);
+  EXPECT_EQ (known_scan_pattern, fld.scan_pattern);
+  EXPECT_EQ (known_numer_of_mirror_facets, fld.number_of_mirror_facets);
+  EXPECT_NEAR (known_scan_frequency, fld.scan_frequency, 0.000001);
+  EXPECT_NEAR (known_scan_angle_min, fld.scan_angle_min, 0.0000001);
+  EXPECT_NEAR (known_scan_angle_max, fld.scan_angle_max, 0.0000005);
+  EXPECT_DOUBLE_EQ (known_pulse_frequency, fld.pulse_frequency);
+  EXPECT_DOUBLE_EQ (known_beam_diameter_at_exit_aperture,
                    fld.beam_diameter_at_exit_aperture);
-  ASSERT_NEAR (known_beam_divergence, fld.beam_divergence, 0.01);
-  ASSERT_NEAR (known_minimal_range, fld.minimal_range, 0.00001);
-  ASSERT_NEAR (known_maximal_range, fld.maximal_range, 0.000001);
+  EXPECT_NEAR (known_beam_divergence, fld.beam_divergence, 0.01);
+  EXPECT_NEAR (known_minimal_range, fld.minimal_range, 0.00001);
+  EXPECT_NEAR (known_maximal_range, fld.maximal_range, 0.000001);
 }
 
 /*******************************************************************************
@@ -126,9 +126,9 @@ TEST_F(FlightLineDataTest, testGetNextPulse){
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
   EXPECT_NO_THROW (fld.setFlightLineData(file_name));  
 
-  PulseData *pd;
+  PulseData pd;
   
-  EXPECT_NO_THROW(fld.getNextPulse(pd));
+  EXPECT_NO_THROW(fld.getNextPulse(&pd));
 
 }
 

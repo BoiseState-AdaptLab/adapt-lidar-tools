@@ -134,7 +134,7 @@ void FlightLineData::FlightLineDataToCSV(){
 }
 
 //True if there exists a next pulse, else false
-void FlightLineData::hasNextPulse(){
+bool FlightLineData::hasNextPulse(){
   return next_pulse_exists;
 }
 

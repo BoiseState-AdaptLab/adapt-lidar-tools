@@ -7,19 +7,15 @@
 #ifndef PEAK_HPP_
 #define PEAK_HPP_
 
-class Peak{
-	struct peak{
+struct peak{
 	  double time;
 	  double amp;
 	  double width;
-	};
+};
 
-	struct peaks{
+struct peaks{
 	  int count;
 	  struct peak* peakList;
-	};
-
-	Peak();
-}
+};
 
 #endif /* PEAK_HPP_ */

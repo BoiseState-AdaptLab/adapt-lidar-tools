@@ -1,22 +1,25 @@
 /*
  * File name: Peak.hpp
- * Created on: 13-October-2017
- * Author: ravi
- * Modified by: olschanowsky
+ * Created on: 15-December-2017
+ * Author: olschanowsky
  */
 
 #ifndef PEAK_HPP_
 #define PEAK_HPP_
 
-struct peak{
-  double time;
-  double amp;
-  double width;
-};
+class Peak{
+	struct peak{
+	  double time;
+	  double amp;
+	  double width;
+	};
 
-struct peaks{
-  int count;
-  struct peak* peakList;
-};
+	struct peaks{
+	  int count;
+	  struct peak* peakList;
+	};
+
+	Peak();
+}
 
 #endif /* PEAK_HPP_ */

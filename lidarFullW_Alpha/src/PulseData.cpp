@@ -11,6 +11,11 @@
 
 //Default constructor
 PulseData::PulseData(){
+  outgoingIdx = new std::vector<int>();
+  outgoingWave = new std::vector<int>();
+  returningIdx = new std::vector<int>();
+  returningWavex = new std::vector<int>();
+
 }
 
 void PulseData::setOutgoing(std::vector<int> *idxArray,

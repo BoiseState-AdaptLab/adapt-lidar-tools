@@ -225,9 +225,11 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
   //Check if there exists a next pulse
   if(pReader->read_pulse()){
-    next_pulse_exists = true;
+    if(pReader->read_waves()){
+      next_pulse_exists = true;
+      return;
+    }
   }
-  else{
-    next_pulse_exists = false;
-  }
+  next_pulse_exists = false;
+  return;
 }

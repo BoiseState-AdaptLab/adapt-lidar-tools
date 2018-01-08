@@ -127,8 +127,7 @@ lidarDriver: $(BIN)/lidarDriver
 
 $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/CmdLine.o \
                $(USER_DIR)/WaveGPSInformation.o $(USER_DIR)/PulseData.o \
-               $(USER_DIR)/FlightLineData.o $(USER_DIR)/Peak.o \
-               $(USER_DIR)/LidarVolume.o $(USER_DIR)/GaussianFitter.o
+               $(USER_DIR)/FlightLineData.o $(USER_DIR)/LidarVolume.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 

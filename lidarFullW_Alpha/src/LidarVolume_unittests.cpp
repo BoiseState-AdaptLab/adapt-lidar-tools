@@ -183,3 +183,4 @@ TEST_F(LidarVolumeTest, allocateThreePeaksMemory){
     lidarVolume.insertPeak(myFirstPeak);
     lidarVolume.deallocateMemory();
 }
+

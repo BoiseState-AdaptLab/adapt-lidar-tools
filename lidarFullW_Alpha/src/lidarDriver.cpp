@@ -8,15 +8,13 @@
 #include <iomanip>
 #include <vector>
 #include "CmdLine.hpp"
-#include "ScannerInformation.hpp"
-#include "GPSInformation.hpp"
+#include "FlightLineData.hpp"
+#include "WaveGPSInformation.hpp"
+#include "LidarVolume.hpp"
 #include "PulseData.hpp"
-#include "FullWaveformIngestion.hpp"
-#include "pulsereader.hpp"
-#include "pulsewriter.hpp"
+#include "Peak.hpp"
+//#include "GaussianFitter.hpp"
 
-
-using namespace std;
 
 int main (int argc, char *argv[]) {
 
@@ -38,16 +36,19 @@ int main (int argc, char *argv[]) {
   intermediateData.setBoundingBox(rawData.bb_x_min,rawData.bb_x_max,
                                   rawData.bb_y_min,rawData.bb_y_max,
                                   rawData.bb_z_min,rawData.bb_z_max);
-  intermediateData.allocateSpace();
+  intermediateData.allocateMemory();
 
   PulseData pd;
-  GaussianFitter fitter;
+  std::ostringstream stream;
+  //GaussianFitter fitter;
   while(rawData.hasNextPulse()){
     rawData.getNextPulse(&pd);
-    struct peaks peakList = fitter.findPeaks(pd); 
-    for(int i=0;i<peaks.size;i++){
-      intermediateData.addPeak(peaks.peak_list[i]);
-    }
+    // struct peaks peakList = fitter.findPeaks(pd); 
+    // for(int i=0;i<peaks.size;i++){
+    //   intermediateData.addPeak(peaks.peak_list[i]);
+    // }
+    pd.displayPulseData(&stream);
+    std::cout << stream.str() << '\n';
   }
   // Lidar Volume is full and complete
   // Rasterize it

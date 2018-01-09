@@ -92,23 +92,23 @@ TEST_F(WaveGPSInformationTest, checkValues){
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
-    ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
-    ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
-    ASSERT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
-    ASSERT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
-    ASSERT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
-    ASSERT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
-    ASSERT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.0000002);
-    ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.0000005);
-    ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000003);
-    ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
-    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.000002);
-    ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
-    ASSERT_EQ (TruthEdge, gpsInfo.edge);
-    ASSERT_EQ (TruthFacet, gpsInfo.facet);
-    ASSERT_EQ (TruthScanDirection, gpsInfo.scanDirection);
-    ASSERT_EQ (TruthIntensity, gpsInfo.intensity);
+    EXPECT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
+    EXPECT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
+    EXPECT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
+    EXPECT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
+    EXPECT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
+    EXPECT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
+    EXPECT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
+    EXPECT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.0000002);
+    EXPECT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.0000005);
+    EXPECT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000003);
+    EXPECT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
+    EXPECT_NEAR (TruthYLast, gpsInfo.yLast, 0.000002);
+    EXPECT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
+    EXPECT_EQ (TruthEdge, gpsInfo.edge);
+    EXPECT_EQ (TruthFacet, gpsInfo.facet);
+    EXPECT_EQ (TruthScanDirection, gpsInfo.scanDirection);
+    EXPECT_EQ (TruthIntensity, gpsInfo.intensity);
   }
   /****************************************************************************
   * 
@@ -140,23 +140,23 @@ TEST_F(WaveGPSInformationTest, checkValues){
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_NEAR (TruthGpsTime, gpsInfo.gpsTime, 0.000005);
-    ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
-    ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
-    ASSERT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
-    ASSERT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
-    ASSERT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
-    ASSERT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
-    ASSERT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.0000005);
-    ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.000001  );
-    ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000005);
-    ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
-    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.000002);
-    ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
-    ASSERT_EQ (TruthEdge, gpsInfo.edge);
-    ASSERT_EQ (TruthFacet, gpsInfo.facet);
-    ASSERT_EQ (TruthScanDirection, gpsInfo.scanDirection);
-    ASSERT_EQ (TruthIntensity, gpsInfo.intensity);
+    EXPECT_NEAR (TruthGpsTime, gpsInfo.gpsTime, 0.000005);
+    EXPECT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
+    EXPECT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
+    EXPECT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
+    EXPECT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
+    EXPECT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
+    EXPECT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
+    EXPECT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.0000005);
+    EXPECT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.000001  );
+    EXPECT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000005);
+    EXPECT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
+    EXPECT_NEAR (TruthYLast, gpsInfo.yLast, 0.000002);
+    EXPECT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
+    EXPECT_EQ (TruthEdge, gpsInfo.edge);
+    EXPECT_EQ (TruthFacet, gpsInfo.facet);
+    EXPECT_EQ (TruthScanDirection, gpsInfo.scanDirection);
+    EXPECT_EQ (TruthIntensity, gpsInfo.intensity);
 }
   /****************************************************************************
   * 
@@ -188,23 +188,23 @@ TEST_F(WaveGPSInformationTest, checkValues){
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
-    ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
-    ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
-    ASSERT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
-    ASSERT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
-    ASSERT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
-    ASSERT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
-    ASSERT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.000006);
-    ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.000002);
-    ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.000002);
-    ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
-    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.0000002);
-    ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
-    ASSERT_EQ (TruthEdge, gpsInfo.edge);
-    ASSERT_EQ (TruthFacet, gpsInfo.facet);
-    ASSERT_EQ (TruthScanDirection, gpsInfo.scanDirection);
-    ASSERT_EQ (TruthIntensity, gpsInfo.intensity);
+    EXPECT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
+    EXPECT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
+    EXPECT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
+    EXPECT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
+    EXPECT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
+    EXPECT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
+    EXPECT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
+    EXPECT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.000006);
+    EXPECT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.000002);
+    EXPECT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.000002);
+    EXPECT_NEAR (TruthXLast, gpsInfo.xLast, 0.000002);
+    EXPECT_NEAR (TruthYLast, gpsInfo.yLast, 0.0000002);
+    EXPECT_NEAR (TruthZLast, gpsInfo.zLast, 0.000002);
+    EXPECT_EQ (TruthEdge, gpsInfo.edge);
+    EXPECT_EQ (TruthFacet, gpsInfo.facet);
+    EXPECT_EQ (TruthScanDirection, gpsInfo.scanDirection);
+    EXPECT_EQ (TruthIntensity, gpsInfo.intensity);
   }
   /****************************************************************************
   * 
@@ -236,23 +236,23 @@ TEST_F(WaveGPSInformationTest, checkValues){
     TruthFacet = 1;
     TruthIntensity = 0;
 
-    ASSERT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
-    ASSERT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
-    ASSERT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
-    ASSERT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
-    ASSERT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
-    ASSERT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
-    ASSERT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
-    ASSERT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.000002);
-    ASSERT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.0000004);
-    ASSERT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000002);
-    ASSERT_NEAR (TruthXLast, gpsInfo.xLast, 0.0000003);
-    ASSERT_NEAR (TruthYLast, gpsInfo.yLast, 0.0000004);
-    ASSERT_NEAR (TruthZLast, gpsInfo.zLast, 0.0000003);
-    ASSERT_EQ (TruthEdge, gpsInfo.edge);
-    ASSERT_EQ (TruthFacet, gpsInfo.facet);
-    ASSERT_EQ (TruthScanDirection, gpsInfo.scanDirection);
-    ASSERT_EQ (TruthIntensity, gpsInfo.intensity);
+    EXPECT_DOUBLE_EQ (TruthGpsTime, gpsInfo.gpsTime);
+    EXPECT_DOUBLE_EQ (TruthXAnchor, gpsInfo.xAnchor);
+    EXPECT_DOUBLE_EQ (TruthYAnchor, gpsInfo.yAnchor);
+    EXPECT_DOUBLE_EQ (TruthZAnchor, gpsInfo.zAnchor);
+    EXPECT_DOUBLE_EQ (TruthXTarget, gpsInfo.xTarget);
+    EXPECT_DOUBLE_EQ (TruthYTarget, gpsInfo.yTarget);
+    EXPECT_DOUBLE_EQ (TruthZTarget, gpsInfo.zTarget);
+    EXPECT_NEAR (TruthXFirst, gpsInfo.xFirst, 0.000002);
+    EXPECT_NEAR (TurthYFirst, gpsInfo.yFirst, 0.0000004);
+    EXPECT_NEAR (TruthZFirst, gpsInfo.zFirst, 0.0000002);
+    EXPECT_NEAR (TruthXLast, gpsInfo.xLast, 0.0000003);
+    EXPECT_NEAR (TruthYLast, gpsInfo.yLast, 0.0000004);
+    EXPECT_NEAR (TruthZLast, gpsInfo.zLast, 0.0000003);
+    EXPECT_EQ (TruthEdge, gpsInfo.edge);
+    EXPECT_EQ (TruthFacet, gpsInfo.facet);
+    EXPECT_EQ (TruthScanDirection, gpsInfo.scanDirection);
+    EXPECT_EQ (TruthIntensity, gpsInfo.intensity);
   }
 }
 
@@ -274,9 +274,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_offset){
     double known_Y_offset=.1;
     double known_Z_offset=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_offset, gpsInfo.xOffset);
-    ASSERT_DOUBLE_EQ(known_Y_offset, gpsInfo.yOffset);
-    ASSERT_DOUBLE_EQ(known_Z_offset, gpsInfo.zOffset);
+    EXPECT_DOUBLE_EQ(known_X_offset, gpsInfo.xOffset);
+    EXPECT_DOUBLE_EQ(known_Y_offset, gpsInfo.yOffset);
+    EXPECT_DOUBLE_EQ(known_Z_offset, gpsInfo.zOffset);
  }
 
 TEST_F(WaveGPSInformationTest, checkXYZ_scale){
@@ -298,9 +298,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_scale){
     double known_Y_scale=.1;
     double known_Z_scale=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_scale, gpsInfo.xScale);
-    ASSERT_DOUBLE_EQ(known_Y_scale, gpsInfo.yScale);
-    ASSERT_DOUBLE_EQ(known_Z_scale, gpsInfo.zScale);
+    EXPECT_DOUBLE_EQ(known_X_scale, gpsInfo.xScale);
+    EXPECT_DOUBLE_EQ(known_Y_scale, gpsInfo.yScale);
+    EXPECT_DOUBLE_EQ(known_Z_scale, gpsInfo.zScale);
 
  }
 
@@ -324,9 +324,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realTargetValues){
     double known_Y_target=.1;
     double known_Z_target=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_target, gpsInfo.xRealTarget);
-    ASSERT_DOUBLE_EQ(known_Y_target, gpsInfo.yRealTarget);
-    ASSERT_DOUBLE_EQ(known_Z_target, gpsInfo.zRealTarget);
+    EXPECT_DOUBLE_EQ(known_X_target, gpsInfo.xRealTarget);
+    EXPECT_DOUBLE_EQ(known_Y_target, gpsInfo.yRealTarget);
+    EXPECT_DOUBLE_EQ(known_Z_target, gpsInfo.zRealTarget);
 
  }
 
@@ -350,9 +350,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realAnchorValues){
     double known_Y_anchor=.1;
     double known_Z_anchor=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_anchor, gpsInfo.xRealAnchor);
-    ASSERT_DOUBLE_EQ(known_Y_anchor, gpsInfo.yRealAnchor);
-    ASSERT_DOUBLE_EQ(known_Z_anchor, gpsInfo.zRealAnchor);
+    EXPECT_DOUBLE_EQ(known_X_anchor, gpsInfo.xRealAnchor);
+    EXPECT_DOUBLE_EQ(known_Y_anchor, gpsInfo.yRealAnchor);
+    EXPECT_DOUBLE_EQ(known_Z_anchor, gpsInfo.zRealAnchor);
     
  }
 
@@ -376,9 +376,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
     double known_Y_first=.1;
     double known_Z_first=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_first, gpsInfo.xRealFirst);
-    ASSERT_DOUBLE_EQ(known_Y_first, gpsInfo.yRealFirst);
-    ASSERT_DOUBLE_EQ(known_Z_first, gpsInfo.zRealFirst);
+    EXPECT_DOUBLE_EQ(known_X_first, gpsInfo.xRealFirst);
+    EXPECT_DOUBLE_EQ(known_Y_first, gpsInfo.yRealFirst);
+    EXPECT_DOUBLE_EQ(known_Z_first, gpsInfo.zRealFirst);
 
  }
 
@@ -402,9 +402,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realLastValues){
     double known_Y_last=.1;
     double known_Z_last=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_last, gpsInfo.xRealLast);
-    ASSERT_DOUBLE_EQ(known_Y_last, gpsInfo.yRealLast);
-    ASSERT_DOUBLE_EQ(known_Z_last, gpsInfo.zRealLast);
+    EXPECT_DOUBLE_EQ(known_X_last, gpsInfo.xRealLast);
+    EXPECT_DOUBLE_EQ(known_Y_last, gpsInfo.yRealLast);
+    EXPECT_DOUBLE_EQ(known_Z_last, gpsInfo.zRealLast);
 
  }
 
@@ -428,9 +428,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realMinimumValues){
     double known_Y_minimum=.1;
     double known_Z_minimum=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_minimum, gpsInfo.xRealMin);
-    ASSERT_DOUBLE_EQ(known_Y_minimum, gpsInfo.yRealMin);
-    ASSERT_DOUBLE_EQ(known_Z_minimum, gpsInfo.zRealMin);
+    EXPECT_DOUBLE_EQ(known_X_minimum, gpsInfo.xRealMin);
+    EXPECT_DOUBLE_EQ(known_Y_minimum, gpsInfo.yRealMin);
+    EXPECT_DOUBLE_EQ(known_Z_minimum, gpsInfo.zRealMin);
 
  }
 
@@ -454,9 +454,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realMaximumValues){
     double known_Y_maximum=.1;
     double known_Z_maximum=.1;
 
-    ASSERT_DOUBLE_EQ(known_X_maximum, gpsInfo.xRealMax);
-    ASSERT_DOUBLE_EQ(known_Y_maximum, gpsInfo.yRealMax);
-    ASSERT_DOUBLE_EQ(known_Z_maximum, gpsInfo.zRealMax);
+    EXPECT_DOUBLE_EQ(known_X_maximum, gpsInfo.xRealMax);
+    EXPECT_DOUBLE_EQ(known_Y_maximum, gpsInfo.yRealMax);
+    EXPECT_DOUBLE_EQ(known_Z_maximum, gpsInfo.zRealMax);
 
  }
 

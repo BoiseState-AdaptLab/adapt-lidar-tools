@@ -1,6 +1,6 @@
 /*
  * File name: FlightLineData.hpp
- * Created on: 09- November-2017
+ * Created on: 09-November-2017
  * Author: ravi
  */
 
@@ -27,6 +27,7 @@ public:
   double bb_y_max;
   double bb_z_max;  
 
+  //Instrument information
   int scanner_id; 
   double wave_length;
   double outgoing_pulse_width;
@@ -41,15 +42,21 @@ public:
   double minimal_range;
   double maximal_range;
 
-  FlightLineData();
-  void setFlightLineData(std::string fileName);
-  void FlightLineDataToCSV();
-  void getNextPulse(PulseData* pd);;
+  //Depends on whether there is a next pulse
+  bool next_pulse_exists;
 
+  //Stores pulse data one at a time
   std::vector<int> outgoing_time;
   std::vector<int> outgoing_wave;
   std::vector<int> returning_time;
   std::vector<int> returning_wave;
+
+  FlightLineData();
+  void setFlightLineData(std::string fileName);
+  void FlightLineDataToCSV();
+  bool hasNextPulse();
+  void getNextPulse(PulseData* pd);;
+
 
 private:
   PULSEreadOpener pOpener;

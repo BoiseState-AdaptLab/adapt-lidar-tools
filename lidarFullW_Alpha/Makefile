@@ -126,7 +126,8 @@ $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
 lidarDriver: $(BIN)/lidarDriver
 
 $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/CmdLine.o \
-               $(USER_DIR)/WaveGPSInformation.o $(USER_DIR)/PulseData.o
+               $(USER_DIR)/WaveGPSInformation.o $(USER_DIR)/PulseData.o \
+               $(USER_DIR)/FlightLineData.o $(USER_DIR)/LidarVolume.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 

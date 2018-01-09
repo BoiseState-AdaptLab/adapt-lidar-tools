@@ -80,7 +80,7 @@ void LidarVolume::allocateMemory(){
   //}
 }
 
-void LidarVolume::insertPeak(struct peak *pulsePeak){
+void LidarVolume::insertPeak(peak *pulsePeak){
   
   peaks[currentPeak].time = pulsePeak->time;
   peaks[currentPeak].amp = pulsePeak->amp;

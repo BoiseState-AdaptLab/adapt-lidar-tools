@@ -114,13 +114,72 @@ TEST_F(LidarVolumeTest, allocatePeakMemory){
       double width;
     };
     
-    peak *myPeak = new peak;
-    peak->time = 12.23;
-    peak->amp = 345.445;
-    peak->width = 23.453;
+    peak myPeak;
+    myPeak.time = 12.23;
+    myPeak.amp = 345.445;
+    myPeak.width = 23.453;
     
     
     lidarVolume.allocateMemory();
     lidarVolume.insertPeak(&myPeak);
+    lidarVolume.deallocateMemory();
+}
+
+//this test will add peaks to lidar volume by adding struct pointers to an array
+TEST_F(LidarVolumeTest, allocateTwoPeaksMemory){
+    LidarVolume lidarVolume;
+    
+    struct peak{
+      double time;
+      double amp;
+      double width;
+    };
+    
+    peak *myFirstPeak = new peak;
+    peak *mySecondPeak = new peak;
+    
+    myFirstPeak->time = 12.23;
+    myFirstPeak->amp = 345.445;
+    myFirstPeak->width = 23.453;
+    
+    mySecondPeak->time = 13.23;
+    mySecondPeak->amp = 350.445;
+    mySecondPeak->width = 33.453;
+    
+    
+    lidarVolume.allocateMemory();
+    lidarVolume.insertPeak(myFirstPeak);
+    lidarVolume.deallocateMemory();
+}
+
+//this test will add peaks to lidar volume by adding struct pointers to an array
+TEST_F(LidarVolumeTest, allocateThreePeaksMemory){
+    LidarVolume lidarVolume;
+    
+    struct peak{
+      double time;
+      double amp;
+      double width;
+    };
+    
+    peak *myFirstPeak = new peak;
+    peak *mySecondPeak = new peak;
+    peak *myThirdPeak = new peak;
+    
+    myFirstPeak->time = 12.23;
+    myFirstPeak->amp = 345.445;
+    myFirstPeak->width = 23.453;
+    
+    mySecondPeak->time = 13.23;
+    mySecondPeak->amp = 350.445;
+    mySecondPeak->width = 33.453;
+    
+    myThirdPeak->time = 14.23;
+    myThirdPeak->amp = 450.445;
+    myThirdPeak->width = 53.453;
+    
+    
+    lidarVolume.allocateMemory();
+    lidarVolume.insertPeak(myFirstPeak);
     lidarVolume.deallocateMemory();
 }

@@ -37,7 +37,7 @@ void PulseData::setReturning(std::vector<int> *idxArray,
  */
 void PulseData::displayPulseData(std::ostream *outStream){
 
-  *outStream << "Outgoing:\n" << std::endl;
+  *outStream << "\nOutgoing:\n" << std::endl;
   *outStream << "\tindices:" << std::endl;
   *outStream << "\t";
   for(int i = 0; i<(int)outgoingIdx.size(); i++){

@@ -73,10 +73,12 @@ void FlightLineData::setFlightLineData(std::string fileName){
   //If no data, throw an exception and exit
   try{
     if(pReader->read_pulse()){
-      next_pulse_exists = true;
-      pReader->read_waves();
+      if(pReader->read_waves()){
+        next_pulse_exists = true;  
+      }      
     }
     else{
+      next_pulse_exists = false;
       throw -1;
     }
   }
@@ -159,8 +161,9 @@ void FlightLineData::getNextPulse(PulseData *pd){
   //returning_wave.clear();
 
   double pulse_outgoing_start_time;
+  double pulse_outgoing_segment_time;
   double pulse_returning_start_time;
-  double segment_time;
+  double pulse_returning_segment_time;
 
   int num_samplings = pReader->waves->get_number_of_samplings();
   int sampling_number = 0;  // can only be 0 or 1
@@ -181,15 +184,15 @@ void FlightLineData::getNextPulse(PulseData *pd){
     if(j == 0){            
       pulse_outgoing_start_time = 
                       sampling->get_duration_from_anchor_for_segment();
-      segment_time = sampling->get_duration_from_anchor_for_segment();
+      pulse_outgoing_segment_time = sampling->get_duration_from_anchor_for_segment();
     }
     else{
-      segment_time = sampling->get_duration_from_anchor_for_segment();
+      pulse_outgoing_segment_time = sampling->get_duration_from_anchor_for_segment();
     }
     for(int k = 0; k < sampling->get_number_of_samples(); k++){
-      pd->outgoingIdx.push_back(segment_time - pulse_outgoing_start_time);
+      pd->outgoingIdx.push_back(pulse_outgoing_segment_time - pulse_outgoing_start_time);
       pd->outgoingWave.push_back(sampling->get_sample(k));
-      segment_time++;
+      pulse_outgoing_segment_time++;
     }
     //pd->setOutgoing(&outgoing_time, &outgoing_wave); 
   }
@@ -210,17 +213,20 @@ void FlightLineData::getNextPulse(PulseData *pd){
       if(j == 0){            
         pulse_returning_start_time = 
                         sampling->get_duration_from_anchor_for_segment();
-        segment_time = sampling->get_duration_from_anchor_for_segment();
+        pulse_returning_segment_time = sampling->get_duration_from_anchor_for_segment();
       }
       else{
-        segment_time = sampling->get_duration_from_anchor_for_segment();
+        pulse_returning_segment_time = sampling->get_duration_from_anchor_for_segment();
       }
       for(int k = 0; k < sampling->get_number_of_samples(); k++){
-        pd->returningIdx.push_back(segment_time - pulse_returning_start_time);
+        pd->returningIdx.push_back(pulse_returning_segment_time - pulse_returning_start_time);
         pd->returningWave.push_back(sampling->get_sample(k));
       }
     }
     //pd->setReturning(&returning_time, &returning_wave);
+  }
+  else{
+    std::cout << "No returning Wave" << std::endl;
   }
 
   //Check if there exists a next pulse

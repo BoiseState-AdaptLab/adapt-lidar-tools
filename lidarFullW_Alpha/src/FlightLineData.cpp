@@ -177,13 +177,12 @@ void FlightLineData::getNextPulse(PulseData *pd){
   }
 
   //Populate outgoing wave data
-  printf("Outgoing\n");
+  std::cout << "Starting outgoing" << std::endl;
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
     sampling->set_active_segment(j);            
     //set the start time of the outgoing wave and keep track of the times
     if(j == 0){            
-      pulse_outgoing_start_time = 
-                      sampling->get_duration_from_anchor_for_segment();
+      pulse_outgoing_start_time = sampling->get_duration_from_anchor_for_segment();
       pulse_outgoing_segment_time = sampling->get_duration_from_anchor_for_segment();
     }
     else{
@@ -199,6 +198,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
   //If there exists a returning wave
   if(++sampling_number < num_samplings){
+    std::cout << "Starting returning" << std::endl;
     sampling = pReader->waves->get_sampling(sampling_number);
     if(sampling->get_type() != PULSEWAVES_RETURNING) {
       std::cout << "CRITICAL ERROR! \
@@ -206,13 +206,11 @@ void FlightLineData::getNextPulse(PulseData *pd){
       exit(EXIT_FAILURE);
     }
     //Populate returing wave data
-    printf("Returning\n");
     for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
       sampling->set_active_segment(j);
       //set the start time of the returning wave and keep track of the times
       if(j == 0){            
-        pulse_returning_start_time = 
-                        sampling->get_duration_from_anchor_for_segment();
+        pulse_returning_start_time = sampling->get_duration_from_anchor_for_segment();
         pulse_returning_segment_time = sampling->get_duration_from_anchor_for_segment();
       }
       else{

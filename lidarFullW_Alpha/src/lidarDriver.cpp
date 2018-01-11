@@ -48,7 +48,7 @@ int main (int argc, char *argv[]) {
     //   intermediateData.addPeak(peaks.peak_list[i]);
     // }
     pd.displayPulseData(&stream);
-    std::cout << stream.str() << '\n';
+    std::cout << stream.str() << std::endl;
   }
   // Lidar Volume is full and complete
   // Rasterize it

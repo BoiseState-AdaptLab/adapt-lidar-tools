@@ -15,10 +15,10 @@ class PulseData{
 private:
 
 public:  
-  std::vector<int> *outgoingIdx;
-  std::vector<int> *outgoingWave;
-  std::vector<int> *returningIdx;
-  std::vector<int> *returningWave;
+  std::vector<int> outgoingIdx;
+  std::vector<int> outgoingWave;
+  std::vector<int> returningIdx;
+  std::vector<int> returningWave;
 
   PulseData();  
   void displayPulseData(std::ostream *outStream);

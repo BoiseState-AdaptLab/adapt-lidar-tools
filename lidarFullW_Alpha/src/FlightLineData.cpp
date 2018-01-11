@@ -148,10 +148,10 @@ void FlightLineData::getNextPulse(PulseData *pd){
   }
 
   //Clear the vectors since we're storing a single pulse at a time
-  pd->outgoingIdx->clear();
-  pd->outgoingWave->clear();
-  pd->returningIdx->clear();
-  pd->returningWave->clear();
+  pd->outgoingIdx.clear();
+  pd->outgoingWave.clear();
+  pd->returningIdx.clear();
+  pd->returningWave.clear();
   
   //outgoing_time.clear();
   //outgoing_wave.clear();
@@ -187,8 +187,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
       segment_time = sampling->get_duration_from_anchor_for_segment();
     }
     for(int k = 0; k < sampling->get_number_of_samples(); k++){
-      pd->outgoingIdx->push_back(segment_time - pulse_outgoing_start_time);
-      pd->outgoingWave->push_back(sampling->get_sample(k));
+      pd->outgoingIdx.push_back(segment_time - pulse_outgoing_start_time);
+      pd->outgoingWave.push_back(sampling->get_sample(k));
       segment_time++;
     }
     //pd->setOutgoing(&outgoing_time, &outgoing_wave); 
@@ -216,8 +216,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
         segment_time = sampling->get_duration_from_anchor_for_segment();
       }
       for(int k = 0; k < sampling->get_number_of_samples(); k++){
-        pd->returningIdx->push_back(segment_time - pulse_returning_start_time);
-        pd->returningWave->push_back(sampling->get_sample(k));
+        pd->returningIdx.push_back(segment_time - pulse_returning_start_time);
+        pd->returningWave.push_back(sampling->get_sample(k));
       }
     }
     //pd->setReturning(&returning_time, &returning_wave);

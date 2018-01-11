@@ -11,24 +11,23 @@
 
 //Default constructor
 PulseData::PulseData(){
-  outgoingIdx = new std::vector<int>();
-  outgoingWave = new std::vector<int>();
-  returningIdx = new std::vector<int>();
-  returningWave = new std::vector<int>();
-
+  outgoingIdx.clear();
+  outgoingWave.clear();
+  returningIdx.clear();
+  returningWave.clear();
 }
 
 void PulseData::setOutgoing(std::vector<int> *idxArray,
                             std::vector<int> *waveArray){
 
-  outgoingIdx = idxArray;
-  outgoingWave = waveArray;
+  outgoingIdx = *idxArray;
+  outgoingWave = *waveArray;
 }
 
 void PulseData::setReturning(std::vector<int> *idxArray, 
                              std::vector<int> *waveArray){
-  returningIdx = idxArray;
-  returningWave = waveArray;
+  returningIdx = *idxArray;
+  returningWave = *waveArray;
 }
 
 
@@ -40,21 +39,21 @@ void PulseData::displayPulseData(std::ostream *outStream){
 
   *outStream << "Outgoing:\n" << std::endl;
   *outStream << "\tindices:\n" << std::endl;
-  for(int i = 0; i<(int)outgoingIdx->size(); i++){
-    *outStream << outgoingIdx->at(i) << " ";
+  for(int i = 0; i<(int)outgoingIdx.size(); i++){
+    *outStream << outgoingIdx.at(i) << " ";
   }
   *outStream << "\tamplitudes:\n" << std::endl;
-  for(int i = 0; i<(int)outgoingWave->size(); i++){
-    *outStream << outgoingWave->at(i) << " ";
+  for(int i = 0; i<(int)outgoingWave.size(); i++){
+    *outStream << outgoingWave.at(i) << " ";
   }
 
   *outStream << "\nReturning Wave:\n" << std::endl;
   *outStream << "\tindices:\n" << std::endl;
-  for(int i = 0; i<(int)returningIdx->size(); i++){
-    *outStream << returningIdx->at(i) << " ";
+  for(int i = 0; i<(int)returningIdx.size(); i++){
+    *outStream << returningIdx.at(i) << " ";
   }
   *outStream << "\tamplitudes:\n" << std::endl;
-  for(int i = 0; i<(int)returningWave->size(); i++){
-    *outStream << returningWave->at(i) << " ";
+  for(int i = 0; i<(int)returningWave.size(); i++){
+    *outStream << returningWave.at(i) << " ";
   }
 }

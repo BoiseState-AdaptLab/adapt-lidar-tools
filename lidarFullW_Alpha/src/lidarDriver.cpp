@@ -49,6 +49,7 @@ int main (int argc, char *argv[]) {
     // }
     pd.displayPulseData(&stream);
     std::cout << stream.str() << std::endl;
+    stream.str("");
   }
   // Lidar Volume is full and complete
   // Rasterize it

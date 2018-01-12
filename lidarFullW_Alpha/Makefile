@@ -41,10 +41,10 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests\
-         $(BIN)/FlightLineData_unittests $(BIN)/WaveGPSInformation_unittests\
-        $(BIN)/PulseData_unittests $(BIN)/LidarVolume_unittests\
-        $(BIN)/GaussianFitter_unittests
+TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests \
+		$(BIN)/FlightLineData_unittests $(BIN)/WaveGPSInformation_unittests \
+		$(BIN)/PulseData_unittests $(BIN)/LidarVolume_unittests \
+		$(BIN)/GaussianFitter_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -80,10 +80,14 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # depending on whether it defines its own main() function.
 
 
-$(BIN)/GaussianFitter_unittests: $(USER_DIR)/GaussianFitter.o $(USER_DIR)/GaussianFitter_unittests.o  $(LIB)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib -lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
+$(BIN)/GaussianFitter_unittests: $(USER_DIR)/GaussianFitter.o \
+		$(USER_DIR)/GaussianFitter_unittests.o  $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib \
+		-lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl \
+		-lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
 
-$(BIN)/FlightLineData_unittests: $(USER_DIR)/FlightLineData_unittests.o $(USER_DIR)/FlightLineData.o $(USER_DIR)/PulseData.o \
+$(BIN)/FlightLineData_unittests: $(USER_DIR)/FlightLineData_unittests.o \
+	$(USER_DIR)/FlightLineData.o $(USER_DIR)/PulseData.o \
                     $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
@@ -95,10 +99,11 @@ $(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o \
 
 # Builds specific object files
 $(USER_DIR)/GaussianFitter_unittests.o: $(USER_DIR)/GaussianFitter_unittests.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I/home/CATHERINEOLSCHAN/tools/include  -c -o $@ $^ 
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I/home/CATHERINEOLSCHAN/tools/include -c \
+		-o $@ $^
 
 $(USER_DIR)/%_unittests.o: $(USER_DIR)/%_unittests.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 $(USER_DIR)/FullWaveformIngestion.o: $(USER_DIR)/FullWaveformIngestion.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
@@ -116,7 +121,9 @@ $(USER_DIR)/LidarVolume.o: $(USER_DIR)/LidarVolume.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(USER_DIR)/GaussianFitter.o: $(USER_DIR)/GaussianFitter.cpp
-	$(CXX) -g -fpermissive -c -o $@ $^ -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
+	$(CXX) -g -fpermissive -c -o $@ $^ -lm \
+		-I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas \
+		-L/home/CATHERINEOLSCHAN/tools/lib
 
 # Builds all object files
 $(USER_DIR)/%.o: $(USER_DIR)/%.cpp
@@ -128,7 +135,7 @@ lidarDriver: $(BIN)/lidarDriver
 $(BIN)/lidarDriver: $(USER_DIR)/lidarDriver.o $(USER_DIR)/CmdLine.o \
                $(USER_DIR)/WaveGPSInformation.o $(USER_DIR)/PulseData.o \
                $(USER_DIR)/FlightLineData.o $(USER_DIR)/LidarVolume.o 
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
             $(PULSE_DIR)/lib -lpulsewaves
 
 $(USER_DIR)/lidarDriver.o: $(USER_DIR)/lidarDriver.cpp

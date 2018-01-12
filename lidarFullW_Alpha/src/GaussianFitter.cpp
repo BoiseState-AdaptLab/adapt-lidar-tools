@@ -79,7 +79,7 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J)
     gsl_matrix_set(J, i,3*j+0, a_sum);
 
     // first derivative wrt b
-    // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2) 
+    // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2)
     // a*(ti-b)*ei*(1/(c*c))
     //gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
     gsl_matrix_set(J, i,3*j+1,b_sum);
@@ -87,7 +87,7 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J)
     // first derivative wrt c
     // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
     gsl_matrix_set(J, i,3*j+2,c_sum);
-    
+
   }
 
   return GSL_SUCCESS;
@@ -154,7 +154,7 @@ void callback(const size_t iter, void *params,
           gsl_vector_get(x,3*j+ 0),
           gsl_vector_get(x,3*j+ 1),
           gsl_vector_get(x,3*j+ 2));
-  } 
+  }
   fprintf(stderr,", |a|/|v| = %.4f cond(J) = %8.4f, |f(x)| = %.4f\n",
           avratio,
           1.0 / rcond,
@@ -253,7 +253,7 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
     fit_data.y[i] = (double)ampData[i];
   }
 
-  // define function to be minimized 
+  // define function to be minimized
   fdf.f = func_f;
   fdf.df = func_df;
   fdf.fvv = func_fvv;
@@ -272,7 +272,7 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
   solve_system(x, &fdf, &fdf_params);
 
-  // print data and model 
+  // print data and model
   {
     double A = gsl_vector_get(x, 0);
     double B = gsl_vector_get(x, 1);
@@ -296,7 +296,7 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
 }
 
 std::vector<int> GaussianFitter::calculateFirstDifferences(
-                                                std::vector<int> ampData){ 
+                                                std::vector<int> ampData){
   int first, second, fDiff, count = 0;
   std::vector<int> firstDifference;
 
@@ -325,8 +325,8 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   /* Level up to and including which peaks will be excluded
    * For the unaltered wave, noise = 16
    * for the scond derivative of the wave, noise = 3
-   */  
-  const int NOISE = 6; 
+   */
+  const int NOISE = 6;
   int wideStart = -1;  //The start of any current wide peak
 
  /* Sign of gradient
@@ -335,7 +335,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   * = -1 for decreasing OR level, but previously decreasing
   * A sharp peak is identified by grad=1 -> grad=-1
   * A wide  peak is identified by grad=0 -> grad=-1
-  */ 
+  */
   int grad = -1;
 
   int count = 1;  //Keep track of the index
@@ -362,7 +362,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
         else {
           peaksLocation.push_back(wideStart + (((i - wideStart) / 2) + 1));
         }
-        
+
       }
       count++;
       grad = -1;
@@ -382,7 +382,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
 
     //Reset the index
     if (count == 60){
-      count = 1;  
+      count = 1;
     }
 
   }

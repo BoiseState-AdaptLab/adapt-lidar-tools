@@ -2,10 +2,10 @@
  * File name: GPSInformation_unittests.cpp
  * Created on: 17-June-2017
  * Author: ravi
- 
+
   * Modified by: Nicholas Chapa
  *
- * This test requres the sample 140823_183115_1_clipped_test.pls file 
+ * This test requres the sample 140823_183115_1_clipped_test.pls file
  * and its corresponding wvs file to be in the etc directory to run
  *
  */
@@ -23,14 +23,14 @@ class WaveGPSInformationTest: public testing::Test{
 
   // function to set up space used by all tests
   virtual void SetUp(){
-  //populate with setup declarations that are 
+  //populate with setup declarations that are
   //currently inside 'checkValues' test
   }
 
 };
 
 /*
-* Given the true values of the GPS file we read the pulse file and compare 
+* Given the known values of the GPS file we read the pulse file and compare
 * the scanned values to the true values
 */
 TEST_F(WaveGPSInformationTest, checkValues){
@@ -46,7 +46,7 @@ TEST_F(WaveGPSInformationTest, checkValues){
   unsigned char TruthFacet;
   unsigned char TruthScanDirection;
   unsigned char TruthIntensity;
-  
+
 
 
   std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
@@ -63,29 +63,29 @@ TEST_F(WaveGPSInformationTest, checkValues){
   long long pulseIndex = 0; // Keep track of the index
 
   /****************************************************************************
-  * 
+  *
   * Begin index = 0 tests
-  * 
+  *
   ****************************************************************************/
   if(pReader->read_pulse()) {
     gpsInfo.populateGPS(pReader);
     pulseIndex++;
- 
+
     TruthGpsTime = 66689.303202;
-    TruthXAnchor = 516324.56; 
+    TruthXAnchor = 516324.56;
     TruthYAnchor = 4767809.865;
     TruthZAnchor = 2835.406;
-    TruthXTarget = 516302.312; 
-    TruthYTarget = 4767831.894; 
+    TruthXTarget = 516302.312;
+    TruthYTarget = 4767831.894;
     TruthZTarget = 2688.858;
-    // TruthXDeviation = 0; 
-    // TurthYDeviation = 0; 
+    // TruthXDeviation = 0;
+    // TurthYDeviation = 0;
     // TruthZDeviation = 0;
-    TruthXFirst = 516211.940623; 
-    TurthYFirst = 4767921.375796; 
+    TruthXFirst = 516211.940623;
+    TurthYFirst = 4767921.375796;
     TruthZFirst = 2093.580011;
-    TruthXLast = 516210.627993; 
-    TruthYLast = 4767922.675509; 
+    TruthXLast = 516210.627993;
+    TruthYLast = 4767922.675509;
     TruthZLast = 2084.933649;
     TruthEdge = 0;
     TruthScanDirection = 0;
@@ -111,29 +111,29 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_EQ (TruthIntensity, gpsInfo.intensity);
   }
   /****************************************************************************
-  * 
+  *
   * Begin index = 1 tests
-  * 
+  *
   ****************************************************************************/
   if(pReader->read_pulse()) {
     gpsInfo.populateGPS(pReader);
     pulseIndex++;
- 
+
     TruthGpsTime = 66689.303202;
-    TruthXAnchor = 516324.56; 
+    TruthXAnchor = 516324.56;
     TruthYAnchor = 4767809.865;
     TruthZAnchor = 2835.406;
-    TruthXTarget = 516302.248; 
-    TruthYTarget = 4767831.952; 
+    TruthXTarget = 516302.248;
+    TruthYTarget = 4767831.952;
     TruthZTarget = 2688.876;
-    // TruthXDeviation = 0; 
-    // TurthYDeviation = 0; 
+    // TruthXDeviation = 0;
+    // TurthYDeviation = 0;
     // TruthZDeviation = 0;
-    TruthXFirst = 516211.549716; 
-    TurthYFirst = 4767921.735659; 
+    TruthXFirst = 516211.549716;
+    TurthYFirst = 4767921.735659;
     TruthZFirst = 2093.231562;
-    TruthXLast = 516210.233309; 
-    TruthYLast = 4767923.03879; 
+    TruthXLast = 516210.233309;
+    TruthYLast = 4767923.03879;
     TruthZLast = 2084.586298;
     TruthEdge = 0;
     TruthScanDirection = 0;
@@ -159,29 +159,29 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_EQ (TruthIntensity, gpsInfo.intensity);
 }
   /****************************************************************************
-  * 
+  *
   * Begin index = 2 tests
-  * 
+  *
   ****************************************************************************/
   if(pReader->read_pulse()) {
     gpsInfo.populateGPS(pReader);
     pulseIndex++;
- 
+
     TruthGpsTime = 66689.303207;
-    TruthXAnchor = 516324.56; 
+    TruthXAnchor = 516324.56;
     TruthYAnchor = 4767809.865;
     TruthZAnchor = 2835.406;
-    TruthXTarget = 516302.187; 
-    TruthYTarget = 4767832.007; 
+    TruthXTarget = 516302.187;
+    TruthYTarget = 4767832.007;
     TruthZTarget = 2688.894;
-    // TruthXDeviation = 0; 
-    // TurthYDeviation = 0; 
+    // TruthXDeviation = 0;
+    // TurthYDeviation = 0;
     // TruthZDeviation = 0;
-    TruthXFirst = 516211.240756; 
-    TurthYFirst = 4767922.014231; 
+    TruthXFirst = 516211.240756;
+    TurthYFirst = 4767922.014231;
     TruthZFirst = 2093.322687;
-    TruthXLast = 516209.920748; 
-    TruthYLast = 4767923.320612; 
+    TruthXLast = 516209.920748;
+    TruthYLast = 4767923.320612;
     TruthZLast = 2084.678522;
     TruthEdge = 0;
     TruthScanDirection = 0;
@@ -207,29 +207,29 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_EQ (TruthIntensity, gpsInfo.intensity);
   }
   /****************************************************************************
-  * 
+  *
   * Begin index = 3 tests
-  * 
+  *
   ****************************************************************************/
   if(pReader->read_pulse()) {
     gpsInfo.populateGPS(pReader);
     pulseIndex++;
- 
+
     TruthGpsTime = 66689.30321;
-    TruthXAnchor = 516324.561; 
+    TruthXAnchor = 516324.561;
     TruthYAnchor = 4767809.865;
     TruthZAnchor = 2835.406;
-    TruthXTarget = 516302.127; 
-    TruthYTarget = 4767832.061; 
+    TruthXTarget = 516302.127;
+    TruthYTarget = 4767832.061;
     TruthZTarget = 2688.912;
-    // TruthXDeviation = 0; 
-    // TurthYDeviation = 0; 
+    // TruthXDeviation = 0;
+    // TurthYDeviation = 0;
     // TruthZDeviation = 0;
-    TruthXFirst = 516210.910358; 
-    TurthYFirst = 4767922.309939; 
+    TruthXFirst = 516210.910358;
+    TurthYFirst = 4767922.309939;
     TruthZFirst = 2093.267389;
-    TruthXLast = 516209.586749; 
-    TruthYLast = 4767923.619501; 
+    TruthXLast = 516209.586749;
+    TruthYLast = 4767923.619501;
     TruthZLast = 2084.624262;
     TruthEdge = 0;
     TruthScanDirection = 0;
@@ -257,19 +257,19 @@ TEST_F(WaveGPSInformationTest, checkValues){
 }
 
 TEST_F(WaveGPSInformationTest, checkXYZ_offset){
-    //This test will compare the known values of x,y, and z 
+    //This test will compare the known values of x,y, and z
     //offset with the values that are retrieved from the pulse
     //data.
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
-    
+
     double known_X_offset=.1;
     double known_Y_offset=.1;
     double known_Z_offset=.1;
@@ -283,17 +283,17 @@ TEST_F(WaveGPSInformationTest, checkXYZ_scale){
     //This test will compare the known values of x, y, and z
     //scale with the values that are retrieved from the pulse
     //data.
-    
+
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
-    
+
     double known_X_scale=.1;
     double known_Y_scale=.1;
     double known_Z_scale=.1;
@@ -309,15 +309,15 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realTargetValues){
     //of x, y, and z that are calculated by the GPSInformation
     //class to the real world target values that are calculated
     //by hand.
-    
+
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
 
     double known_X_target=.1;
@@ -333,17 +333,17 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realTargetValues){
 TEST_F(WaveGPSInformationTest, checkXYZ_realAnchorValues){
     //This test will compare the real world anchor values of
     //x, y, and z that are calculated by the GPSInformation
-    //class to the real world anchor values that are calculated 
+    //class to the real world anchor values that are calculated
     //by hand.
-    
+
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
 
     double known_X_anchor=.1;
@@ -353,7 +353,7 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realAnchorValues){
     EXPECT_DOUBLE_EQ(known_X_anchor, gpsInfo.xRealAnchor);
     EXPECT_DOUBLE_EQ(known_Y_anchor, gpsInfo.yRealAnchor);
     EXPECT_DOUBLE_EQ(known_Z_anchor, gpsInfo.zRealAnchor);
-    
+
  }
 
 TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
@@ -361,15 +361,15 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
     //x, y, and z that are calcuated by the GPSInformation
     //class to the real world first values that are calculated
     //by hand.
-    
+
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
 
     double known_X_first=.1;
@@ -384,18 +384,18 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
 
 TEST_F(WaveGPSInformationTest, checkXYZ_realLastValues){
     //This test will compare the real world last values of
-    //x, y, and z that are calculated by the GPSInformation 
-    //class to the real world last values that are calculated 
+    //x, y, and z that are calculated by the GPSInformation
+    //class to the real world last values that are calculated
     //by hand.
-    
+
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
 
     double known_X_last=.1;
@@ -413,15 +413,15 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realMinimumValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world minimum values that are calculated
     //by hand.
-    
+
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
 
     double known_X_minimum=.1;
@@ -439,15 +439,15 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realMaximumValues){
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world maximum values that are calculated
     //by hand.
-    
+
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-    
+
     WaveGPSInformation gpsInfo;
     PULSEreadOpener pOpener;  // Create a pulse read opener object
     PULSEreader *pReader;     // Create a pulse reader object
     pOpener.set_file_name(fileNameCorrect.c_str());
     pReader = pOpener.open();
-    
+
     gpsInfo.populateGPS(pReader);
 
     double known_X_maximum=.1;

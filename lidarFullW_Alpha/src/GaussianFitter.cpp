@@ -47,9 +47,7 @@ int func_f (const gsl_vector * x, void *params, gsl_vector * f)
   return GSL_SUCCESS;
 }
 
-int
-func_df (const gsl_vector * x, void *params, gsl_matrix * J)
-{
+int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
   struct data *d = (struct data *) params;
 
   int npeaks = x->size/3;
@@ -77,69 +75,23 @@ func_df (const gsl_vector * x, void *params, gsl_matrix * J)
       // first derivative wrt a
       // ei
       //gsl_matrix_set(J, i,3*j+ 0, -ei);
-      gsl_matrix_set(J, i,3*j+0, a_sum);
+      gsl_matrix_set(J, i, 3*j+0, a_sum);
 
       // first derivative wrt b
-      // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2) 
+      // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2)
       // a*(ti-b)*ei*(1/(c*c))
       //gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
-      gsl_matrix_set(J, i,3*j+1,b_sum);
+      gsl_matrix_set(J, i, 3*j+1, b_sum);
 
       // first derivative wrt c
       // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
-      gsl_matrix_set(J, i,3*j+2,c_sum);
+      gsl_matrix_set(J, i, 3*j+2, c_sum);
     }
-
   }
 
   return GSL_SUCCESS;
 }
 
-
-
-/*int func_df (const gsl_vector * x, void *params, gsl_matrix * J)
-{
-  struct data *d = (struct data *) params;
-
-  int npeaks = x->size/3;
-  int j;
-  size_t i;
-  for (i = 0; i < d->n; ++i){
-    double a_sum = 0;
-    double b_sum = 0;
-    double c_sum = 0;
-    double ti = d->t[i];
-    for(j=0;j<npeaks;j++){
-      double a = gsl_vector_get(x, j*3+0);
-      double b = gsl_vector_get(x, j*3+1);
-      double c = gsl_vector_get(x, j*3+2);
-
-      double zi = (ti - b) / c;
-      double ei = exp(-0.5 * zi * zi);
-
-      a_sum += (-1)*ei;
-      b_sum += (-1)*a*(ti-b)*ei*(1/(c*c));
-      c_sum += (-1)*a*(ti-b)*(ti-b) * ei * (1/(c*c*c));
-    }
-    // first derivative wrt a
-    // ei
-    //gsl_matrix_set(J, i,3*j+ 0, -ei);
-    gsl_matrix_set(J, i,0, a_sum);
-
-    // first derivative wrt b
-    // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2)
-    // a*(ti-b)*ei*(1/(c*c))
-    //gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
-    gsl_matrix_set(J, i,1,b_sum);
-
-    // first derivative wrt c
-    // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
-    gsl_matrix_set(J, i,2,c_sum);
-
-  }
-
-  return GSL_SUCCESS;
-}*/
 
 int func_fvv (const gsl_vector * x, const gsl_vector * v,
           void *params, gsl_vector * fvv)

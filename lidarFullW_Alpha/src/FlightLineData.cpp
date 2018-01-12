@@ -17,7 +17,7 @@ FlightLineData::FlightLineData(){
   bb_y_max = 0;
   bb_z_max = 0;
 
-  scanner_id  = 0; 
+  scanner_id  = 0;
   wave_length = 0;
   outgoing_pulse_width  = 0;
   scan_pattern  = 0;
@@ -50,10 +50,10 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_x_max = pReader->header.max_x;
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
-    
+
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
-    scanner_id = i; 
+    scanner_id = i;
     wave_length = scanner.wave_length;
     outgoing_pulse_width = scanner.outgoing_pulse_width;
     scan_pattern = scanner.scan_pattern;
@@ -68,14 +68,14 @@ void FlightLineData::setFlightLineData(std::string fileName){
     maximal_range = scanner.maximal_range;
     i++;
   }
-  
+
   //Initialize the pReader to read the pulse and the wave
   //If no data, throw an exception and exit
   try{
     if(pReader->read_pulse()){
       if(pReader->read_waves()){
-        next_pulse_exists = true;  
-      }      
+        next_pulse_exists = true;
+      }
     }
     else{
       next_pulse_exists = false;
@@ -93,7 +93,7 @@ void FlightLineData::setFlightLineData(std::string fileName){
 void FlightLineData::FlightLineDataToCSV(){
 
   /* Provide the file name to the PULSEreadOpener
-  c_str returns a const char* that points to a null-terminated string 
+  c_str returns a const char* that points to a null-terminated string
   (i.e. a C-style string). It is useful when you want to pass the "contents"
   of an std::string to a function that expects to work with a C-style string */
 
@@ -108,7 +108,7 @@ void FlightLineData::FlightLineDataToCSV(){
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
 
-    scanner_id = i; 
+    scanner_id = i;
     wave_length = scanner.wave_length;
     outgoing_pulse_width = scanner.outgoing_pulse_width;
     scan_pattern = scanner.scan_pattern;
@@ -123,10 +123,10 @@ void FlightLineData::FlightLineDataToCSV(){
     maximal_range = scanner.maximal_range;
 
     fprintf(scanout, "%d,%lf,%lf,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n",
-            scanner_id, wave_length, outgoing_pulse_width, 
-            scan_pattern, number_of_mirror_facets, scan_frequency, 
-            scan_angle_min, scan_angle_max, pulse_frequency, 
-            beam_diameter_at_exit_aperture, beam_divergence, 
+            scanner_id, wave_length, outgoing_pulse_width,
+            scan_pattern, number_of_mirror_facets, scan_frequency,
+            scan_angle_min, scan_angle_max, pulse_frequency,
+            beam_diameter_at_exit_aperture, beam_divergence,
             minimal_range, maximal_range);
     i++;
   }
@@ -143,7 +143,7 @@ bool FlightLineData::hasNextPulse(){
 
 //Read and populate a single pulse at a time
 void FlightLineData::getNextPulse(PulseData *pd){
-  
+
   if(!next_pulse_exists){
     std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next pulse\n";
     exit(EXIT_FAILURE);
@@ -154,7 +154,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
   pd->outgoingWave.clear();
   pd->returningIdx.clear();
   pd->returningWave.clear();
-  
+
   //outgoing_time.clear();
   //outgoing_wave.clear();
   //returning_time.clear();
@@ -170,7 +170,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
   sampling = pReader->waves->get_sampling(sampling_number);
 
   //If the first sampling is not of type outgoing, there is some error
-  if(sampling->get_type() != PULSEWAVES_OUTGOING){     
+  if(sampling->get_type() != PULSEWAVES_OUTGOING){
     std::cout << "CRITICAL ERROR! \
                   The first sampling must be an outgoing wave!\n";
     exit(EXIT_FAILURE);
@@ -179,9 +179,9 @@ void FlightLineData::getNextPulse(PulseData *pd){
   //Populate outgoing wave data
   std::cout << "Starting outgoing" << std::endl;
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
-    sampling->set_active_segment(j);            
+    sampling->set_active_segment(j);
     //set the start time of the outgoing wave and keep track of the times
-    if(j == 0){            
+    if(j == 0){
       pulse_outgoing_start_time = sampling->get_duration_from_anchor_for_segment();
       pulse_outgoing_segment_time = sampling->get_duration_from_anchor_for_segment();
     }
@@ -193,7 +193,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
       pd->outgoingWave.push_back(sampling->get_sample(k));
       pulse_outgoing_segment_time++;
     }
-    //pd->setOutgoing(&outgoing_time, &outgoing_wave); 
+    //pd->setOutgoing(&outgoing_time, &outgoing_wave);
   }
 
   //If there exists a returning wave
@@ -209,7 +209,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
     for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
       sampling->set_active_segment(j);
       //set the start time of the returning wave and keep track of the times
-      if(j == 0){            
+      if(j == 0){
         pulse_returning_start_time = sampling->get_duration_from_anchor_for_segment();
         pulse_returning_segment_time = sampling->get_duration_from_anchor_for_segment();
       }
@@ -219,6 +219,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
       for(int k = 0; k < sampling->get_number_of_samples(); k++){
         pd->returningIdx.push_back(pulse_returning_segment_time - pulse_returning_start_time);
         pd->returningWave.push_back(sampling->get_sample(k));
+        pulse_returning_segment_time++;
       }
     }
     //pd->setReturning(&returning_time, &returning_wave);

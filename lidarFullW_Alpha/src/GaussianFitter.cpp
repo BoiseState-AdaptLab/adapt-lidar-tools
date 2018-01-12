@@ -67,9 +67,9 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J)
       double zi = (ti - b) / c;
       double ei = exp(-0.5 * zi * zi);
 
-      a_sum += ei;
-      b_sum += a*(ti-b)*ei*(1/(c*c));
-      c_sum += a*(ti-b)*(ti-b) * ei * (1/(c*c*c));
+      a_sum += (-1)*ei;
+      b_sum += (-1)*a*(ti-b)*ei*(1/(c*c));
+      c_sum += (-1)*a*(ti-b)*(ti-b) * ei * (1/(c*c*c));
     }
     // first derivative wrt a
     // ei

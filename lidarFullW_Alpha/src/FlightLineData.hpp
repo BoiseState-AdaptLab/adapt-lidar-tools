@@ -2,8 +2,8 @@
 // Created on: 09-November-2017
 // Author: ravi
 
-#ifndef FLIGHTLINEDATAUNITTESTS_HPP_
-#define FLIGHTLINEDATAUNITTESTS_HPP_
+#ifndef FLIGHTLINEDATA_HPP_
+#define FLIGHTLINEDATA_HPP_
 
 #include <iostream>
 #include <fstream>
@@ -64,4 +64,4 @@ private:
 
 };
 
-#endif /* FLIGHTLINEDATAUNITTESTS_HPP_ */
+#endif /* FLIGHTLINEDATA_HPP_ */

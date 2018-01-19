@@ -1,13 +1,13 @@
-//PulseData_unittest.cpp
-//Created 12/15/2017
-//Author: Nicholas Chapa
+ // File name: LidarVolume_unittests.cpp
+ // Created on: 15-December-2017
+ // Author: nicholas chapa
+ // Modified by: ravi 
+
 #include <string>
 #include <iostream>
 #include <sstream>
 #include "gtest/gtest.h"
 #include "PulseData.hpp"
-#include "pulsereader.hpp"
-#include "pulsewriter.hpp"
 
 class PulseDataTest: public testing::Test{
   public:

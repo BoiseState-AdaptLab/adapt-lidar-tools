@@ -1,8 +1,6 @@
-/*
- * File name: lidarDriver.cpp
- * Created on: 17-May-2017
- * Author: ravi
- */
+ // File name: lidarDriver.cpp
+ // Created on: 17-May-2017
+ // Author: ravi
  
 #include <iostream>
 #include <iomanip>

@@ -1,9 +1,6 @@
-/*
- * File name: LidarVolume_unittests.cpp
- * Created on: 08-November-2017
- * Author: ravi
- * Modified by: Nicholas Chapa
- */
+ // File name: LidarVolume_unittests.cpp
+ // Created on: 08-November-2017
+ // Author: ravi 
 
 #include <math.h>
 

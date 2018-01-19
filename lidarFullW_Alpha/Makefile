@@ -150,6 +150,7 @@ $(USER_DIR)/lidarDriver.o: $(USER_DIR)/lidarDriver.cpp
 
 # Runs all tests
 test: $(TESTS)
+	clear
 	-$(BIN)/CmdLine_unittests
 	-$(BIN)/FullWaveformIngestion_unittests
 	-$(BIN)/FlightLineData_unittests
@@ -167,4 +168,5 @@ clean:
 	rm -f $(LIB)/*
 	rm -f $(USER_DIR)/*.o
 	rm -f *.csv
+	clear
 	

@@ -8,7 +8,6 @@
 #include <math.h>
 
 class LidarVolumeTest: public testing::Test{
-
   protected:
   
   // function to set up space used by all tests
@@ -25,7 +24,7 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
 
     std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
     FlightLineData fld;
-    
+
     EXPECT_NO_THROW (fld.setFlightLineData(file_name)); 
 
     LidarVolume lv;

@@ -9,7 +9,6 @@
 class FlightLineDataTest: public testing::Test{
   protected:
 
-
   // function to set up space used by all tests
   virtual void SetUp(){
   }

@@ -16,8 +16,12 @@ class LidarVolumeTest: public testing::Test{
 
 };
 
-
-TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
+/****************************************************************************
+* 
+* Calling the setFlightLineData() function test
+* 
+****************************************************************************/
+TEST_F(LidarVolumeTest, testBoundingBox){
 
     //This test will compare the calculated bounding box values
     //for x, y, and z with the known values in the clipped test .pls file
@@ -58,7 +62,11 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
 }
 
 
-//this test will add peaks to lidar volume by adding struct pointers to an array
+/****************************************************************************
+* 
+* Calling the setFlightLineData() function test
+* 
+****************************************************************************/
 TEST_F(LidarVolumeTest, allocatePeakMemory){
     LidarVolume lidarVolume;
     

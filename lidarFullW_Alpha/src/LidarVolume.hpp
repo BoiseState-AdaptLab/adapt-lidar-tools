@@ -1,13 +1,9 @@
-/*
- * File name: LidarVolume.cpp
- * Created on: 08-November-2017
- * Author: ravi
- */
+// File name: LidarVolume.cpp
+// Created on: 08-November-2017
+// Author: ravi
 
 #ifndef LIDARVOLUME_HPP_
 #define LIDARVOLUME_HPP_
-
-#include <math.h>
 
 class LidarVolume{
 

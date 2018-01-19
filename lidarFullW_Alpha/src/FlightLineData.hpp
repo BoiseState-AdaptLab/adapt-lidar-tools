@@ -1,8 +1,6 @@
-/*
- * File name: FlightLineData.hpp
- * Created on: 09-November-2017
- * Author: ravi
- */
+// File name: FlightLineData.hpp
+// Created on: 09-November-2017
+// Author: ravi
 
 #ifndef FLIGHTLINEDATAUNITTESTS_HPP_
 #define FLIGHTLINEDATAUNITTESTS_HPP_

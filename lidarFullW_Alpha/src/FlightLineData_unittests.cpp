@@ -1,13 +1,10 @@
-/*
- * File name: FlightLineData_unittests.cpp
- * Created on: 09- November-2017
- * Author: ravi
- */
+// File name: FlightLineData_unittests.cpp
+// Created on: 09- November-2017
+// Author: ravi
 
 #include "gtest/gtest.h"
 #include "FlightLineData.hpp"
 #include "PulseData.hpp"
-
 
 class FlightLineDataTest: public testing::Test{
   protected:

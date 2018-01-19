@@ -3,7 +3,7 @@
 // Author: ravi
  
 #include "LidarVolume.hpp"
-
+#include <math.h>
 
 //Default constructor
 LidarVolume::LidarVolume(){

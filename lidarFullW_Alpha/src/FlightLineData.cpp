@@ -1,8 +1,6 @@
-/*
- * File name: FlightLineData.cpp
- * Created on: 09-November-2017
- * Author: ravi
- */
+// File name: FlightLineData.cpp
+// Created on: 09-November-2017
+// Author: ravi
 
 #include <iostream>
 #include "FlightLineData.hpp"

@@ -1,14 +1,9 @@
-/*
- * File name: GPSInformation_unittests.cpp
- * Created on: 17-June-2017
- * Author: ravi
+// File name: WaveGPSInformation_unittests.cpp
+// Created on: 17-June-2017
+// Author: ravi
 
-  * Modified by: Nicholas Chapa
- *
- * This test requres the sample 140823_183115_1_clipped_test.pls file
- * and its corresponding wvs file to be in the etc directory to run
- *
- */
+// This test requres the sample 140823_183115_1_clipped_test.pls file
+// and its corresponding wvs file to be in the etc directory to run
 
 #include "FullWaveformIngestion.hpp"
 #include "WaveGPSInformation.hpp"
@@ -20,7 +15,6 @@
 class WaveGPSInformationTest: public testing::Test{
   protected:
 
-
   // function to set up space used by all tests
   virtual void SetUp(){
   //populate with setup declarations that are
@@ -29,10 +23,13 @@ class WaveGPSInformationTest: public testing::Test{
 
 };
 
-/*
+
+/****************************************************************************
+* 
 * Given the known values of the GPS file we read the pulse file and compare
-* the scanned values to the true values
-*/
+* the scanned values to the known values
+* 
+****************************************************************************/
 TEST_F(WaveGPSInformationTest, checkValues){
 
   // Known GPS information

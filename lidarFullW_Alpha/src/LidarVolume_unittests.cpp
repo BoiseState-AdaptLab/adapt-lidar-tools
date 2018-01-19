@@ -18,7 +18,7 @@ class LidarVolumeTest: public testing::Test{
 
 /****************************************************************************
 * 
-* Calling the setFlightLineData() function test
+* Test bounding box i, j, k mins and maxes and the extents
 * 
 ****************************************************************************/
 TEST_F(LidarVolumeTest, testBoundingBox){

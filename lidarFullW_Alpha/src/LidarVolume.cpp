@@ -72,8 +72,8 @@ void LidarVolume::insertPeak(peak *pulsePeak){
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 3D array of space that will hold peak 
   // information (we don't know how many per voxel)
-  vector<int>* element;
-  (vector<int>**) malloc (#ofiElem * #ofjElem * #ofk * sizeof(element));
+  // vector<int>* element;
+  // (vector<int>**) malloc (#ofiElem * #ofjElem * #ofk * sizeof(element));
 }
 
 void LidarVolume::deallocateMemory(){

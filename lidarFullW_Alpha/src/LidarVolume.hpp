@@ -22,11 +22,10 @@ class LidarVolume{
     double bb_y_max;
     double bb_z_max;
 
-    // integer mins
+    // bounding box mins & maxes
     int bb_i_min;
     int bb_j_min;
     int bb_k_min;
-    // integer maxes
     int bb_i_max;
     int bb_j_max;
     int bb_k_max;

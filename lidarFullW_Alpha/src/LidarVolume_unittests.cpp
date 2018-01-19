@@ -24,18 +24,19 @@ class LidarVolumeTest: public testing::Test{
 
 TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
 
-    LidarVolume lidarVolume;
-    // values that will be read from the FlightLineData
-    double known_bb_x_min= 516209.586;
-    double known_bb_y_min= 4767921.375;
-    double known_bb_z_min= 2084.585;
-    double known_bb_x_max= 516211.942;
-    double known_bb_y_max= 4767923.621;
-    double known_bb_z_max= 2093.581;
+    //This test will compare the calculated bounding box values
+    //for x, y, and z with the known values in the clipped test .pls file
 
-    lidarVolume.setBoundingBox(known_bb_x_min, known_bb_x_max,
-                               known_bb_y_min, known_bb_y_max,
-                               known_bb_z_min, known_bb_z_max);
+    FlightLineData fld;
+    std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
+    
+    EXPECT_NO_THROW (fld.setFlightLineData(file_name)); 
+
+    LidarVolume lv;
+    lv.setBoundingBox(fld.bb_x_min,fld.bb_x_max,
+                      fld.bb_y_min,fld.bb_y_max,
+                      fld.bb_z_min,fld.bb_z_max);
+    
 
     int known_i_min= (int) (floor(516209.586) - 10);
     int known_j_min= (int) (floor(4767921.375) - 10);
@@ -43,22 +44,22 @@ TEST_F(LidarVolumeTest, CheckBoundingBoxClippedTest){
     int known_i_max= (int) (ceil(516211.942) + 10);
     int known_j_max= (int) (ceil(4767923.621) + 10);
     int known_k_max= (int) (ceil(2093.581) + 10);
-
+  
+    ASSERT_EQ(known_i_min,lv.bb_i_min);
+    ASSERT_EQ(known_j_min,lv.bb_j_min);
+    ASSERT_EQ(known_k_min,lv.bb_k_min);
+    ASSERT_EQ(known_i_max,lv.bb_i_max);
+    ASSERT_EQ(known_j_max,lv.bb_j_max);
+    ASSERT_EQ(known_k_max,lv.bb_k_max);
+    
     int known_i_extent= known_i_max - known_i_min;
     int known_j_extent= known_j_max - known_j_min;
     int known_k_extent= known_k_max - known_k_min;
+
+    ASSERT_EQ(known_i_extent,lv.i_extent);
+    ASSERT_EQ(known_j_extent,lv.j_extent);
+    ASSERT_EQ(known_k_extent,lv.k_extent);
     
-    ASSERT_EQ(known_i_min,lidarVolume.bb_i_min);
-    ASSERT_EQ(known_j_min,lidarVolume.bb_j_min);
-    ASSERT_EQ(known_k_min,lidarVolume.bb_k_min);
-    ASSERT_EQ(known_i_max,lidarVolume.bb_i_max);
-    ASSERT_EQ(known_j_max,lidarVolume.bb_j_max);
-    ASSERT_EQ(known_k_max,lidarVolume.bb_k_max);
-    
-    ASSERT_EQ(known_i_extent,lidarVolume.i_extent);
-    ASSERT_EQ(known_j_extent,lidarVolume.j_extent);
-    ASSERT_EQ(known_k_extent,lidarVolume.k_extent);
- 
 }
 
 TEST_F(LidarVolumeTest, CheckBoundingBox2Nayani){

@@ -14,9 +14,9 @@ using namespace std;
 
 
 /****************************************************************************
-* 
+*
 * Custom exceptions
-* 
+*
 ****************************************************************************/
 
 /**
@@ -48,9 +48,9 @@ struct invalidOptionException : public exception{
 
 
 /****************************************************************************
-* 
+*
 * Begin CmdLine functions
-* 
+*
 ****************************************************************************/
 
 /* Function that sets the command line arguments*/
@@ -65,9 +65,9 @@ void CmdLine::setUsageMessage()
   buffer << "\nUsage: " << std::endl;
   buffer << "       pathToExecutable [-option argument]+" << std::endl;
   buffer << "\nOption:  " << std::endl;
-  buffer << "       -f  pathToFile.pls" 
+  buffer << "       -f  pathToFile.pls"
          << "  (first difference to find peaks)" << std::endl;
-  buffer << "       -s  pathToFile.pls" 
+  buffer << "       -s  pathToFile.pls"
          << "  (smooth second difference to find peaks)" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
@@ -125,7 +125,7 @@ void CmdLine::parse(int argc,char *argv[]){
    * option 'f' and 's' require arguments
    */
   while((optionChar = getopt_long (argc, argv, ":hf:s:",
-         long_options, &option_index))!= -1){    
+         long_options, &option_index))!= -1){
     switch(optionChar){
     /*option h show the help information*/
       case 'f': //Find peaks using first difference
@@ -137,7 +137,7 @@ void CmdLine::parse(int argc,char *argv[]){
         fArg = optarg;
         setInputFileName(fArg);
         peakFlag = false;
-        break;        
+        break;
       case 'h':
         printUsageMessage = true;
         break;
@@ -157,7 +157,7 @@ void CmdLine::parse(int argc,char *argv[]){
   }
 }
 
-/* 
+/*
  * Return peakFlag value
  */
 bool CmdLine::getPeakFlag(){

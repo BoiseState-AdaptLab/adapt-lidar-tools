@@ -1,7 +1,7 @@
 // File name: lidarDriver.cpp
 // Created on: 17-May-2017
 // Author: ravi
- 
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -19,7 +19,7 @@ int main (int argc, char *argv[]) {
   // parse the command lines
   CmdLine cmdLineArgs;
   cmdLineArgs.parse(argc,argv);
-  
+
   if(cmdLineArgs.printUsageMessage == true) {
     std::cout << cmdLineArgs.getUsageMessage() << std::endl;
     return 0;
@@ -41,7 +41,7 @@ int main (int argc, char *argv[]) {
   //GaussianFitter fitter;
   while(rawData.hasNextPulse()){
     rawData.getNextPulse(&pd);
-    // struct peaks peakList = fitter.findPeaks(pd); 
+    // struct peaks peakList = fitter.findPeaks(pd);
     // for(int i=0;i<peaks.size;i++){
     //   intermediateData.addPeak(peaks.peak_list[i]);
     // }
@@ -51,5 +51,5 @@ int main (int argc, char *argv[]) {
   }
   // Lidar Volume is full and complete
   // Rasterize it
-  
+
 }

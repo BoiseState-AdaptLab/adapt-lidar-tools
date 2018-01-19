@@ -15,18 +15,18 @@
 class FlightLineData{
 
   public:
-    //The min and max fields describing the boundary box that includes the 
-    //first & last points of the sampled parts of the returning waveforms of 
+    //The min and max fields describing the boundary box that includes the
+    //first & last points of the sampled parts of the returning waveforms of
     //all pulses
     double bb_x_min;
     double bb_y_min;
     double bb_z_min;
     double bb_x_max;
     double bb_y_max;
-    double bb_z_max;  
+    double bb_z_max;
 
     //Instrument information
-    int scanner_id; 
+    int scanner_id;
     double wave_length;
     double outgoing_pulse_width;
     int scan_pattern;

@@ -17,9 +17,9 @@ class FlightLineDataTest: public testing::Test{
 
 
 /****************************************************************************
-* 
+*
 * Calling the setFlightLineData() function test
-* 
+*
 ****************************************************************************/
 TEST_F(FlightLineDataTest, testFunctionStart){
 
@@ -32,21 +32,21 @@ TEST_F(FlightLineDataTest, testFunctionStart){
   EXPECT_ANY_THROW (fld.setFlightLineData(incorrect_file_name2));
 
   std::string correct_file_name =  "etc/140823_183115_1_clipped_test.pls";
-  EXPECT_NO_THROW (fld.setFlightLineData(correct_file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(correct_file_name));
 }
 
 
 /****************************************************************************
-* 
+*
 * Test the boundary mins and maxes
-* 
+*
 ****************************************************************************/
 TEST_F(FlightLineDataTest, testBoundaryMinsAndMaxes){
 
   FlightLineData fld;
 
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
-  EXPECT_NO_THROW (fld.setFlightLineData(file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(file_name));
 
   double known_bb_x_min = 516209.586;
   double known_bb_y_min = 4767921.375;
@@ -67,11 +67,11 @@ TEST_F(FlightLineDataTest, testBoundaryMinsAndMaxes){
 
 
 /****************************************************************************
-* 
+*
 * Given the known values of the actual anchor, target and deviation,
 * we calculate the actual anchor, actual target and actual deviation
 * using FullWaveformIngestion functions
-* 
+*
 ****************************************************************************/
 TEST_F(FlightLineDataTest, testInstrumentInformation){
 
@@ -93,7 +93,7 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
   double known_maximal_range = 1860.605225;
 
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
-  EXPECT_NO_THROW (fld.setFlightLineData(file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(file_name));
 
   EXPECT_EQ (known_scanner_id, fld.scanner_id);
   EXPECT_DOUBLE_EQ (known_wave_length, fld.wave_length);
@@ -113,17 +113,17 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
 
 /*******************************************************************************
 *
-*  
+*
 *******************************************************************************/
 TEST_F(FlightLineDataTest, testGetNextPulse){
 
   FlightLineData fld;
 
   std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
-  EXPECT_NO_THROW (fld.setFlightLineData(file_name));  
+  EXPECT_NO_THROW (fld.setFlightLineData(file_name));
 
   PulseData pd;
-  
+
   EXPECT_NO_THROW(fld.getNextPulse(&pd));
 
 }

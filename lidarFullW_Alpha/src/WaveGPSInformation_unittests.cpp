@@ -25,10 +25,10 @@ class WaveGPSInformationTest: public testing::Test{
 
 
 /****************************************************************************
-* 
+*
 * Given the known values of the GPS file we read the pulse file and compare
 * the scanned values to the known values
-* 
+*
 ****************************************************************************/
 TEST_F(WaveGPSInformationTest, checkValues){
 

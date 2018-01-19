@@ -24,7 +24,7 @@ public:
 
 private:
   int getNumPeaks();
-  std::vector<int> guessPeaks(std::vector<int> ampData); 
+  std::vector<int> guessPeaks(std::vector<int> ampData);
   std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
   void calculateSecondDifference();
   int medianOfFive(int a, int b, int c, int d, int e);

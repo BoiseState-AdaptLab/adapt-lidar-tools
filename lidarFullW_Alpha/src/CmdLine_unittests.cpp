@@ -15,14 +15,14 @@ class CmdLineTest : public testing::Test {
   virtual void SetUp(){
     numberOfArgs = 10;
     maxLengthOfArg = 256;
-    commonArgSpace = allocateTestArgs(numberOfArgs,maxLengthOfArg); 
+    commonArgSpace = allocateTestArgs(numberOfArgs,maxLengthOfArg);
   }
 
   static char** allocateTestArgs(int N,int M){
     char** someArgs = (char**)malloc(sizeof(char*)*N);
     for(int i=0;i<10;i++){
       someArgs[i] = (char*)malloc(sizeof(char)*M);
-    } 
+    }
     return someArgs;
   }
 
@@ -37,16 +37,16 @@ class CmdLineTest : public testing::Test {
 
 
 /****************************************************************************
-* 
+*
 * Begin valid command line option tests
-* 
+*
 ****************************************************************************/
 
 // Tests valid short command line options
 TEST_F(CmdLineTest, validShortCmdLineOpts) {
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",5);   
+  strncpy( commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-h",3);
   ASSERT_NO_THROW({
     cmd.parse(numberOfArgs, commonArgSpace);
@@ -68,7 +68,7 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
 TEST_F(CmdLineTest, validLongCmdLineOpts) {
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",5);   
+  strncpy( commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"--help",7);
   ASSERT_NO_THROW({
     cmd.parse(numberOfArgs, commonArgSpace);
@@ -98,9 +98,9 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
 
 
 /****************************************************************************
-* 
+*
 * Begin invalid command line option tests
-* 
+*
 ****************************************************************************/
 
 // Tests missing command line arguments
@@ -133,7 +133,7 @@ TEST_F(CmdLineTest, missingLongOptArg) {
 TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",5);   
+  strncpy( commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-s",3);
   EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
@@ -142,7 +142,7 @@ TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
 TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",5);   
+  strncpy( commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"--who",6);
   EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }

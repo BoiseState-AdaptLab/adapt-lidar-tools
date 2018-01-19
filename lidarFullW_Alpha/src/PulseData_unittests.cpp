@@ -1,7 +1,7 @@
 // File name: LidarVolume_unittests.cpp
 // Created on: 15-December-2017
 // Author: nicholas chapa
-// Modified by: ravi 
+// Modified by: ravi
 
 #include <string>
 #include <iostream>
@@ -11,12 +11,12 @@
 
 class PulseDataTest: public testing::Test{
   public:
-    
-    
+
+
     virtual void SetUp(){
-    
+
     }
-    
+
 };
 
 TEST_F(PulseDataTest, testSetterGetter){
@@ -48,16 +48,16 @@ TEST_F(PulseDataTest, testSetterGetter){
 
     pulseData.setOutgoing(&indexArrayOut, &waveArrayOut);
     pulseData.setReturning(&indexArrayIn, &waveArrayIn);
-    
+
     std::ostringstream stream;
     pulseData.displayPulseData(&stream);
-    
+
     streamData = stream.str();
 
     realStream = "\nOutgoing:\n\n\tindices:\n\t0 1 2 \n\tamplitudes:\n\t34 45 67 \n\nReturning Wave:\n\n\tindices:\n\t0 1 2 \n\tamplitudes:\n\t76 65 43 ";
-    
 
-    // testing for string will go here    
+
+    // testing for string will go here
     ASSERT_EQ( streamData, realStream);
 }
 

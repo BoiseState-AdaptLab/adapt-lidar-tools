@@ -24,7 +24,7 @@ void PulseData::setOutgoing(std::vector<int> *idxArray,
   outgoingWave = *waveArray;
 }
 
-void PulseData::setReturning(std::vector<int> *idxArray, 
+void PulseData::setReturning(std::vector<int> *idxArray,
                              std::vector<int> *waveArray){
   returningIdx = *idxArray;
   returningWave = *waveArray;

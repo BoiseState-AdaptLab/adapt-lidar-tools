@@ -80,7 +80,7 @@ void LidarVolume::deallocateMemory(){
 
 }
 
-void LidarVolume::position(int i, int j, int k){
+int LidarVolume::position(int i, int j, int k){
   //return k + (j* len(k)) + (i*len(k)*len(j));
   return 0;
 }

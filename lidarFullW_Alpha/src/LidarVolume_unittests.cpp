@@ -9,6 +9,7 @@
 
 #include "gtest/gtest.h"
 #include "LidarVolume.hpp"
+#include "FlightLineData.hpp"
 #include "Peak.hpp"
 
 class LidarVolumeTest: public testing::Test{

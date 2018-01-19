@@ -43,8 +43,8 @@ class LidarVolume{
     int currentPeak;
     
     struct peak{
-      double time;
       double amp;
+      double time;
       double width;
     };
     
@@ -57,13 +57,12 @@ class LidarVolume{
 
     //Read and store the mins and maxes from the header, calculate and store the
     //i, j,k values and the extents
-    // void calculateBoundingBox(PULSEreader *pReader);
     void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
                               double ld_yMax, double ld_zMin, double ld_zMax);
-    void allocateMemory();
     void insertPeak(peak *pulsePeak);
+    void allocateMemory();
     void deallocateMemory();
-
+    int position(int i, int j, int k);
 
 };
 

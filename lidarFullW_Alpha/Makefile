@@ -92,6 +92,12 @@ $(BIN)/FlightLineData_unittests: $(USER_DIR)/FlightLineData_unittests.o \
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
+$(BIN)/LidarVolume_unittests: $(USER_DIR)/LidarVolume_unittests.o \
+	$(USER_DIR)/LidarVolume.o $(USER_DIR)/FlightLineData.o \
+                    $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
+            $(PULSE_DIR)/lib -lpulsewaves
+
 $(BIN)/%_unittests: $(USER_DIR)/%_unittests.o $(USER_DIR)/%.o \
                     $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
@@ -163,10 +169,10 @@ test: $(TESTS)
 # Clean up when done. 
 # Removes all object, library and executable files
 clean: 
+	clear
 	rm -f $(BIN)/*
 	rm -f $(OBJ)/*
 	rm -f $(LIB)/*
 	rm -f $(USER_DIR)/*.o
 	rm -f *.csv
-	clear
 	

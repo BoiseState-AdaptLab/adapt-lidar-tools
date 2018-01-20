@@ -11,7 +11,7 @@
 #include "LidarVolume.hpp"
 #include "PulseData.hpp"
 #include "Peak.hpp"
-//#include "GaussianFitter.hpp"
+#include "GaussianFitter.hpp"
 
 
 int main (int argc, char *argv[]) {
@@ -38,10 +38,13 @@ int main (int argc, char *argv[]) {
 
   PulseData pd;
   std::ostringstream stream;
-  //GaussianFitter fitter;
+  GaussianFitter fitter;
   while(rawData.hasNextPulse()){
     rawData.getNextPulse(&pd);
-    // struct peaks peakList = fitter.findPeaks(pd);
+    if(!pd.returningIdx.empty()){
+      struct peaks peakList = fitter.findPeaks(
+                                    pd.returningWave, pd.returningIdx);
+    }
     // for(int i=0;i<peaks.size;i++){
     //   intermediateData.addPeak(peaks.peak_list[i]);
     // }

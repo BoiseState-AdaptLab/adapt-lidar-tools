@@ -8,15 +8,16 @@
 class LidarVolume{
 
   public:
-    double bb_x_min_pad;
-    double bb_y_min_pad;
-    double bb_z_min_pad;
-    double bb_x_max_pad;
-    double bb_y_max_pad;
-    double bb_z_max_pad;
-    //The min and max fields describing the boundary box(bb) that includes the 
-    //first & last points of the sampled parts of the returning waveforms of 
-    //all pulses. 
+    //The padded min and max fields describing the bounding box(bb) that 
+    //includes the first & last points of the sampled parts of the returning 
+    //waveforms of all pulses. 
+    double bb_x_min_padded;
+    double bb_y_min_padded;
+    double bb_z_min_padded;
+    double bb_x_max_padded;
+    double bb_y_max_padded;
+    double bb_z_max_padded;
+ 
     int bb_i_min;
     int bb_j_min;
     int bb_k_min;
@@ -33,18 +34,10 @@ class LidarVolume{
     int numOfPeaks;
     
     //current position in peaks array
-    int currentPeak;
+    int currentPeak;    
     
-    struct peak{
-      double amp;
-      double time;
-      double width;
-    };
-    
-    //array of pointers to structs for peak data
-    peak *peaks;
-    
-    
+
+    std::vector<int>* voxel;
     
     LidarVolume();
 
@@ -56,6 +49,9 @@ class LidarVolume{
     void allocateMemory();
     void deallocateMemory();
     int position(int i, int j, int k);
+    void gps_to_voxel_x();
+    void gps_to_voxel_y();
+    void gps_to_voxel_z();
 
 };
 

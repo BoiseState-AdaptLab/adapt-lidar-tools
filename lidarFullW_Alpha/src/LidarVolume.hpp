@@ -4,6 +4,7 @@
 
 #ifndef LIDARVOLUME_HPP_
 #define LIDARVOLUME_HPP_
+#include <vector>
 
 class LidarVolume{
 

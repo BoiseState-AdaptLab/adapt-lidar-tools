@@ -28,9 +28,7 @@ LidarVolume::LidarVolume(){
   
   currentPeak = 0;
   numOfPeaks = 5;
-  //peakData = NULL;
-  peaks = 0;
-  
+  //peakData = NULL;  
 }
 
 void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
@@ -61,8 +59,8 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 3D array of space that will hold peak 
   // information (we don't know how many per voxel)
-  voxel = (std::vector<int>**) malloc (i_extent * j_extent * k_extent 
-                                  * sizeof(element));
+  voxel = (std::vector<int>*) malloc (i_extent * j_extent * k_extent 
+                                  * sizeof(voxel));
 }
 
 void LidarVolume::deallocateMemory(){

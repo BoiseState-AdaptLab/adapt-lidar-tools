@@ -56,9 +56,6 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   k_extent = bb_k_max - bb_k_min + 1;
 }
 
-void LidarVolume::insertPeak(){
-
-}
 
 //allocate memory with a 3d array of the data
 void LidarVolume::allocateMemory(){
@@ -76,6 +73,10 @@ void LidarVolume::deallocateMemory(){
 int LidarVolume::position(int i, int j, int k){
   //return k + (j* len(k)) + (i*len(k)*len(j));
   return 0;
+}
+
+void LidarVolume::insertPeak(){
+
 }
 
 

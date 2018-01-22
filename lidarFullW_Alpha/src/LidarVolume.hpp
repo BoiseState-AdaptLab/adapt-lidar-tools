@@ -36,7 +36,6 @@ class LidarVolume{
     //current position in peaks array
     int currentPeak;    
     
-
     std::vector<int>* voxel;
     
     LidarVolume();
@@ -45,7 +44,7 @@ class LidarVolume{
     //i, j,k values and the extents
     void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
                               double ld_yMax, double ld_zMin, double ld_zMax);
-    void insertPeak(peak *pulsePeak);
+    void insertPeak();
     void allocateMemory();
     void deallocateMemory();
     int position(int i, int j, int k);

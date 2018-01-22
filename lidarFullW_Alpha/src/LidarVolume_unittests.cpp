@@ -6,6 +6,7 @@
 #include "LidarVolume.hpp"
 #include "FlightLineData.hpp"
 #include <math.h>
+#include <vector>
 
 class LidarVolumeTest: public testing::Test{
   protected:

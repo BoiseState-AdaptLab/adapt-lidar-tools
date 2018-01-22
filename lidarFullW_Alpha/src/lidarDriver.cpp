@@ -46,15 +46,19 @@ int main (int argc, char *argv[]) {
     }
     rawData.getNextPulse(&pd);
     if(!pd.returningIdx.empty()){
-      int peak_count = fitter.findPeaks(&peaks, pd.returningWave, pd.returningIdx);
+      int peak_count = fitter.findPeaks(&peaks, pd.returningWave, 
+                                        pd.returningIdx);
     }
     // check for valid count
+    if(peak_count != peaks.size()){
+
+    }
     // foreach peak - find activation point
     //              - calculate x,y,z
     //              - give it to lidarVolume
-    // for(int i=0;i<peaks.size;i++){
-    //   intermediateData.addPeak(peaks.peak_list[i]);
-    // }
+    for(int i=0;i<peak_count;i++){
+      // intermediateData.addPeak(peaks.peak_list[i]);
+    }
     pd.displayPulseData(&stream);
     std::cout << stream.str() << std::endl;
     stream.str("");

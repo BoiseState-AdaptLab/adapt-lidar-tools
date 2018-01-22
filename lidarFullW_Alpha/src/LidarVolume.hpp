@@ -8,6 +8,12 @@
 class LidarVolume{
 
   public:
+    double bb_x_min_pad;
+    double bb_y_min_pad;
+    double bb_z_min_pad;
+    double bb_x_max_pad;
+    double bb_y_max_pad;
+    double bb_z_max_pad;
     //The min and max fields describing the boundary box(bb) that includes the 
     //first & last points of the sampled parts of the returning waveforms of 
     //all pulses. 

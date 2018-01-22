@@ -8,6 +8,12 @@
 //Default constructor
 LidarVolume::LidarVolume(){
   //initialize to zero
+  bb_x_min_pad;
+  bb_y_min_pad;
+  bb_z_min_pad;
+  bb_x_max_pad;
+  bb_y_max_pad;
+  bb_z_max_pad;
   bb_i_min = 0;
   bb_j_min = 0;
   bb_k_min = 0;
@@ -30,16 +36,23 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
                                        double ld_yMin, double ld_yMax,
                                        double ld_zMin, double ld_zMax){  
 
-  bb_i_min = (int)(floor(ld_xMin)- 10);
-  bb_j_min = (int)(floor(ld_yMin)- 10);
-  bb_k_min = (int)(floor(ld_zMin)- 10);
-  bb_i_max = (int)(ceil(ld_xMax)+ 10);
-  bb_j_max = (int)(ceil(ld_yMax)+ 10);
-  bb_k_max = (int)(ceil(ld_zMax)+ 10);
+  bb_x_min_pad = ld_xMin-10;
+  bb_y_min_pad = ld_yMin-10;
+  bb_z_min_pad = ld_zMin-10;
+  bb_x_max_pad = ld_xMax+10;
+  bb_y_max_pad = ld_yMax+10;
+  bb_z_max_pad = ld_zMax+10;
 
-  i_extent = bb_i_max - bb_i_min;
-  j_extent = bb_j_max - bb_j_min;
-  k_extent = bb_k_max - bb_k_min;
+  bb_i_min = 0;
+  bb_j_min = 0;
+  bb_k_min = 0;
+  bb_i_max = (int)(ceil(bb_x_max_pad - bb_x_min_pad));
+  bb_j_max = (int)(ceil(bb_y_max_pad - bb_y_min_pad));
+  bb_k_max = (int)(ceil(bb_z_max_pad - bb_z_min_pad));
+
+  i_extent = bb_i_max - bb_i_min +1;
+  j_extent = bb_j_max - bb_j_min +1;
+  k_extent = bb_k_max - bb_k_min +1;
 }
 
 void LidarVolume::insertPeak(peak *pulsePeak){

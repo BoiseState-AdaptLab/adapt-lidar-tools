@@ -39,12 +39,19 @@ int main (int argc, char *argv[]) {
   PulseData pd;
   std::ostringstream stream;
   GaussianFitter fitter;
+  std::vector<Peak> peaks;
   while(rawData.hasNextPulse()){
+    for(int i=0;i<peaks.size();i++){
+      peaks.pop_back();
+    }
     rawData.getNextPulse(&pd);
     if(!pd.returningIdx.empty()){
-      struct peaks peakList = fitter.findPeaks(
-                                    pd.returningWave, pd.returningIdx);
+      int peak_count = fitter.findPeaks(&peaks, pd.returningWave, pd.returningIdx);
     }
+    // check for valid count
+    // foreach peak - find activation point
+    //              - calculate x,y,z
+    //              - give it to lidarVolume
     // for(int i=0;i<peaks.size;i++){
     //   intermediateData.addPeak(peaks.peak_list[i]);
     // }

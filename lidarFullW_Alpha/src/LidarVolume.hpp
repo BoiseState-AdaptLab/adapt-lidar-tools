@@ -37,7 +37,7 @@ class LidarVolume{
     //current position in peaks array
     int currentPeak;    
     
-    std::vector<int>* voxel;
+    std::vector<Peak>** volume;
     
     LidarVolume();
 

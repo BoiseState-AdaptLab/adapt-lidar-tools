@@ -7,17 +7,6 @@
 #ifndef PEAK_HPP_
 #define PEAK_HPP_
 
-/*struct peak{
-	  double time;
-	  double amp;
-	  double width;
-};
-
-struct peaks{
-	  int count;
-	  struct peak* peakList;
-};*/
-
 double amp;
 double location;    //The time location of peak occurence
 double fwhm;        //Full width half maximum - the width of the peak

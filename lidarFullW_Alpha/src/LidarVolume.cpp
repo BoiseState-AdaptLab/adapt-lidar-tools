@@ -59,14 +59,14 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 //allocate memory with a 3d array of the data
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 3D array of space that will hold peak 
-  // information (we don't know how many per voxel)
-  voxel = (std::vector<int>*) malloc (i_extent * j_extent * k_extent 
-                                  * sizeof(voxel));
+  // information (we don't know how many per volume)
+  volume = (std::vector<Peak>**) malloc (i_extent * j_extent * k_extent 
+                                  * sizeof(std::vector<Peak>*));
 }
 
 void LidarVolume::deallocateMemory(){
-  delete voxel;
-  voxel = NULL; //poiting dangling pointer to null
+  delete volume;
+  volume = NULL; //poiting dangling pointer to null
 }
 
 int LidarVolume::position(int i, int j, int k){

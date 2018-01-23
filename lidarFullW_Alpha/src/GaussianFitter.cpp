@@ -295,8 +295,6 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
     double B = gsl_vector_get(x, 1);
     double C = gsl_vector_get(x, 2);
 
-  //use a loop like the one above, but that uses gsl_vector_get
-   // that goes through every peak
     for (i = 0; i < n; ++i){
 
         double ti = fit_data.t[i];

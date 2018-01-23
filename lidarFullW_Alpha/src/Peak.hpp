@@ -7,7 +7,7 @@
 #ifndef PEAK_HPP_
 #define PEAK_HPP_
 
-double amp;         //Amplitude
+double amp;         //Ampitude
 double location;    //The time location of peak occurence
 double fwhm;        //Full width half maximum - the width of the peak
 

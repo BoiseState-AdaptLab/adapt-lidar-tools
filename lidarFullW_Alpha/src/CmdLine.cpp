@@ -83,6 +83,7 @@ std::string CmdLine::getUsageMessage(){
 /* Default constructor*/
 CmdLine::CmdLine(){
   // enter default values
+  noise_level = 3;
   printUsageMessage = false;
   exceptionFlag = false;
   exeName = "";

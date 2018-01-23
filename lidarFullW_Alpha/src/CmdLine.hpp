@@ -28,9 +28,12 @@ private:
   bool peakFlag;
 
 public:
-  // help parameter
+  // help parameters
   bool printUsageMessage;
   bool exceptionFlag;
+
+  //User inputted noise leve
+  int noise_level;
 
   CmdLine();
 

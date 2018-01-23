@@ -5,6 +5,7 @@
  */
 
 #include "GaussianFitter.hpp"
+#include <math.h>
 
 struct data
 {
@@ -211,6 +212,7 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   gsl_multifit_nlinear_free(work);
 }
 
+//Find the peaks and return the peak count
 int GaussianFitter::findPeaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
@@ -267,30 +269,36 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
   solve_system(x, &fdf, &fdf_params);
 
+  double fwhm_t_positive;
+  double fwhm_t_negative;
+  // this loop is going through every peak
+  for(i=0; i< peakCount; i++){
+    Peak* peak = new Peak();
+      peak.amp = gsl_vector_get(x,3*i+ 0);
+      peak.location = gsl_vector_get(x,3*i+ 1);
+
+      // calculate fwhm full width at half maximum
+      fwhm_t_positive = sqrt((-2)*(c^2)*ln(y/a));
+      fwhm_t_negative = (-1)*sqrt((-2)*(c^2)*ln(y/a));        
+      // peak.fwhm = ;
+
+      // calculate activation point in t
+      peaks.peak_triggering_location = noise_level + 1;
+
+      // add the peak to our result
+      results->push_back(&peak);
+  }
+
   // print data and model
   {
     double A = gsl_vector_get(x, 0);
     double B = gsl_vector_get(x, 1);
     double C = gsl_vector_get(x, 2);
 
-   // this loop is going through every t we want a loop 
-  //for(i=0; i< peakCount; i++){
-    //gsl_vector_set(x, i*3+0, ampData[guesses[i]] );
-    //gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
-    //gsl_vector_set(x, i*3+2, 2);
-  //}
   //use a loop like the one above, but that uses gsl_vector_get
    // that goes through every peak
     for (i = 0; i < n; ++i){
 
-        Peak* peak = new Peak();
-        peak.location = fit_data.t[i];
-        peak.amp = gaussianSum(x,ti);
-        // calculate fwhm full width at half maximum
-        // calculate activation point in t
-        //
-        // add the peak to our result
-        results->push_back(&peak);
         double ti = fit_data.t[i];
         double yi = fit_data.y[i];
         double fi = gaussianSum(x, ti);
@@ -334,10 +342,10 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   std::vector<int> peaksLocation;
 
   /* Level up to and including which peaks will be excluded
-   * For the unaltered wave, noise = 16
-   * for the scond derivative of the wave, noise = 3
+   * For the unaltered wave, noise_level = 16
+   * for the scond derivative of the wave, noise_level = 3
    */
-  const int NOISE = 3;
+  noise_level = 3;
   int wideStart = -1;  //The start of any current wide peak
 
  /* Sign of gradient
@@ -360,12 +368,12 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
     //Only possibility of a peak
     if(data[i+1] < data[i]){
       //Sharp peak
-      if(grad == 1 && data[i] > NOISE){
+      if(grad == 1 && data[i] > noise_level){
         // peaks.push_back(data[i]);    //Peak value
         peaksLocation.push_back(i);  //Peak location
       }
       //Wide peak
-      else if(grad == 0 && data[i] > NOISE){
+      else if(grad == 0 && data[i] > noise_level){
         // peaks.push_back(data[wideStart]);
         if ((i - wideStart) % 2 == 0) {
           peaksLocation.push_back(wideStart);

@@ -66,7 +66,7 @@ void LidarVolume::allocateMemory(){
 
 void LidarVolume::deallocateMemory(){
   delete volume;
-  volume = NULL; //poiting dangling pointer to null
+  volume = NULL; //pointing dangling pointer to null
 }
 
 int LidarVolume::position(int i, int j, int k){

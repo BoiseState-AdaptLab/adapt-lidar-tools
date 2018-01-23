@@ -2,9 +2,6 @@
 // Created on: 17-May-2017
 // Author: ravi
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
 #include "CmdLine.hpp"
 #include "FlightLineData.hpp"
 #include "WaveGPSInformation.hpp"
@@ -12,6 +9,9 @@
 #include "PulseData.hpp"
 #include "Peak.hpp"
 #include "GaussianFitter.hpp"
+#include <iostream>
+#include <iomanip>
+#include <vector>
 
 
 int main (int argc, char *argv[]) {

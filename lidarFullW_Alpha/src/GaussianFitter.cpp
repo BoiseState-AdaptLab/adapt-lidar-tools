@@ -211,12 +211,10 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   gsl_multifit_nlinear_free(work);
 }
 
-struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
-                                       std::vector<int> idxData){
+int GaussianFitter::findPeaks(std::vector<Peak>* results,
+                              std::vector<int> ampData,
+                              std::vector<int> idxData){
 
-  struct peaks results;
-  results.count = 0;
-  results.peakList = NULL;
 
   // figure out how many items there are in the ampData
   size_t n = ampData.size();
@@ -225,9 +223,6 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
   std::vector<int> guesses = guessPeaks(ampData);
   size_t peakCount = guesses.size();
   fprintf(stderr, "Peak count is %d\n", peakCount);
-
-  size_t p = peakCount*3;
-  results.peakList = (struct peak*) malloc(sizeof(struct peak)*peakCount);
 
   // allocate space for fitting
   const gsl_rng_type * T = gsl_rng_default;
@@ -278,8 +273,24 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
     double B = gsl_vector_get(x, 1);
     double C = gsl_vector_get(x, 2);
 
-    for (i = 0; i < n; ++i)
-      {
+   // this loop is going through every t we want a loop 
+  //for(i=0; i< peakCount; i++){
+    //gsl_vector_set(x, i*3+0, ampData[guesses[i]] );
+    //gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
+    //gsl_vector_set(x, i*3+2, 2);
+  //}
+  //use a loop like the one above, but that uses gsl_vector_get
+   // that goes through every peak
+    for (i = 0; i < n; ++i){
+
+        Peak* peak = new Peak();
+        peak.location = fit_data.t[i];
+        peak.amp = gaussianSum(x,ti);
+        // calculate fwhm full width at half maximum
+        // calculate activation point in t
+        //
+        // add the peak to our result
+        results->push_back(&peak);
         double ti = fit_data.t[i];
         double yi = fit_data.y[i];
         double fi = gaussianSum(x, ti);
@@ -292,7 +303,7 @@ struct peaks GaussianFitter::findPeaks(std::vector<int> ampData,
   gsl_vector_free(x);
   gsl_rng_free(r);
 
-  return results;
+  return peakCount;
 }
 
 std::vector<int> GaussianFitter::calculateFirstDifferences(

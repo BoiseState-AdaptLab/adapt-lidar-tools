@@ -20,6 +20,7 @@ class GaussianFitter{
 
 public:
   struct peaks findPeaks(std::vector<int> ampData, std::vector<int> idxData);
+  int noise_level;
 
 private:
   int getNumPeaks();

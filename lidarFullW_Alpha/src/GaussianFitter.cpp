@@ -277,42 +277,44 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
 
   //this loop is going through every peak
   for(i=0; i< peakCount; i++){
-      Peak* peak = new Peak();
-      peak.amp = gsl_vector_get(x,3*i+ 0);
-      peak.location = gsl_vector_get(x,3*i+ 1);
-      double c = gsl_vector_get(x,3*i+ 2);
+    Peak* peak = new Peak();
+    peak.amp = gsl_vector_get(x,3*i+ 0);
+    peak.location = gsl_vector_get(x,3*i+ 1);
+    double c = gsl_vector_get(x,3*i+ 2);
 
-      //calculate fwhm full width at half maximum
-      //model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
-      //TODO substitue a, b, c
-      peak.fwhm_t_positive = sqrt((-2)*(c^2)*ln(y/peak.amp));      
-      peak.fwhm_t_negative = (-1)*sqrt((-2)*(c^2)*ln(y/peak.amp));
-      printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n", 
-              fwhm_t_positive, fwhm_t_negative);
+    //calculate fwhm full width at half maximum
+    //model function: y= a * exp( -1/2 * [ (t - b) / c ]^2 )
+    // time = +/-sqrt((-2)*(c^2)*ln(y/a) +b
+    peak.fwhm_t_positive = sqrt((-2)*(c^2)*ln(y/peak.amp)) + peak.location;      
+    peak.fwhm_t_negative = (-1)*sqrt((-2)*(c^2)*ln(y/peak.amp)) + peak.location;
+    printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n", 
+            fwhm_t_positive, fwhm_t_negative);
 
-      peak.fwhm = abs(fwhm_t_positive-fwhm_t_negative)
-      printf("fwhm: %f", peak.fwhm)
+    peak.fwhm = abs(fwhm_t_positive-fwhm_t_negative)
+    printf("fwhm: %f", peak.fwhm)
 
-      //calculate triggering location
+    //calculate triggering location
 
-      peaks.triggering_amp = noise_level + 1;
-      //TODO +/-? & substitute a, b, c
-      peaks.triggering_location = std::min(sqrt((-2)*(c^2)*ln(y/a)), 
-                                           (-1)*sqrt((-2)*(c^2)*ln(y/a)));
+    peaks.triggering_amp = noise_level + 1;
+    //TODO +/-? & substitute a, b, c
+    peaks.triggering_location = std::min(
+                              sqrt((-2)*(c^2)*ln(y/peak.amp)) + peak.location, 
+                         (-1)*sqrt((-2)*(c^2)*ln(y/peak.amp)) + peak.location
+                                        );
 
-      //add the peak to our result
-      results->push_back(&peak);
+    //add the peak to our result
+    results->push_back(&peak);
   }
 
-  //print data and model
+  //print data and model 
   for (i = 0; i < n; ++i){
 
-    double ti = fit_data.t[i];
-    double yi = fit_data.y[i];
-    double fi = gaussianSum(x, ti);
+      double ti = fit_data.t[i];
+      double yi = fit_data.y[i];
+      double fi = gaussianSum(x, ti);
 
-    printf("%f %f %f\n", ti, yi, fi);
-  }
+      printf("%f %f %f\n", ti, yi, fi);
+    }
 
   gsl_vector_free(f);
   gsl_vector_free(x);

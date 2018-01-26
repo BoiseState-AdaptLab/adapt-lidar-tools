@@ -4,6 +4,7 @@
 
 #include "GaussianFitter.hpp"
 #include <math.h>
+#include <algorithm> 
 
 struct data
 {
@@ -280,7 +281,9 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
       peak.amp = gsl_vector_get(x,3*i+ 0);
       peak.location = gsl_vector_get(x,3*i+ 1);
 
-      // calculate fwhm full width at half maximum
+      //calculate fwhm full width at half maximum
+      //model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
+      //TODO substitue a, b, c
       peak.fwhm_t_positive = sqrt((-2)*(c^2)*ln(y/a));      
       peak.fwhm_t_negative = (-1)*sqrt((-2)*(c^2)*ln(y/a));
       printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n", 
@@ -290,8 +293,11 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
       printf("fwhm: %f", peak.fwhm)
 
       //calculate triggering location
+
       peaks.triggering_amp = noise_level + 1;
-      //peaks.fwhm = ;
+      //TODO +/-? & substitute a, b, c
+      peaks.triggering_location = std::min(sqrt((-2)*(c^2)*ln(y/a)), 
+                                           (-1)*sqrt((-2)*(c^2)*ln(y/a)));
 
       //add the peak to our result
       results->push_back(&peak);

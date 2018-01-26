@@ -1,18 +1,13 @@
-/*
- * File name: GaussianFitter_unittests.cpp
- * Created on: 13-October-2017
- * Author: ravi
- *
- *
- */
+//File name: GaussianFitter_unittests.cpp
+//Created on: 13-October-2017
+//Author: ravi
+
 #include "GaussianFitter.hpp"
 #include "PulseData.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 #include "gtest/gtest.h"
 #include "Peak.hpp"
-
-
 
 class GaussianFitterTest: public testing::Test{
   public:
@@ -50,10 +45,9 @@ TEST_F(GaussianFitterTest, gaussianFitter){
     i++;
     ptr = strtok (NULL," ");
   }
-  // now that we have the input vectors call the gaussianFitter
 
+  // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
-  struct peaks peaklist = fitter.findPeaks(ampData,idxData);
 
   //TODO: check the results
 

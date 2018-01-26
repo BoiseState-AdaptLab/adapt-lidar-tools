@@ -274,8 +274,6 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
   solve_system(x, &fdf, &fdf_params);
 
-  double fwhm_t_positive;
-  double fwhm_t_negative;
   //this loop is going through every peak
   for(i=0; i< peakCount; i++){
     Peak* peak = new Peak();
@@ -283,12 +281,17 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
       peak.location = gsl_vector_get(x,3*i+ 1);
 
       // calculate fwhm full width at half maximum
-      fwhm_t_positive = sqrt((-2)*(c^2)*ln(y/a));
-      fwhm_t_negative = (-1)*sqrt((-2)*(c^2)*ln(y/a));        
-      //peak.fwhm = ;
+      peak.fwhm_t_positive = sqrt((-2)*(c^2)*ln(y/a));      
+      peak.fwhm_t_negative = (-1)*sqrt((-2)*(c^2)*ln(y/a));
+      printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n", 
+              fwhm_t_positive, fwhm_t_negative);
 
-      //calculate activation point in t
-      peaks.peak_triggering_location = noise_level + 1;
+      peak.fwhm = abs(fwhm_t_positive-fwhm_t_negative)
+      printf("fwhm: %f", peak.fwhm)
+
+      //calculate triggering location
+      peaks.triggering_amp = noise_level + 1;
+      //peaks.fwhm = ;
 
       //add the peak to our result
       results->push_back(&peak);

@@ -1,9 +1,7 @@
-/*
- * File name: GaussianFitting.hpp
- * Created on: 13-October-2017
- * Author: ravi
- */
-
+//File name: GaussianFitting.hpp
+//Created on: 13-October-2017
+//Author: ravi
+ 
 #ifndef GAUSIANFITTING_HPP_
 #define GAUSIANFITTING_HPP_
 
@@ -19,7 +17,8 @@
 class GaussianFitter{
 
 public:
-  struct peaks findPeaks(std::vector<int> ampData, std::vector<int> idxData);
+  int findPeaks(std::vector<Peak>* results,std::vector<int> ampData,
+                std::vector<int> idxData)
   int noise_level;
 
 private:

@@ -5,6 +5,7 @@
 #include "LidarVolume.hpp"
 #include <math.h>
 #include <stdlib.h>
+#include "Peak.h"
 
 //Default constructor
 LidarVolume::LidarVolume(){

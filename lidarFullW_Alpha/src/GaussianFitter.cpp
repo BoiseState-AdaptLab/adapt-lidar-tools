@@ -1,8 +1,6 @@
-/*
- * File name: GaussianFitter.cpp
- * Created on: 13-October-2017
- * Author: ravi
- */
+//File name: GaussianFitter.cpp
+//Created on: 13-October-2017
+//Author: ravi
 
 #include "GaussianFitter.hpp"
 #include <math.h>
@@ -14,7 +12,8 @@ struct data
   size_t n;
 };
 
-/* model function: a * exp( -1/2 * [ (t - b) / c ]^2 ) */
+
+//model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
 double gaussianSum(const gsl_vector * x,const double t)
 {
 
@@ -30,6 +29,8 @@ double gaussianSum(const gsl_vector * x,const double t)
   return value;
 }
 
+
+//
 int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 {
   struct data *d = (struct data *) params;
@@ -48,6 +49,8 @@ int func_f (const gsl_vector * x, void *params, gsl_vector * f)
   return GSL_SUCCESS;
 }
 
+
+//
 int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
   struct data *d = (struct data *) params;
 
@@ -94,6 +97,7 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
 }
 
 
+//
 int func_fvv (const gsl_vector * x, const gsl_vector * v,
           void *params, gsl_vector * fvv)
 {
@@ -135,8 +139,7 @@ int func_fvv (const gsl_vector * x, const gsl_vector * v,
 }
 
 void callback(const size_t iter, void *params,
-         const gsl_multifit_nlinear_workspace *w)
-{
+         const gsl_multifit_nlinear_workspace *w){
   gsl_vector *f = gsl_multifit_nlinear_residual(w);
   gsl_vector *x = gsl_multifit_nlinear_position(w);
   double avratio = gsl_multifit_nlinear_avratio(w);
@@ -162,9 +165,10 @@ void callback(const size_t iter, void *params,
           gsl_blas_dnrm2(f));
 }
 
+
+//
 void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
-             gsl_multifit_nlinear_parameters *params)
-{
+             gsl_multifit_nlinear_parameters *params){
   const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
   const size_t max_iter = 200;
   const double xtol = 1.0e-8;
@@ -212,21 +216,22 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   gsl_multifit_nlinear_free(work);
 }
 
+
 //Find the peaks and return the peak count
 int GaussianFitter::findPeaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
 
 
-  // figure out how many items there are in the ampData
+  //figure out how many items there are in the ampData
   size_t n = ampData.size();
 
-  // figure out how many peaks there are in the data
+  //figure out how many peaks there are in the data
   std::vector<int> guesses = guessPeaks(ampData);
   size_t peakCount = guesses.size();
   fprintf(stderr, "Peak count is %d\n", peakCount);
 
-  // allocate space for fitting
+  //allocate space for fitting
   const gsl_rng_type * T = gsl_rng_default;
   gsl_vector *f = gsl_vector_alloc(n);
   gsl_vector *x = gsl_vector_alloc(p);
@@ -244,13 +249,13 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fit_data.y = (double*)malloc(n * sizeof(double));
   fit_data.n = n;
 
-  // copy the data to a format
+  //copy the data to a format
   for(i=0;i<ampData.size();i++){
     fit_data.t[i] = (double)idxData[i];
     fit_data.y[i] = (double)ampData[i];
   }
 
-  // define function to be minimized
+  //define function to be minimized
   fdf.f = func_f;
   fdf.df = func_df;
   fdf.fvv = func_fvv;
@@ -259,7 +264,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf.p = p;
   fdf.params = &fit_data;
 
-  // this is a guess starting point
+  //this is a guess starting point
   for(i=0; i< peakCount; i++){
     gsl_vector_set(x, i*3+0, ampData[guesses[i]] );
     gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
@@ -271,7 +276,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
 
   double fwhm_t_positive;
   double fwhm_t_negative;
-  // this loop is going through every peak
+  //this loop is going through every peak
   for(i=0; i< peakCount; i++){
     Peak* peak = new Peak();
       peak.amp = gsl_vector_get(x,3*i+ 0);
@@ -280,16 +285,16 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
       // calculate fwhm full width at half maximum
       fwhm_t_positive = sqrt((-2)*(c^2)*ln(y/a));
       fwhm_t_negative = (-1)*sqrt((-2)*(c^2)*ln(y/a));        
-      // peak.fwhm = ;
+      //peak.fwhm = ;
 
-      // calculate activation point in t
+      //calculate activation point in t
       peaks.peak_triggering_location = noise_level + 1;
 
-      // add the peak to our result
+      //add the peak to our result
       results->push_back(&peak);
   }
 
-  // print data and model
+  //print data and model
   {
     double A = gsl_vector_get(x, 0);
     double B = gsl_vector_get(x, 1);
@@ -312,6 +317,8 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   return peakCount;
 }
 
+
+//Calculate the first difference
 std::vector<int> GaussianFitter::calculateFirstDifferences(
                                                 std::vector<int> ampData){
   int first, second, fDiff, count = 0;
@@ -334,25 +341,27 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
   return firstDifference;
 }
 
+
+//
 std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
 
   //std::vector<int> data = calculateFirstDifferences(ampData);
   std::vector<int> peaksLocation;
 
-  /* Level up to and including which peaks will be excluded
-   * For the unaltered wave, noise_level = 16
-   * for the scond derivative of the wave, noise_level = 3
-   */
+  //Level up to and including which peaks will be excluded
+  //For the unaltered wave, noise_level = 16
+  //for the scond derivative of the wave, noise_level = 3
+   
   noise_level = 3;
   int wideStart = -1;  //The start of any current wide peak
 
- /* Sign of gradient
-  * =  1 for increasing
-  * =  0 for level AND PREVIOUSLY INCREASING (so potential wide peak)
-  * = -1 for decreasing OR level, but previously decreasing
-  * A sharp peak is identified by grad=1 -> grad=-1
-  * A wide  peak is identified by grad=0 -> grad=-1
-  */
+  //Sign of gradient:
+  // =  1 for increasing
+  // =  0 for level AND PREVIOUSLY INCREASING (so potential wide peak)
+  // = -1 for decreasing OR level, but previously decreasing
+  //A sharp peak is identified by grad=1 -> grad=-1
+  //A wide  peak is identified by grad=0 -> grad=-1
+  
   int grad = -1;
 
   int count = 1;  //Keep track of the index

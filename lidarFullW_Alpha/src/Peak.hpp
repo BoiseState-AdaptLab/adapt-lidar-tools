@@ -29,6 +29,9 @@ class Peak{
   //(peak_triggering_location) * dz + z_first
   int z_activation;
 
+  //Default constructor
+  Peak();
+
 };
 
 #endif /* PEAK_HPP_ */

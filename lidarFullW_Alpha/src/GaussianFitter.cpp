@@ -291,7 +291,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
     printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n", 
             peak->fwhm_t_positive, peak->fwhm_t_negative);
 
-    peak->fwhm = abs(fwhm_t_positive-fwhm_t_negative)
+    peak->fwhm = abs(fwhm_t_positive-fwhm_t_negative);
     printf("fwhm: %f", peak->fwhm);
 
     //calculate triggering location

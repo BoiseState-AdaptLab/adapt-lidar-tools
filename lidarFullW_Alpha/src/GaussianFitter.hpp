@@ -18,7 +18,7 @@ class GaussianFitter{
 
 public:
   int findPeaks(std::vector<Peak>* results,std::vector<int> ampData,
-                std::vector<int> idxData)
+                std::vector<int> idxData);
   int noise_level;
 
 private:

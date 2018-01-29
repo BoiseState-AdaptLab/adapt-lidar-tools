@@ -235,7 +235,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   //allocate space for fitting
   const gsl_rng_type * T = gsl_rng_default;
   gsl_vector *f = gsl_vector_alloc(n);
-  gsl_vector *x = gsl_vector_alloc(p);
+  gsl_vector *x = gsl_vector_alloc(peakCount*3);
   gsl_multifit_nlinear_fdf fdf;
   gsl_multifit_nlinear_parameters fdf_params =
                                   gsl_multifit_nlinear_default_parameters();

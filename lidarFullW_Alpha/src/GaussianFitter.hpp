@@ -16,18 +16,18 @@
 
 class GaussianFitter{
 
-public:
-  int findPeaks(std::vector<Peak>* results,std::vector<int> ampData,
-                std::vector<int> idxData);
-  int noise_level;
+  public:
+    int findPeaks(std::vector<Peak>* results,std::vector<int> ampData,
+                  std::vector<int> idxData);
+    int noise_level;
 
-private:
-  int getNumPeaks();
-  std::vector<int> guessPeaks(std::vector<int> ampData);
-  std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
-  void calculateSecondDifference();
-  int medianOfFive(int a, int b, int c, int d, int e);
-  void calculateSmoothSecondDifference();
+  private:
+    int getNumPeaks();
+    std::vector<int> guessPeaks(std::vector<int> ampData);
+    std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
+    void calculateSecondDifference();
+    int medianOfFive(int a, int b, int c, int d, int e);
+    void calculateSmoothSecondDifference();
 
 };
 

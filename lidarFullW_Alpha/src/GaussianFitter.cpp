@@ -4,7 +4,7 @@
 
 #include "GaussianFitter.hpp"
 #include <math.h>
-#include <algorithm> 
+#include <algorithm>
 
 struct data
 {
@@ -289,11 +289,11 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
     //        a: amplitude at the peak
     //        t: time
     // time = +/-sqrt((-2)*(c^2)*ln(y/a) +b
-    peak->fwhm_t_positive = sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp)) 
-                            + peak->location;      
-    peak->fwhm_t_negative = (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp)) 
+    peak->fwhm_t_positive = sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
                             + peak->location;
-    printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n", 
+    peak->fwhm_t_negative = (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
+                            + peak->location;
+    printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n",
             peak->fwhm_t_positive, peak->fwhm_t_negative);
 
     peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
@@ -302,7 +302,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
     //calculate triggering location
     peak->triggering_amp = noise_level + 1;
     peak->triggering_location = std::min(
-          sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location, 
+          sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
      (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
                                         );
 
@@ -310,7 +310,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
     results->push_back(&peak);
   }
 
-  //print data and model 
+  //print data and model
   for (i = 0; i < n; ++i){
 
       double ti = fit_data.t[i];
@@ -361,7 +361,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   //Level up to and including which peaks will be excluded
   //For the unaltered wave, noise_level = 16
   //for the scond derivative of the wave, noise_level = 3
-   
+
   noise_level = 3;
   int wideStart = -1;  //The start of any current wide peak
 
@@ -371,7 +371,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   // = -1 for decreasing OR level, but previously decreasing
   //A sharp peak is identified by grad=1 -> grad=-1
   //A wide  peak is identified by grad=0 -> grad=-1
-  
+
   int grad = -1;
 
   int count = 1;  //Keep track of the index

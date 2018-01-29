@@ -226,12 +226,12 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
 
   //figure out how many items there are in the ampData
   size_t n = ampData.size();
-  size_t p = peakCount*3;
 
   //figure out how many peaks there are in the data
   std::vector<int> guesses = guessPeaks(ampData);
   size_t peakCount = guesses.size();
   fprintf(stderr, "Peak count is %d\n", peakCount);
+  size_t p = peakCount*3;
 
   //allocate space for fitting
   const gsl_rng_type * T = gsl_rng_default;

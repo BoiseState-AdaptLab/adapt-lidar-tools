@@ -307,7 +307,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
                                         );
 
     //add the peak to our result
-    results->push_back(&peak);
+    results->push_back(*peak);
   }
 
   //print data and model

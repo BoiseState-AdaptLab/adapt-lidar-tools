@@ -30,6 +30,9 @@ class Peak{
     //(peak_triggering_location) * dz + z_first
     int z_activation;
 
+    //holds peak location in the xyz space
+    double x, y, z;
+
     //Default constructor
     Peak();
 

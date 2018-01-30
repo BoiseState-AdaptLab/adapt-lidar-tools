@@ -78,7 +78,7 @@ int LidarVolume::position(int i, int j, int k){
 }
 
 
-void LidarVolume::insertPeak(Peak *peak){
+void LidarVolume::insert_peak(Peak *peak){
   unsigned int i = gps_to_voxel_x(peak->x);
   unsigned int j = gps_to_voxel_y(peak->y);
   unsigned int k = gps_to_voxel_z(peak->z);
@@ -93,14 +93,17 @@ void LidarVolume::insertPeak(Peak *peak){
 
 //Convert peak x, y and z values to 
 //i, j and k which identifies the voxel space they belong to
-void LidarVolume::gps_to_voxel_x(double x){
-  return (x - bb_x_min_padded);
+int LidarVolume::gps_to_voxel_x(double x){
+  int voxel_x = (x - bb_x_min_padded);
+  return voxel_x;
 }
 
-void LidarVolume::gps_to_voxel_y(double y){
-  return (y - bb_y_min_padded);
+int LidarVolume::gps_to_voxel_y(double y){
+  int voxel_y = (y - bb_y_min_padded);
+  return voxel_y;
 }
 
-void LidarVolume::gps_to_voxel_z(double z){
-  return (z - bb_z_min_padded);
+int LidarVolume::gps_to_voxel_z(double z){
+  int voxel_z = (z - bb_z_min_padded);
+  return voxel_z;
 }

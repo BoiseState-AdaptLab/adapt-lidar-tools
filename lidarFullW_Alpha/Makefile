@@ -88,7 +88,7 @@ $(BIN)/GaussianFitter_unittests: $(SRC)/GaussianFitter.o \
 
 $(BIN)/FlightLineData_unittests: $(SRC)/FlightLineData_unittests.o \
 						$(SRC)/FlightLineData.o $(SRC)/PulseData.o \
-            $(LIB)/gtest_main.a
+            $(LIB)/gtest_main.a $(SRC)/WaveGPSInformation.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 

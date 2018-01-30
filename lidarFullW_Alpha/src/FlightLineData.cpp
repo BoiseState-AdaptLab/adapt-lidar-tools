@@ -43,7 +43,6 @@ void FlightLineData::setFlightLineData(std::string fileName){
     exit (EXIT_FAILURE);
   }
 
-  gpsInfo = new WaveGPSInformation(); 
   gpsInfo.populateGPS(pReader);
 
   //bounding box x,y & z mins and maxes

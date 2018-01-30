@@ -64,14 +64,19 @@ void LidarVolume::allocateMemory(){
                                   * sizeof(std::vector<Peak>*));
 }
 
+
 void LidarVolume::deallocateMemory(){
   delete volume;
   volume = NULL; //pointing dangling pointer to null
 }
 
+
+//k is most contiguous
+//i is the least contiguous
 int LidarVolume::position(int i, int j, int k){
   return k + (j* k_extent) + (i*k_extent*j_extent);
 }
+
 
 void LidarVolume::insertPeak(Peak *peak){
   unsigned int i = gps_to_voxel_x(peak->x);
@@ -79,23 +84,23 @@ void LidarVolume::insertPeak(Peak *peak){
   unsigned int k = gps_to_voxel_z(peak->z);
   unsigned long int p = position(i,j,k);
 
-  if(volume[p] == NULL{
+  if(volume[p] == NULL){
     volume[p] = new std::vector<Peak>();
   }
   volume[p]->push_back(*peak);
-
 }
 
 
-void LidarVolume::gps_to_voxel_x(){
-  
-  
+//Convert peak x, y and z values to 
+//i, j and k which identifies the voxel space they belong to
+void LidarVolume::gps_to_voxel_x(double x){
+  return (x - bb_x_min_padded);
 }
 
-void LidarVolume::gps_to_voxel_y(){
-  
+void LidarVolume::gps_to_voxel_y(double y){
+  return (y - bb_y_min_padded);
 }
 
-void LidarVolume::gps_to_voxel_z(){
-  
+void LidarVolume::gps_to_voxel_z(double z){
+  return (z - bb_z_min_padded);
 }

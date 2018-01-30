@@ -45,7 +45,7 @@ class LidarVolume{
     //Read and store the mins and maxes from the header, calculate and store the
     //i, j,k values and the extents
     void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
-                              double ld_yMax, double ld_zMin, double ld_zMax);
+                        double ld_yMax, double ld_zMin, double ld_zMax);
     void insertPeak();
     void allocateMemory();
     void deallocateMemory();

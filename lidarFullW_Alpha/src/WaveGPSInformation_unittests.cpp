@@ -37,7 +37,7 @@ TEST_F(WaveGPSInformationTest, checkValues){
   double known_x_anchor, known_y_anchor, known_z_anchor;
   double known_x_target, known_y_target, known_z_target;
   double known_x_first, known_y_first, known_z_first;
-  double known_xLast, known_YLast, known_ZLast;
+  double known_x_last, known_Y_last, known_Z_last;
   unsigned char known_edge;
   unsigned char known_facet;
   unsigned char known_scan_direction;
@@ -77,27 +77,27 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516211.940623;
     known_y_first = 4767921.375796;
     known_z_first = 2093.580011;
-    known_xLast = 516210.627993;
-    known_YLast = 4767922.675509;
-    known_ZLast = 2084.933649;
+    known_x_last = 516210.627993;
+    known_Y_last = 4767922.675509;
+    known_Z_last = 2084.933649;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;
     known_intensity = 0;
 
     EXPECT_DOUBLE_EQ (known_gps_time, gpsInfo.gpsTime);
-    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.xAnchor);
-    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.yAnchor);
-    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.zAnchor);
-    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.xTarget);
-    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.yTarget);
-    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.zTarget);
-    EXPECT_NEAR (known_x_first, gpsInfo.xFirst, 0.0000002);
-    EXPECT_NEAR (known_y_first, gpsInfo.yFirst, 0.0000005);
-    EXPECT_NEAR (known_z_first, gpsInfo.zFirst, 0.0000003);
-    EXPECT_NEAR (known_xLast, gpsInfo.xLast, 0.000002);
-    EXPECT_NEAR (known_YLast, gpsInfo.yLast, 0.000002);
-    EXPECT_NEAR (known_ZLast, gpsInfo.zLast, 0.000002);
+    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.x_anchor);
+    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.y_anchor);
+    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.z_anchor);
+    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.x_target);
+    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.y_target);
+    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.z_target);
+    EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.0000002);
+    EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.0000005);
+    EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.0000003);
+    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.000002);
+    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.000002);
+    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.000002);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -122,27 +122,27 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516211.549716;
     known_y_first = 4767921.735659;
     known_z_first = 2093.231562;
-    known_xLast = 516210.233309;
-    known_YLast = 4767923.03879;
-    known_ZLast = 2084.586298;
+    known_x_last = 516210.233309;
+    known_Y_last = 4767923.03879;
+    known_Z_last = 2084.586298;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;
     known_intensity = 0;
 
     EXPECT_NEAR (known_gps_time, gpsInfo.gpsTime, 0.000005);
-    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.xAnchor);
-    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.yAnchor);
-    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.zAnchor);
-    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.xTarget);
-    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.yTarget);
-    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.zTarget);
-    EXPECT_NEAR (known_x_first, gpsInfo.xFirst, 0.0000005);
-    EXPECT_NEAR (known_y_first, gpsInfo.yFirst, 0.000001  );
-    EXPECT_NEAR (known_z_first, gpsInfo.zFirst, 0.0000005);
-    EXPECT_NEAR (known_xLast, gpsInfo.xLast, 0.000002);
-    EXPECT_NEAR (known_YLast, gpsInfo.yLast, 0.000002);
-    EXPECT_NEAR (known_ZLast, gpsInfo.zLast, 0.000002);
+    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.x_anchor);
+    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.y_anchor);
+    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.z_anchor);
+    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.x_target);
+    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.y_target);
+    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.z_target);
+    EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.0000005);
+    EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.000001  );
+    EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.0000005);
+    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.000002);
+    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.000002);
+    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.000002);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -167,27 +167,27 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516211.240756;
     known_y_first = 4767922.014231;
     known_z_first = 2093.322687;
-    known_xLast = 516209.920748;
-    known_YLast = 4767923.320612;
-    known_ZLast = 2084.678522;
+    known_x_last = 516209.920748;
+    known_Y_last = 4767923.320612;
+    known_Z_last = 2084.678522;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;
     known_intensity = 0;
 
     EXPECT_DOUBLE_EQ (known_gps_time, gpsInfo.gpsTime);
-    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.xAnchor);
-    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.yAnchor);
-    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.zAnchor);
-    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.xTarget);
-    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.yTarget);
-    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.zTarget);
-    EXPECT_NEAR (known_x_first, gpsInfo.xFirst, 0.000006);
-    EXPECT_NEAR (known_y_first, gpsInfo.yFirst, 0.000002);
-    EXPECT_NEAR (known_z_first, gpsInfo.zFirst, 0.000002);
-    EXPECT_NEAR (known_xLast, gpsInfo.xLast, 0.000002);
-    EXPECT_NEAR (known_YLast, gpsInfo.yLast, 0.0000002);
-    EXPECT_NEAR (known_ZLast, gpsInfo.zLast, 0.000002);
+    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.x_anchor);
+    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.y_anchor);
+    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.z_anchor);
+    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.x_target);
+    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.y_target);
+    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.z_target);
+    EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.000006);
+    EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.000002);
+    EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.000002);
+    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.000002);
+    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.0000002);
+    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.000002);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -212,27 +212,27 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516210.910358;
     known_y_first = 4767922.309939;
     known_z_first = 2093.267389;
-    known_xLast = 516209.586749;
-    known_YLast = 4767923.619501;
-    known_ZLast = 2084.624262;
+    known_x_last = 516209.586749;
+    known_Y_last = 4767923.619501;
+    known_Z_last = 2084.624262;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;
     known_intensity = 0;
 
     EXPECT_DOUBLE_EQ (known_gps_time, gpsInfo.gpsTime);
-    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.xAnchor);
-    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.yAnchor);
-    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.zAnchor);
-    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.xTarget);
-    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.yTarget);
-    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.zTarget);
-    EXPECT_NEAR (known_x_first, gpsInfo.xFirst, 0.000002);
-    EXPECT_NEAR (known_y_first, gpsInfo.yFirst, 0.0000004);
-    EXPECT_NEAR (known_z_first, gpsInfo.zFirst, 0.0000002);
-    EXPECT_NEAR (known_xLast, gpsInfo.xLast, 0.0000003);
-    EXPECT_NEAR (known_YLast, gpsInfo.yLast, 0.0000004);
-    EXPECT_NEAR (known_ZLast, gpsInfo.zLast, 0.0000003);
+    EXPECT_DOUBLE_EQ (known_x_anchor, gpsInfo.x_anchor);
+    EXPECT_DOUBLE_EQ (known_y_anchor, gpsInfo.y_anchor);
+    EXPECT_DOUBLE_EQ (known_z_anchor, gpsInfo.z_anchor);
+    EXPECT_DOUBLE_EQ (known_x_target, gpsInfo.x_target);
+    EXPECT_DOUBLE_EQ (known_y_target, gpsInfo.y_target);
+    EXPECT_DOUBLE_EQ (known_z_target, gpsInfo.z_target);
+    EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.000002);
+    EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.0000004);
+    EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.0000002);
+    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.0000003);
+    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.0000004);
+    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.0000003);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -288,7 +288,7 @@ TEST_F(WaveGPSInformationTest, checkXYZ_scale){
 
  }
 
-TEST_F(WaveGPSInformationTest, checkXYZ_realTargetValues){
+TEST_F(WaveGPSInformationTest, checkXYZ_real_targetValues){
     //This test will compare the real world target values
     //of x, y, and z that are calculated by the GPSInformation
     //class to the real world target values that are calculated
@@ -308,13 +308,13 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realTargetValues){
     double known_Y_target=.1;
     double known_Z_target=.1;
 
-    EXPECT_DOUBLE_EQ(known_x_target, gpsInfo.xRealTarget);
-    EXPECT_DOUBLE_EQ(known_Y_target, gpsInfo.yRealTarget);
-    EXPECT_DOUBLE_EQ(known_Z_target, gpsInfo.zRealTarget);
+    EXPECT_DOUBLE_EQ(known_x_target, gpsInfo.xReal_target);
+    EXPECT_DOUBLE_EQ(known_Y_target, gpsInfo.yReal_target);
+    EXPECT_DOUBLE_EQ(known_Z_target, gpsInfo.zReal_target);
 
  }
 
-TEST_F(WaveGPSInformationTest, checkXYZ_realAnchorValues){
+TEST_F(WaveGPSInformationTest, checkXYZ_real_anchorValues){
     //This test will compare the real world anchor values of
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world anchor values that are calculated
@@ -334,13 +334,13 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realAnchorValues){
     double known_Y_anchor=.1;
     double known_Z_anchor=.1;
 
-    EXPECT_DOUBLE_EQ(known_x_anchor, gpsInfo.xRealAnchor);
-    EXPECT_DOUBLE_EQ(known_Y_anchor, gpsInfo.yRealAnchor);
-    EXPECT_DOUBLE_EQ(known_Z_anchor, gpsInfo.zRealAnchor);
+    EXPECT_DOUBLE_EQ(known_x_anchor, gpsInfo.xReal_anchor);
+    EXPECT_DOUBLE_EQ(known_Y_anchor, gpsInfo.yReal_anchor);
+    EXPECT_DOUBLE_EQ(known_Z_anchor, gpsInfo.zReal_anchor);
 
  }
 
-TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
+TEST_F(WaveGPSInformationTest, checkXYZ_real_firstValues){
     //This test will compare the real world first values of
     //x, y, and z that are calcuated by the GPSInformation
     //class to the real world first values that are calculated
@@ -360,13 +360,13 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realFirstValues){
     double known_Y_first=.1;
     double known_Z_first=.1;
 
-    EXPECT_DOUBLE_EQ(known_x_first, gpsInfo.xRealFirst);
-    EXPECT_DOUBLE_EQ(known_Y_first, gpsInfo.yRealFirst);
-    EXPECT_DOUBLE_EQ(known_Z_first, gpsInfo.zRealFirst);
+    EXPECT_DOUBLE_EQ(known_x_first, gpsInfo.xReal_first);
+    EXPECT_DOUBLE_EQ(known_Y_first, gpsInfo.yReal_first);
+    EXPECT_DOUBLE_EQ(known_Z_first, gpsInfo.zReal_first);
 
  }
 
-TEST_F(WaveGPSInformationTest, checkXYZ_realLastValues){
+TEST_F(WaveGPSInformationTest, checkXYZ_real_lastValues){
     //This test will compare the real world last values of
     //x, y, and z that are calculated by the GPSInformation
     //class to the real world last values that are calculated
@@ -386,9 +386,9 @@ TEST_F(WaveGPSInformationTest, checkXYZ_realLastValues){
     double known_Y_last=.1;
     double known_Z_last=.1;
 
-    EXPECT_DOUBLE_EQ(known_x_last, gpsInfo.xRealLast);
-    EXPECT_DOUBLE_EQ(known_Y_last, gpsInfo.yRealLast);
-    EXPECT_DOUBLE_EQ(known_Z_last, gpsInfo.zRealLast);
+    EXPECT_DOUBLE_EQ(known_x_last, gpsInfo.xReal_last);
+    EXPECT_DOUBLE_EQ(known_Y_last, gpsInfo.yReal_last);
+    EXPECT_DOUBLE_EQ(known_Z_last, gpsInfo.zReal_last);
 
  }
 

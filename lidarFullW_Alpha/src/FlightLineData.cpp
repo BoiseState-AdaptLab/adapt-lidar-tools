@@ -40,9 +40,12 @@ void FlightLineData::setFlightLineData(std::string fileName){
   pReader = pOpener.open();
   if(pReader == NULL){
     throw "Unable to Open File" + fileName;
+    exit (EXIT_FAILURE);
   }
 
+  gpsInfo = new WaveGPSInformation(); 
   gpsInfo.populateGPS(pReader);
+
   //bounding box x,y & z mins and maxes
   bb_x_min = pReader->header.min_x;
   bb_y_min = pReader->header.min_y;
@@ -182,14 +185,18 @@ void FlightLineData::getNextPulse(PulseData *pd){
     sampling->set_active_segment(j);
     //set the start time of the outgoing wave and keep track of the times
     if(j == 0){
-      pulse_outgoing_start_time = sampling->get_duration_from_anchor_for_segment();
-      pulse_outgoing_segment_time = sampling->get_duration_from_anchor_for_segment();
+      pulse_outgoing_start_time = 
+                              sampling->get_duration_from_anchor_for_segment();
+      pulse_outgoing_segment_time = 
+                              sampling->get_duration_from_anchor_for_segment();
     }
     else{
-      pulse_outgoing_segment_time = sampling->get_duration_from_anchor_for_segment();
+      pulse_outgoing_segment_time = 
+                              sampling->get_duration_from_anchor_for_segment();
     }
     for(int k = 0; k < sampling->get_number_of_samples(); k++){
-      pd->outgoingIdx.push_back(pulse_outgoing_segment_time - pulse_outgoing_start_time);
+      pd->outgoingIdx.push_back(pulse_outgoing_segment_time - 
+                                pulse_outgoing_start_time);
       pd->outgoingWave.push_back(sampling->get_sample(k));
       pulse_outgoing_segment_time++;
     }
@@ -210,14 +217,18 @@ void FlightLineData::getNextPulse(PulseData *pd){
       sampling->set_active_segment(j);
       //set the start time of the returning wave and keep track of the times
       if(j == 0){
-        pulse_returning_start_time = sampling->get_duration_from_anchor_for_segment();
-        pulse_returning_segment_time = sampling->get_duration_from_anchor_for_segment();
+        pulse_returning_start_time = 
+                              sampling->get_duration_from_anchor_for_segment();
+        pulse_returning_segment_time = 
+                              sampling->get_duration_from_anchor_for_segment();
       }
       else{
-        pulse_returning_segment_time = sampling->get_duration_from_anchor_for_segment();
+        pulse_returning_segment_time = 
+                              sampling->get_duration_from_anchor_for_segment();
       }
       for(int k = 0; k < sampling->get_number_of_samples(); k++){
-        pd->returningIdx.push_back(pulse_returning_segment_time - pulse_returning_start_time);
+        pd->returningIdx.push_back(pulse_returning_segment_time - 
+                                   pulse_returning_start_time);
         pd->returningWave.push_back(sampling->get_sample(k));
         pulse_returning_segment_time++;
       }

@@ -70,16 +70,25 @@ void LidarVolume::deallocateMemory(){
 }
 
 int LidarVolume::position(int i, int j, int k){
-  //return k + (j* len(k)) + (i*len(k)*len(j));
-  return 0;
+  return k + (j* k_extent) + (i*k_extent*j_extent);
 }
 
-void LidarVolume::insertPeak(){
+void LidarVolume::insertPeak(Peak *peak){
+  unsigned int i = gps_to_voxel_x(peak->x);
+  unsigned int j = gps_to_voxel_y(peak->y);
+  unsigned int k = gps_to_voxel_z(peak->z);
+  unsigned long int p = position(i,j,k);
+
+  if(volume[p] == NULL{
+    volume[p] = new std::vector<Peak>();
+  }
+  volume[p]->push_back(*peak);
 
 }
 
 
 void LidarVolume::gps_to_voxel_x(){
+  
   
 }
 

@@ -48,16 +48,18 @@ int main (int argc, char *argv[]) {
     if(!pd.returningIdx.empty()){
       int peak_count = fitter.findPeaks(&peaks, pd.returningWave, 
                                         pd.returningIdx);
-    }
-    // check for valid count
-    if(peak_count != peaks.size()){
-
-    }
-    // foreach peak - find activation point
-    //              - calculate x,y,z
-    //              - give it to lidarVolume
-    for(int i=0;i<peak_count;i++){
-      // intermediateData.addPeak(peaks.peak_list[i]);
+      // check for valid count
+      if(peak_count != peaks.size()){
+        // error we should never reach
+      }
+      // foreach peak 
+      // foreach peak - find activation point
+      //              - calculate x,y,z
+      //              - give it to lidarVolume
+      for(int i=0;i<peak_count;i++){
+        // x,y,z
+        intermediateData.insertPeak(peaks[i]);
+      }
     }
     pd.displayPulseData(&stream);
     std::cout << stream.str() << std::endl;

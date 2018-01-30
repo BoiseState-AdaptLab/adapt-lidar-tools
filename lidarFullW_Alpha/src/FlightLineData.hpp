@@ -11,6 +11,7 @@
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 #include "PulseData.hpp"
+#include "WaveGPSInformation.hpp"
 
 class FlightLineData{
 
@@ -48,6 +49,8 @@ class FlightLineData{
     std::vector<int> outgoing_wave;
     std::vector<int> returning_time;
     std::vector<int> returning_wave;
+
+    WaveGPSInformation gpsInfo;
 
     FlightLineData();
     void setFlightLineData(std::string fileName);

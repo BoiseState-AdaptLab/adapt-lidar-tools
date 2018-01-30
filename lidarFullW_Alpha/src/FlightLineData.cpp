@@ -41,6 +41,8 @@ void FlightLineData::setFlightLineData(std::string fileName){
   if(pReader == NULL){
     throw "Unable to Open File" + fileName;
   }
+
+  gpsInfo.populateGPS(pReader);
   //bounding box x,y & z mins and maxes
   bb_x_min = pReader->header.min_x;
   bb_y_min = pReader->header.min_y;

@@ -36,16 +36,13 @@ public:
   double xRealMin, yRealMin, zRealMin;
   double xRealMax, yRealMax, zRealMax;
   
-  struct xyzCoordinates {
-    double xCoordinate;
-    double yCoordinate;
-    double zCoordinate;
-  };
-
   WaveGPSInformation();  
   void populateGPS(PULSEreader *pReader);
   void displayGPSData();
   void calculateTargetDeviations(); 
+  double calculatexPosition(double t);
+  double calculateyPosition(double t);
+  double calculatezPosition(double t);
 };
 
 #endif /* WAVEGPSINFORMATION_HPP_ */

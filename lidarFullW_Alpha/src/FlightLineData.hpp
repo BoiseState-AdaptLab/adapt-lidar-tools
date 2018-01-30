@@ -50,7 +50,7 @@ class FlightLineData{
     std::vector<int> returning_time;
     std::vector<int> returning_wave;
 
-    WaveGPSInformation gpsInfo;
+    WaveGPSInformation currentGpsInfo;
 
     FlightLineData();
     void setFlightLineData(std::string fileName);

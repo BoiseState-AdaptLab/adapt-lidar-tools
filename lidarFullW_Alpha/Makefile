@@ -87,13 +87,15 @@ $(BIN)/GaussianFitter_unittests: $(SRC)/GaussianFitter.o \
 		-lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
 
 $(BIN)/FlightLineData_unittests: $(SRC)/FlightLineData_unittests.o \
-						$(SRC)/FlightLineData.o $(SRC)/PulseData.o \
+                                 $(SRC)/FlightLineData.o $(SRC)/PulseData.o \
+                                 $(SRC)/WaveGPSInformation.o \
             $(LIB)/gtest_main.a $(SRC)/WaveGPSInformation.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
 $(BIN)/LidarVolume_unittests: $(SRC)/LidarVolume_unittests.o \
-						$(SRC)/LidarVolume.o $(SRC)/FlightLineData.o \
+                              $(SRC)/LidarVolume.o $(SRC)/FlightLineData.o \
+                              $(SRC)/WaveGPSInformation.o \
             $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves

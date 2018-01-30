@@ -58,9 +58,6 @@ WaveGPSInformation::WaveGPSInformation(){
   yRealMax = 0;
   zRealMax = 0;
   
-  //xyzCoordinates.xCoordinate = 0;
-  //xyzCoordinates.yCoordinate = 0;
-  //xyzCoordinates.zCoordinate = 0;
 }
 
 
@@ -68,13 +65,6 @@ WaveGPSInformation::WaveGPSInformation(){
 void WaveGPSInformation::populateGPS(PULSEreader *pReader){
   
     gpsTime = pReader->pulse.get_t();
-    
-    //xScale = pReader->header.x_scale_factor;
-    //yScale = pReader->header.x_scale_factor;
-    //zScale = pReader->header.x_scale_factor;
-    //xOffset = pReader->header.x_offset;
-    //yOffset = pReader->header.x_offset;
-    //zOffset = pReader->header.x_offset;
     
     pReader->pulse.compute_anchor_and_target_and_dir();
     x_anchor = pReader->pulse.get_anchor_x();
@@ -92,10 +82,8 @@ void WaveGPSInformation::populateGPS(PULSEreader *pReader){
     x_first = pReader->pulse.get_first_x();
     y_first = pReader->pulse.get_first_y();
     z_first = pReader->pulse.get_first_z();
-    x_last = pReader->pulse.get_last_x();
-    y_last = pReader->pulse.get_last_y();
-    z_last = pReader->pulse.get_last_z();
 
+    // these are saved so that we can print them if need be
     edge = pReader->pulse.edge_of_scan_line;
     scanDirection = pReader->pulse.scan_direction;
     facet = pReader->pulse.mirror_facet,

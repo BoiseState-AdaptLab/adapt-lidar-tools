@@ -43,7 +43,6 @@ void FlightLineData::setFlightLineData(std::string fileName){
     exit (EXIT_FAILURE);
   }
 
-  gpsInfo.populateGPS(pReader);
 
   //bounding box x,y & z mins and maxes
   bb_x_min = pReader->header.min_x;
@@ -86,6 +85,7 @@ void FlightLineData::setFlightLineData(std::string fileName){
   }
   catch(int e){
         std::cout << "CRITICAL ERROR! No data!\n";
+  // TODO: FIXME!!
         exit(EXIT_FAILURE);
   }
 
@@ -150,6 +150,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
     std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next pulse\n";
     exit(EXIT_FAILURE);
   }
+  currentGpsInfo.populateGPS(pReader);
 
   //Clear the vectors since we're storing a single pulse at a time
   pd->outgoingIdx.clear();

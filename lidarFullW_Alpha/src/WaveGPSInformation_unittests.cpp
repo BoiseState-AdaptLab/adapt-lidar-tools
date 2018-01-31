@@ -95,9 +95,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.0000002);
     EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.0000005);
     EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.0000003);
-    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.000002);
-    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.000002);
-    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.000002);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -140,9 +137,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.0000005);
     EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.000001  );
     EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.0000005);
-    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.000002);
-    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.000002);
-    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.000002);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -185,9 +179,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.000006);
     EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.000002);
     EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.000002);
-    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.000002);
-    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.0000002);
-    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.000002);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -230,9 +221,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_NEAR (known_x_first, gpsInfo.x_first, 0.000002);
     EXPECT_NEAR (known_y_first, gpsInfo.y_first, 0.0000004);
     EXPECT_NEAR (known_z_first, gpsInfo.z_first, 0.0000002);
-    EXPECT_NEAR (known_x_last, gpsInfo.x_last, 0.0000003);
-    EXPECT_NEAR (known_Y_last, gpsInfo.y_last, 0.0000004);
-    EXPECT_NEAR (known_Z_last, gpsInfo.z_last, 0.0000003);
     EXPECT_EQ (known_edge, gpsInfo.edge);
     EXPECT_EQ (known_facet, gpsInfo.facet);
     EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
@@ -240,207 +228,8 @@ TEST_F(WaveGPSInformationTest, checkValues){
   }
 }
 
-TEST_F(WaveGPSInformationTest, checkXYZ_offset){
-    //This test will compare the known values of x,y, and z
-    //offset with the values that are retrieved from the pulse
-    //data.
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
 
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
 
-    gpsInfo.populateGPS(pReader);
 
-    double known_x_offset=.1;
-    double known_Y_offset=.1;
-    double known_Z_offset=.1;
 
-    EXPECT_DOUBLE_EQ(known_x_offset, gpsInfo.xOffset);
-    EXPECT_DOUBLE_EQ(known_Y_offset, gpsInfo.yOffset);
-    EXPECT_DOUBLE_EQ(known_Z_offset, gpsInfo.zOffset);
- }
-
-TEST_F(WaveGPSInformationTest, checkXYZ_scale){
-    //This test will compare the known values of x, y, and z
-    //scale with the values that are retrieved from the pulse
-    //data.
-
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
-
-    gpsInfo.populateGPS(pReader);
-
-    double known_x_scale=.1;
-    double known_Y_scale=.1;
-    double known_Z_scale=.1;
-
-    EXPECT_DOUBLE_EQ(known_x_scale, gpsInfo.xScale);
-    EXPECT_DOUBLE_EQ(known_Y_scale, gpsInfo.yScale);
-    EXPECT_DOUBLE_EQ(known_Z_scale, gpsInfo.zScale);
-
- }
-
-TEST_F(WaveGPSInformationTest, checkXYZ_real_targetValues){
-    //This test will compare the real world target values
-    //of x, y, and z that are calculated by the GPSInformation
-    //class to the real world target values that are calculated
-    //by hand.
-
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
-
-    gpsInfo.populateGPS(pReader);
-
-    double known_x_target=.1;
-    double known_Y_target=.1;
-    double known_Z_target=.1;
-
-    EXPECT_DOUBLE_EQ(known_x_target, gpsInfo.xReal_target);
-    EXPECT_DOUBLE_EQ(known_Y_target, gpsInfo.yReal_target);
-    EXPECT_DOUBLE_EQ(known_Z_target, gpsInfo.zReal_target);
-
- }
-
-TEST_F(WaveGPSInformationTest, checkXYZ_real_anchorValues){
-    //This test will compare the real world anchor values of
-    //x, y, and z that are calculated by the GPSInformation
-    //class to the real world anchor values that are calculated
-    //by hand.
-
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
-
-    gpsInfo.populateGPS(pReader);
-
-    double known_x_anchor=.1;
-    double known_Y_anchor=.1;
-    double known_Z_anchor=.1;
-
-    EXPECT_DOUBLE_EQ(known_x_anchor, gpsInfo.xReal_anchor);
-    EXPECT_DOUBLE_EQ(known_Y_anchor, gpsInfo.yReal_anchor);
-    EXPECT_DOUBLE_EQ(known_Z_anchor, gpsInfo.zReal_anchor);
-
- }
-
-TEST_F(WaveGPSInformationTest, checkXYZ_real_firstValues){
-    //This test will compare the real world first values of
-    //x, y, and z that are calcuated by the GPSInformation
-    //class to the real world first values that are calculated
-    //by hand.
-
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
-
-    gpsInfo.populateGPS(pReader);
-
-    double known_x_first=.1;
-    double known_Y_first=.1;
-    double known_Z_first=.1;
-
-    EXPECT_DOUBLE_EQ(known_x_first, gpsInfo.xReal_first);
-    EXPECT_DOUBLE_EQ(known_Y_first, gpsInfo.yReal_first);
-    EXPECT_DOUBLE_EQ(known_Z_first, gpsInfo.zReal_first);
-
- }
-
-TEST_F(WaveGPSInformationTest, checkXYZ_real_lastValues){
-    //This test will compare the real world last values of
-    //x, y, and z that are calculated by the GPSInformation
-    //class to the real world last values that are calculated
-    //by hand.
-
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
-
-    gpsInfo.populateGPS(pReader);
-
-    double known_x_last=.1;
-    double known_Y_last=.1;
-    double known_Z_last=.1;
-
-    EXPECT_DOUBLE_EQ(known_x_last, gpsInfo.xReal_last);
-    EXPECT_DOUBLE_EQ(known_Y_last, gpsInfo.yReal_last);
-    EXPECT_DOUBLE_EQ(known_Z_last, gpsInfo.zReal_last);
-
- }
-
-TEST_F(WaveGPSInformationTest, checkXYZ_realMinimumValues){
-    //This test will compare the real world minimum values of
-    //x, y, and z that are calculated by the GPSInformation
-    //class to the real world minimum values that are calculated
-    //by hand.
-
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
-
-    gpsInfo.populateGPS(pReader);
-
-    double known_x_minimum=.1;
-    double known_Y_minimum=.1;
-    double known_Z_minimum=.1;
-
-    EXPECT_DOUBLE_EQ(known_x_minimum, gpsInfo.xRealMin);
-    EXPECT_DOUBLE_EQ(known_Y_minimum, gpsInfo.yRealMin);
-    EXPECT_DOUBLE_EQ(known_Z_minimum, gpsInfo.zRealMin);
-
- }
-
-TEST_F(WaveGPSInformationTest, checkXYZ_realMaximumValues){
-    //This test will compare the real world maximum values of
-    //x, y, and z that are calculated by the GPSInformation
-    //class to the real world maximum values that are calculated
-    //by hand.
-
-    std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
-
-    WaveGPSInformation gpsInfo;
-    PULSEreadOpener pOpener;  // Create a pulse read opener object
-    PULSEreader *pReader;     // Create a pulse reader object
-    pOpener.set_file_name(fileNameCorrect.c_str());
-    pReader = pOpener.open();
-
-    gpsInfo.populateGPS(pReader);
-
-    double known_x_maximum=.1;
-    double known_Y_maximum=.1;
-    double known_Z_maximum=.1;
-
-    EXPECT_DOUBLE_EQ(known_x_maximum, gpsInfo.xRealMax);
-    EXPECT_DOUBLE_EQ(known_Y_maximum, gpsInfo.yRealMax);
-    EXPECT_DOUBLE_EQ(known_Z_maximum, gpsInfo.zRealMax);
-
- }
 

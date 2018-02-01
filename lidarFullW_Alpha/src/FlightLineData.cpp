@@ -180,7 +180,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
   }
 
   //Populate outgoing wave data
-  std::cout << "Starting outgoing" << std::endl;
+  // std::cout << "Starting outgoing" << std::endl; //For testing
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
     sampling->set_active_segment(j);
     //set the start time of the outgoing wave and keep track of the times
@@ -205,7 +205,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
   //If there exists a returning wave
   if(++sampling_number < num_samplings){
-    std::cout << "Starting returning" << std::endl;
+    // std::cout << "Starting returning" << std::endl;  //For testing
     sampling = pReader->waves->get_sampling(sampling_number);
     if(sampling->get_type() != PULSEWAVES_RETURNING) {
       std::cout << "CRITICAL ERROR! \

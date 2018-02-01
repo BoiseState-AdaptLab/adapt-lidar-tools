@@ -45,21 +45,27 @@ int main (int argc, char *argv[]) {
       peaks.pop_back();
     }
     rawData.getNextPulse(&pd);
-    if(!pd.returningIdx.empty()){
-      int peak_count = fitter.findPeaks(&peaks, pd.returningWave, 
-                                        pd.returningIdx);
-      // check for valid count
-      if(peak_count != peaks.size()){
-        // error we should never reach
+    try{
+      if(!pd.returningIdx.empty()){
+        int peak_count = fitter.findPeaks(&peaks, pd.returningWave, 
+                                          pd.returningIdx);
+        // check for valid count
+        if(peak_count != peaks.size()){
+          // error we should never reach
+          throw "Critical error! peak_count must be equal to peaks.size!"
+        }
+        // foreach peak 
+        // foreach peak - find activation point
+        //              - calculate x,y,z
+        //              - give it to lidarVolume
+        for(int i=0;i<peak_count;i++){
+          // x,y,z
+          intermediateData.insertPeak(peaks[i]);
+        }
       }
-      // foreach peak 
-      // foreach peak - find activation point
-      //              - calculate x,y,z
-      //              - give it to lidarVolume
-      for(int i=0;i<peak_count;i++){
-        // x,y,z
-        intermediateData.insertPeak(peaks[i]);
-      }
+    } 
+    catch (const char* msg){
+      cerr << msg << endl;
     }
     pd.displayPulseData(&stream);
     std::cout << stream.str() << std::endl;

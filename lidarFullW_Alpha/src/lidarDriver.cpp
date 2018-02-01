@@ -54,10 +54,11 @@ int main (int argc, char *argv[]) {
           // error we should never reach
           throw "Critical error! peak_count must be equal to peaks.size!"
         }
-        // foreach peak 
         // foreach peak - find activation point
         //              - calculate x,y,z
         //              - give it to lidarVolume
+        //x_activation = triggering_location * rawData.currentGpsInfo.dz + 
+        //                                     rawData.currentGpsInfo.x_first
         for(int i=0;i<peak_count;i++){
           // x,y,z
           intermediateData.insertPeak(peaks[i]);

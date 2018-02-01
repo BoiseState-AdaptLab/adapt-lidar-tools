@@ -49,8 +49,6 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   bb_i_max = (int) (ceil(bb_x_max_padded)) - (floor(bb_x_min_padded));
   bb_j_max = (int) (ceil(bb_y_max_padded)) - (floor(bb_y_min_padded));
   bb_k_max = (int) (ceil(bb_z_max_padded)) - (floor(bb_z_min_padded));
-  std::cout << "HEP!";
-  printf("ceil:%ld floor:%ld \n" ,ceil(2093.581 + 10), floor(2084.585 - 10));
 
   i_extent = bb_i_max - bb_i_min + 1;
   j_extent = bb_j_max - bb_j_min + 1;

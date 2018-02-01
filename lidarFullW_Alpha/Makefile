@@ -80,8 +80,8 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # depending on whether it defines its own main() function.
 
 $(BIN)/GaussianFitter_unittests: $(SRC)/GaussianFitter.o \
-            $(SRC)/Peak.o $(SRC)/GaussianFitter_unittests.o \
-						$(LIB)/gtest_main.a
+                                 $(SRC)/GaussianFitter_unittests.o \
+						                     $(LIB)/gtest_main.a $(SRC)/Peak.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib \
 		-lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl \
 		-lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
@@ -89,14 +89,15 @@ $(BIN)/GaussianFitter_unittests: $(SRC)/GaussianFitter.o \
 $(BIN)/FlightLineData_unittests: $(SRC)/FlightLineData_unittests.o \
                                  $(SRC)/FlightLineData.o $(SRC)/PulseData.o \
                                  $(SRC)/WaveGPSInformation.o \
-            $(LIB)/gtest_main.a $(SRC)/WaveGPSInformation.o
+                                 $(LIB)/gtest_main.a \
+                                 $(SRC)/WaveGPSInformation.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
 $(BIN)/LidarVolume_unittests: $(SRC)/LidarVolume_unittests.o \
                               $(SRC)/LidarVolume.o $(SRC)/FlightLineData.o \
                               $(SRC)/WaveGPSInformation.o \
-            $(LIB)/gtest_main.a
+            									$(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 

@@ -39,9 +39,6 @@ public:
   WaveGPSInformation();  
   void populateGPS(PULSEreader *pReader);
   void displayGPSData();
-  double calculatexPosition(double t);
-  double calculateyPosition(double t);
-  double calculatezPosition(double t);
 };
 
 #endif /* WAVEGPSINFORMATION_HPP_ */

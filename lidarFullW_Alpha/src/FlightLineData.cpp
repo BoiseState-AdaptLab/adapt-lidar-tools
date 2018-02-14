@@ -253,7 +253,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
 //xyz_activation = triggering_location * rawData.current_wave_gps_info.dz + 
 //                                     rawData.current_wave_gps_info.x_first
 void FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
-  for(int i=0; i<peaks->size, i++){
+  for(int i=0; i<(int)peaks->size(); i++){
     peaks[i]->x_activation = 
                   peaks[i]->triggering_location * current_wave_gps_info.dx + 
                                   current_wave_gps_info.x_first;

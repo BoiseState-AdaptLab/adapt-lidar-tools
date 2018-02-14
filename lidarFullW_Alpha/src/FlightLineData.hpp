@@ -11,6 +11,7 @@
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 #include "PulseData.hpp"
+#include "Peak.hpp"
 #include "WaveGPSInformation.hpp"
 
 class FlightLineData{

@@ -150,7 +150,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
     std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next pulse\n";
     exit(EXIT_FAILURE);
   }
-  currentGpsInfo.populateGPS(pReader);
+  current_wave_gps_info.populateGPS(pReader);
 
   //Clear the vectors since we're storing a single pulse at a time
   pd->outgoingIdx.clear();
@@ -249,3 +249,23 @@ void FlightLineData::getNextPulse(PulseData *pd){
   next_pulse_exists = false;
   return;
 }
+
+//xyz_activation = triggering_location * rawData.current_wave_gps_info.dz + 
+//                                     rawData.current_wave_gps_info.x_first
+void FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
+  for(int i=0; i<peaks->size, i++){
+    peaks[i]->x_activation = 
+                  peaks[i]->triggering_location * current_wave_gps_info.dx + 
+                                  current_wave_gps_info.x_first;
+
+    peaks[i]->y_activation = 
+                  peaks[i]->triggering_location * current_wave_gps_info.dy + 
+                                  current_wave_gps_info.y_first;
+
+    peaks[i]->z_activation = 
+                  peaks[i]->triggering_location * current_wave_gps_info.dz + 
+                                  current_wave_gps_info.z_first;                                  
+  }
+  return;
+}
+

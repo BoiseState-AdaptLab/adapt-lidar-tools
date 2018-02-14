@@ -50,14 +50,14 @@ class FlightLineData{
     std::vector<int> returning_time;
     std::vector<int> returning_wave;
 
-    WaveGPSInformation currentGpsInfo;
+    WaveGPSInformation current_wave_gps_info;
 
     FlightLineData();
     void setFlightLineData(std::string fileName);
     void FlightLineDataToCSV();
     bool hasNextPulse();
     void getNextPulse(PulseData* pd);;
-
+    void calc_xyz_activation(std::vector<Peak> *peaks);
 
   private:
     PULSEreadOpener pOpener;

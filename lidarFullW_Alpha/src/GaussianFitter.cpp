@@ -150,7 +150,7 @@ void callback(const size_t iter, void *params,
 
   /* compute reciprocal condition number of J(x) */
   gsl_multifit_nlinear_rcond(&rcond, w);
-
+/*
   size_t npeaks = x->size/3;
   fprintf(stderr, "iter %2zu: ",iter);
   size_t j;
@@ -163,7 +163,7 @@ void callback(const size_t iter, void *params,
   fprintf(stderr,", |a|/|v| = %.4f cond(J) = %8.4f, |f(x)| = %.4f\n",
           avratio,
           1.0 / rcond,
-          gsl_blas_dnrm2(f));
+          gsl_blas_dnrm2(f));*/
 }
 
 
@@ -311,14 +311,14 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   }
 
   //print data and model
-  for (i = 0; i < n; ++i){
+  /*for (i = 0; i < n; ++i){
 
       double ti = fit_data.t[i];
       double yi = fit_data.y[i];
       double fi = gaussianSum(x, ti);
 
       printf("%f %f %f\n", ti, yi, fi);
-    }
+    }*/
 
   gsl_vector_free(f);
   gsl_vector_free(x);

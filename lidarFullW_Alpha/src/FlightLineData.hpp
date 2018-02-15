@@ -58,7 +58,7 @@ class FlightLineData{
     void FlightLineDataToCSV();
     bool hasNextPulse();
     void getNextPulse(PulseData* pd);;
-    void calc_xyz_activation(std::vector<Peak> *peaks);
+    int calc_xyz_activation(std::vector<Peak> *peaks);
 
   private:
     PULSEreadOpener pOpener;

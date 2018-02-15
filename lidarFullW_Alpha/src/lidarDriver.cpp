@@ -41,38 +41,47 @@ int main (int argc, char *argv[]) {
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   while(rawData.hasNextPulse()){
+    // make sure that we have an empty vector
     for(int i=0;i<peaks.size();i++){
       peaks.pop_back();
     }
+    // gets the raw data from the file
     rawData.getNextPulse(&pd);
     try{
       if(!pd.returningIdx.empty()){
+        // as long as the pulse has a returning wave it finds
+        // the peaks in that wave
         int peak_count = fitter.findPeaks(&peaks, pd.returningWave, 
                                           pd.returningIdx);
-        // check for valid count
-        if(peak_count != peaks.size()){
-          // error we should never reach
-          throw "Critical error! peak_count must be equal to peaks.size!"
-        }
+
+
         // foreach peak - find activation point
         //              - calculate x,y,z
-        //              - give it to lidarVolume      
-        rawdata.calc_xyz_activation(&peaks);
+        peak_count = rawData.calc_xyz_activation(&peaks);
 
+        // give each peak to lidarVolume      
         for(int i=0;i<peak_count;i++){
-          // x,y,z
-          intermediateData.insertPeak(peaks[i]);
+          intermediateData.insert_peak(&peaks[i]);
         }
       }
     } 
     catch (const char* msg){
-      cerr << msg << endl;
+      std::cerr << msg << std::endl;
     }
+
     pd.displayPulseData(&stream);
     std::cout << stream.str() << std::endl;
     stream.str("");
   }
   // Lidar Volume is full and complete
   // Rasterize it
+    // at this point we have all of the data and we need to 
+    // provide an image of the 3D space.
+    // the user can tell us which type of rasterization to use, but for now
+    // we are just going to offer one.
+    intermediateData.rasterize();
+    std::cout<< "This is our display" << std::endl;
+    intermediateData.display();
+
 
 }

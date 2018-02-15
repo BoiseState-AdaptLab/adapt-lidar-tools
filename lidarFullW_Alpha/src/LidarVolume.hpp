@@ -37,6 +37,9 @@ class LidarVolume{
     
     //current position in peaks array
     int currentPeak;    
+   
+    //The raw raster data
+    int* raster;
     
     std::vector<Peak>** volume;
     
@@ -53,6 +56,9 @@ class LidarVolume{
     int gps_to_voxel_x(double x);
     int gps_to_voxel_y(double y);
     int gps_to_voxel_z(double z);
+
+    void rasterize();
+    void display();
 
 };
 

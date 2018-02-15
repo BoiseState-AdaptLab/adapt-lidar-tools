@@ -144,9 +144,10 @@ lidarDriver: $(BIN)/lidarDriver
 $(BIN)/lidarDriver: $(SRC)/lidarDriver.o $(SRC)/CmdLine.o \
                $(SRC)/WaveGPSInformation.o $(SRC)/PulseData.o \
                $(SRC)/FlightLineData.o $(SRC)/LidarVolume.o \
-               $(SRC)/Peak.o
+               $(SRC)/Peak.o $(SRC)/GaussianFitter.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
-            $(PULSE_DIR)/lib -lpulsewaves
+            $(PULSE_DIR)/lib -lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl \
+                -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
 
 $(SRC)/lidarDriver.o: $(SRC)/lidarDriver.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 

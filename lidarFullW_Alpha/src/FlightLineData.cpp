@@ -252,20 +252,28 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
 //xyz_activation = triggering_location * rawData.current_wave_gps_info.dz + 
 //                                     rawData.current_wave_gps_info.x_first
-void FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
-  for(int i=0; i<(int)peaks->size(); i++){
-    peaks[i]->x_activation = 
-                  peaks[i]->triggering_location * current_wave_gps_info.dx + 
+int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
+
+  //for(int i=0; i<(int)peaks->size(); i++){
+  for(auto it = peaks->begin(); it != peaks->end();){
+    //if(peaks->at(i).amp <= peaks->at(i).triggering_amp){
+    if((*it).amp <= (*it).triggering_amp){
+      it = peaks->erase(it);
+      continue;
+    }
+    (*it).x_activation = 
+                  (*it).triggering_location * current_wave_gps_info.dx + 
                                   current_wave_gps_info.x_first;
 
-    peaks[i]->y_activation = 
-                  peaks[i]->triggering_location * current_wave_gps_info.dy + 
+    (*it).y_activation = 
+                  (*it).triggering_location * current_wave_gps_info.dy + 
                                   current_wave_gps_info.y_first;
 
-    peaks[i]->z_activation = 
-                  peaks[i]->triggering_location * current_wave_gps_info.dz + 
+    (*it).z_activation = 
+                  (*it).triggering_location * current_wave_gps_info.dz + 
                                   current_wave_gps_info.z_first;                                  
+    it++;
   }
-  return;
+  return peaks->size();
 }
 

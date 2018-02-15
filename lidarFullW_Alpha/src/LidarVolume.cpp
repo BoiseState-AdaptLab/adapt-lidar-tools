@@ -5,6 +5,7 @@
 #include "LidarVolume.hpp"
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 //Default constructor
 LidarVolume::LidarVolume(){
@@ -60,8 +61,10 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 3D array of space that will hold peak 
   // information (we don't know how many per volume)
-  volume = (std::vector<Peak>**) malloc (i_extent * j_extent * k_extent 
-                                  * sizeof(std::vector<Peak>*));
+  volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*),
+                                         i_extent * j_extent * k_extent );
+                                  
+  raster = (int*)calloc(sizeof(int),i_extent*j_extent);
 }
 
 
@@ -79,9 +82,9 @@ int LidarVolume::position(int i, int j, int k){
 
 
 void LidarVolume::insert_peak(Peak *peak){
-  unsigned int i = gps_to_voxel_x(peak->x);
-  unsigned int j = gps_to_voxel_y(peak->y);
-  unsigned int k = gps_to_voxel_z(peak->z);
+  unsigned int i = gps_to_voxel_x(peak->x_activation);
+  unsigned int j = gps_to_voxel_y(peak->y_activation);
+  unsigned int k = gps_to_voxel_z(peak->z_activation);
   unsigned long int p = position(i,j,k);
 
   if(volume[p] == NULL){
@@ -107,3 +110,36 @@ int LidarVolume::gps_to_voxel_z(double z){
   int voxel_z = (z - bb_z_min_padded);
   return voxel_z;
 }
+
+
+void LidarVolume::rasterize(){
+
+  int i,j,k;
+
+  for(i=bb_i_min;i<bb_i_max;i++){
+    for(j=bb_j_min;j<bb_j_max;j++){
+      for(k=bb_k_max;k<bb_k_min;k--){
+        if(volume[position(i,j,k)] != NULL){
+          raster[i*j_extent+j] = k;
+          break;
+        }
+      }
+    }
+  }
+}
+
+void LidarVolume::display(){
+
+  int i,j;
+  for(i=bb_i_min;i<bb_i_max;i++){
+    for(j=bb_j_min;j<bb_j_max;j++){
+      printf("%d ",raster[i*j_extent+j]); 
+    }
+    printf("\n");
+  }
+  
+
+  return;
+}
+
+

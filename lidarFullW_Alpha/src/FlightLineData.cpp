@@ -255,7 +255,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
 int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
 
   //for(int i=0; i<(int)peaks->size(); i++){
-  for(auto it = peaks->begin(); it != peaks->end();){
+  std::vector<Peak>::iterator it;
+  for(it = peaks->begin(); it != peaks->end();){
     //if(peaks->at(i).amp <= peaks->at(i).triggering_amp){
     if((*it).amp <= (*it).triggering_amp){
       it = peaks->erase(it);

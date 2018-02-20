@@ -1,7 +1,7 @@
 // File name: LidarVolume.cpp
 // Created on: 08-November-2017
 // Author: ravi
- 
+
 #include "LidarVolume.hpp"
 #include <math.h>
 #include <stdlib.h>
@@ -27,15 +27,15 @@ LidarVolume::LidarVolume(){
   i_extent = 0;
   j_extent = 0;
   k_extent = 0;
-  
+
   currentPeak = 0;
   numOfPeaks = 5;
-  //peakData = NULL;  
+  //peakData = NULL;
 }
 
 void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
                                  double ld_yMin, double ld_yMax,
-                                 double ld_zMin, double ld_zMax){  
+                                 double ld_zMin, double ld_zMax){
 
   bb_x_min_padded = ld_xMin - 10;
   bb_y_min_padded = ld_yMin - 10;
@@ -59,11 +59,11 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 
 //allocate memory with a 3d array of the data
 void LidarVolume::allocateMemory(){
-  // we are going to allocate a 3D array of space that will hold peak 
+  // we are going to allocate a 3D array of space that will hold peak
   // information (we don't know how many per volume)
   volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*),
                                          i_extent * j_extent * k_extent );
-                                  
+
   raster = (int*)calloc(sizeof(int),i_extent*j_extent);
 }
 
@@ -94,7 +94,7 @@ void LidarVolume::insert_peak(Peak *peak){
 }
 
 
-//Convert peak x, y and z values to 
+//Convert peak x, y and z values to
 //i, j and k which identifies the voxel space they belong to
 int LidarVolume::gps_to_voxel_x(double x){
   int voxel_x = (x - bb_x_min_padded);
@@ -133,11 +133,11 @@ void LidarVolume::display(){
   int i,j;
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
-      printf("%d ",raster[i*j_extent+j]); 
+      printf("%3d ",raster[i*j_extent+j]);
     }
     printf("\n");
   }
-  
+
 
   return;
 }

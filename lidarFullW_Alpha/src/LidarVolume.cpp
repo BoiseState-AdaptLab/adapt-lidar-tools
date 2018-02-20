@@ -118,7 +118,7 @@ void LidarVolume::rasterize(){
 
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
-      for(k=bb_k_max;k<bb_k_min;k--){
+      for(k=bb_k_max-1;k>=bb_k_min;k--){
         if(volume[position(i,j,k)] != NULL){
           raster[i*j_extent+j] = k;
           break;

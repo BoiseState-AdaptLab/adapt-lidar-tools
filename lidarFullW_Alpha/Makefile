@@ -79,77 +79,77 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # A test should link with either gtest.a or gtest_main.a, 
 # depending on whether it defines its own main() function.
 
-$(BIN)/GaussianFitter_unittests: $(SRC)/GaussianFitter.o \
-                                 $(SRC)/GaussianFitter_unittests.o \
-						                     $(LIB)/gtest_main.a $(SRC)/Peak.o 
+$(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
+                                 $(OBJ)/GaussianFitter_unittests.o \
+						                     $(LIB)/gtest_main.a $(OBJ)/Peak.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib \
 		-lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl \
 		-lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
 
-$(BIN)/FlightLineData_unittests: $(SRC)/FlightLineData_unittests.o \
-                                 $(SRC)/FlightLineData.o $(SRC)/PulseData.o \
-                                 $(SRC)/WaveGPSInformation.o \
+$(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
+                                 $(OBJ)/FlightLineData.o $(OBJ)/PulseData.o \
+                                 $(OBJ)/WaveGPSInformation.o \
                                  $(LIB)/gtest_main.a \
-                                 $(SRC)/WaveGPSInformation.o
+                                 $(OBJ)/WaveGPSInformation.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
-$(BIN)/LidarVolume_unittests: $(SRC)/LidarVolume_unittests.o \
-                              $(SRC)/LidarVolume.o $(SRC)/FlightLineData.o \
-                              $(SRC)/WaveGPSInformation.o \
+$(BIN)/LidarVolume_unittests: $(OBJ)/LidarVolume_unittests.o \
+                              $(OBJ)/LidarVolume.o $(OBJ)/FlightLineData.o \
+                              $(OBJ)/WaveGPSInformation.o \
             									$(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
-$(BIN)/%_unittests: $(SRC)/%_unittests.o $(SRC)/%.o \
+$(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o \
             $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
             $(PULSE_DIR)/lib -lpulsewaves
 
 # Builds specific object files
-$(SRC)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
+$(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I/home/CATHERINEOLSCHAN/tools/include -c \
 		-o $@ $^
 
-$(SRC)/%_unittests.o: $(SRC)/%_unittests.cpp
+$(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
-$(SRC)/FullWaveformIngestion.o: $(SRC)/FullWaveformIngestion.cpp
+$(OBJ)//FullWaveformIngestion.o: $(SRC)/FullWaveformIngestion.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(SRC)/FlightLineData.o: $(SRC)/FlightLineData.cpp
+$(OBJ)/FlightLineData.o: $(SRC)/FlightLineData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(SRC)/WaveGPSInformation.o: $(SRC)/WaveGPSInformation.cpp
+$(OBJ)//WaveGPSInformation.o: $(SRC)/WaveGPSInformation.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(SRC)/PulseData.o: $(SRC)/PulseData.cpp
+$(OBJ)/PulseData.o: $(SRC)/PulseData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(SRC)/LidarVolume.o: $(SRC)/LidarVolume.cpp
+$(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(SRC)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
+$(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 	$(CXX) -g -fpermissive -c -o $@ $^ -lm \
 		-I/home/CATHERINEOLSCHAN/tools/include -lgsl -lgslcblas \
 		-L/home/CATHERINEOLSCHAN/tools/lib
 
 # Builds all object files
-$(SRC)/%.o: $(SRC)/%.cpp
+$(OBJ)/%.o: $(SRC)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
 
 # Builds the driver file 
 lidarDriver: $(BIN)/lidarDriver
 
-$(BIN)/lidarDriver: $(SRC)/lidarDriver.o $(SRC)/CmdLine.o \
-               $(SRC)/WaveGPSInformation.o $(SRC)/PulseData.o \
-               $(SRC)/FlightLineData.o $(SRC)/LidarVolume.o \
-               $(SRC)/Peak.o $(SRC)/GaussianFitter.o 
+$(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
+               $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
+               $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
+               $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
             $(PULSE_DIR)/lib -lpulsewaves -lm -I/home/CATHERINEOLSCHAN/tools/include -lgsl \
                 -lgslcblas -L/home/CATHERINEOLSCHAN/tools/lib
 
-$(SRC)/lidarDriver.o: $(SRC)/lidarDriver.cpp
+$(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
 
 # A phony target is one that is not really the name of a file; rather it 

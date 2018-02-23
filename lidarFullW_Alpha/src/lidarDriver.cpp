@@ -79,25 +79,14 @@ int main (int argc, char *argv[]) {
     // provide an image of the 3D space.
     // the user can tell us which type of rasterization to use, but for now
     // we are just going to offer one.
-    intermediateData.rasterize();
-    std::cout<< "This is our display" << std::endl;
-    intermediateData.display();
-
-
-    float *buffer = intermediateData.createImage(x_extent, y_extent, 
-                                                 -0.802, -0.177, 0.011, 110);
-    if (buffer == NULL) {
-        return 1;
-    }
+    //intermediateData.rasterize();
+    //std::cout<< "This is our display" << std::endl;
+    //intermediateData.display();
 
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file
     printf("Saving PNG\n");
+    intermediateData.toPng("testfile.png");
 
-    int result = writeImage("image", x_extent, height, buffer, 
-                            "This is my test image");
-
-    // Free up the memorty used to store the image
-    free(buffer);
-
+  return 0;
 }

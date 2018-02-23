@@ -61,10 +61,11 @@ class LidarVolume{
     void display();
 
 
+    int toPng(std::string filename);
+
     // Creates a test image for saving. Creates a Mandelbrot Set fractal of 
     // size width x height
-    float *createImage(int width, int height, float xS, float yS, float rad, 
-                       int maxIteration);
+    float *createImage(int width, int height);
 
     // This takes the float value 'val', converts it to red, green & 
     // blue values, then sets those values into the image memory buffer 

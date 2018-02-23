@@ -84,4 +84,20 @@ int main (int argc, char *argv[]) {
     intermediateData.display();
 
 
+    float *buffer = intermediateData.createImage(x_extent, y_extent, 
+                                                 -0.802, -0.177, 0.011, 110);
+    if (buffer == NULL) {
+        return 1;
+    }
+
+    // Save the image to a PNG file
+    // The 'title' string is stored as part of the PNG file
+    printf("Saving PNG\n");
+
+    int result = writeImage("image", x_extent, height, buffer, 
+                            "This is my test image");
+
+    // Free up the memorty used to store the image
+    free(buffer);
+
 }

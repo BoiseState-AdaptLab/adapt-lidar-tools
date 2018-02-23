@@ -60,6 +60,22 @@ class LidarVolume{
     void rasterize();
     void display();
 
+
+    // Creates a test image for saving. Creates a Mandelbrot Set fractal of 
+    // size width x height
+    float *createImage(int width, int height, float xS, float yS, float rad, 
+                       int maxIteration);
+
+    // This takes the float value 'val', converts it to red, green & 
+    // blue values, then sets those values into the image memory buffer 
+    // location pointed to by 'ptr'
+    void setRGB(png_byte *ptr, float val);
+
+    int writeImage(char* filename, int width, int height, 
+                                float *buffer, char* title);
+
+
+
 };
 
 

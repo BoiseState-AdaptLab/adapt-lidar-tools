@@ -6,6 +6,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <malloc.h>
 #include <png.h>
 
 //Default constructor
@@ -190,7 +191,7 @@ int LidarVolume::writeImage(char* filename, char* title){
   png_init_io(png_ptr, fp);
 
   // Write header (8 bit colour depth)
-  png_set_IHDR(png_ptr, info_ptr, x_extent, y_extent,
+  png_set_IHDR(png_ptr, info_ptr, i_extent, j_extent,
             8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
             PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
@@ -206,13 +207,13 @@ int LidarVolume::writeImage(char* filename, char* title){
   png_write_info(png_ptr, info_ptr);
 
   // Allocate memory for one row (3 bytes per pixel - RGB)
-  row = (png_bytep) malloc(3 * x_extent * sizeof(png_byte));
+  row = (png_bytep) malloc(3 * i_extent * sizeof(png_byte));
 
   // Write image data
   int x, y;
-  for (y=0 ; y<y_extent ; y++) {
-    for (x=0 ; x<x_extent ; x++) {
-      setRGB(&(row[x*3]), raster[y*x_extent + x]);
+  for (y=0 ; y<j_extent ; y++) {
+    for (x=0 ; x<i_extent ; x++) {
+      setRGB(&(row[x*3]), raster[y*i_extent + x]);
     }
     png_write_row(png_ptr, row);
   }

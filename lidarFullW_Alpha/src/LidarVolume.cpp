@@ -3,11 +3,6 @@
 // Author: ravi
 
 #include "LidarVolume.hpp"
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <malloc.h>
-#include <png.h>
 
 //Default constructor
 LidarVolume::LidarVolume(){
@@ -147,7 +142,7 @@ void LidarVolume::display(){
 
 // This function actually writes out the PNG image file. The string 'title' is
 // also written into the image file
-int LidarVolume::writeImage(char* filename, char* title){
+int LidarVolume::writeImage(const char* filename, const char* title){
 
   int code = 0;
   FILE *fp = NULL;
@@ -200,7 +195,9 @@ int LidarVolume::writeImage(char* filename, char* title){
       png_text title_text;
       title_text.compression = PNG_TEXT_COMPRESSION_NONE;
       title_text.key = "Title";
-      title_text.text = title;
+      char* temp = (char*)malloc (strlen(title));
+      strcpy (temp, title);
+      title_text.text = temp;
       png_set_text(png_ptr, info_ptr, &title_text, 1);
   }
 
@@ -229,6 +226,23 @@ int LidarVolume::writeImage(char* filename, char* title){
 
   return code;
 
+}
+
+void LidarVolume::setRGB(png_byte *ptr, float val){
+  int v = (int)(val * 767);
+  if (v < 0) v = 0;
+  if (v > 767) v = 767;
+  int offset = v % 256;
+
+  if (v<256) {
+    ptr[0] = 0; ptr[1] = 0; ptr[2] = offset;
+  }
+  else if (v<512) {
+    ptr[0] = 0; ptr[1] = offset; ptr[2] = 255-offset;
+  }
+  else {
+    ptr[0] = offset; ptr[1] = 255-offset; ptr[2] = 0;
+  }
 }
 
 int LidarVolume::toPng(std::string filename){

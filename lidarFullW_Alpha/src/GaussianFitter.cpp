@@ -381,12 +381,12 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   int grad = -1;
 
   int count = 1;  //Keep track of the index
-  for(int i = 1; i<(int)data.size()-1; i++){
-    //First index represents the pulse index
-    //if(count == 1){
-      //i = i+1;
-      //count = count + 1;
-    //}
+  for(int i = 0; i<(int)data.size()-1; i++){
+    // First index represents the pulse index
+    if(count == 1){
+      count++;
+      continue;
+    }
 
     //Only possibility of a peak
     if(data[i+1] < data[i]){

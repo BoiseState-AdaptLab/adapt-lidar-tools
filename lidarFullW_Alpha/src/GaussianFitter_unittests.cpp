@@ -53,8 +53,8 @@ TEST_F(GaussianFitterTest, NayaniClipped2){
 
   EXPECT_EQ(3,guesses.size());
   EXPECT_EQ(19,guesses[0]);
-  EXPECT_EQ(32 ,guesses[1]);
-  EXPECT_TRUE(39 == guesses[2]);
+  EXPECT_EQ(31 ,guesses[1]);
+  EXPECT_TRUE(38 == guesses[2]);
 
 }
 
@@ -80,8 +80,10 @@ TEST_F(GaussianFitterTest, NayaniClipped){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  int count = fitter.findPeaks(&peaks,ampData,idxData);
-  EXPECT_TRUE(count == 3);
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(2,guesses.size());
+  EXPECT_EQ(18,guesses[0]);
+  EXPECT_EQ(29 ,guesses[1]);
 }
 
 TEST_F(GaussianFitterTest, gaussianFitter){
@@ -107,4 +109,223 @@ TEST_F(GaussianFitterTest, gaussianFitter){
 
   //TODO: check the results
 
+}
+
+TEST_F(GaussianFitterTest, NayaniClipped3){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "1 3 4 3 3 2 1 1 0 1 1 1 1 1 6 29 79 147 207 238 235 198 141 86 43 20 11 11 13 15 15 15 13 11 8 5 5 4 6 6 7 7 5 4 4 3 4 4 5 4 3 3 2 1 1 3 3 3 2 3";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(19,guesses[0]);
+  EXPECT_EQ(30 ,guesses[1]);
+  EXPECT_EQ(41 ,guesses[2]); 
+
+  int count = fitter.findPeaks(&peaks,ampData,idxData);  
+
+  EXPECT_EQ(3,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+  
+}
+
+
+TEST_F(GaussianFitterTest, NayaniClipped4){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "2 2 3 2 2 2 2 1 0 1 1 2 2 4 16 49 105 170 217 239 240 223 195 155 110 68 40 25 20 16 16 15 12 10 7 7 7 7 6 5 4 4 3 2 2 3 5 4 4 3 2 3 4 4 3 3 2 2 2 2";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(20,guesses[0]);
+  EXPECT_EQ(30 ,guesses[1]);
+  EXPECT_EQ(36 ,guesses[2]); 
+
+  int count = fitter.findPeaks(&peaks,ampData,idxData);  
+
+  EXPECT_EQ(3,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+  
+}
+
+TEST_F(GaussianFitterTest, NayaniClipped5){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "1 1 1 1 0 1 3 2 3 4 5 7 16 38 72 109 136 150 150 140 118 87 56 32 23 30 53 82 111 133 145 146 135 121 106 96 87 71 52 35 23 19 16 14 10 8 8 7 6 6 4 4 4 5 5 6 5 4 3 1";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(2,guesses.size());
+  EXPECT_EQ(18,guesses[0]);
+  EXPECT_EQ(31 ,guesses[1]);
+
+  int count = fitter.findPeaks(&peaks,ampData,idxData);  
+
+  EXPECT_EQ(2,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+  
+}
+
+TEST_F(GaussianFitterTest, NayaniClipped6){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "1 1 1 1 2 3 2 2 2 3 5 8 10 11 10 8 7 9 14 28 51 88 131 171 193 193 173 140 117 117 135 151 148 122 88 58 37 23 16 12 11 12 12 12 10 10 10 10 10 8 6 5 5 4 4 3 3 4 3 2";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(2,guesses.size());
+  EXPECT_EQ(25,guesses[0]);
+  EXPECT_EQ(31 ,guesses[1]);
+
+  int count = fitter.findPeaks(&peaks,ampData,idxData);  
+
+  EXPECT_EQ(2,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+  
+}
+
+TEST_F(GaussianFitterTest, NayaniClipped7){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "1 0 1 0 0 1 2 1 2 1 1 1 2 8 19 39 65 87 98 97 89 82 76 79 93 114 130 137 141 152 165 168 153 119 77 46 26 19 15 13 13 13 13 11 10 8 6 6 5 4 4 3 2 2 2 2 3 4 4 4";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(2,guesses.size());
+  EXPECT_EQ(18,guesses[0]);
+  EXPECT_EQ(31 ,guesses[1]);
+
+  int count = fitter.findPeaks(&peaks,ampData,idxData);  
+
+  EXPECT_EQ(2,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+  
+}
+TEST_F(GaussianFitterTest, NayaniClipped8){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "4 3 2 2 1 1 1 1 1 3 3 6 11 17 23 26 26 25 27 42 76 124 170 200 211 213 215 219 221 209 178 133 90 60 42 30 23 20 21 20 19 16 13 11 9 6 5 4 3 3 3 3 4 6 6 6 4 3 1 2";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(16,guesses[0]);
+  EXPECT_EQ(28 ,guesses[1]);
+  EXPECT_EQ(38 ,guesses[2]);
+
+  int count = fitter.findPeaks(&peaks,ampData,idxData);  
+
+  EXPECT_EQ(3,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+  
 }

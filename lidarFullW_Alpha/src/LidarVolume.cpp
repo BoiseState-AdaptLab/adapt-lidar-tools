@@ -3,6 +3,7 @@
 // Author: ravi
 
 #include "LidarVolume.hpp"
+#include <iostream>
 
 //Default constructor
 LidarVolume::LidarVolume(){
@@ -82,6 +83,11 @@ void LidarVolume::insert_peak(Peak *peak){
   unsigned int i = gps_to_voxel_x(peak->x_activation);
   unsigned int j = gps_to_voxel_y(peak->y_activation);
   unsigned int k = gps_to_voxel_z(peak->z_activation);
+
+  if(i<0 || i>i_extent || j<0 || k <0 || j> j_extent || k > k_extent){
+    std::cerr << "ERROR: Invalid peak ignored\n";
+    return;
+  }
   unsigned long int p = position(i,j,k);
 
   if(volume[p] == NULL){
@@ -229,20 +235,15 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 }
 
 void LidarVolume::setRGB(png_byte *ptr, float val){
-  int v = (int)(val * 767);
-  if (v < 0) v = 0;
-  if (v > 767) v = 767;
-  int offset = v % 256;
 
-  if (v<256) {
-    ptr[0] = 0; ptr[1] = 0; ptr[2] = offset;
-  }
-  else if (v<512) {
-    ptr[0] = 0; ptr[1] = offset; ptr[2] = 255-offset;
-  }
-  else {
-    ptr[0] = offset; ptr[1] = 255-offset; ptr[2] = 0;
-  }
+
+  ptr[0] = 255;
+  ptr[1] = 255;
+  ptr[2] = 255;
+
+  if(val > 0 ){
+    ptr[0] = 1;
+  } 
 }
 
 int LidarVolume::toPng(std::string filename){

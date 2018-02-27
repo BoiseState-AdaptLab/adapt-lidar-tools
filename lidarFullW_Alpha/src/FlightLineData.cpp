@@ -158,11 +158,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
   pd->returningIdx.clear();
   pd->returningWave.clear();
 
-  //outgoing_time.clear();
-  //outgoing_wave.clear();
-  //returning_time.clear();
-  //returning_wave.clear();
-
   double pulse_outgoing_start_time;
   double pulse_outgoing_segment_time;
   double pulse_returning_start_time;
@@ -200,7 +195,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
       pd->outgoingWave.push_back(sampling->get_sample(k));
       pulse_outgoing_segment_time++;
     }
-    //pd->setOutgoing(&outgoing_time, &outgoing_wave);
   }
 
   //If there exists a returning wave
@@ -232,6 +226,11 @@ void FlightLineData::getNextPulse(PulseData *pd){
         pd->returningWave.push_back(sampling->get_sample(k));
         pulse_returning_segment_time++;
       }
+std::cerr << std::endl << "DEBUG SAMPLES: ";
+for(int i=0; i< pd->returningWave.size(); i++){
+std::cerr<< pd->returningWave[i] << " ";
+}
+std::cerr << std::endl ;
     }
     //pd->setReturning(&returning_time, &returning_wave);
   }

@@ -276,10 +276,14 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   for(i=0; i< peakCount; i++){
     gsl_vector_set(x, i*3+0, ampData[guesses[i]] );
     gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
-    gsl_vector_set(x, i*3+2, 2);
+    gsl_vector_set(x, i*3+2, 5);
   }
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
+  //fdf_params.trs = gsl_multifit_nlinear_trs_lm;
+  fdf_params.scale = gsl_multifit_nlinear_scale_more;
+  fdf_params.solver = gsl_multifit_nlinear_solver_svd;
+  fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
   solve_system(x, &fdf, &fdf_params);
 
   //this loop is going through every peak
@@ -367,8 +371,21 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   //Level up to and including which peaks will be excluded
   //For the unaltered wave, noise_level = 16
   //for the scond derivative of the wave, noise_level = 3
-
-  noise_level = 6;
+  //
+  // this is creating guesses for a guassian fitter that does not do
+  // well if we have guesses that have an amplitde more than an order 
+  // of magnitute apart. We are going to set the nose level to be the 
+  // max value/ 10 - max*.05;
+  int max = 0;
+  for(int i = 0; i<(int)data.size(); i++){
+    if(data[i]>max){
+      max = data[i];
+    }
+  } 
+  noise_level = ((float)max)*.09;
+  if(noise_level < 6){
+    noise_level = 6;
+  }
   int wideStart = -1;  //The start of any current wide peak
 
   //Sign of gradient:
@@ -378,58 +395,58 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   //A sharp peak is identified by grad=1 -> grad=-1
   //A wide  peak is identified by grad=0 -> grad=-1
 
+  int prev_grad = -1;
   int grad = -1;
+  for(int i = 0; i<(int)data.size(); i++){
 
-  int count = 1;  //Keep track of the index
-  for(int i = 0; i<(int)data.size()-1; i++){
-    // First index represents the pulse index
-    if(count == 1){
-      count++;
-      continue;
-    }
+    if(data[i] > noise_level){
+      // sloping down
+      if(data[i+1] < data[i]){
+        // were we sloping up before?
+        if(grad == 1){
+          //record the peak
+          peaksLocation.push_back(i);  //Peak location
 
-    //Only possibility of a peak
-    if(data[i+1] < data[i]){
-      //Sharp peak
-      if(grad == 1 && data[i] > noise_level){
-        // peaks.push_back(data[i]);    //Peak value
-        peaksLocation.push_back(i);  //Peak location
-      }
-      //Wide peak
-      else if(grad == 0 && data[i] > noise_level){
-        // peaks.push_back(data[wideStart]);
-        if ((i - wideStart) % 2 == 0) {
-          //peaksLocation.push_back(wideStart - (i-(wideStart)/2));
-          peaksLocation.push_back(wideStart - (i-(wideStart)/2));
+        // previously flat 
+        }else if(grad == 0){
+          int width = (i-wideStart);
+          // if we were sloping down and then flat and then down
+          // we need a width of 2
+          if(prev_grad == -1){
+            if(width >2){
+              // record the center of the flat
+              peaksLocation.push_back(i-(width/2));  //Peak location
+            }
+          }else{
+            peaksLocation.push_back(i-(width/2));  //Peak location
+          }
         }
-        else {
-          peaksLocation.push_back(wideStart - (((i - wideStart) / 2) + 1));
+        grad = -1;
+      // sloping up
+      }else if(data[i+1] > data[i]){
+        //was flat
+        if(grad == 0){
+          // need to look back to before going flat. If we were 
+          // going down then do not record.
+          if(prev_grad == 1){
+            peaksLocation.push_back(i-((i-wideStart)/2));  //Peak location
+          }
         }
-
-      }
-      count++;
-      grad = -1;
-
-
-    //Start of a wide peak
-    }else if (data[i+1] == data[i]){
-      count++;
-      if(grad == 1){
-        wideStart = i;  //Index where the wide peak begins
+        // previously sloping up or down
+        grad = 1;
+      }else{
+        // if we were flat
+        if(grad != 0){
+          wideStart = i;
+        }
+        prev_grad = grad;
         grad = 0;
       }
-    }
-    else{
-      grad = 1;
-      count++;
-    }
 
-    //Reset the index
-    if (count == 60){
-      count = 1;
     }
-
   }
+
+ 
   std::cerr << std::endl << "Guesses: \n";
   
   for(int i=0;i<peaksLocation.size();i++){

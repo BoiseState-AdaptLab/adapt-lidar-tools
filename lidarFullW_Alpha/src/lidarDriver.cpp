@@ -40,6 +40,7 @@ int main (int argc, char *argv[]) {
   std::ostringstream stream;
   GaussianFitter fitter;
   std::vector<Peak> peaks;
+  int count = 1;
   while(rawData.hasNextPulse()){
     // make sure that we have an empty vector
     for(int i=0;i<peaks.size();i++){
@@ -51,6 +52,10 @@ int main (int argc, char *argv[]) {
       if(!pd.returningIdx.empty()){
         // as long as the pulse has a returning wave it finds
         // the peaks in that wave
+        int i;
+        for(i=0;i<pd.returningWave.size();i++){
+          std::cout << pd.returningWave[i] << " " ;
+        }
         int peak_count = fitter.findPeaks(&peaks, pd.returningWave, 
                                           pd.returningIdx);
 
@@ -72,6 +77,7 @@ int main (int argc, char *argv[]) {
     pd.displayPulseData(&stream);
     std::cout << stream.str() << std::endl;
     stream.str("");
+    
   }
   // Lidar Volume is full and complete
   // Rasterize it

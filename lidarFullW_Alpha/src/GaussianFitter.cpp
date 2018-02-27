@@ -3,6 +3,7 @@
 //Author: ravi
 
 #include "GaussianFitter.hpp"
+#include <iostream>
 #include <math.h>
 #include <algorithm>
 
@@ -203,16 +204,18 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   gsl_vector_memcpy(x, y);
 
   /* print summary */
-
   fprintf(stderr, "NITER         = %zu\n", gsl_multifit_nlinear_niter(work));
   fprintf(stderr, "NFEV          = %zu\n", fdf->nevalf);
   fprintf(stderr, "NJEV          = %zu\n", fdf->nevaldf);
   fprintf(stderr, "NAEV          = %zu\n", fdf->nevalfvv);
   fprintf(stderr, "initial cost  = %.12e\n", chisq0);
   fprintf(stderr, "final cost    = %.12e\n", chisq);
-  fprintf(stderr, "final x       = (%.12e, %.12e, %12e)\n",
-          gsl_vector_get(x, 0), gsl_vector_get(x, 1), gsl_vector_get(x, 2));
-  fprintf(stderr, "final cond(J) = %.12e\n", 1.0 / rcond);
+  int i;
+  for(i=0;i<p/3;i++){
+    fprintf(stderr, "final x       = (%.12e, %.12e, %12e)\n",
+          gsl_vector_get(x,i*3+0), gsl_vector_get(x,i*3+1), gsl_vector_get(x,i*3+2));
+    fprintf(stderr, "final cond(J) = %.12e\n", 1.0 / rcond);
+  }
 
   gsl_multifit_nlinear_free(work);
 }
@@ -232,6 +235,9 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   size_t peakCount = guesses.size();
   fprintf(stderr, "Peak count is %d\n", peakCount);
   size_t p = peakCount*3;
+
+  // try to filter out some of the guesses if they are 
+  // near the noise
 
   //allocate space for fitting
   const gsl_rng_type * T = gsl_rng_default;
@@ -362,7 +368,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   //For the unaltered wave, noise_level = 16
   //for the scond derivative of the wave, noise_level = 3
 
-  noise_level = 3;
+  noise_level = 6;
   int wideStart = -1;  //The start of any current wide peak
 
   //Sign of gradient:
@@ -375,12 +381,12 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   int grad = -1;
 
   int count = 1;  //Keep track of the index
-  for(int i = 0; i<(int)data.size()-1; i++){
+  for(int i = 1; i<(int)data.size()-1; i++){
     //First index represents the pulse index
-    if(count == 1){
-      i = i+1;
-      count = count + 1;
-    }
+    //if(count == 1){
+      //i = i+1;
+      //count = count + 1;
+    //}
 
     //Only possibility of a peak
     if(data[i+1] < data[i]){
@@ -393,18 +399,20 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
       else if(grad == 0 && data[i] > noise_level){
         // peaks.push_back(data[wideStart]);
         if ((i - wideStart) % 2 == 0) {
-          peaksLocation.push_back(wideStart);
+          //peaksLocation.push_back(wideStart - (i-(wideStart)/2));
+          peaksLocation.push_back(wideStart - (i-(wideStart)/2));
         }
         else {
-          peaksLocation.push_back(wideStart + (((i - wideStart) / 2) + 1));
+          peaksLocation.push_back(wideStart - (((i - wideStart) / 2) + 1));
         }
 
       }
       count++;
       grad = -1;
-    }
+
+
     //Start of a wide peak
-    else if (data[i+1] == data[i]){
+    }else if (data[i+1] == data[i]){
       count++;
       if(grad == 1){
         wideStart = i;  //Index where the wide peak begins
@@ -422,6 +430,12 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
     }
 
   }
+  std::cerr << std::endl << "Guesses: \n";
+  
+  for(int i=0;i<peaksLocation.size();i++){
+    std::cerr << peaksLocation[i] << " ";
+  }
+
   return peaksLocation;
 }
 

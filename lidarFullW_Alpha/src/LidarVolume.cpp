@@ -116,7 +116,7 @@ int LidarVolume::gps_to_voxel_z(double z){
 
 
 void LidarVolume::rasterize(){
-  
+
   int i,j,k;
 
   for(i=bb_i_min;i<bb_i_max;i++){
@@ -155,7 +155,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   png_structp png_ptr = NULL;
   png_infop info_ptr = NULL;
   png_bytep row = NULL;
-    
+
   // Open file for writing (binary mode)
   fp = fopen(filename, "wb");
   // TODO: fixme: this should not print or do a goto
@@ -240,10 +240,41 @@ void LidarVolume::setRGB(png_byte *ptr, float val){
   ptr[0] = 255;
   ptr[1] = 255;
   ptr[2] = 255;
-
-  if(val > 0 ){
-    ptr[0] = 1;
-  } 
+  if(val > 0 && val <40){
+    ptr[0] = 255;
+    ptr[1] = 204;
+    ptr[2] = 204;
+  }
+  if(val >= 41 && val <80){
+    ptr[0] = 255;
+    ptr[1] = 153;
+    ptr[2] = 153;
+  }
+  if(val > 81 && val <120){
+    ptr[0] = 255;
+    ptr[1] = 102;
+    ptr[2] = 102;
+  }
+  if(val >= 121 && val <160){
+    ptr[0] = 255;
+    ptr[1] = 51;
+    ptr[2] = 51;
+  }
+  if(val >= 161 && val <200){
+    ptr[0] = 255;
+    ptr[1] = 0;
+    ptr[2] = 0;
+  }
+  if(val >= 201 && val <250){
+    ptr[0] = 204;
+    ptr[1] = 0;
+    ptr[2] = 0;
+  }
+  if(val >= 251){
+    ptr[0] = 153;
+    ptr[1] = 0;
+    ptr[2] = 0;
+  }
 }
 
 int LidarVolume::toPng(std::string filename){

@@ -56,7 +56,7 @@ int main (int argc, char *argv[]) {
         for(i=0;i<pd.returningWave.size();i++){
           std::cout << pd.returningWave[i] << " " ;
         }
-        int peak_count = fitter.findPeaks(&peaks, pd.returningWave, 
+        int peak_count = fitter.findPeaks(&peaks, pd.returningWave,
                                           pd.returningIdx);
 
 
@@ -64,12 +64,12 @@ int main (int argc, char *argv[]) {
         //              - calculate x,y,z
         peak_count = rawData.calc_xyz_activation(&peaks);
 
-        // give each peak to lidarVolume      
+        // give each peak to lidarVolume
         for(int i=0;i<peak_count;i++){
           intermediateData.insert_peak(&peaks[i]);
         }
       }
-    } 
+    }
     catch (const char* msg){
       std::cerr << msg << std::endl;
     }
@@ -77,17 +77,17 @@ int main (int argc, char *argv[]) {
     pd.displayPulseData(&stream);
     std::cout << stream.str() << std::endl;
     stream.str("");
-    
+
   }
   // Lidar Volume is full and complete
   // Rasterize it
-    // at this point we have all of the data and we need to 
+    // at this point we have all of the data and we need to
     // provide an image of the 3D space.
     // the user can tell us which type of rasterization to use, but for now
     // we are just going to offer one.
-    //intermediateData.rasterize();
-    //std::cout<< "This is our display" << std::endl;
-    //intermediateData.display();
+    intermediateData.rasterize();
+    std::cout<< "This is our display" << std::endl;
+    intermediateData.display();
 
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file

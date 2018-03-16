@@ -210,13 +210,13 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   png_write_info(png_ptr, info_ptr);
 
   // Allocate memory for one row (3 bytes per pixel - RGB)
-  row = (png_bytep) malloc(3 * i_extent * sizeof(png_byte));
+  row = (png_bytep) calloc(sizeof(png_byte),3 * j_extent);
 
   // Write image data
   int x, y;
-  for (y=0 ; y<j_extent ; y++) {
-    for (x=0 ; x<i_extent ; x++) {
-      setRGB(&(row[x*3]), raster[y*i_extent + x]);
+  for (y=0 ; y<i_extent ; y++) {
+    for (x=0 ; x<j_extent ; x++) {
+      setRGB(&(row[x*3]), raster[y*j_extent + x]);
     }
     png_write_row(png_ptr, row);
   }

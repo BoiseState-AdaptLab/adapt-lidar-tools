@@ -192,7 +192,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   png_init_io(png_ptr, fp);
 
   // Write header (8 bit colour depth)
-  png_set_IHDR(png_ptr, info_ptr, i_extent, j_extent,
+  png_set_IHDR(png_ptr, info_ptr, j_extent, i_extent,
             8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
             PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 

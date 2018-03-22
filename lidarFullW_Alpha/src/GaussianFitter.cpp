@@ -178,7 +178,7 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   const double ftol = 1.0e-8;
   const size_t n = fdf->n;
   const size_t p = fdf->p;
-  
+
   //Error handling
   int status;
   gsl_set_error_handler_off();
@@ -198,7 +198,7 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   }
 
   /* store initial cost */
-  satus =  gsl_blas_ddot(f, f, &chisq0);
+  status =  gsl_blas_ddot(f, f, &chisq0);
   if (status) {
     std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
     exit (-1);
@@ -268,7 +268,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fprintf(stderr, "Peak count is %d\n", peakCount);
   size_t p = peakCount*3;
 
-  // try to filter out some of the guesses if they are 
+  // try to filter out some of the guesses if they are
   // near the noise
 
   //allocate space for fitting
@@ -320,7 +320,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf_params.scale = gsl_multifit_nlinear_scale_more;
   fdf_params.solver = gsl_multifit_nlinear_solver_svd;
   fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
-  
+
   status = solve_system(x, &fdf, &fdf_params);
     if (status) {
     std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
@@ -414,15 +414,15 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
   //for the scond derivative of the wave, noise_level = 3
   //
   // this is creating guesses for a guassian fitter that does not do
-  // well if we have guesses that have an amplitde more than an order 
-  // of magnitute apart. We are going to set the nose level to be the 
+  // well if we have guesses that have an amplitde more than an order
+  // of magnitute apart. We are going to set the nose level to be the
   // max value/ 10 - max*.05;
   int max = 0;
   for(int i = 0; i<(int)data.size(); i++){
     if(data[i]>max){
       max = data[i];
     }
-  } 
+  }
   noise_level = ((float)max)*.09;
   if(noise_level < 6){
     noise_level = 6;
@@ -448,7 +448,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
           //record the peak
           peaksLocation.push_back(i);  //Peak location
 
-        // previously flat 
+        // previously flat
         }else if(grad == 0){
           int width = (i-wideStart);
           // if we were sloping down and then flat and then down
@@ -467,7 +467,7 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
       }else if(data[i+1] > data[i]){
         //was flat
         if(grad == 0){
-          // need to look back to before going flat. If we were 
+          // need to look back to before going flat. If we were
           // going down then do not record.
           if(prev_grad == 1){
             peaksLocation.push_back(i-((i-wideStart)/2));  //Peak location
@@ -487,9 +487,9 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
     }
   }
 
- 
+
   std::cerr << std::endl << "Guesses: \n";
-  
+
   for(int i=0;i<peaksLocation.size();i++){
     std::cerr << peaksLocation[i] << " ";
   }

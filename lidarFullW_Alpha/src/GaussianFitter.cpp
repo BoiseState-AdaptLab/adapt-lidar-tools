@@ -178,6 +178,11 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   const double ftol = 1.0e-8;
   const size_t n = fdf->n;
   const size_t p = fdf->p;
+  
+  //Error handling
+  int status;
+  gsl_set_error_handler_off();
+
   gsl_multifit_nlinear_workspace *work =
     gsl_multifit_nlinear_alloc(T, params, n, p);
   gsl_vector * f = gsl_multifit_nlinear_residual(work);
@@ -186,22 +191,46 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   double chisq0, chisq, rcond;
 
   /* initialize solver */
-  gsl_multifit_nlinear_init(x, fdf, work);
+  status = gsl_multifit_nlinear_init(x, fdf, work);
+  if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
 
   /* store initial cost */
-  gsl_blas_ddot(f, f, &chisq0);
+  satus =  gsl_blas_ddot(f, f, &chisq0);
+  if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
 
   /* iterate until convergence */
-  gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
+  status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
                               callback, NULL, &info, work);
+  if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
 
   /* store final cost */
-  gsl_blas_ddot(f, f, &chisq);
+  status = gsl_blas_ddot(f, f, &chisq);
+  if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
 
   /* store cond(J(x)) */
-  gsl_multifit_nlinear_rcond(&rcond, work);
+  status = gsl_multifit_nlinear_rcond(&rcond, work);
+  if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
 
-  gsl_vector_memcpy(x, y);
+  status = gsl_vector_memcpy(x, y);
+  if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
 
   /* print summary */
   fprintf(stderr, "NITER         = %zu\n", gsl_multifit_nlinear_niter(work));

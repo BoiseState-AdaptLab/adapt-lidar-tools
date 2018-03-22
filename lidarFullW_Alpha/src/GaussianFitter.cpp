@@ -169,6 +169,17 @@ void callback(const size_t iter, void *params,
 
 
 //
+
+void handler (const char * reason, 
+              const char * file, 
+              int line, 
+              int gsl_errno){
+
+  std::cerr << "FATAL Error:" << file << ": " << reason << std::endl;
+  gsl_strerror (gsl_errno); 
+}
+
+//
 void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
              gsl_multifit_nlinear_parameters *params){
   const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
@@ -181,7 +192,7 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
   //Error handling
   int status;
-  gsl_set_error_handler_off();
+  //gsl_set_error_handler_off();
 
   gsl_multifit_nlinear_workspace *work =
     gsl_multifit_nlinear_alloc(T, params, n, p);
@@ -191,18 +202,10 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   double chisq0, chisq, rcond;
 
   /* initialize solver */
-  status = gsl_multifit_nlinear_init(x, fdf, work);
-  if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
-  }
+  gsl_multifit_nlinear_init(x, fdf, work);
 
   /* store initial cost */
-  status =  gsl_blas_ddot(f, f, &chisq0);
-  if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
-  }
+  gsl_blas_ddot(f, f, &chisq0);
 
   /* iterate until convergence */
   status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
@@ -213,24 +216,12 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   }
 
   /* store final cost */
-  status = gsl_blas_ddot(f, f, &chisq);
-  if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
-  }
+  gsl_blas_ddot(f, f, &chisq);
 
   /* store cond(J(x)) */
-  status = gsl_multifit_nlinear_rcond(&rcond, work);
-  if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
-  }
+  gsl_multifit_nlinear_rcond(&rcond, work);
 
-  status = gsl_vector_memcpy(x, y);
-  if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
-  }
+  gsl_vector_memcpy(x, y);
 
   /* print summary */
   fprintf(stderr, "NITER         = %zu\n", gsl_multifit_nlinear_niter(work));
@@ -257,7 +248,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
 
   //Error handling
   int status;
-  gsl_set_error_handler_off();
+  gsl_set_error_handler(handler);
 
   //figure out how many items there are in the ampData
   size_t n = ampData.size();
@@ -282,11 +273,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   gsl_rng * r;
   int i;
 
-  status = gsl_rng_env_setup ();
-  if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
-  }
+  gsl_rng_env_setup ();
   r = gsl_rng_alloc (T);
 
   fit_data.t = (double*)malloc(n * sizeof(double));
@@ -321,11 +308,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf_params.solver = gsl_multifit_nlinear_solver_svd;
   fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
-  status = solve_system(x, &fdf, &fdf_params);
-    if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
-  }
+  solve_system(x, &fdf, &fdf_params);
 
   //this loop is going through every peak
   for(i=0; i< peakCount; i++){

@@ -226,8 +226,9 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
 
+  //Error handling
   int status;
-
+  gsl_set_error_handler_off();
 
   //figure out how many items there are in the ampData
   size_t n = ampData.size();

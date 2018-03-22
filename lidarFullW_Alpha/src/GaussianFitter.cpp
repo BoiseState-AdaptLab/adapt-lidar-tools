@@ -226,6 +226,8 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
 
+  int status;
+
 
   //figure out how many items there are in the ampData
   size_t n = ampData.size();
@@ -250,7 +252,11 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   gsl_rng * r;
   int i;
 
-  gsl_rng_env_setup ();
+  status = gsl_rng_env_setup ();
+  if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
   r = gsl_rng_alloc (T);
 
   fit_data.t = (double*)malloc(n * sizeof(double));
@@ -274,7 +280,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
 
   //this is a guess starting point
   for(i=0; i< peakCount; i++){
-    gsl_vector_set(x, i*3+0, ampData[guesses[i]] );
+    gsl_vector_set(x, i*3+0, ampData[guesses[i]]);
     gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
     gsl_vector_set(x, i*3+2, 5);
   }
@@ -284,7 +290,12 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf_params.scale = gsl_multifit_nlinear_scale_more;
   fdf_params.solver = gsl_multifit_nlinear_solver_svd;
   fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
-  solve_system(x, &fdf, &fdf_params);
+  
+  status = solve_system(x, &fdf, &fdf_params);
+    if (status) {
+    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    exit (-1);
+  }
 
   //this loop is going through every peak
   for(i=0; i< peakCount; i++){

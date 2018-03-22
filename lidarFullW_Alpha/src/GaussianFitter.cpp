@@ -212,7 +212,6 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
                               callback, NULL, &info, work);
   if (status) {
     std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
-    exit (-1);
   }
 
   /* store final cost */

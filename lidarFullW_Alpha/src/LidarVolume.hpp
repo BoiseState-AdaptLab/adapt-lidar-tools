@@ -34,6 +34,9 @@ class LidarVolume{
     int bb_j_max;
     int bb_k_max;
 
+    double max_z;
+    double min_z;
+
     //extent of x, y, and z as calculated from the pulse data (max - min)
     int i_extent;
     int j_extent;
@@ -77,7 +80,7 @@ class LidarVolume{
     // This takes the float value 'val', converts it to red, green & 
     // blue values, then sets those values into the image memory buffer 
     // location pointed to by 'ptr'
-    void setRGB(png_byte *ptr, float val, int min_z, int max_z );
+    void setRGB(png_byte *ptr, float val);
 
     int writeImage(const char* filename, const char* title);
 

@@ -246,7 +246,7 @@ void LidarVolume::setRGB(png_byte *ptr, float val){
   ptr[2] = 255;
 
   double normalized_z = (val - min_z) / (max_z - min_z);
-  double inverted_group=(1-f)/0.25;       //invert and group
+  double inverted_group=(1-normalized_z)/0.25;       //invert and group
   int decimal_part=floor(inverted_group); //this is the integer part
   //fractional_part part from 0 to 255
   double fractional_part=floor(255*(inverted_group-decimal_part)); 

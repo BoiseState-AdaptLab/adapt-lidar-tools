@@ -22,6 +22,9 @@ LidarVolume::LidarVolume(){
   bb_j_max = 0;
   bb_k_max = 0;
 
+  max_z = 0;
+  min_z = 0;
+
   i_extent = 0;
   j_extent = 0;
   k_extent = 0;
@@ -34,6 +37,8 @@ LidarVolume::LidarVolume(){
 void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
                                  double ld_yMin, double ld_yMax,
                                  double ld_zMin, double ld_zMax){
+  max_z = ld_zMax;
+  min_z = ld_zMin;
 
   bb_x_min_padded = ld_xMin - 10;
   bb_y_min_padded = ld_yMin - 10;
@@ -236,44 +241,43 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
 void LidarVolume::setRGB(png_byte *ptr, float val){
 
-
   ptr[0] = 255;
   ptr[1] = 255;
   ptr[2] = 255;
-  if(val > 0 && val <40){
-    ptr[0] = 255;
-    ptr[1] = 204;
-    ptr[2] = 204;
-  }
-  if(val >= 41 && val <80){
-    ptr[0] = 255;
-    ptr[1] = 153;
-    ptr[2] = 153;
-  }
-  if(val > 81 && val <120){
-    ptr[0] = 255;
-    ptr[1] = 102;
-    ptr[2] = 102;
-  }
-  if(val >= 121 && val <160){
-    ptr[0] = 255;
-    ptr[1] = 51;
-    ptr[2] = 51;
-  }
-  if(val >= 161 && val <200){
-    ptr[0] = 255;
-    ptr[1] = 0;
-    ptr[2] = 0;
-  }
-  if(val >= 201 && val <250){
-    ptr[0] = 204;
-    ptr[1] = 0;
-    ptr[2] = 0;
-  }
-  if(val >= 251){
-    ptr[0] = 153;
-    ptr[1] = 0;
-    ptr[2] = 0;
+
+  double normalized_z = (val - min_z) / (max_z - min_z);
+  double inverted_group=(1-f)/0.25;       //invert and group
+  int decimal_part=floor(inverted_group); //this is the integer part
+  //fractional_part part from 0 to 255
+  double fractional_part=floor(255*(inverted_group-decimal_part)); 
+
+  switch(decimal_part)
+  {
+    case 0: 
+      ptr[0]=255;
+      ptr[1]=fractional_part;
+      ptr[2]=0;
+      break;
+    case 1:
+      ptr[0]=255-fractional_part;
+      ptr[1]=255;
+      ptr[2]=0;
+      break;
+    case 2:
+      ptr[0]=0;
+      ptr[1]=255;
+      ptr[2]=fractional_part;
+      break;
+    case 3:
+      ptr[0]=0;
+      ptr[1]=255-fractional_part;
+      ptr[2]=255;
+      break;
+    case 4:
+      ptr[0]=0;
+      ptr[1]=0;
+      ptr[2]=255;
+      break;
   }
 }
 

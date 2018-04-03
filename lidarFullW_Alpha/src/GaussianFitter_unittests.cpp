@@ -106,8 +106,9 @@ TEST_F(GaussianFitterTest, gaussianFitter){
 
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
-
-  //TODO: check the results
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(3,guesses.size());
 
 }
 

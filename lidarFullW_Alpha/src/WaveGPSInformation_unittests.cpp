@@ -36,7 +36,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
   double known_x_anchor, known_y_anchor, known_z_anchor;
   double known_x_target, known_y_target, known_z_target;
   double known_x_first, known_y_first, known_z_first;
-  double known_x_last, known_Y_last, known_Z_last;
   unsigned char known_edge;
   unsigned char known_facet;
   unsigned char known_scan_direction;
@@ -76,9 +75,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516211.940623;
     known_y_first = 4767921.375796;
     known_z_first = 2093.580011;
-    known_x_last = 516210.627993;
-    known_Y_last = 4767922.675509;
-    known_Z_last = 2084.933649;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;
@@ -118,9 +114,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516211.549716;
     known_y_first = 4767921.735659;
     known_z_first = 2093.231562;
-    known_x_last = 516210.233309;
-    known_Y_last = 4767923.03879;
-    known_Z_last = 2084.586298;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;
@@ -160,9 +153,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516211.240756;
     known_y_first = 4767922.014231;
     known_z_first = 2093.322687;
-    known_x_last = 516209.920748;
-    known_Y_last = 4767923.320612;
-    known_Z_last = 2084.678522;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;
@@ -202,9 +192,6 @@ TEST_F(WaveGPSInformationTest, checkValues){
     known_x_first = 516210.910358;
     known_y_first = 4767922.309939;
     known_z_first = 2093.267389;
-    known_x_last = 516209.586749;
-    known_Y_last = 4767923.619501;
-    known_Z_last = 2084.624262;
     known_edge = 0;
     known_scan_direction = 0;
     known_facet = 1;

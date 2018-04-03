@@ -41,10 +41,9 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = $(BIN)/CmdLine_unittests $(BIN)/FullWaveformIngestion_unittests \
-		$(BIN)/FlightLineData_unittests $(BIN)/WaveGPSInformation_unittests \
-		$(BIN)/PulseData_unittests $(BIN)/LidarVolume_unittests \
-		$(BIN)/GaussianFitter_unittests
+TESTS = $(BIN)/CmdLine_unittests $(BIN)/FlightLineData_unittests \
+		$(BIN)/WaveGPSInformation_unittests $(BIN)/PulseData_unittests \
+		$(BIN)/LidarVolume_unittests $(BIN)/GaussianFitter_unittests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -81,7 +80,7 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 
 $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
                                  $(OBJ)/GaussianFitter_unittests.o \
-						                     $(LIB)/gtest_main.a $(OBJ)/Peak.o 
+						         $(LIB)/gtest_main.a $(OBJ)/Peak.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib \
 		-lpulsewaves -lm -I/home/Ravishankar/tools/include -lgsl \
 		-lgslcblas -L/home/Ravishankar/tools/lib
@@ -91,20 +90,18 @@ $(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
                                  $(OBJ)/WaveGPSInformation.o \
                                  $(LIB)/gtest_main.a \
                                  $(OBJ)/WaveGPSInformation.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
-            $(PULSE_DIR)/lib -lpulsewaves
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
+		$(PULSE_DIR)/lib -lpulsewaves
 
 $(BIN)/LidarVolume_unittests: $(OBJ)/LidarVolume_unittests.o \
                               $(OBJ)/LidarVolume.o $(OBJ)/FlightLineData.o \
-                              $(OBJ)/WaveGPSInformation.o \
-            									$(LIB)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
-            $(PULSE_DIR)/lib -lpulsewaves -L/home/Ravishankar/tools/lib -lpng
+                              $(OBJ)/WaveGPSInformation.o $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
+		$(PULSE_DIR)/lib -lpulsewaves -L/home/Ravishankar/tools/lib -lpng
 
-$(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o \
-            $(LIB)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
-            $(PULSE_DIR)/lib -lpulsewaves
+$(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
+		$(PULSE_DIR)/lib -lpulsewaves
 
 # Builds specific object files
 $(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
@@ -113,9 +110,6 @@ $(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
 
 $(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
-
-$(OBJ)//FullWaveformIngestion.o: $(SRC)/FullWaveformIngestion.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)/FlightLineData.o: $(SRC)/FlightLineData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
@@ -142,15 +136,15 @@ $(OBJ)/%.o: $(SRC)/%.cpp
 lidarDriver: $(BIN)/lidarDriver
 
 $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
-               $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
-               $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
-               $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o 
+					$(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
+					$(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
+					$(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
-            $(PULSE_DIR)/lib -lpulsewaves -lm -I/home/Ravishankar/tools/include -lgsl \
-                -lgslcblas -L/home/Ravishankar/tools/lib -lpng
+		$(PULSE_DIR)/lib -lpulsewaves -lm -I/home/Ravishankar/tools/include -lgsl \
+		-lgslcblas -L/home/Ravishankar/tools/lib -lpng
 
 $(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ 
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 # A phony target is one that is not really the name of a file; rather it 
 # is just a name for a recipe to be executed when you make an explicit request. 
@@ -164,7 +158,6 @@ test: $(TESTS)
 	clear
 	-$(BIN)/CmdLine_unittests
 	-$(BIN)/FullWaveformIngestion_unittests
-	-$(BIN)/FlightLineData_unittests
 	-$(BIN)/WaveGPSInformation_unittests
 	-$(BIN)/LidarVolume_unittests
 	-$(BIN)/PulseData_unittests

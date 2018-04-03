@@ -40,10 +40,9 @@ int main (int argc, char *argv[]) {
   std::ostringstream stream;
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  int count = 1;
   while(rawData.hasNextPulse()){
     // make sure that we have an empty vector
-    for(int i=0;i<peaks.size();i++){
+    for(int i=0; i<(int)peaks.size(); i++){
       peaks.pop_back();
     }
     // gets the raw data from the file
@@ -53,7 +52,7 @@ int main (int argc, char *argv[]) {
         // as long as the pulse has a returning wave it finds
         // the peaks in that wave
         int i;
-        for(i=0;i<pd.returningWave.size();i++){
+        for(i=0; i<(int)pd.returningWave.size(); i++){
           std::cout << pd.returningWave[i] << " " ;
         }
         int peak_count = fitter.findPeaks(&peaks, pd.returningWave,
@@ -86,12 +85,12 @@ int main (int argc, char *argv[]) {
     // the user can tell us which type of rasterization to use, but for now
     // we are just going to offer one.
     intermediateData.rasterize();
-    std::cout<< "This is our display" << std::endl;
-    intermediateData.display();
+    //std::cout<< "This is our display" << std::endl;
+    //intermediateData.display();
 
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file
-    printf("Saving PNG\n");
+    printf("Saving PNG...\n");
     intermediateData.toPng("testfile.png");
 
   return 0;

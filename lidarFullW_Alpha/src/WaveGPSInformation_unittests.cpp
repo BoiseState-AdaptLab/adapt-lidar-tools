@@ -5,7 +5,6 @@
 // This test requres the sample 140823_183115_1_clipped_test.pls file
 // and its corresponding wvs file to be in the etc directory to run
 
-#include "FullWaveformIngestion.hpp"
 #include "WaveGPSInformation.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
@@ -227,9 +226,3 @@ TEST_F(WaveGPSInformationTest, checkValues){
     EXPECT_EQ (known_intensity, gpsInfo.intensity);
   }
 }
-
-
-
-
-
-

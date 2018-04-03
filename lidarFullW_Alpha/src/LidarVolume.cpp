@@ -89,7 +89,8 @@ void LidarVolume::insert_peak(Peak *peak){
   unsigned int j = gps_to_voxel_y(peak->y_activation);
   unsigned int k = gps_to_voxel_z(peak->z_activation);
 
-  if(i<0 || i>i_extent || j<0 || k <0 || j> j_extent || k > k_extent){
+  //No need to check for i, j, k < 0 because they are unsigned ints
+  if((int) i>i_extent || (int)j> j_extent || (int)k > k_extent){
     std::cerr << "ERROR: Invalid peak ignored\n";
     return;
   }
@@ -246,12 +247,16 @@ void LidarVolume::setRGB(png_byte *ptr, float val){
   ptr[2] = 255;
 
   double normalized_z = (val - min_z) / (max_z - min_z);
-  double inverted_group=(1-normalized_z)/0.25;       //invert and group
-  int decimal_part=floor(inverted_group); //this is the integer part
+  std::cout << "Normalized z = " << normalized_z << std::endl;
+  double inverted_group=(1 - normalized_z)/0.25;       //invert and group
+  std::cout << "Inverted group = " << inverted_group << std::endl;
+  int integer_part=floor(inverted_group); //this is the integer part
+  std::cout << "Integer part = " << integer_part << std::endl;
   //fractional_part part from 0 to 255
-  double fractional_part=floor(255*(inverted_group-decimal_part));
+  int fractional_part=floor(255*(inverted_group - integer_part));
+  std::cout << "Fractional part  = " << fractional_part << std::endl;
 
-  switch(decimal_part)
+  switch(integer_part)
   {
     case 0:
       ptr[0]=255;

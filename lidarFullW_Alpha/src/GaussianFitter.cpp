@@ -170,13 +170,13 @@ void callback(const size_t iter, void *params,
 
 //
 
-void handler (const char * reason, 
-              const char * file, 
-              int line, 
+void handler (const char * reason,
+              const char * file,
+              int line,
               int gsl_errno){
 
   std::cerr << "FATAL Error:" << file << ": " << reason << std::endl;
-  gsl_strerror (gsl_errno); 
+  gsl_strerror (gsl_errno);
 }
 
 //
@@ -222,7 +222,8 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
   gsl_vector_memcpy(x, y);
 
-  /* print summary */
+  /*
+  // print summary
   fprintf(stderr, "NITER         = %zu\n", gsl_multifit_nlinear_niter(work));
   fprintf(stderr, "NFEV          = %zu\n", fdf->nevalf);
   fprintf(stderr, "NJEV          = %zu\n", fdf->nevaldf);
@@ -235,6 +236,7 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
           gsl_vector_get(x,i*3+0), gsl_vector_get(x,i*3+1), gsl_vector_get(x,i*3+2));
     fprintf(stderr, "final cond(J) = %.12e\n", 1.0 / rcond);
   }
+*/
 
   gsl_multifit_nlinear_free(work);
 }

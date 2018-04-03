@@ -180,17 +180,17 @@ void FlightLineData::getNextPulse(PulseData *pd){
     sampling->set_active_segment(j);
     //set the start time of the outgoing wave and keep track of the times
     if(j == 0){
-      pulse_outgoing_start_time = 
+      pulse_outgoing_start_time =
                               sampling->get_duration_from_anchor_for_segment();
-      pulse_outgoing_segment_time = 
+      pulse_outgoing_segment_time =
                               sampling->get_duration_from_anchor_for_segment();
     }
     else{
-      pulse_outgoing_segment_time = 
+      pulse_outgoing_segment_time =
                               sampling->get_duration_from_anchor_for_segment();
     }
     for(int k = 0; k < sampling->get_number_of_samples(); k++){
-      pd->outgoingIdx.push_back(pulse_outgoing_segment_time - 
+      pd->outgoingIdx.push_back(pulse_outgoing_segment_time -
                                 pulse_outgoing_start_time);
       pd->outgoingWave.push_back(sampling->get_sample(k));
       pulse_outgoing_segment_time++;
@@ -211,23 +211,23 @@ void FlightLineData::getNextPulse(PulseData *pd){
       sampling->set_active_segment(j);
       //set the start time of the returning wave and keep track of the times
       if(j == 0){
-        pulse_returning_start_time = 
+        pulse_returning_start_time =
                               sampling->get_duration_from_anchor_for_segment();
-        pulse_returning_segment_time = 
+        pulse_returning_segment_time =
                               sampling->get_duration_from_anchor_for_segment();
       }
       else{
-        pulse_returning_segment_time = 
+        pulse_returning_segment_time =
                               sampling->get_duration_from_anchor_for_segment();
       }
       for(int k = 0; k < sampling->get_number_of_samples(); k++){
-        pd->returningIdx.push_back(pulse_returning_segment_time - 
+        pd->returningIdx.push_back(pulse_returning_segment_time -
                                    pulse_returning_start_time);
         pd->returningWave.push_back(sampling->get_sample(k));
         pulse_returning_segment_time++;
       }
 std::cerr << std::endl << "DEBUG SAMPLES: ";
-for(int i=0; i< pd->returningWave.size(); i++){
+for(int i=0; i< (int)pd->returningWave.size(); i++){
 std::cerr<< pd->returningWave[i] << " ";
 }
 std::cerr << std::endl ;
@@ -249,7 +249,7 @@ std::cerr << std::endl ;
   return;
 }
 
-//xyz_activation = triggering_location * rawData.current_wave_gps_info.dz + 
+//xyz_activation = triggering_location * rawData.current_wave_gps_info.dz +
 //                                     rawData.current_wave_gps_info.x_first
 int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
 
@@ -261,17 +261,17 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
       it = peaks->erase(it);
       continue;
     }
-    (*it).x_activation = 
-                  (*it).triggering_location * current_wave_gps_info.dx + 
+    (*it).x_activation =
+                  (*it).triggering_location * current_wave_gps_info.dx +
                                   current_wave_gps_info.x_first;
 
-    (*it).y_activation = 
-                  (*it).triggering_location * current_wave_gps_info.dy + 
+    (*it).y_activation =
+                  (*it).triggering_location * current_wave_gps_info.dy +
                                   current_wave_gps_info.y_first;
 
-    (*it).z_activation = 
-                  (*it).triggering_location * current_wave_gps_info.dz + 
-                                  current_wave_gps_info.z_first;                                  
+    (*it).z_activation =
+                  (*it).triggering_location * current_wave_gps_info.dz +
+                                  current_wave_gps_info.z_first;
     it++;
   }
   return peaks->size();

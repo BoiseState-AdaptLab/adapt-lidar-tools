@@ -47,6 +47,9 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   bb_y_max_padded = ld_yMax + 10;
   bb_z_max_padded = ld_zMax + 10;
 
+  std::cout << "bb_z_min = "<< bb_z_min_padded << std::endl;
+  std::cout << "bb_z_max = "<< bb_z_max_padded << std::endl;
+
   bb_i_min = 0;
   bb_j_min = 0;
   bb_k_min = 0;
@@ -246,15 +249,18 @@ void LidarVolume::setRGB(png_byte *ptr, float val){
   ptr[1] = 255;
   ptr[2] = 255;
 
-  double normalized_z = (val - min_z) / (max_z - min_z);
-  std::cout << "Normalized z = " << normalized_z << std::endl;
+  //std::cout << "max z = " << max_z << std::endl;
+  //std::cout << "min z = " << min_z << std::endl;
+  std::cout << "float val = " << val << std::endl;
+  double normalized_z = 2*((val - min_z) / (max_z - min_z)) - 1;
+  //std::cout << "Normalized z = " << normalized_z << std::endl;
   double inverted_group=(1 - normalized_z)/0.25;       //invert and group
-  std::cout << "Inverted group = " << inverted_group << std::endl;
+  //std::cout << "Inverted group = " << inverted_group << std::endl;
   int integer_part=floor(inverted_group); //this is the integer part
-  std::cout << "Integer part = " << integer_part << std::endl;
+  //std::cout << "Integer part = " << integer_part << std::endl;
   //fractional_part part from 0 to 255
   int fractional_part=floor(255*(inverted_group - integer_part));
-  std::cout << "Fractional part  = " << fractional_part << std::endl;
+  //std::cout << "Fractional part  = " << fractional_part << std::endl;
 
   switch(integer_part)
   {

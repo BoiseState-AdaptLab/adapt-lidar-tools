@@ -252,7 +252,7 @@ void LidarVolume::setRGB(png_byte *ptr, float val){
   //std::cout << "max z = " << max_z << std::endl;
   //std::cout << "min z = " << min_z << std::endl;
   std::cout << "float val = " << val << std::endl;
-  double normalized_z = 2*((val - min_z) / (max_z - min_z)) - 1;
+  double normalized_z = (val - min_z) / (max_z - min_z);
   //std::cout << "Normalized z = " << normalized_z << std::endl;
   double inverted_group=(1 - normalized_z)/0.25;       //invert and group
   //std::cout << "Inverted group = " << inverted_group << std::endl;

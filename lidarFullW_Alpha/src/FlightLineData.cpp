@@ -192,7 +192,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
     for(int k = 0; k < sampling->get_number_of_samples(); k++){
       pd->outgoingIdx.push_back(pulse_outgoing_segment_time -
                                 pulse_outgoing_start_time);
-      pd->outgoingWave.push_back(sampling->get_sample(k));
+      int temp_amp = sampling->get_sample(k);
+      pd->outgoingWave.push_back(temp_amp);
       pulse_outgoing_segment_time++;
     }
   }
@@ -226,11 +227,11 @@ void FlightLineData::getNextPulse(PulseData *pd){
         pd->returningWave.push_back(sampling->get_sample(k));
         pulse_returning_segment_time++;
       }
-std::cerr << std::endl << "DEBUG SAMPLES: ";
-for(int i=0; i< (int)pd->returningWave.size(); i++){
-std::cerr<< pd->returningWave[i] << " ";
-}
-std::cerr << std::endl ;
+      std::cerr << std::endl << "DEBUG SAMPLES: ";
+      for(int i=0; i< (int)pd->returningWave.size(); i++){
+        std::cerr<< pd->returningWave[i] << " ";
+      }
+      std::cerr << std::endl ;
     }
     //pd->setReturning(&returning_time, &returning_wave);
   }
@@ -253,10 +254,8 @@ std::cerr << std::endl ;
 //                                     rawData.current_wave_gps_info.x_first
 int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
 
-  //for(int i=0; i<(int)peaks->size(); i++){
   std::vector<Peak>::iterator it;
   for(it = peaks->begin(); it != peaks->end();){
-    //if(peaks->at(i).amp <= peaks->at(i).triggering_amp){
     if((*it).amp <= (*it).triggering_amp){
       it = peaks->erase(it);
       continue;

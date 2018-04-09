@@ -340,6 +340,11 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
           sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
      (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
                                         );
+    if(peak->triggering_location > n || peak->triggering_location <0){
+      std::cerr << "Triggering location: "<< peak->triggering_location \
+                << " not in range: " << n <<std::endl;
+      exit (EXIT_FAILURE);
+    }
 
     //add the peak to our result
     results->push_back(*peak);

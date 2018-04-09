@@ -264,8 +264,8 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
                   (*it).triggering_location * current_wave_gps_info.dx +
                                   current_wave_gps_info.x_first;
     if((*it).x_activation < bb_x_min || (*it).x_activation > bb_x_max){
-      std::cerr << "x activation: "<< (*it).x_activation
-                << " not in range: " << bb_x_min << " - " << bb_x_max << 
+      std::cerr << "\nx activation: "<< (*it).x_activation
+                << " not in range: " << bb_x_min << " - " << bb_x_max <<
                 std::endl;
       exit (EXIT_FAILURE);
     }
@@ -274,21 +274,21 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
                   (*it).triggering_location * current_wave_gps_info.dy +
                                   current_wave_gps_info.y_first;
     if((*it).y_activation < bb_y_min || (*it).y_activation > bb_y_max){
-      std::cerr << "y activation: "<< (*it).y_activation
-                << " not in range: " << bb_y_min << " - " << bb_y_may << 
+      std::cerr << "\ny activation: "<< (*it).y_activation
+                << " not in range: " << bb_y_min << " - " << bb_y_max <<
                 std::endl;
       exit (EXIT_FAILURE);
-    }  
+    }
 
     (*it).z_activation =
                   (*it).triggering_location * current_wave_gps_info.dz +
                                   current_wave_gps_info.z_first;
     if((*it).z_activation < bb_z_min || (*it).z_activation > bb_z_max){
-      std::cerr << "z activation: "<< (*it).z_activation
-                << " not in range: " << bb_z_min << " - " << bb_z_may << 
+      std::cerr << "\nz activation: "<< (*it).z_activation
+                << " not in range: " << bb_z_min << " - " << bb_z_max <<
                 std::endl;
       exit (EXIT_FAILURE);
-    }                                    
+    }
     it++;
   }
   return peaks->size();

@@ -51,10 +51,9 @@ TEST_F(GaussianFitterTest, NayaniClipped2){
   GaussianFitter fitter;
   std::vector<int> guesses = fitter.guessPeaks(ampData);
 
-  EXPECT_EQ(3,guesses.size());
-  EXPECT_EQ(19,guesses[0]);
-  EXPECT_EQ(31 ,guesses[1]);
-  EXPECT_TRUE(38 == guesses[2]);
+  EXPECT_EQ(2,guesses.size());
+  EXPECT_EQ(200,guesses[0]);
+  EXPECT_EQ(34 ,guesses[1]);
 
 }
 

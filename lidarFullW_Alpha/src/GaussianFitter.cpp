@@ -180,7 +180,7 @@ void handler (const char * reason,
 }
 
 //
-void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
+int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
              gsl_multifit_nlinear_parameters *params){
   const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
   const size_t max_iter = 200;
@@ -211,7 +211,7 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
                               callback, NULL, &info, work);
   if (status) {
-    std::cerr << "Error: " << gsl_strerror (status) << "\n" << std::endl;
+    std::cerr << "There was an error: " << gsl_strerror (status) << "\n" << std::endl;
   }
 
   /* store final cost */
@@ -239,6 +239,12 @@ void solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 */
 
   gsl_multifit_nlinear_free(work);
+  if(status){
+    return 1;
+  }
+  else{
+    return 0;
+  }
 }
 
 
@@ -309,45 +315,45 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf_params.solver = gsl_multifit_nlinear_solver_svd;
   fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
-  solve_system(x, &fdf, &fdf_params);
+  if(!solve_system(x, &fdf, &fdf_params)){
+    //this loop is going through every peak
+    for(i=0; i< peakCount; i++){
+      Peak* peak = new Peak();
+      peak->amp = gsl_vector_get(x,3*i+ 0);
+      peak->location = gsl_vector_get(x,3*i+ 1);
+      double c = gsl_vector_get(x,3*i+ 2);
 
-  //this loop is going through every peak
-  for(i=0; i< peakCount; i++){
-    Peak* peak = new Peak();
-    peak->amp = gsl_vector_get(x,3*i+ 0);
-    peak->location = gsl_vector_get(x,3*i+ 1);
-    double c = gsl_vector_get(x,3*i+ 2);
+      //calculate fwhm: full width at half maximum
+      // y = a * exp( -1/2 * [ (t - b) / c ]^2 )
+      // where, y: amplitude at the t we are solving for
+      //        a: amplitude at the peak
+      //        t: time
+      // time = +/-sqrt((-2)*(c^2)*ln(y/a) +b
+      peak->fwhm_t_positive = sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
+                              + peak->location;
+      peak->fwhm_t_negative = (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
+                              + peak->location;
+      printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n",
+              peak->fwhm_t_positive, peak->fwhm_t_negative);
 
-    //calculate fwhm: full width at half maximum
-    // y = a * exp( -1/2 * [ (t - b) / c ]^2 )
-    // where, y: amplitude at the t we are solving for
-    //        a: amplitude at the peak
-    //        t: time
-    // time = +/-sqrt((-2)*(c^2)*ln(y/a) +b
-    peak->fwhm_t_positive = sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
-                            + peak->location;
-    peak->fwhm_t_negative = (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
-                            + peak->location;
-    printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n",
-            peak->fwhm_t_positive, peak->fwhm_t_negative);
+      peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
+      printf("fwhm: %f", peak->fwhm);
 
-    peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
-    printf("fwhm: %f", peak->fwhm);
+      //calculate triggering location
+      peak->triggering_amp = noise_level + 1;
+      peak->triggering_location = std::min(
+            sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
+       (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
+                                          );
+      if(peak->triggering_location > n || peak->triggering_location <0){
+        std::cerr << "\nTriggering location: "<< peak->triggering_location \
+                  << " not in range: " << n <<std::endl;
+        exit (EXIT_FAILURE);
+      }
 
-    //calculate triggering location
-    peak->triggering_amp = noise_level + 1;
-    peak->triggering_location = std::min(
-          sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
-     (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
-                                        );
-    if(peak->triggering_location > n || peak->triggering_location <0){
-      std::cerr << "\nTriggering location: "<< peak->triggering_location \
-                << " not in range: " << n <<std::endl;
-      exit (EXIT_FAILURE);
+      //add the peak to our result
+      results->push_back(*peak);
     }
-
-    //add the peak to our result
-    results->push_back(*peak);
   }
 
   //print data and model

@@ -356,15 +356,14 @@ TEST_F(GaussianFitterTest, 140823_152426_2){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guessPeaks(ampData);
-  EXPECT_EQ(4,guesses.size());
-  EXPECT_EQ(41,guesses[18]);
-  EXPECT_EQ(163 ,guesses[25]);
-  EXPECT_EQ(11 ,guesses[37]);
-  EXPECT_EQ(58, guesses[44]);
-
+  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(41,ampData[guesses[0]]);
+  EXPECT_EQ(163 ,ampData[guesses[1]]);
+  EXPECT_EQ(60, ampData[guesses[2]]);
+std::cerr << "After guessPeaks before find Peaks\n";
   int count = fitter.findPeaks(&peaks,ampData,idxData);
 
-  EXPECT_EQ(4,count);
+  EXPECT_EQ(3,count);
   for(int i=0;i<count;i++){
     std::cerr<<peaks[i].amp<<std::endl;
   }

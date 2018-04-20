@@ -303,10 +303,28 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   fdf.params = &fit_data;
 
   //this is a guess starting point
+  int j;
   for(i=0; i< peakCount; i++){
     gsl_vector_set(x, i*3+0, ampData[guesses[i]]);
     gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
-    gsl_vector_set(x, i*3+2, 5);
+    // TODO create a better guess right here
+    int half = ampData[guesses[i]]/2;
+    int idx_lo=0,idx_hi=0;
+    // look low
+    for(j=guesses[i];j>0;j--){
+      if(ampData[guesses[i]] < half){
+        idx_lo = j;
+      }
+    }
+    // look hi
+    for(j=guesses[i];j<n;j++){
+      if(ampData[guesses[i]] < half){
+        idx_hi = j;
+      }
+    }
+    int guess = idx_hi-idx_lo-1;
+    if(guess > 20){guess = 10;}
+    gsl_vector_set(x, i*3+2, guess);
   }
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
@@ -348,10 +366,10 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
       if(peak->triggering_location > n || peak->triggering_location <0){
         std::cerr << "\nTriggering location: "<< peak->triggering_location \
                   << " not in range: " << n <<std::endl;
+      }else{
+        //add the peak to our result
+        results->push_back(*peak);
       }
-
-      //add the peak to our result
-      results->push_back(*peak);
     }
   }
 

@@ -255,11 +255,16 @@ void FlightLineData::getNextPulse(PulseData *pd){
 int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
 
   std::vector<Peak>::iterator it;
+  // for each of the incoming peaks
   for(it = peaks->begin(); it != peaks->end();){
+    // if the amplitude of the peak is too small just ignore the whole
+    // thing
     if((*it).amp <= (*it).triggering_amp){
       it = peaks->erase(it);
       continue;
     }
+    // check to see that each of the gps locations is within our
+    // bounding box -- this is for x y and z
     (*it).x_activation =
                   (*it).triggering_location * current_wave_gps_info.dx +
                                   current_wave_gps_info.x_first;

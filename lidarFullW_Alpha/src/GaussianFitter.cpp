@@ -307,18 +307,19 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   for(i=0; i< peakCount; i++){
     gsl_vector_set(x, i*3+0, ampData[guesses[i]]);
     gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
-    // TODO create a better guess right here
-    int half = ampData[guesses[i]]/2;
+    
+    // Create a better guess by using a better width
+    int half_ampData_guess = ampData[guesses[i]]/2;
     int idx_lo=0,idx_hi=0;
     // look low
     for(j=guesses[i];j>0;j--){
-      if(ampData[guesses[i]] < half){
+      if(ampData[guesses[i]] < half_ampData_guess){
         idx_lo = j;
       }
     }
     // look hi
     for(j=guesses[i];j<n;j++){
-      if(ampData[guesses[i]] < half){
+      if(ampData[guesses[i]] < half_ampData_guess){
         idx_hi = j;
       }
     }

@@ -255,83 +255,54 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
   *g = 255;
   *b = 255;
 
-   if(val > 0 && val <40){
-    *r = 255;
-    *g = 204;
-    *b = 204;
-  }
-  if(val >= 41 && val <80){
-    *r = 255;
-    *g = 153;
-    *b = 153;
-  }
-  if(val > 81 && val <120){
-    *r = 255;
-    *g = 102;
-    *b = 102;
-  }
-  if(val >= 121 && val <160){
-    *r = 255;
-    *g = 51;
-    *b = 51;
-  }
-  if(val >= 161 && val <200){
-    *r = 255;
-    *g = 0;
-    *b = 0;
-  }
-  if(val >= 201 && val <250){
-    *r = 204;
-    *g = 0;
-    *b = 0;
-  }
-  if(val >= 251){
-    *r = 153;
-    *g = 0;
-    *b = 0;
-  }
+  double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
 
-  std::cout << "max k = " << bb_k_max << std::endl;
-  std::cout << "min k = " << bb_k_min << std::endl;
-  std::cout << "float val = " << val << std::endl;
-  // double normalized_z = (val - min_z) / (max_z - min_z);
-  // //std::cout << "Normalized z = " << normalized_z << std::endl;
-  // double inverted_group=(1 - normalized_z)/0.25;       //invert and group
-  // //std::cout << "Inverted group = " << inverted_group << std::endl;
-  // int integer_part=floor(inverted_group); //this is the integer part
-  // //std::cout << "Integer part = " << integer_part << std::endl;
-  // //fractional_part part from 0 to 255
-  // int fractional_part=floor(255*(inverted_group - integer_part));
-  // //std::cout << "Fractional part  = " << fractional_part << std::endl;
+  //invert and group
+  double inverted_group=(1 - normalized_z)/0.25;
+  
+  //this is the integer part
+  int integer_part=floor(inverted_group); 
+  
+  //fractional_part part from 0 to 255
+  int fractional_part=floor(255*(inverted_group - integer_part));
 
-  // switch(integer_part)
-  // {
-  //   case 0:
-  //     ptr[0]=255;
-  //     ptr[1]=fractional_part;
-  //     ptr[2]=0;
-  //     break;
-  //   case 1:
-  //     ptr[0]=255-fractional_part;
-  //     ptr[1]=255;
-  //     ptr[2]=0;
-  //     break;
-  //   case 2:
-  //     ptr[0]=0;
-  //     ptr[1]=255;
-  //     ptr[2]=fractional_part;
-  //     break;
-  //   case 3:
-  //     ptr[0]=0;
-  //     ptr[1]=255-fractional_part;
-  //     ptr[2]=255;
-  //     break;
-  //   case 4:
-  //     ptr[0]=0;
-  //     ptr[1]=0;
-  //     ptr[2]=255;
-  //     break;
-  // }
+  // FOR TESTING PURPOSES
+  // std::cout << "max k = " << bb_k_max << std::endl;
+  // std::cout << "min k = " << bb_k_min << std::endl;
+  // std::cout << "float val = " << val << std::endl;
+  // std::cout << "Normalized z = " << normalized_z << std::endl;
+  // std::cout << "Inverted group = " << inverted_group << std::endl;
+  // std::cout << "Integer part = " << integer_part << std::endl;
+  // std::cout << "Fractional part  = " << fractional_part << std::endl;
+
+  switch(integer_part)
+  {
+    case 0:
+      *r=255;
+      *g=fractional_part;
+      *b=0;
+      break;
+    case 1:
+      *r=255-fractional_part;
+      *g=255;
+      *b=0;
+      break;
+    case 2:
+      *r=0;
+      *g=255;
+      *b=fractional_part;
+      break;
+    case 3:
+      *r=0;
+      *g=255-fractional_part;
+      *b=255;
+      break;
+    case 4:
+      *r=0;
+      *g=0;
+      *b=255;
+      break;
+  }
 }
 
 int LidarVolume::toPng(std::string filename){

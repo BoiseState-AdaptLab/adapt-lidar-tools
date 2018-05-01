@@ -225,7 +225,13 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   int x, y;
   for (y=0 ; y<i_extent ; y++) {
     for (x=0 ; x<j_extent ; x++) {
-      setRGB(&(row[x*3]), raster[y*j_extent + x]);
+      unsigned char r,g,b;
+      setRGB(&r,&g,&b,raster[y*j_extent + x]);
+      //setRGB(&(row[x*3]), raster[y*j_extent + x]);
+      row[x*3] = r;
+      row[x*3+1] = g;
+      row[x*3+2] = b;
+      
     }
     png_write_row(png_ptr, row);
   }
@@ -243,51 +249,51 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
 }
 
-void LidarVolume::setRGB(png_byte *ptr, float val){
+void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
 
-  ptr[0] = 255;
-  ptr[1] = 255;
-  ptr[2] = 255;
+  *r = 255;
+  *g = 255;
+  *b = 255;
 
    if(val > 0 && val <40){
-    ptr[0] = 255;
-    ptr[1] = 204;
-    ptr[2] = 204;
+    *r = 255;
+    *g = 204;
+    *b = 204;
   }
   if(val >= 41 && val <80){
-    ptr[0] = 255;
-    ptr[1] = 153;
-    ptr[2] = 153;
+    *r = 255;
+    *g = 153;
+    *b = 153;
   }
   if(val > 81 && val <120){
-    ptr[0] = 255;
-    ptr[1] = 102;
-    ptr[2] = 102;
+    *r = 255;
+    *g = 102;
+    *b = 102;
   }
   if(val >= 121 && val <160){
-    ptr[0] = 255;
-    ptr[1] = 51;
-    ptr[2] = 51;
+    *r = 255;
+    *g = 51;
+    *b = 51;
   }
   if(val >= 161 && val <200){
-    ptr[0] = 255;
-    ptr[1] = 0;
-    ptr[2] = 0;
+    *r = 255;
+    *g = 0;
+    *b = 0;
   }
   if(val >= 201 && val <250){
-    ptr[0] = 204;
-    ptr[1] = 0;
-    ptr[2] = 0;
+    *r = 204;
+    *g = 0;
+    *b = 0;
   }
   if(val >= 251){
-    ptr[0] = 153;
-    ptr[1] = 0;
-    ptr[2] = 0;
-}
+    *r = 153;
+    *g = 0;
+    *b = 0;
+  }
 
-  // //std::cout << "max z = " << max_z << std::endl;
-  // //std::cout << "min z = " << min_z << std::endl;
-  // std::cout << "float val = " << val << std::endl;
+  std::cout << "max k = " << bb_k_max << std::endl;
+  std::cout << "min k = " << bb_k_min << std::endl;
+  std::cout << "float val = " << val << std::endl;
   // double normalized_z = (val - min_z) / (max_z - min_z);
   // //std::cout << "Normalized z = " << normalized_z << std::endl;
   // double inverted_group=(1 - normalized_z)/0.25;       //invert and group

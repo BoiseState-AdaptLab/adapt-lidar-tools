@@ -62,6 +62,29 @@ TEST_F(LidarVolumeTest, testBoundingBox){
     
 }
 
+TEST_F(LidarVolumeTest, testSetRGB){
+
+    //This test will compare the calculated bounding box values
+    //for x, y, and z with the known values in the clipped test .pls file
+
+    std::string file_name =  "etc/140823_183115_1_clipped_test.pls";
+    FlightLineData fld;
+
+    EXPECT_NO_THROW (fld.setFlightLineData(file_name));
+
+    LidarVolume lv;
+    lv.setBoundingBox(fld.bb_x_min,fld.bb_x_max,
+                      fld.bb_y_min,fld.bb_y_max,
+                      fld.bb_z_min,fld.bb_z_max);
+
+    unsigned char r,g,b;
+    lv.setRGB(&r,&g,&b,15.);
+
+    EXPECT_EQ(255,(int)r);
+    EXPECT_EQ(204,(int)g);
+    EXPECT_EQ(204,(int)b);
+    
+}
 
 /****************************************************************************
 * 

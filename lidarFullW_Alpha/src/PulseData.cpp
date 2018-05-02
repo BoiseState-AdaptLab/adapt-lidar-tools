@@ -1,8 +1,6 @@
-/*
- * File name: PulseData.cpp
- * Created on: 12-July-2017
- * Author: ravi
- */
+// File name: PulseData.cpp
+// Created on: 12-July-2017
+// Author: ravi
 
 #include <iostream>
 #include <cmath>
@@ -31,10 +29,7 @@ void PulseData::setReturning(std::vector<int> *idxArray,
 }
 
 
-
-/*
- * Displays all wave data
- */
+//Displays all wave data 
 void PulseData::displayPulseData(std::ostream *outStream){
 
   *outStream << "\nOutgoing:\n" << std::endl;

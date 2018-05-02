@@ -22,9 +22,8 @@ private:
   std::string usageMessage;
   std::string exeName;
 
-  /* If peakFlag == true, use first difference to find peaks
-   * else, use smooth second difference
-   */
+  // If peakFlag == true, use first difference to find peaks
+  // else, use smooth second difference 
   bool peakFlag;
 
 public:

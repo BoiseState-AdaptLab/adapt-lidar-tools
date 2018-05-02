@@ -14,9 +14,10 @@
 #include <vector>
 
 
+// Lidar driver
 int main (int argc, char *argv[]) {
 
-  // parse the command lines
+  // Parse the command line args
   CmdLine cmdLineArgs;
   cmdLineArgs.parse(argc,argv);
 
@@ -25,7 +26,7 @@ int main (int argc, char *argv[]) {
     return 0;
   }
 
-  // create a flight line data object
+  // Create a flight line data object
   std::string fileName = cmdLineArgs.getInputFileName();
   FlightLineData rawData;
   rawData.setFlightLineData(fileName);
@@ -73,25 +74,28 @@ int main (int argc, char *argv[]) {
       std::cerr << msg << std::endl;
     }
 
-    pd.displayPulseData(&stream);
-    std::cout << stream.str() << std::endl;
-    stream.str("");
+    // FOR TESTING PURPOSES
+    // pd.displayPulseData(&stream);
+    // std::cout << stream.str() << std::endl;
+    // stream.str("");
 
   }
-  // Lidar Volume is full and complete
-  // Rasterize it
-    // at this point we have all of the data and we need to
+    // Lidar Volume is full and complete
+    // Rasterize it
+    // At this point we have all of the data and we need to
     // provide an image of the 3D space.
-    // the user can tell us which type of rasterization to use, but for now
+    // The user can tell us which type of rasterization to use, but for now
     // we are just going to offer one.
     intermediateData.rasterize();
-    //std::cout<< "This is our display" << std::endl;
-    //intermediateData.display();
+
+    // FOR TESTING PURPOSES
+    // std::cout<< "This is our display" << std::endl;
+    // intermediateData.display();
 
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file
     printf("Saving PNG...\n");
-    intermediateData.toPng("testfile.png");
+    intermediateData.toPng("heatmap.png");
 
   return 0;
 }

@@ -174,8 +174,10 @@ void FlightLineData::getNextPulse(PulseData *pd){
     exit(EXIT_FAILURE);
   }
 
+  //FOR TESTING PURPO
+  // std::cout << "Starting outgoing" << std::endl; 
+
   //Populate outgoing wave data
-  // std::cout << "Starting outgoing" << std::endl; //For testing
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
     sampling->set_active_segment(j);
     //set the start time of the outgoing wave and keep track of the times
@@ -200,7 +202,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
   //If there exists a returning wave
   if(++sampling_number < num_samplings){
-    // std::cout << "Starting returning" << std::endl;  //For testing
+    // FOR TESTING PURPOSES
+    // std::cout << "Starting returning" << std::endl;  
     sampling = pReader->waves->get_sampling(sampling_number);
     if(sampling->get_type() != PULSEWAVES_RETURNING) {
       std::cout << "CRITICAL ERROR! \
@@ -227,13 +230,14 @@ void FlightLineData::getNextPulse(PulseData *pd){
         pd->returningWave.push_back(sampling->get_sample(k));
         pulse_returning_segment_time++;
       }
-      std::cerr << std::endl << "DEBUG SAMPLES: ";
-      for(int i=0; i< (int)pd->returningWave.size(); i++){
-        std::cerr<< pd->returningWave[i] << " ";
-      }
-      std::cerr << std::endl ;
+
+      // FOR TESTING PURPOSES
+      // std::cerr << std::endl << "DEBUG SAMPLES: ";
+      // for(int i=0; i< (int)pd->returningWave.size(); i++){
+      //   std::cerr<< pd->returningWave[i] << " ";
+      // }
+      // std::cerr << std::endl ;
     }
-    //pd->setReturning(&returning_time, &returning_wave);
   }
   else{
     std::cout << "No returning Wave" << std::endl;
@@ -250,8 +254,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
   return;
 }
 
-//xyz_activation = triggering_location * rawData.current_wave_gps_info.dz +
-//                                     rawData.current_wave_gps_info.x_first
+// Calculate x, y and z activation
 int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
 
   std::vector<Peak>::iterator it;

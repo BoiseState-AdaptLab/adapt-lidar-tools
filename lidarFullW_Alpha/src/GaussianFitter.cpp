@@ -86,7 +86,7 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
       // first derivative wrt b
       // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2)
       // a*(ti-b)*ei*(1/(c*c))
-      //gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
+      // gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
       gsl_matrix_set(J, i, 3*j+1, b_sum);
 
       // first derivative wrt c
@@ -222,21 +222,21 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
   gsl_vector_memcpy(x, y);
 
-  /*
-  // print summary
-  fprintf(stderr, "NITER         = %zu\n", gsl_multifit_nlinear_niter(work));
-  fprintf(stderr, "NFEV          = %zu\n", fdf->nevalf);
-  fprintf(stderr, "NJEV          = %zu\n", fdf->nevaldf);
-  fprintf(stderr, "NAEV          = %zu\n", fdf->nevalfvv);
-  fprintf(stderr, "initial cost  = %.12e\n", chisq0);
-  fprintf(stderr, "final cost    = %.12e\n", chisq);
-  int i;
-  for(i=0;i<p/3;i++){
-    fprintf(stderr, "final x       = (%.12e, %.12e, %12e)\n",
-          gsl_vector_get(x,i*3+0), gsl_vector_get(x,i*3+1), gsl_vector_get(x,i*3+2));
-    fprintf(stderr, "final cond(J) = %.12e\n", 1.0 / rcond);
-  }
-*/
+  
+  // PRINT SUMMARY FOR TESTING PUPOSES
+  // fprintf(stderr, "NITER         = %zu\n", gsl_multifit_nlinear_niter(work));
+  // fprintf(stderr, "NFEV          = %zu\n", fdf->nevalf);
+  // fprintf(stderr, "NJEV          = %zu\n", fdf->nevaldf);
+  // fprintf(stderr, "NAEV          = %zu\n", fdf->nevalfvv);
+  // fprintf(stderr, "initial cost  = %.12e\n", chisq0);
+  // fprintf(stderr, "final cost    = %.12e\n", chisq);
+  // int i;
+  // for(i=0;i<p/3;i++){
+  //   fprintf(stderr, "final x       = (%.12e, %.12e, %12e)\n",
+  //         gsl_vector_get(x,i*3+0), gsl_vector_get(x,i*3+1), gsl_vector_get(x,i*3+2));
+  //   fprintf(stderr, "final cond(J) = %.12e\n", 1.0 / rcond);
+  // }
+
 
   gsl_multifit_nlinear_free(work);
   if(status){
@@ -374,15 +374,13 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
     }
   }
 
-  //print data and model
-  /*for (i = 0; i < n; ++i){
-
-      double ti = fit_data.t[i];
-      double yi = fit_data.y[i];
-      double fi = gaussianSum(x, ti);
-
-      printf("%f %f %f\n", ti, yi, fi);
-    }*/
+  // PRINT DATA AND MODEL FOR TESTING PURPOSES
+  // for (i = 0; i < n; ++i){
+  //     double ti = fit_data.t[i];
+  //     double yi = fit_data.y[i];
+  //     double fi = gaussianSum(x, ti);
+  //     printf("%f %f %f\n", ti, yi, fi);
+  //   }
 
   gsl_vector_free(f);
   gsl_vector_free(x);
@@ -416,7 +414,8 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
 }
 
 
-//
+// Estimate of peaks to be supplied to the gaussian fitter based on 
+// first difference gradient
 std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
 
   //std::vector<int> data = calculateFirstDifferences(ampData);
@@ -500,12 +499,11 @@ std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
     }
   }
 
-
-  std::cerr << std::endl << "Guesses: \n";
-
-  for(int i=0;i<peaksLocation.size();i++){
-    std::cerr << peaksLocation[i] << " ";
-  }
+  // FOR TESTING PURPOSES
+  // std::cerr << std::endl << "Guesses: \n";
+  // for(int i=0;i<peaksLocation.size();i++){
+  //   std::cerr << peaksLocation[i] << " ";
+  // }
 
   return peaksLocation;
 }

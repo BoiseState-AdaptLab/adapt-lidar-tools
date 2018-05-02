@@ -299,7 +299,12 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
       *b=255;
       break;
     case 4:
-      *r=0;
+      *r=fractional_part;
+      *g=0;
+      *b=255;
+      break;
+    case 5:
+      *r=255;
       *g=0;
       *b=255;
       break;

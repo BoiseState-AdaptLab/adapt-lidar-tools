@@ -222,7 +222,7 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
   gsl_vector_memcpy(x, y);
 
-  
+
   // PRINT SUMMARY FOR TESTING PUPOSES
   // fprintf(stderr, "NITER         = %zu\n", gsl_multifit_nlinear_niter(work));
   // fprintf(stderr, "NFEV          = %zu\n", fdf->nevalf);
@@ -263,7 +263,10 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   //figure out how many peaks there are in the data
   std::vector<int> guesses = guessPeaks(ampData);
   size_t peakCount = guesses.size();
-  fprintf(stderr, "Peak count is %d\n", peakCount);
+
+  // FOR TESTING PURPOSES
+  // fprintf(stderr, "Peak count is %d\n", peakCount);
+
   size_t p = peakCount*3;
 
   // try to filter out some of the guesses if they are
@@ -307,7 +310,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   for(i=0; i< peakCount; i++){
     gsl_vector_set(x, i*3+0, ampData[guesses[i]]);
     gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
-    
+
     // Create a better guess by using a better width
     int half_ampData_guess = ampData[guesses[i]]/2;
     int idx_lo=0,idx_hi=0;
@@ -352,11 +355,12 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
                               + peak->location;
       peak->fwhm_t_negative = (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
                               + peak->location;
-      printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n",
-              peak->fwhm_t_positive, peak->fwhm_t_negative);
-
       peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
-      printf("fwhm: %f", peak->fwhm);
+
+      // FOR TESTING PURPOSES
+      // printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n",
+      //         peak->fwhm_t_positive, peak->fwhm_t_negative);
+      // printf("fwhm: %f", peak->fwhm);
 
       //calculate triggering location
       peak->triggering_amp = noise_level + 1;
@@ -414,7 +418,7 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
 }
 
 
-// Estimate of peaks to be supplied to the gaussian fitter based on 
+// Estimate of peaks to be supplied to the gaussian fitter based on
 // first difference gradient
 std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
 

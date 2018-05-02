@@ -174,7 +174,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
     exit(EXIT_FAILURE);
   }
 
-  //FOR TESTING PURPO
+  //FOR TESTING PURPOSES
   // std::cout << "Starting outgoing" << std::endl; 
 
   //Populate outgoing wave data

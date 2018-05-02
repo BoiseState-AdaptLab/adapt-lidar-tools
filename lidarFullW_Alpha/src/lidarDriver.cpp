@@ -53,9 +53,12 @@ int main (int argc, char *argv[]) {
         // as long as the pulse has a returning wave it finds
         // the peaks in that wave
         int i;
-        for(i=0; i<(int)pd.returningWave.size(); i++){
-          std::cout << pd.returningWave[i] << " " ;
-        }
+
+        // FOR TESTING PURPOSES
+        // for(i=0; i<(int)pd.returningWave.size(); i++){
+        //   std::cout << pd.returningWave[i] << " " ;
+        // }
+        
         int peak_count = fitter.findPeaks(&peaks, pd.returningWave,
                                           pd.returningIdx);
 

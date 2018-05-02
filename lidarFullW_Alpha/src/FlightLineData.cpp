@@ -240,7 +240,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
     }
   }
   else{
-    std::cout << "No returning Wave" << std::endl;
+    // FOR TESTING PURPOSES
+    // std::cout << "No returning Wave" << std::endl;
   }
 
   //Check if there exists a next pulse

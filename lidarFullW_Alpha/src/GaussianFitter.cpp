@@ -316,14 +316,16 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
     int idx_lo=0,idx_hi=0;
     // look low
     for(j=guesses[i];j>0;j--){
-      if(ampData[guesses[i]] < half_ampData_guess){
+      if(ampData[j] < half_ampData_guess){
         idx_lo = j;
+        break;
       }
     }
     // look hi
     for(j=guesses[i];j<n;j++){
-      if(ampData[guesses[i]] < half_ampData_guess){
+      if(ampData[j] < half_ampData_guess){
         idx_hi = j;
+        break;
       }
     }
     int guess = idx_hi-idx_lo-1;
@@ -392,6 +394,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
         std::cerr<< ampData[i] << " ";
       }
       std::cerr << std::endl ;
+      peakCount = 0;
   }
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES

@@ -399,7 +399,7 @@ TEST_F(GaussianFitterTest, trig_loc_2){
   EXPECT_EQ(41,ampData[guesses[0]]);
   EXPECT_EQ(163 ,ampData[guesses[1]]);
   EXPECT_EQ(60, ampData[guesses[2]]);
-  
+
   std::cerr << "After guessPeaks before find Peaks\n";
   int count = fitter.findPeaks(&peaks,ampData,idxData);
 
@@ -433,14 +433,13 @@ TEST_F(GaussianFitterTest, trig_loc_3){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guessPeaks(ampData);
-  EXPECT_EQ(2,guesses.size());
+  EXPECT_EQ(1,guesses.size());
   EXPECT_EQ(185,ampData[guesses[0]]);
-  EXPECT_EQ(10 ,ampData[guesses[1]]);
-  
+
   std::cerr << "After guessPeaks before find Peaks\n";
   int count = fitter.findPeaks(&peaks,ampData,idxData);
 
-  EXPECT_EQ(3,count);
+  EXPECT_EQ(1,count);
   for(int i=0;i<count;i++){
     std::cerr<<peaks[i].amp<<std::endl;
   }

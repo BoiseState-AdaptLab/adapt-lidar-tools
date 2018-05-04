@@ -28,7 +28,7 @@ class GaussianFitterTest: public testing::Test{
 *  15 15 14 13 10 8 8 8 8 7 6 6 4 4 4 3 4 5 6 4 4 3 2 2 1 1 0 1 2 3 4 4 2"
 *
 ******************************************************************************/
-TEST_F(GaussianFitterTest, NayaniClipped2){
+TEST_F(GaussianFitterTest, NayaniClipped1){
 
   // create a vector of integers
   std::vector<int> idxData;
@@ -57,7 +57,7 @@ TEST_F(GaussianFitterTest, NayaniClipped2){
 
 }
 
-TEST_F(GaussianFitterTest, NayaniClipped){
+TEST_F(GaussianFitterTest, NayaniClipped2){
 
   // create a vector of integers
   std::vector<int> idxData;
@@ -330,10 +330,11 @@ TEST_F(GaussianFitterTest, NayaniClipped8){
 
 }
 
-//  gsl: svd.c:148: ERROR: SVD decomposition failed to converge
-//  Default GSL error handler invoked.
-//  /cm/local/apps/slurm/var/spool/job66099/slurm_script: line 17: 138960 Aborted
-TEST_F(GaussianFitterTest, 140823_152426_2){
+// gsl: svd.c:148: ERROR: SVD decomposition failed to converge
+// Default GSL error handler invoked.
+// /cm/local/apps/slurm/var/spool/job66099/slurm_script: line 17: 138960 Aborted
+// Using file 140823_152426_2.pls
+TEST_F(GaussianFitterTest, trig_loc_1){
 
   // create a vector of integers
   std::vector<int> idxData;
@@ -360,7 +361,8 @@ TEST_F(GaussianFitterTest, 140823_152426_2){
   EXPECT_EQ(41,ampData[guesses[0]]);
   EXPECT_EQ(163 ,ampData[guesses[1]]);
   EXPECT_EQ(60, ampData[guesses[2]]);
-std::cerr << "After guessPeaks before find Peaks\n";
+
+  std::cerr << "After guessPeaks before find Peaks\n";
   int count = fitter.findPeaks(&peaks,ampData,idxData);
 
   EXPECT_EQ(3,count);
@@ -369,3 +371,80 @@ std::cerr << "After guessPeaks before find Peaks\n";
   }
 
 }
+
+TEST_F(GaussianFitterTest, trig_loc_2){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "0 1 1 1 2 1 1 1 1 1 2 2 4 8 15 24 34 41 41 36 29 31 51 90 132 161 163 137 97 57 29 13 7 6 8 11 12 11 8 7 8 17 32 50 60 58 46 30 18 10 4 2 2 4 6 6 6 6 5 4";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(41,ampData[guesses[0]]);
+  EXPECT_EQ(163 ,ampData[guesses[1]]);
+  EXPECT_EQ(60, ampData[guesses[2]]);
+  
+  std::cerr << "After guessPeaks before find Peaks\n";
+  int count = fitter.findPeaks(&peaks,ampData,idxData);
+
+  EXPECT_EQ(3,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+
+}
+
+TEST_F(GaussianFitterTest, trig_loc_3){
+
+  // create a vector of integers
+  std::vector<int> idxData;
+  std::vector<int> ampData;
+
+  char input[] = "2 3 1 3 3 3 2 3 4 5 5 5 8 12 17 18 18 21 32 63 111 158 185 182 151 106 62 33 16 10 7 8 9 10 9 9 8 6 5 5 4 4 4 4 4 3 3 2 2 1 2 3 3 3 3 2 2 2 2 3";
+
+  char* ptr;
+  ptr = strtok (input," ");
+  int i=0;
+  while (ptr != NULL){
+    int y0 = atoi(ptr);
+    ampData.push_back(y0);
+    idxData.push_back(i);
+    i++;
+    ptr = strtok (NULL," ");
+  }
+
+  // now that we have the input vectors call the gaussianFitter
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  std::vector<int> guesses = fitter.guessPeaks(ampData);
+  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(41,ampData[guesses[0]]);
+  EXPECT_EQ(163 ,ampData[guesses[1]]);
+  EXPECT_EQ(60, ampData[guesses[2]]);
+  
+  std::cerr << "After guessPeaks before find Peaks\n";
+  int count = fitter.findPeaks(&peaks,ampData,idxData);
+
+  EXPECT_EQ(3,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<std::endl;
+  }
+
+}
+

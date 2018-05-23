@@ -80,7 +80,7 @@ class LidarVolume{
     // This takes the float value 'val', converts it to red, green & 
     // blue values, then sets those values into the image memory buffer 
     // location pointed to by 'ptr'
-    void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val);
+    void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, int val);
 
     int writeImage(const char* filename, const char* title);
 

@@ -138,6 +138,9 @@ void LidarVolume::rasterize(){
           break;
         }
       }
+      // if we never broke from the loop we
+      // need to choose a default value
+      raster[i*j_extent+j] = -1;
     }
   }
 }
@@ -250,12 +253,19 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
 }
 
-void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
+void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, int val){
 
   *r = 255;
   *g = 255;
   *b = 255;
 
+  if(val < 0){
+    // use a special color
+    *r=255;
+    *g=255;
+    *b=255;
+    return;
+  }
   double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
 
   //invert and group

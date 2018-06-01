@@ -131,16 +131,13 @@ void LidarVolume::rasterize(){
 
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
-      raster[i*j_extent+j] = 0;
+      raster[i*j_extent+j] = -1;
       for(k=bb_k_max-1;k>=bb_k_min;k--){
         if(volume[position(i,j,k)] != NULL){
           raster[i*j_extent+j] = k;
           break;
         }
       }
-      // if we never broke from the loop we
-      // need to choose a default value
-      raster[i*j_extent+j] = -1;
     }
   }
 }

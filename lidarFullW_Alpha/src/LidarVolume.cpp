@@ -135,6 +135,7 @@ void LidarVolume::rasterize(){
       for(k=bb_k_max-1;k>=bb_k_min;k--){
         if(volume[position(i,j,k)] != NULL){
           raster[i*j_extent+j] = k;
+          //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
           break;
         }
       }
@@ -232,7 +233,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
       row[x*3] = r;
       row[x*3+1] = g;
       row[x*3+2] = b;
-      
+
     }
     png_write_row(png_ptr, row);
   }
@@ -250,34 +251,34 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
 }
 
-void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, int val){
+void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
 
   *r = 255;
   *g = 255;
   *b = 255;
 
-  if(val < 0){
+  if(val < 0 ){
     // use a special color
-    *r=255;
-    *g=255;
-    *b=255;
+    *r=0;
+    *g=0;
+    *b=0;
     return;
   }
   double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
 
   //invert and group
   double inverted_group=(1 - normalized_z)/0.25;
-  
+
   //this is the integer part
-  int integer_part=floor(inverted_group); 
-  
+  int integer_part=floor(inverted_group);
+
   //fractional_part part from 0 to 255
   int fractional_part=floor(255*(inverted_group - integer_part));
 
   // FOR TESTING PURPOSES
   // std::cout << "max k = " << bb_k_max << std::endl;
   // std::cout << "min k = " << bb_k_min << std::endl;
-  // std::cout << "float val = " << val << std::endl;
+  // std::cout << "int val = " << val << std::endl;
   // std::cout << "Normalized z = " << normalized_z << std::endl;
   // std::cout << "Inverted group = " << inverted_group << std::endl;
   // std::cout << "Integer part = " << integer_part << std::endl;

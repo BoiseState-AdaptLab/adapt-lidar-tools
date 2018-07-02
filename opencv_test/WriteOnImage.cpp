@@ -1,7 +1,4 @@
 //Opencv c++ code for Overlaying a Text on an Image
-//Opencv c++ code for Putting Text on an Image
-//#include <opencv2/core/core.hpp>
-//#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
@@ -10,9 +7,7 @@ using namespace std;
 
 int main(int argc, char** argv){
   Mat image;
-  Mat image2;
   image=imread(argv[1], 1);
-  //image2=imread(argv[2], 1);
 
   if(!image.data){
     printf("Error loading image \n");
@@ -29,9 +24,14 @@ int main(int argc, char** argv){
 
   //resize(image2, image2, Size(image2.cols/15, image2.rows/15));
 
-  namedWindow("Display image", WINDOW_AUTOSIZE);
-  imshow("Display image", image);
+  try{
+    imwrite("new_heatmap.png", image);
+  }
+  catch (runtime_error& ex){
+    fprintf(stderr, "Exception converting image to PNG format: %s\n", ex.what());
+    return 1;
+  }
 
-  waitKey(0);
-  return(0);
+  fprintf(stdout, "Saved PNG file with file name new_heatmap.png.\n");
+  return 0;
 }

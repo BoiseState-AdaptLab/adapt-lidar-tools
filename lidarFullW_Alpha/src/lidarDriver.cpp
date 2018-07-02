@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <vector>
 #include <opencv2/opencv.hpp>
+#include "opencv2/core/core.hpp"
 
 
 // Lidar driver
@@ -116,7 +117,7 @@ int main (int argc, char *argv[]) {
     std::cout << "Width : " << image.cols << std::endl;
     std::cout << "Height: " << image.rows << std::endl;
 
-    int fontface = FONT_HERSHEY_DUPLEX;
+    int fontface = cv::FONT_HERSHEY_DUPLEX;
 
     cv::putText(image, "Maximum elevation (m)", cv::Point(0, image.rows-100), fontface, 1, cv::Scalar(255,255,255), 2, true);
     cv::putText(image, intermediateData.elev_high, cv::Point(0, image.rows-65), fontface, 1, cv::Scalar(255,255,255), 2, true);

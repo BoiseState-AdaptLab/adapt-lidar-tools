@@ -87,9 +87,13 @@ int main (int argc, char *argv[]) {
     // Rasterize it
     // At this point we have all of the data and we need to
     // provide an image of the 3D space.
-    // The user can tell us which type of rasterization to use, but for now
-    // we are just going to offer one.
-    intermediateData.rasterize();
+    // The user tells us which type of rasterization to use
+    if(cmdLineArgs.get_max_elev_flag == true){
+      intermediateData.rasterizeMaxElevation();
+    }
+    else{
+      intermediateData.rasterizeMinElevation();
+    }
 
     // FOR TESTING PURPOSES
     // std::cout<< "This is our display" << std::endl;

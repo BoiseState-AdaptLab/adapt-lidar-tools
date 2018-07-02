@@ -89,7 +89,7 @@ int main (int argc, char *argv[]) {
     // At this point we have all of the data and we need to
     // provide an image of the 3D space.
     // The user tells us which type of rasterization to use
-    if(cmdLineArgs.get_max_elev_flag == true){
+    if(cmdLineArgs.get_max_elev_flag() == true){
       intermediateData.rasterizeMaxElevation();
     }
     else{
@@ -106,26 +106,26 @@ int main (int argc, char *argv[]) {
     intermediateData.toPng("temp.png");
 
     //Writing legend
-    Mat image;
-    image=imread("/home/ravi/temp.png", 1);
+    cv::Mat image;
+    image=cv::imread("/home/ravi/temp.png", 1);
 
     if(!image.data){
       printf("Error loading image \n");
       return -1;
     }
-    cout << "Width : " << image.cols << endl;
-    cout << "Height: " << image.rows << endl;
+    std::cout << "Width : " << image.cols << std::endl;
+    std::cout << "Height: " << image.rows << std::endl;
 
-    putText(image, "Maximum elevation (m)", Point(0, image.rows-100), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
-    putText(image, intermediateData.elev_high, Point(0, image.rows-65), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
-    putText(image, intermediateData.elev_low, Point(0, image.rows-30), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
+    cv::putText(image, "Maximum elevation (m)", cv::Point(0, image.rows-100), FONT_HERSHEY_DUPLEX, 1, cv::Scalar(255,255,255), 2, true);
+    cv::putText(image, intermediateData.elev_high, cv::Point(0, image.rows-65), FONT_HERSHEY_DUPLEX, 1, cv::Scalar(255,255,255), 2, true);
+    cv::putText(image, intermediateData.elev_low, cv::Point(0, image.rows-30), FONT_HERSHEY_DUPLEX, 1, cv::Scalar(255,255,255), 2, true);
 
-    putText(image, "adapt-lab", Point(image.cols-200, image.rows-20), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
+    cv::putText(image, "adapt-lab", cv::Point(image.cols-200, image.rows-20), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
 
     //resize(image2, image2, Size(image2.cols/15, image2.rows/15));
 
     try{
-      imwrite("heatmap.png", image);
+      cv::imwrite("heatmap.png", image);
     }
     catch (runtime_error& ex){
       fprintf(stderr, "Exception converting image to PNG format: %s\n", ex.what());

@@ -58,10 +58,10 @@ void CmdLine::setUsageMessage()
   buffer << "\nUsage: " << std::endl;
   buffer << "       pathToExecutable [-option argument]+" << std::endl;
   buffer << "\nOption:  " << std::endl;
-  buffer << "       -f  pathToFile.pls"
-         << "  (first difference to find peaks)" << std::endl;
-  buffer << "       -s  pathToFile.pls"
-         << "  (smooth second difference to find peaks)" << std::endl;
+  buffer << "       -x  <path to pls file>"
+         << "  (Generate heat map with max elevations)" << std::endl;
+  buffer << "       -n  <path to pls file>"
+         << "  (Generate heat map with min elevations)" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
   buffer << "       pathToExecutable -f ../src/140823_183115_1_clipped_test.pls\n" << std::endl;
@@ -104,8 +104,8 @@ void CmdLine::parse(int argc,char *argv[]){
 
   static struct option long_options[] =
   {
-      {"first", required_argument, NULL, 'f'},
-      {"smooth", required_argument, NULL, 's'},
+      {"max", required_argument, NULL, 'x'},
+      {"min", required_argument, NULL, 'n'},
       {"help", no_argument, NULL, 'h'},
       {0, 0, 0, 0}
   };
@@ -118,19 +118,19 @@ void CmdLine::parse(int argc,char *argv[]){
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hf:s:",
+  while((optionChar = getopt_long (argc, argv, ":hx:n:",
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information
-      case 'f': //Find peaks using first difference
+      case 'x': //Find peaks using first difference
         fArg = optarg;
         setInputFileName(fArg);
-        peakFlag = true;
+        max_elev_flag = true;
         break;
-      case 's': //Find peaks using smooth second difference
+      case 'n': //Find peaks using smooth second difference
         fArg = optarg;
         setInputFileName(fArg);
-        peakFlag = false;
+        max_elev_flag = false;
         break;
       case 'h':
         printUsageMessage = true;
@@ -153,6 +153,6 @@ void CmdLine::parse(int argc,char *argv[]){
 
 
 // Return peakFlag value
-bool CmdLine::getPeakFlag(){
-  return peakFlag;
+bool CmdLine::get_max_elev_flag(){
+  return max_elev_flag;
 }

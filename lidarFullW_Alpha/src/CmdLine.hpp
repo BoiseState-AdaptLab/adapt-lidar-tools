@@ -24,7 +24,7 @@ private:
 
   // If peakFlag == true, use first difference to find peaks
   // else, use smooth second difference 
-  bool peakFlag;
+  bool max_elev_flag;
 
 public:
   // help parameters
@@ -44,7 +44,7 @@ public:
   void setInputFileName(char *args);
   void setInputFileName(std::string filename);
   std::string getInputFileName();
-  bool getPeakFlag();
+  bool get_max_elev_flag();
 };
 
 #endif /* CMDLINE_HPP_ */

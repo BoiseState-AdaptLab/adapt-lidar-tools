@@ -125,6 +125,7 @@ int LidarVolume::gps_to_voxel_z(double z){
 }
 
 
+//Default rasterize if user does not specifically pick one
 void LidarVolume::rasterize(){
 
   int i,j,k;
@@ -142,6 +143,47 @@ void LidarVolume::rasterize(){
     }
   }
 }
+
+
+//Rasterize for max elevation
+void LidarVolume::rasterizeMaxElevation(){
+
+  int i,j,k;
+
+  for(i=bb_i_min;i<bb_i_max;i++){
+    for(j=bb_j_min;j<bb_j_max;j++){
+      raster[i*j_extent+j] = -1;
+      for(k=bb_k_max-1;k>=bb_k_min;k--){
+        if(volume[position(i,j,k)] != NULL){
+          raster[i*j_extent+j] = k;
+          //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
+          break;
+        }
+      }
+    }
+  }
+}
+
+
+//Rasterize for min elevation
+void LidarVolume::rasterizeMinElevation(){
+
+  int i,j,k;
+
+  for(i=bb_i_min;i<bb_i_max;i++){
+    for(j=bb_j_min;j<bb_j_max;j++){
+      raster[i*j_extent+j] = -1;
+      for(k=bb_k_min;k>=bb_k_max;k++){
+        if(volume[position(i,j,k)] != NULL){
+          raster[i*j_extent+j] = k;
+          //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
+          break;
+        }
+      }
+    }
+  }
+}
+
 
 void LidarVolume::display(){
 

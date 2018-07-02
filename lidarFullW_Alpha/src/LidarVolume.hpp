@@ -68,6 +68,9 @@ class LidarVolume{
     int gps_to_voxel_z(double z);
 
     void rasterize();
+    void rasterizeMaxElevation();
+    void rasterizeMinElevation();
+    
     void display();
 
 

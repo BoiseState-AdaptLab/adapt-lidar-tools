@@ -108,7 +108,8 @@ int main (int argc, char *argv[]) {
 
     //Writing legend
     cv::Mat image;
-    image=cv::imread("/home/ravi/temp.png", 1);
+    char* filename = "/home/ravi/temp.png";
+    image=cv::imread(filename, 1);
 
     if(!image.data){
       printf("Error loading image \n");

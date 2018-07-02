@@ -144,7 +144,7 @@ $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
 		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib -lpng
 
 $(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ `pkg-config --cflags --libs opencv`
 
 # A phony target is one that is not really the name of a file; rather it 
 # is just a name for a recipe to be executed when you make an explicit request. 

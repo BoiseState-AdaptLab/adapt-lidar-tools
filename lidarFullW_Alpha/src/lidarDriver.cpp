@@ -116,11 +116,13 @@ int main (int argc, char *argv[]) {
     std::cout << "Width : " << image.cols << std::endl;
     std::cout << "Height: " << image.rows << std::endl;
 
-    cv::putText(image, "Maximum elevation (m)", cv::Point(0, image.rows-100), FONT_HERSHEY_DUPLEX, 1, cv::Scalar(255,255,255), 2, true);
-    cv::putText(image, intermediateData.elev_high, cv::Point(0, image.rows-65), FONT_HERSHEY_DUPLEX, 1, cv::Scalar(255,255,255), 2, true);
-    cv::putText(image, intermediateData.elev_low, cv::Point(0, image.rows-30), FONT_HERSHEY_DUPLEX, 1, cv::Scalar(255,255,255), 2, true);
+    int fontface = FONT_HERSHEY_DUPLEX;
 
-    cv::putText(image, "adapt-lab", cv::Point(image.cols-200, image.rows-20), FONT_HERSHEY_DUPLEX, 1, cv::Scalar(255,255,255), 2, true);
+    cv::putText(image, "Maximum elevation (m)", cv::Point(0, image.rows-100), fontface, 1, cv::Scalar(255,255,255), 2, true);
+    cv::putText(image, intermediateData.elev_high, cv::Point(0, image.rows-65), fontface, 1, cv::Scalar(255,255,255), 2, true);
+    cv::putText(image, intermediateData.elev_low, cv::Point(0, image.rows-30), fontface, 1, cv::Scalar(255,255,255), 2, true);
+
+    cv::putText(image, "adapt-lab", cv::Point(image.cols-200, image.rows-20), fontface, 1, cv::Scalar(255,255,255), 2, true);
 
     //resize(image2, image2, Size(image2.cols/15, image2.rows/15));
 

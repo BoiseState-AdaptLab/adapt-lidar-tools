@@ -102,7 +102,34 @@ int main (int argc, char *argv[]) {
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file
     printf("Saving PNG...\n");
-    intermediateData.toPng("heatmap.png");
+    intermediateData.toPng("temp.png");
 
-  return 0;
+    //Writing legend
+    Mat image;
+    image=imread("/home/ravi/temp.png", 1);
+
+    if(!image.data){
+      printf("Error loading image \n");
+      return -1;
+    }
+    cout << "Width : " << image.cols << endl;
+    cout << "Height: " << image.rows << endl;
+
+    putText(image, "Maximum elevation (m)", Point(0, image.rows-100), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
+    putText(image, intermediateData.elev_high, Point(0, image.rows-65), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
+    putText(image, intermediateData.elev_low, Point(0, image.rows-30), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
+
+    putText(image, "adapt-lab", Point(image.cols-200, image.rows-20), FONT_HERSHEY_DUPLEX, 1, Scalar(255,255,255), 2, true);
+
+    //resize(image2, image2, Size(image2.cols/15, image2.rows/15));
+
+    try{
+      imwrite("heatmap.png", image);
+    }
+    catch (runtime_error& ex){
+      fprintf(stderr, "Exception converting image to PNG format: %s\n", ex.what());
+      return 1;
+    }
+
+    return 0;
 }

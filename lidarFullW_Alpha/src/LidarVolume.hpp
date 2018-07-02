@@ -70,6 +70,7 @@ class LidarVolume{
     void rasterize();
     void rasterizeMaxElevation();
     void rasterizeMinElevation();
+    int elev_high, elev_low;
     
     void display();
 

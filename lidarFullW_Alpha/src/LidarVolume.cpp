@@ -31,7 +31,10 @@ LidarVolume::LidarVolume(){
 
   currentPeak = 0;
   numOfPeaks = 5;
-  //peakData = NULL;
+
+  elev_high = -1;
+  elev_low = 99999;
+
 }
 
 void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
@@ -125,26 +128,6 @@ int LidarVolume::gps_to_voxel_z(double z){
 }
 
 
-//Default rasterize if user does not specifically pick one
-void LidarVolume::rasterize(){
-
-  int i,j,k;
-
-  for(i=bb_i_min;i<bb_i_max;i++){
-    for(j=bb_j_min;j<bb_j_max;j++){
-      raster[i*j_extent+j] = -1;
-      for(k=bb_k_max-1;k>=bb_k_min;k--){
-        if(volume[position(i,j,k)] != NULL){
-          raster[i*j_extent+j] = k;
-          //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
-          break;
-        }
-      }
-    }
-  }
-}
-
-
 //Rasterize for max elevation
 void LidarVolume::rasterizeMaxElevation(){
 
@@ -156,6 +139,13 @@ void LidarVolume::rasterizeMaxElevation(){
       for(k=bb_k_max-1;k>=bb_k_min;k--){
         if(volume[position(i,j,k)] != NULL){
           raster[i*j_extent+j] = k;
+          //Save the max and mins of the max elevations
+          if(raster[i*j_extent+j] > elev_high){
+            elev_high = k;
+          }
+          if(raster[i*j_extent+j] < elev_low){
+            elev_low = k;
+          }
           //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
           break;
         }
@@ -176,6 +166,13 @@ void LidarVolume::rasterizeMinElevation(){
       for(k=bb_k_min;k>=bb_k_max;k++){
         if(volume[position(i,j,k)] != NULL){
           raster[i*j_extent+j] = k;
+          //store the maz and mins of the min elevation
+          if(raster[i*j_extent+j] > elev_high){
+            elev_high = k;
+          }
+          if(raster[i*j_extent+j] < elev_low){
+            elev_low = k;
+          }
           //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
           break;
         }
@@ -362,7 +359,6 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
 }
 
 int LidarVolume::toPng(std::string filename){
-  rasterize();
   writeImage(filename.c_str(), "This is a super fun test");
   return 0;
 }

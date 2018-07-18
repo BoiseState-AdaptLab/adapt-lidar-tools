@@ -11,7 +11,7 @@ int main(){
   GDALAllRegister();  
 
   //Setup gdal datasets
-  GDALDataset *newDS *oldDS;
+  GDALDataset *newDS, *oldDS;
 
   //Stores these details from the existing tif dataset
   int nRows, nCols;
@@ -19,7 +19,7 @@ int main(){
   double transform[6];
 
   //Open the existing file you want to copy
-  oldDS = (GDALDataser*) GDALOpen(input, GA_ReadOnly);
+  oldDS = (GDALDataset*) GDALOpen(input, GA_ReadOnly);
   
   //Get the no of rows and cols from the existing file
   nCols = oldDS->GetRasterBand(1)->GetXSize();
@@ -39,7 +39,7 @@ int main(){
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
 
-  pDriverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
+  driverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
 
 
 
@@ -54,7 +54,7 @@ int main(){
   //         GDALDataType eType,      //type of raster
   //         char **   papszOptions   //driver specific control parameters
   //        )
-  newDS = DriverTiff->Create(output, nCols, nRows, 1, GDT_Float32, NULL);
+  newDS = driverTiff->Create(output, nCols, nRows, 1, oldDS->GetRasterBand(1)->GetRasterDataType(), NULL);
 
   float *oldRow = (float*) CPLMalloc(sizeof(float)*nCols);
   float *newRow = (float*) CPLMalloc(sizeof(float)*nCols);
@@ -62,7 +62,11 @@ int main(){
   
   for(int i =0; i<nRows; i++){
     //Read an entire row from the raster into memory and loop through each column
-    oldDs->GetRasterBand(1)->RasterIO(GF_Read, 0, i, nCols, 1, oldRow, nCols, 1, GDT_Float32, 0, 0);
+    CPLErr retval = oldDS->GetRasterBand(1)->RasterIO(GF_Read, 0, i, nCols, 1, oldRow, nCols, 1, oldDS->GetRasterBand(1)->GetRasterDataType(), 0, 0);
+    if(retval != CE_None){
+      fprintf(stderr,"Error during reading\n");
+      return 0;
+    }
     for(int j =0; j<nCols; j++){
 
       if(oldRow[j] == noData){
@@ -72,7 +76,11 @@ int main(){
         newRow[j] = oldRow[j] + 10;
       }
     }
-    newDs->GetRasterBand(1)->RasterIO(GF_Read, 0. i. nCols, 1, newRow, nCols, 1, GDT_Float32, 0, 0);
+    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, i, nCols, 1, newRow, nCols, 1, oldDS->GetRasterBand(1)->GetRasterDataType(), 0, NULL);
+    if(retval != CE_None){
+      fprintf(stderr,"Error during reading\n");
+      return 0;
+    }
   }
 
 

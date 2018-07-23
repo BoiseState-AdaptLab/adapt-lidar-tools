@@ -16,6 +16,10 @@ int main(){
   //Stores these details from the existing tif dataset
   int nRows, nCols;
   double noData;
+
+  //In a north up image, transform[1] is the pixel width, and transform[5] is 
+  //the pixel height. The upper left corner of the upper left pixel is at 
+  //position (transform[0],transform[3]).
   double transform[6];
 
   //Open the existing file you want to copy

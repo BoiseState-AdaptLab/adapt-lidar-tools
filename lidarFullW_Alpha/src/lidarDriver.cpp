@@ -58,7 +58,7 @@ int main (int argc, char *argv[]) {
         // for(i=0; i<(int)pd.returningWave.size(); i++){
         //   std::cout << pd.returningWave[i] << " " ;
         // }
-        
+
         int peak_count = fitter.findPeaks(&peaks, pd.returningWave,
                                           pd.returningIdx);
 
@@ -102,7 +102,7 @@ int main (int argc, char *argv[]) {
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file
     printf("Saving TIFF...\n");
-    intermediateData.toTif("tifTest.png");
+    intermediateData.toTif("tifTest.tif");
 
     return 0;
 }

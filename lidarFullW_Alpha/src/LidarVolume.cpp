@@ -203,99 +203,6 @@ void LidarVolume::display(){
 // also written into the image file
 int LidarVolume::writeImage(const char* filename, const char* title){
 
-  /* OLD CODE USING libpng
-
-  int code = 0;
-  FILE *fp = NULL;
-  png_structp png_ptr = NULL;
-  png_infop info_ptr = NULL;
-  png_bytep row = NULL;
-
-  // Open file for writing (binary mode)
-  fp = fopen(filename, "wb");
-  // TODO: fixme: this should not print or do a goto
-  if (fp == NULL) {
-      fprintf(stderr, "Could not open file %s for writing\n", filename);
-      code = 1;
-      goto finalise;
-  }
-
-  // Initialize write structure
-  png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-  // TODO: fixme: this should not print or do a goto
-  if (png_ptr == NULL) {
-      fprintf(stderr, "Could not allocate write struct\n");
-      code = 1;
-      goto finalise;
-  }
-
-  // Initialize info structure
-  info_ptr = png_create_info_struct(png_ptr);
-  if (info_ptr == NULL) {
-      fprintf(stderr, "Could not allocate info struct\n");
-      code = 1;
-      goto finalise;
-  }
-
-  // Setup Exception handling
-  if (setjmp(png_jmpbuf(png_ptr))) {
-      fprintf(stderr, "Error during png creation\n");
-      code = 1;
-      goto finalise;
-  }
-
-  png_init_io(png_ptr, fp);
-
-  // Write header (8 bit colour depth)
-  png_set_IHDR(png_ptr, info_ptr, j_extent, i_extent,
-            8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
-            PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-    // Set title
-  if (title != NULL) {
-      png_text title_text;
-      title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-      title_text.key = "Title";
-      char* temp = (char*)malloc (strlen(title));
-      strcpy (temp, title);
-      title_text.text = temp;
-      png_set_text(png_ptr, info_ptr, &title_text, 1);
-  }
-
-  png_write_info(png_ptr, info_ptr);
-
-  // Allocate memory for one row (3 bytes per pixel - RGB)
-  row = (png_bytep) calloc(sizeof(png_byte),3 * j_extent);
-
-  // Write image data
-  int x, y;
-  for (y=0 ; y<i_extent ; y++) {
-    for (x=0 ; x<j_extent ; x++) {
-      unsigned char r,g,b;
-      setRGB(&r,&g,&b,raster[y*j_extent + x]);
-      //setRGB(&(row[x*3]), raster[y*j_extent + x]);
-      row[x*3] = r;
-      row[x*3+1] = g;
-      row[x*3+2] = b;
-
-    }
-    png_write_row(png_ptr, row);
-  }
-
-  // End write
-  png_write_end(png_ptr, NULL);
-
-  finalise:
-  if (fp != NULL) fclose(fp);
-  if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
-  if (png_ptr != NULL) png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-  if (row != NULL) free(row);
-
-  return code;
-
-  */
-
-  
   //GDAL uses drivers to format all data sets so this registers the drivers
   GDALAllRegister();  
 
@@ -305,19 +212,28 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   //From raster
   int nCols = i_extent;
   int nRows = j_extent;
-  double noData;
+  double noData = -99999.9;
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is 
   //the pixel height. The upper left corner of the upper left pixel is at 
   //position (transform[0],transform[3]).
   double transform[6];
+  transform[0] = 1000.;
+  transform[1] = 1;
+  transform[2] = 1;
+  transform[3] = 1000.;
+  transform[4] = 1;
+  transform[5] = 1;
+   
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
 
   driverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
 
-  unsigned char row = (unsigned char) calloc(sizeof(unsigned char),3 * j_extent);
+  unsigned char *r_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
+  unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
+  unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
 
   //To create a new dataset
   // Create (const char *pszFilename, //the name of the dataset to create
@@ -337,17 +253,18 @@ int LidarVolume::writeImage(const char* filename, const char* title){
     for (x=0 ; x<j_extent ; x++) {
       unsigned char r,g,b;
       setRGB(&r,&g,&b,raster[y*j_extent + x]);
-      //setRGB(&(row[x*3]), raster[y*j_extent + x]);
-      row[x*3] = r;
-      row[x*3+1] = g;
-      row[x*3+2] = b;
-
+      r_row[x] = r;
+      g_row[x] = g;
+      g_row[x] = b;
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
-    retval[0] = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3], nCols, 1, GDT_Byte, 0, NULL);
-    retval[1] = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3+1], nCols, 1, GDT_Byte, 0, NULL);
-    retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3+2], nCols, 1, GDT_Byte, 0, NULL);
+    retval[0] = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
+                                       r_row, nCols, 1, GDT_Byte, 0, NULL);
+    retval[1] = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, y, nCols, 1,
+                                       g_row, nCols, 1, GDT_Byte, 0, NULL);
+    retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y, nCols, 1,
+                                       b_row, nCols, 1, GDT_Byte, 0, NULL);
     
     for(int i =0; i<3; i++){
       if(retval[i] != CE_None){

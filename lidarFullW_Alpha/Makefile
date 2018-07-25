@@ -121,7 +121,7 @@ $(OBJ)/PulseData.o: $(SRC)/PulseData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) -c -o $@ $^ $(CFLAGS) -lgdal -L$(PULSE_DIR)/lib
 
 $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 	$(CXX) -g -fpermissive -c -o $@ $^ -lm \
@@ -140,7 +140,7 @@ $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
 					$(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
 					$(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lm -I/home/ravi/tools/gsl-2.4/include -lgsl \
+		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -I/home/ravi/tools/gsl-2.4/include -lgsl \
 		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib -lpng
 
 $(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp

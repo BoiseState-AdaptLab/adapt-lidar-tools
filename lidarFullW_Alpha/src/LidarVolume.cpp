@@ -198,6 +198,7 @@ void LidarVolume::display(){
   return;
 }
 
+
 // This function actually writes out the PNG image file. The string 'title' is
 // also written into the image file
 int LidarVolume::writeImage(const char* filename, const char* title){
@@ -301,8 +302,9 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   //Setup gdal datasets
   GDALDataset *newDS;
 
-  //Stores these details from the existing tif dataset
-  int nRows, nCols;
+  //From raster
+  int nCols = i_extent;
+  int nRows = j_extent;
   double noData;
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is 
@@ -317,7 +319,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
   unsigned char row = (unsigned char) calloc(sizeof(unsigned char),3 * j_extent);
 
-    //To create a new dataset
+  //To create a new dataset
   // Create (const char *pszFilename, //the name of the dataset to create
   //         int nXSize,              //width of created raster in pixels(cols)
   //         int nYSize,              //height of created raster in pixels(rows)
@@ -327,7 +329,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   //        )
   newDS = driverTiff->Create(filename, nCols, nRows, 3, GDT_Byte, NULL);
 
-  float *newRow = (float*) CPLMalloc(sizeof(float)*nCols);
+  CPLErr retval[3];
 
   // Write image data
   int x, y;
@@ -342,16 +344,24 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
     }
 
-    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3], nCols, 1, GDT_Byte, 0, NULL);
-    retval = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3+1], nCols, 1, GDT_Byte, 0, NULL);
-    retval = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3+2], nCols, 1, GDT_Byte, 0, NULL);
-    if(retval != CE_None){
-      fprintf(stderr,"Error during reading\n");
-      return 0;
+    // Refer to http://www.gdal.org/classGDALRasterBand.html
+    retval[0] = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3], nCols, 1, GDT_Byte, 0, NULL);
+    retval[1] = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3+1], nCols, 1, GDT_Byte, 0, NULL);
+    retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, i, nCols, 1, row[x*3+2], nCols, 1, GDT_Byte, 0, NULL);
+    
+    for(int i =0; i<3; i++){
+      if(retval[i] != CE_None){
+        fprintf(stderr,"Error during reading band: %d\n", i);
+        return 0;
+      }
     }
+
   }
 
+  GDALClose(newDS);
+  GDALDestroyDriverManager();
 }
+
 
 void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
 
@@ -420,6 +430,7 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
       break;
   }
 }
+
 
 int LidarVolume::toTif(std::string filename){
   writeImage(filename.c_str(), "This is a super fun test");

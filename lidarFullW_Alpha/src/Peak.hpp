@@ -8,7 +8,7 @@
 class Peak{
 
   public:
-    double amp;         //Ampitude
+    double amp;         //Amplitude
     double location;    //The time location of peak occurence
     double fwhm;        //Full width at half maximum - the width of the peak
 

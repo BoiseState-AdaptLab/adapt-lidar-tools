@@ -103,32 +103,8 @@ int main (int argc, char *argv[]) {
 
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file
-    printf("Saving PNG...\n");
-    intermediateData.toPng("temp.png");
-
-    //Writing legend
-    cv::Mat image;
-    char* filename = "/home/ravi/temp.png";
-    image=cv::imread(filename, 1);
-
-    if(!image.data){
-      printf("Error loading image \n");
-      return -1;
-    }
-    std::cout << "Width : " << image.cols << std::endl;
-    std::cout << "Height: " << image.rows << std::endl;
-
-    int fontface = cv::FONT_HERSHEY_DUPLEX;
-
-    cv::putText(image, "Maximum elevation (m)", cv::Point(0, image.rows-100), fontface, 1, cv::Scalar(255,255,255), 2, true);
-    cv::putText(image, intermediateData.elev_high, cv::Point(0, image.rows-65), fontface, 1, cv::Scalar(255,255,255), 2, true);
-    cv::putText(image, intermediateData.elev_low, cv::Point(0, image.rows-30), fontface, 1, cv::Scalar(255,255,255), 2, true);
-
-    cv::putText(image, "adapt-lab", cv::Point(image.cols-200, image.rows-20), fontface, 1, cv::Scalar(255,255,255), 2, true);
-
-    //resize(image2, image2, Size(image2.cols/15, image2.rows/15));
-
-    cv::imwrite("heatmap.png", image);
+    printf("Saving TIFF...\n");
+    intermediateData.toTif("tifTest.png");
 
     return 0;
 }

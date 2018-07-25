@@ -35,10 +35,10 @@ int main(){
   oldDS->GetGeoTransform(transform);
 
   //Print all data to check
-  std::cout << "Cols: " <<nCols<< " Rows: "<<nRows<< std::endl;
-  std::cout << "NoData : "<<noData<< std::endl;
-  std::cout << "Width: " <<transform[1]<< " Height: "<<transform[5]<< std::endl;
-  std::cout << "X: " <<transform[0]<< " Y: "<<transform[3]<< std::endl;
+  std::cout << "Cols: " << nCols << " Rows: " << nRows << std::endl;
+  std::cout << "NoData : " << noData << std::endl;
+  std::cout << "Width: " << transform[1] << " Height: " <<transform[5] << std::endl;
+  std::cout << "X: " << transform[0] << " Y: "<< transform[3] << std::endl;
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -67,6 +67,7 @@ int main(){
   for(int i =0; i<nRows; i++){
     //Read an entire row from the raster into memory and loop through each column
     CPLErr retval = oldDS->GetRasterBand(1)->RasterIO(GF_Read, 0, i, nCols, 1, oldRow, nCols, 1, oldDS->GetRasterBand(1)->GetRasterDataType(), 0, 0);
+    
     if(retval != CE_None){
       fprintf(stderr,"Error during reading\n");
       return 0;

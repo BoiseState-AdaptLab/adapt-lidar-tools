@@ -214,15 +214,19 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   int nRows = j_extent;
   double noData = -99999.9;
 
+  //Used in transform
+  double min_x = bb_x_min_padded + 10;
+  double max_y = bb_y_max_padded - 10;
+
   //In a north up image, transform[1] is the pixel width, and transform[5] is 
   //the pixel height. The upper left corner of the upper left pixel is at 
   //position (transform[0],transform[3]).
   double transform[6];
-  transform[0] = 1000.;
+  transform[0] = min_x;
   transform[1] = 1;
-  transform[2] = 1;
-  transform[3] = 1000.;
-  transform[4] = 1;
+  transform[2] = 0;
+  transform[3] = max_y;
+  transform[4] = 0;
   transform[5] = 1;
    
 

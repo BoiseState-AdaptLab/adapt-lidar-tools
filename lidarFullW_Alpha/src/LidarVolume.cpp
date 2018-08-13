@@ -204,22 +204,28 @@ void LidarVolume::display(){
 int LidarVolume::writeImage(const char* filename, const char* title){
 
   //GDAL uses drivers to format all data sets so this registers the drivers
-  GDALAllRegister();  
+  GDALAllRegister();
 
   //Setup gdal datasets
   GDALDataset *newDS;
 
   //From raster
-  int nCols = i_extent;
-  int nRows = j_extent;
+  //-1 because of zero indexing
+  int nCols = i_extent - 1;
+  int nRows = j_extent - 1 ;
+
+  //FOR TESTING PURPOSES
+  std::cout << "nCols = i_extent = " << nCols << std::endl;
+  std::cout << "nRows = j_extent = " << nRows << std::endl;
+
   double noData = -99999.9;
 
   //Used in transform
   double min_x = bb_x_min_padded + 10;
   double max_y = bb_y_max_padded - 10;
 
-  //In a north up image, transform[1] is the pixel width, and transform[5] is 
-  //the pixel height. The upper left corner of the upper left pixel is at 
+  //In a north up image, transform[1] is the pixel width, and transform[5] is
+  //the pixel height. The upper left corner of the upper left pixel is at
   //position (transform[0],transform[3]).
   double transform[6];
   transform[0] = min_x;
@@ -228,7 +234,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   transform[3] = max_y;
   transform[4] = 0;
   transform[5] = 1;
-   
+
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -259,7 +265,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
       setRGB(&r,&g,&b,raster[y*j_extent + x]);
       r_row[x] = r;
       g_row[x] = g;
-      g_row[x] = b;
+      b_row[x] = b;
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
@@ -269,7 +275,7 @@ int LidarVolume::writeImage(const char* filename, const char* title){
                                        g_row, nCols, 1, GDT_Byte, 0, NULL);
     retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y, nCols, 1,
                                        b_row, nCols, 1, GDT_Byte, 0, NULL);
-    
+
     for(int i =0; i<3; i++){
       if(retval[i] != CE_None){
         fprintf(stderr,"Error during reading band: %d\n", i);

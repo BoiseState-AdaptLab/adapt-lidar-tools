@@ -83,7 +83,7 @@ $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
 						         $(LIB)/gtest_main.a $(OBJ)/Peak.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib \
 		-lpulsewaves -lm -I/home/ravi/tools/gsl-2.4/include -lgsl \
-		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib
+		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib -lgdal
 
 $(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
                                  $(OBJ)/FlightLineData.o $(OBJ)/PulseData.o \
@@ -97,7 +97,7 @@ $(BIN)/LidarVolume_unittests: $(OBJ)/LidarVolume_unittests.o \
                               $(OBJ)/LidarVolume.o $(OBJ)/FlightLineData.o \
                               $(OBJ)/WaveGPSInformation.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -L/home/ravi/tools/gsl-2.4/lib -lpng
+		$(PULSE_DIR)/lib -lpulsewaves -L/home/ravi/tools/gsl-2.4/lib -lpng -lgdal
 
 $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
@@ -144,12 +144,12 @@ $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
 		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib -lpng
 
 $(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^ `pkg-config --cflags --libs opencv`
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 # A phony target is one that is not really the name of a file; rather it 
 # is just a name for a recipe to be executed when you make an explicit request. 
 # There are two reasons to use a phony target: to avoid a conflict with a file 
-# of the same name, and to improve performance. 
+# of the same name, and to improve performance.
 .PHONY: test
 .PHONY: clean
 

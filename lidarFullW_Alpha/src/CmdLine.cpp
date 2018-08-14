@@ -58,10 +58,8 @@ void CmdLine::setUsageMessage()
   buffer << "\nUsage: " << std::endl;
   buffer << "       pathToExecutable [-option argument]+" << std::endl;
   buffer << "\nOption:  " << std::endl;
-  buffer << "       -x  <path to pls file>"
-         << "  (Generate heat map with max elevations)" << std::endl;
-  buffer << "       -n  <path to pls file>"
-         << "  (Generate heat map with min elevations)" << std::endl;
+  buffer << "       -f  <path to pls file>"
+         << "  (Generate a Geotif file based on max elevation)" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
   buffer << "       pathToExecutable -f ../src/140823_183115_1_clipped_test.pls\n" << std::endl;
@@ -104,43 +102,37 @@ void CmdLine::parse(int argc,char *argv[]){
 
   static struct option long_options[] =
   {
-      {"max", required_argument, NULL, 'x'},
-      {"min", required_argument, NULL, 'n'},
+      {"file", required_argument, NULL, 'f'},
       {"help", no_argument, NULL, 'h'},
       {0, 0, 0, 0}
   };
 
 
-  // getopt_long stores the option index here. 
+  // getopt_long stores the option index here.
   int option_index = 0;
 
   /* Using getopt_long to get the arguments with an option.
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hx:n:",
+  while((optionChar = getopt_long (argc, argv, ":hf:",
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information
-      case 'x': //Find peaks using first difference
+      case 'f': //Generate a geotif file of max elevations
         fArg = optarg;
         setInputFileName(fArg);
         max_elev_flag = true;
-        break;
-      case 'n': //Find peaks using smooth second difference
-        fArg = optarg;
-        setInputFileName(fArg);
-        max_elev_flag = false;
         break;
       case 'h':
         printUsageMessage = true;
         break;
       case ':':
-        // Missing option argument 
+        // Missing option argument
         exceptionFlag = true;
         throw missingArgException();
       default:
-        // Invalid option 
+        // Invalid option
         exceptionFlag = true;
         throw invalidOptionException();
     }

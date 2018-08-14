@@ -46,7 +46,7 @@ class CmdLineTest : public testing::Test {
 TEST_F(CmdLineTest, validShortCmdLineOpts) {
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 2;
-  strncpy( commonArgSpace[0],"test",5);
+  strncpy(commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-h",3);
   ASSERT_NO_THROW({
     cmd.parse(numberOfArgs, commonArgSpace);
@@ -77,23 +77,14 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
 
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 3;
-  strncpy(commonArgSpace[1],"--first",8);
-  strncpy(commonArgSpace[2],"first",6);
+  strncpy(commonArgSpace[1],"--file",7);
+  strncpy(commonArgSpace[2],"file",5);
   ASSERT_NO_THROW({
     cmd2.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
-  ASSERT_EQ("first",cmd2.getInputFileName());
+  ASSERT_EQ("file",cmd2.getInputFileName());
 
-  optind = 0; // Need to reset optind to 0 for each test
-  numberOfArgs = 3;
-  strncpy(commonArgSpace[1],"--smooth",9);
-  strncpy(commonArgSpace[2],"smooth",7);
-  ASSERT_NO_THROW({
-    cmd3.parse(numberOfArgs, commonArgSpace);
-  });
-  ASSERT_FALSE(cmd3.printUsageMessage);
-  ASSERT_EQ("smooth",cmd3.getInputFileName());
 }
 
 

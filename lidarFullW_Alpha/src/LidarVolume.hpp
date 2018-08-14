@@ -83,7 +83,7 @@ class LidarVolume{
     // location pointed to by 'ptr'
     void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val);
 
-    int writeImage(const char* filename, const char* title);
+    void writeImage(const char* filename, const char* title);
 
 
 

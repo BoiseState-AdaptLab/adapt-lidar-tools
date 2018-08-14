@@ -201,7 +201,7 @@ void LidarVolume::display(){
 
 // This function actually writes out the PNG image file. The string 'title' is
 // also written into the image file
-int LidarVolume::writeImage(const char* filename, const char* title){
+void LidarVolume::writeImage(const char* filename, const char* title){
 
   //GDAL uses drivers to format all data sets so this registers the drivers
   GDALAllRegister();
@@ -211,8 +211,8 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
   //From raster
   //-1 because of zero indexing
-  int nCols = i_extent - 1;
-  int nRows = j_extent - 1 ;
+  int nCols = j_extent;
+  int nRows = i_extent;
 
   //FOR TESTING PURPOSES
   std::cout << "nCols = i_extent = " << nCols << std::endl;
@@ -221,8 +221,8 @@ int LidarVolume::writeImage(const char* filename, const char* title){
   double noData = -99999.9;
 
   //Used in transform
-  double min_x = bb_x_min_padded + 10;
-  double max_y = bb_y_max_padded - 10;
+  double min_x = bb_x_min_padded;
+  double max_y = bb_y_max_padded;
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at
@@ -278,8 +278,10 @@ int LidarVolume::writeImage(const char* filename, const char* title){
 
     for(int i =0; i<3; i++){
       if(retval[i] != CE_None){
-        fprintf(stderr,"Error during reading band: %d\n", i);
-        return 0;
+        fprintf(stderr,"Error during writing band: %d\n", i);
+        fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
+                                                             i_extent,nRows);
+        return;
       }
     }
 

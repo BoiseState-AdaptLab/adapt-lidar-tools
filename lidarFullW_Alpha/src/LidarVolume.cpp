@@ -72,7 +72,7 @@ void LidarVolume::allocateMemory(){
   //volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*),
   //                                       i_extent * j_extent * k_extent );
 
-  volume = (Peak**) calloc (sizeof(Peak*), i_extent * j_extent * k_extent);
+  volume = (Peak**)calloc(sizeof(Peak*), i_extent * j_extent * k_extent);
 
   raster = (int*)calloc(sizeof(int),i_extent*j_extent);
 }

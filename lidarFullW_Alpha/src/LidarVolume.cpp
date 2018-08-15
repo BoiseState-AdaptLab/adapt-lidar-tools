@@ -227,6 +227,13 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at
   //position (transform[0],transform[3]).
+  //  adfGeoTransform[0] /* top left x */
+  //  adfGeoTransform[1] /* w-e pixel resolution */
+  //  adfGeoTransform[2] /* 0 */
+  //  adfGeoTransform[3] /* top left y */
+  //  adfGeoTransform[4] /* 0 */
+  //  adfGeoTransform[5] /* n-s pixel resolution (negative value) */
+
   double transform[6];
   transform[0] = min_x;
   transform[1] = 1;
@@ -246,13 +253,14 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
 
   //To create a new dataset
-  // Create (const char *pszFilename, //the name of the dataset to create
-  //         int nXSize,              //width of created raster in pixels(cols)
-  //         int nYSize,              //height of created raster in pixels(rows)
-  //         int nBands,              //number of bands
-  //         GDALDataType eType,      //type of raster
-  //         char **   papszOptions   //driver specific control parameters
-  //        )
+  // Create(
+  //      const char *pszFilename, //the name of the dataset to create
+  //      int nXSize,              //width of created raster in pixels(cols)
+  //      int nYSize,              //height of created raster in pixels(rows)
+  //      int nBands,              //number of bands
+  //      GDALDataType eType,      //type of raster
+  //      char **   papszOptions   //driver specific control parameters
+  //      )
   newDS = driverTiff->Create(filename, nCols, nRows, 3, GDT_Byte, NULL);
 
   CPLErr retval[3];
@@ -284,7 +292,6 @@ void LidarVolume::writeImage(const char* filename, const char* title){
         return;
       }
     }
-
   }
 
   GDALClose(newDS);
@@ -325,8 +332,7 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
   // std::cout << "Integer part = " << integer_part << std::endl;
   // std::cout << "Fractional part  = " << fractional_part << std::endl;
 
-  switch(integer_part)
-  {
+  switch(integer_part){
     case 0:
       *r=255;
       *g=fractional_part;

@@ -45,16 +45,12 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   max_z = ld_zMax;
   min_z = ld_zMin;
 
-  bb_x_min_padded = ld_xMin - 10;
-  bb_y_min_padded = ld_yMin - 10;
-  bb_z_min_padded = ld_zMin - 10;
-  bb_x_max_padded = ld_xMax + 10;
-  bb_y_max_padded = ld_yMax + 10;
-  bb_z_max_padded = ld_zMax + 10;
-
-  // FOR TESTING PURPOSES
-  // std::cout << "bb_z_min = "<< bb_z_min_padded << std::endl;
-  // std::cout << "bb_z_max = "<< bb_z_max_padded << std::endl;
+  bb_x_min_padded = ld_xMin;
+  bb_y_min_padded = ld_yMin;
+  bb_z_min_padded = ld_zMin;
+  bb_x_max_padded = ld_xMax;
+  bb_y_max_padded = ld_yMax;
+  bb_z_max_padded = ld_zMax;
 
   bb_i_min = 0;
   bb_j_min = 0;

@@ -52,6 +52,8 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
 
+  fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
+
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
     scanner_id = i;

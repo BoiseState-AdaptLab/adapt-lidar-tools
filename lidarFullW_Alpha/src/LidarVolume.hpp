@@ -51,7 +51,8 @@ class LidarVolume{
     //The raw raster data
     int* raster;
 
-    std::vector<Peak>** volume;
+    //std::vector<Peak>** volume;
+    Peak** volume;
 
     LidarVolume();
 

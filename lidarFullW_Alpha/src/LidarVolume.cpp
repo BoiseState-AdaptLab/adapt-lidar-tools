@@ -69,8 +69,10 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 3D array of space that will hold peak
   // information (we don't know how many per volume)
-  volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*),
-                                         i_extent * j_extent * k_extent );
+  //volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*),
+  //                                       i_extent * j_extent * k_extent );
+
+  volume = (Peak**) calloc (sizeof(Peak*), i_extent * j_extent * k_extent);
 
   raster = (int*)calloc(sizeof(int),i_extent*j_extent);
 }
@@ -102,9 +104,11 @@ void LidarVolume::insert_peak(Peak *peak){
   unsigned long int p = position(i,j,k);
 
   if(volume[p] == NULL){
-    volume[p] = new std::vector<Peak>();
+    //volume[p] = new std::vector<Peak>();
+    volume[p] = new Peak();
   }
-  volume[p]->push_back(*peak);
+  //volume[p]->push_back(*peak);
+  volume[p] = peak;
 }
 
 

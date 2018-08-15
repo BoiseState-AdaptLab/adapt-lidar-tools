@@ -139,7 +139,7 @@ $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
 					$(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
 					$(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
 					$(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -I/home/ravi/tools/gsl-2.4/include -lgsl \
 		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib -lpng
 

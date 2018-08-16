@@ -254,6 +254,8 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   unsigned char *r_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
+  int* height = (int*)calloc(sizeof(int),j_extent);
+
 
   //To create a new dataset
   // Create(
@@ -264,7 +266,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, nCols, nRows, 3, GDT_Byte, NULL);
+  newDS = driverTiff->Create(filename, nCols, nRows, 3, GDT_UInt16, NULL);
 
   CPLErr retval[3];
 
@@ -274,6 +276,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
     for (x=0 ; x<j_extent ; x++) {
       unsigned char r,g,b;
       setRGB(&r,&g,&b,raster[y*j_extent + x]);
+      heights[x] = raster[y*j_extent + x];
       r_row[x] = r;
       g_row[x] = g;
       b_row[x] = b;
@@ -281,19 +284,25 @@ void LidarVolume::writeImage(const char* filename, const char* title){
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
     retval[0] = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
-                                       r_row, nCols, 1, GDT_Byte, 0, NULL);
-    retval[1] = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, y, nCols, 1,
-                                       g_row, nCols, 1, GDT_Byte, 0, NULL);
-    retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y, nCols, 1,
-                                       b_row, nCols, 1, GDT_Byte, 0, NULL);
+                                       r_row, nCols, 1, GDT_UInt16, 0, NULL);
+    // retval[1] = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, y, nCols, 1,
+    //                                    g_row, nCols, 1, GDT_Byte, 0, NULL);
+    // retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y, nCols, 1,
+    //                                    b_row, nCols, 1, GDT_Byte, 0, NULL);
 
-    for(int i =0; i<3; i++){
-      if(retval[i] != CE_None){
+    // for(int i =0; i<3; i++){
+    //   if(retval[i] != CE_None){
+    //     fprintf(stderr,"Error during writing band: %d\n", i);
+    //     fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
+    //                                                          i_extent,nRows);
+    //     return;
+    //   }
+    // }
+
+    if(retval[0] != CE_None){
         fprintf(stderr,"Error during writing band: %d\n", i);
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
                                                              i_extent,nRows);
-        return;
-      }
     }
   }
 

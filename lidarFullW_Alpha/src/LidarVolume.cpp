@@ -254,7 +254,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   unsigned char *r_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
-  int* height = (int*)calloc(sizeof(int),j_extent);
+  int* heights = (int*)calloc(sizeof(int),j_extent);
 
 
   //To create a new dataset
@@ -300,7 +300,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
     // }
 
     if(retval[0] != CE_None){
-        fprintf(stderr,"Error during writing band: %d\n", i);
+        fprintf(stderr,"Error during writing band: 1\n");
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
                                                              i_extent,nRows);
     }

@@ -236,7 +236,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_UInt16, NULL);
+  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_Byte, NULL);
 
   double noData = -99999.9;
 
@@ -267,19 +267,15 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   newDS->SetGeoTransform(transform);
   oSRS.SetUTM(11, TRUE);
   oSRS.SetWellKnownGeogCS("NAD83");
-  oSRS.exportToWkt(&pszSRS_WKT );
+  oSRS.exportToWkt(&pszSRS_WKT);
   newDS->SetProjection(pszSRS_WKT);
-  CPLFree( pszSRS_WKT );
-
-
+  CPLFree(pszSRS_WKT);
 
 
   unsigned char *r_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   int* heights = (int*)calloc(sizeof(int),j_extent);
-
-
 
 
   CPLErr retval[3];
@@ -298,7 +294,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
     retval[0] = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
-                                       r_row, nCols, 1, GDT_UInt16, 0, NULL);
+                                       r_row, nCols, 1, GDT_Byte, 0, NULL);
     // retval[1] = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, y, nCols, 1,
     //                                    g_row, nCols, 1, GDT_Byte, 0, NULL);
     // retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y, nCols, 1,
@@ -320,7 +316,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
     }
   }
 
-  GDALClose(newDS);
+  GDALClose((GDALDatasetH)newDS);
   GDALDestroyDriverManager();
 }
 

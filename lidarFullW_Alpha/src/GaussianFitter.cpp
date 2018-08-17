@@ -211,7 +211,7 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
   status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
                               callback, NULL, &info, work);
   if (status) {
-    std::cerr << "There was an error: " << gsl_strerror (status) << "\n" << std::endl;
+    // std::cerr << "There was an error: " << gsl_strerror (status) << "\n" << std::endl;
   }
 
   /* store final cost */

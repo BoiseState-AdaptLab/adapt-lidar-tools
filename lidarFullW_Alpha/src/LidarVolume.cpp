@@ -5,6 +5,7 @@
 #include "LidarVolume.hpp"
 #include "gdal.h"
 #include "gdal_priv.h"
+#include "ogr_spatialref.h"
 #include <iostream>
 
 //Default constructor
@@ -221,6 +222,11 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   // std::cout << "nCols = i_extent = " << nCols << std::endl;
   // std::cout << "nRows = j_extent = " << nRows << std::endl;
 
+  //Represents the output file format. This is used only to write data sets
+  GDALDriver *driverTiff;
+
+  driverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
+
   //To create a new dataset
   // Create(
   //      const char *pszFilename, //the name of the dataset to create
@@ -266,10 +272,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   CPLFree( pszSRS_WKT );
 
 
-  //Represents the output file format. This is used only to write data sets
-  GDALDriver *driverTiff;
 
-  driverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
 
   unsigned char *r_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);

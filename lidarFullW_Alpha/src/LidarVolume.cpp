@@ -145,6 +145,7 @@ void LidarVolume::rasterizeMaxElevation(){
       for(k=bb_k_max-1;k>=bb_k_min;k--){
         if(volume[position(i,j,k)] != NULL){
           raster[i*j_extent+j] = k;
+          std::cout << volume[position(i,j,k)].z <<std::endl;
           //Save the max and mins of the max elevations
           if(raster[i*j_extent+j] > elev_high){
             elev_high = k;

@@ -218,8 +218,19 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   int nRows = i_extent;
 
   //FOR TESTING PURPOSES
-  std::cout << "nCols = i_extent = " << nCols << std::endl;
-  std::cout << "nRows = j_extent = " << nRows << std::endl;
+  // std::cout << "nCols = i_extent = " << nCols << std::endl;
+  // std::cout << "nRows = j_extent = " << nRows << std::endl;
+
+  //To create a new dataset
+  // Create(
+  //      const char *pszFilename, //the name of the dataset to create
+  //      int nXSize,              //width of created raster in pixels(cols)
+  //      int nYSize,              //height of created raster in pixels(rows)
+  //      int nBands,              //number of bands
+  //      GDALDataType eType,      //type of raster
+  //      char **   papszOptions   //driver specific control parameters
+  //      )
+  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_UInt16, NULL);
 
   double noData = -99999.9;
 
@@ -245,6 +256,15 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   transform[4] = 0;
   transform[5] = 1;
 
+  OGRSpatialReference oSRS;
+  char *pszSRS_WKT = NULL;
+  newDS->SetGeoTransform(transform);
+  oSRS.SetUTM(11, TRUE);
+  oSRS.SetWellKnownGeogCS("NAD83");
+  oSRS.exportToWkt(&pszSRS_WKT );
+  newDS->SetProjection(pszSRS_WKT);
+  CPLFree( pszSRS_WKT );
+
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -257,16 +277,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   int* heights = (int*)calloc(sizeof(int),j_extent);
 
 
-  //To create a new dataset
-  // Create(
-  //      const char *pszFilename, //the name of the dataset to create
-  //      int nXSize,              //width of created raster in pixels(cols)
-  //      int nYSize,              //height of created raster in pixels(rows)
-  //      int nBands,              //number of bands
-  //      GDALDataType eType,      //type of raster
-  //      char **   papszOptions   //driver specific control parameters
-  //      )
-  newDS = driverTiff->Create(filename, nCols, nRows, 3, GDT_UInt16, NULL);
+
 
   CPLErr retval[3];
 
@@ -274,12 +285,12 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   int x, y;
   for (y=0 ; y<i_extent ; y++) {
     for (x=0 ; x<j_extent ; x++) {
-      unsigned char r,g,b;
-      setRGB(&r,&g,&b,raster[y*j_extent + x]);
+      // unsigned char r,g,b;
+      // setRGB(&r,&g,&b,raster[y*j_extent + x]);
       heights[x] = raster[y*j_extent + x];
-      r_row[x] = r;
-      g_row[x] = g;
-      b_row[x] = b;
+      // r_row[x] = r;
+      // g_row[x] = g;
+      // b_row[x] = b;
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
@@ -311,72 +322,72 @@ void LidarVolume::writeImage(const char* filename, const char* title){
 }
 
 
-void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
+// void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
 
-  *r = 255;
-  *g = 255;
-  *b = 255;
+//   *r = 255;
+//   *g = 255;
+//   *b = 255;
 
-  if(val < 0 ){
-    // use a special color
-    *r=0;
-    *g=0;
-    *b=0;
-    return;
-  }
-  double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
+//   if(val < 0 ){
+//     // use a special color
+//     *r=0;
+//     *g=0;
+//     *b=0;
+//     return;
+//   }
+//   double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
 
-  //invert and group
-  double inverted_group=(1 - normalized_z)/0.25;
+//   //invert and group
+//   double inverted_group=(1 - normalized_z)/0.25;
 
-  //this is the integer part
-  int integer_part=floor(inverted_group);
+//   //this is the integer part
+//   int integer_part=floor(inverted_group);
 
-  //fractional_part part from 0 to 255
-  int fractional_part=floor(255*(inverted_group - integer_part));
+//   //fractional_part part from 0 to 255
+//   int fractional_part=floor(255*(inverted_group - integer_part));
 
-  // FOR TESTING PURPOSES
-  // std::cout << "max k = " << bb_k_max << std::endl;
-  // std::cout << "min k = " << bb_k_min << std::endl;
-  // std::cout << "int val = " << val << std::endl;
-  // std::cout << "Normalized z = " << normalized_z << std::endl;
-  // std::cout << "Inverted group = " << inverted_group << std::endl;
-  // std::cout << "Integer part = " << integer_part << std::endl;
-  // std::cout << "Fractional part  = " << fractional_part << std::endl;
+//   // FOR TESTING PURPOSES
+//   // std::cout << "max k = " << bb_k_max << std::endl;
+//   // std::cout << "min k = " << bb_k_min << std::endl;
+//   // std::cout << "int val = " << val << std::endl;
+//   // std::cout << "Normalized z = " << normalized_z << std::endl;
+//   // std::cout << "Inverted group = " << inverted_group << std::endl;
+//   // std::cout << "Integer part = " << integer_part << std::endl;
+//   // std::cout << "Fractional part  = " << fractional_part << std::endl;
 
-  switch(integer_part){
-    case 0:
-      *r=255;
-      *g=fractional_part;
-      *b=0;
-      break;
-    case 1:
-      *r=255-fractional_part;
-      *g=255;
-      *b=0;
-      break;
-    case 2:
-      *r=0;
-      *g=255;
-      *b=fractional_part;
-      break;
-    case 3:
-      *r=0;
-      *g=255-fractional_part;
-      *b=255;
-      break;
-    case 4:
-      *r=fractional_part;
-      *g=0;
-      *b=255;
-      break;
-    case 5:
-      *r=255;
-      *g=0;
-      *b=255;
-      break;
-  }
-}
+//   switch(integer_part){
+//     case 0:
+//       *r=255;
+//       *g=fractional_part;
+//       *b=0;
+//       break;
+//     case 1:
+//       *r=255-fractional_part;
+//       *g=255;
+//       *b=0;
+//       break;
+//     case 2:
+//       *r=0;
+//       *g=255;
+//       *b=fractional_part;
+//       break;
+//     case 3:
+//       *r=0;
+//       *g=255-fractional_part;
+//       *b=255;
+//       break;
+//     case 4:
+//       *r=fractional_part;
+//       *g=0;
+//       *b=255;
+//       break;
+//     case 5:
+//       *r=255;
+//       *g=0;
+//       *b=255;
+//       break;
+//   }
+// }
 
 
 int LidarVolume::toTif(std::string filename){

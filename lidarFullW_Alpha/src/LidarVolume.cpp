@@ -5,7 +5,7 @@
 #include "LidarVolume.hpp"
 #include "gdal.h"
 #include "gdal_priv.h"
-#include "ogr_spatialref.h"
+//#include "ogr_spatialref.h"
 #include <iostream>
 
 //Default constructor

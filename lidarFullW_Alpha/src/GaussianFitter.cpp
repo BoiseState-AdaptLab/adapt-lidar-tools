@@ -175,7 +175,7 @@ void handler (const char * reason,
               int line,
               int gsl_errno){
 
-  std::cerr << "FATAL Error:" << file << ": " << reason << std::endl;
+  //std::cerr << "FATAL Error:" << file << ": " << reason << std::endl;
   gsl_strerror (gsl_errno);
 }
 

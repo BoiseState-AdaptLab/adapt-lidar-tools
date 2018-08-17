@@ -371,15 +371,17 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
        (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
                                           );
       if(peak->triggering_location > n || peak->triggering_location <0){
-        std::cerr << "\nTriggering location: "<< peak->triggering_location \
-                  << " not in range: " << n <<std::endl;
-      // FOR TESTING PURPOSES
-      std::cerr << "Amplitudes: " << std::endl;
-      for(int i=0; i< (int)ampData.size(); i++){
-        std::cerr<< ampData[i] << " ";
+        //Print amplitude information that is causing the error
+        // std::cerr << "\nTriggering location: "<< peak->triggering_location \
+        //           << " not in range: " << n <<std::endl;
+        // // FOR TESTING PURPOSES
+        // std::cerr << "Amplitudes: " << std::endl;
+        // for(int i=0; i< (int)ampData.size(); i++){
+        //   std::cerr<< ampData[i] << " ";
+        // }
+        // std::cerr << std::endl ;
       }
-      std::cerr << std::endl ;
-      }else{
+      else{
         //add the peak to our result
         results->push_back(*peak);
       }
@@ -387,13 +389,13 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   }
   else{
       // FOR TESTING PURPOSES
-      std::cerr << std::endl << "Exceeding max no of iterations: " << std::endl;
-      std::cerr << "Amplitudes: " << std::endl;
+      // std::cerr << std::endl << "Exceeding max no of iterations: " << std::endl;
+      // std::cerr << "Amplitudes: " << std::endl;
 
-      for(int i=0; i< (int)ampData.size(); i++){
-        std::cerr<< ampData[i] << " ";
-      }
-      std::cerr << std::endl ;
+      // for(int i=0; i< (int)ampData.size(); i++){
+      //   std::cerr<< ampData[i] << " ";
+      // }
+      // std::cerr << std::endl ;
       peakCount = 0;
   }
 

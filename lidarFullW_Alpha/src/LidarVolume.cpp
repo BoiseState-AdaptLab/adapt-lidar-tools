@@ -70,10 +70,9 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 3D array of space that will hold peak
   // information (we don't know how many per volume)
-  //volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*),
-  //                                       i_extent * j_extent * k_extent );
-  unsigned int size = i_extent*j_extent*k_extent;
-  volume = (Peak**)calloc(size, sizeof(Peak*));
+  unsigned int size = i_extent*j_extent;  //To preven overflow during calloc
+  volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*), size);
+  
   if(volume==NULL){
     perror("PERROR: ");
   }
@@ -90,29 +89,26 @@ void LidarVolume::deallocateMemory(){
 
 //k is most contiguous
 //i is the least contiguous
-int LidarVolume::position(int i, int j, int k){
-  return k + (j* k_extent) + (i*k_extent*j_extent);
+int LidarVolume::position(int i, int j){
+  return j + (i* j_extent);
 }
 
 
 void LidarVolume::insert_peak(Peak *peak){
   unsigned int i = gps_to_voxel_x(peak->x_activation);
   unsigned int j = gps_to_voxel_y(peak->y_activation);
-  unsigned int k = gps_to_voxel_z(peak->z_activation);
 
   //No need to check for i, j, k < 0 because they are unsigned ints
-  if((int) i>i_extent || (int)j> j_extent || (int)k > k_extent){
+  if((int) i>i_extent || (int)j> j_extent){
     std::cerr << "ERROR: Invalid peak ignored\n";
     return;
   }
-  unsigned long int p = position(i,j,k);
+  unsigned long int p = position(i,j);
 
   if(volume[p] == NULL){
-    //volume[p] = new std::vector<Peak>();
-    volume[p] = new Peak();
+    volume[p] = new std::vector<Peak>();
   }
-  //volume[p]->push_back(*peak);
-  volume[p] = peak;
+  volume[p]->push_back(*peak);  
 }
 
 
@@ -128,11 +124,6 @@ int LidarVolume::gps_to_voxel_y(double y){
   return voxel_y;
 }
 
-int LidarVolume::gps_to_voxel_z(double z){
-  int voxel_z = (z - bb_z_min_padded);
-  return voxel_z;
-}
-
 
 //Rasterize for max elevation
 void LidarVolume::rasterizeMaxElevation(){
@@ -141,21 +132,19 @@ void LidarVolume::rasterizeMaxElevation(){
 
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
-      raster[i*j_extent+j] = -1;
-      for(k=bb_k_max-1;k>=bb_k_min;k--){
-        if(volume[position(i,j,k)] != NULL){
-          raster[i*j_extent+j] = k;
-          std::cout << volume[position(i,j,k)].z <<std::endl;
-          //Save the max and mins of the max elevations
-          if(raster[i*j_extent+j] > elev_high){
-            elev_high = k;
-          }
-          if(raster[i*j_extent+j] < elev_low){
-            elev_low = k;
-          }
-          //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
-          break;
+      raster[i*j_extent] = -1;
+      if(volume[position(i,j)] != NULL){
+        raster[i*j_extent] = j;
+
+        //Save the max and mins of the max elevations
+        if(raster[i*j_extent] > elev_high){
+          elev_high = k;
         }
+        if(raster[i*j_extent] < elev_low){
+          elev_low = k;
+        }
+        //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
+        break;
       }
     }
   }
@@ -280,7 +269,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   GUInt16 *heights = (GUInt16*)calloc(sizeof(GUInt16),j_extent);
 
 
-  CPLErr retval[3];
+  CPLErr retval;
 
   // Write image data
   int x, y;
@@ -295,23 +284,10 @@ void LidarVolume::writeImage(const char* filename, const char* title){
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
-    retval[0] = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
+    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
                                        heights, nCols, 1, GDT_UInt16, 0, NULL);
-    // retval[1] = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, y, nCols, 1,
-    //                                    g_row, nCols, 1, GDT_Byte, 0, NULL);
-    // retval[2] = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y, nCols, 1,
-    //                                    b_row, nCols, 1, GDT_Byte, 0, NULL);
-
-    // for(int i =0; i<3; i++){
-    //   if(retval[i] != CE_None){
-    //     fprintf(stderr,"Error during writing band: %d\n", i);
-    //     fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
-    //                                                          i_extent,nRows);
-    //     return;
-    //   }
-    // }
-
-    if(retval[0] != CE_None){
+    
+    if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
                                                              i_extent,nRows);
@@ -323,72 +299,72 @@ void LidarVolume::writeImage(const char* filename, const char* title){
 }
 
 
-// void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
+void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
 
-//   *r = 255;
-//   *g = 255;
-//   *b = 255;
+  *r = 255;
+  *g = 255;
+  *b = 255;
 
-//   if(val < 0 ){
-//     // use a special color
-//     *r=0;
-//     *g=0;
-//     *b=0;
-//     return;
-//   }
-//   double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
+  if(val < 0 ){
+    // use a special color
+    *r=0;
+    *g=0;
+    *b=0;
+    return;
+  }
+  double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
 
-//   //invert and group
-//   double inverted_group=(1 - normalized_z)/0.25;
+  //invert and group
+  double inverted_group=(1 - normalized_z)/0.25;
 
-//   //this is the integer part
-//   int integer_part=floor(inverted_group);
+  //this is the integer part
+  int integer_part=floor(inverted_group);
 
-//   //fractional_part part from 0 to 255
-//   int fractional_part=floor(255*(inverted_group - integer_part));
+  //fractional_part part from 0 to 255
+  int fractional_part=floor(255*(inverted_group - integer_part));
 
-//   // FOR TESTING PURPOSES
-//   // std::cout << "max k = " << bb_k_max << std::endl;
-//   // std::cout << "min k = " << bb_k_min << std::endl;
-//   // std::cout << "int val = " << val << std::endl;
-//   // std::cout << "Normalized z = " << normalized_z << std::endl;
-//   // std::cout << "Inverted group = " << inverted_group << std::endl;
-//   // std::cout << "Integer part = " << integer_part << std::endl;
-//   // std::cout << "Fractional part  = " << fractional_part << std::endl;
+  // FOR TESTING PURPOSES
+  // std::cout << "max k = " << bb_k_max << std::endl;
+  // std::cout << "min k = " << bb_k_min << std::endl;
+  // std::cout << "int val = " << val << std::endl;
+  // std::cout << "Normalized z = " << normalized_z << std::endl;
+  // std::cout << "Inverted group = " << inverted_group << std::endl;
+  // std::cout << "Integer part = " << integer_part << std::endl;
+  // std::cout << "Fractional part  = " << fractional_part << std::endl;
 
-//   switch(integer_part){
-//     case 0:
-//       *r=255;
-//       *g=fractional_part;
-//       *b=0;
-//       break;
-//     case 1:
-//       *r=255-fractional_part;
-//       *g=255;
-//       *b=0;
-//       break;
-//     case 2:
-//       *r=0;
-//       *g=255;
-//       *b=fractional_part;
-//       break;
-//     case 3:
-//       *r=0;
-//       *g=255-fractional_part;
-//       *b=255;
-//       break;
-//     case 4:
-//       *r=fractional_part;
-//       *g=0;
-//       *b=255;
-//       break;
-//     case 5:
-//       *r=255;
-//       *g=0;
-//       *b=255;
-//       break;
-//   }
-// }
+  switch(integer_part){
+    case 0:
+      *r=255;
+      *g=fractional_part;
+      *b=0;
+      break;
+    case 1:
+      *r=255-fractional_part;
+      *g=255;
+      *b=0;
+      break;
+    case 2:
+      *r=0;
+      *g=255;
+      *b=fractional_part;
+      break;
+    case 3:
+      *r=0;
+      *g=255-fractional_part;
+      *b=255;
+      break;
+    case 4:
+      *r=fractional_part;
+      *g=0;
+      *b=255;
+      break;
+    case 5:
+      *r=255;
+      *g=0;
+      *b=255;
+      break;
+  }
+}
 
 
 int LidarVolume::toTif(std::string filename){

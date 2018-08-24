@@ -51,8 +51,7 @@ class LidarVolume{
     //The raw raster data
     int* raster;
 
-    //std::vector<Peak>** volume;
-    Peak** volume;
+    std::vector<Peak>** volume;
 
     LidarVolume();
 
@@ -63,10 +62,9 @@ class LidarVolume{
     void insert_peak(Peak *peak);
     void allocateMemory();
     void deallocateMemory();
-    int position(int i, int j, int k);
+    int position(int i, int j);
     int gps_to_voxel_x(double x);
     int gps_to_voxel_y(double y);
-    int gps_to_voxel_z(double z);
 
     void rasterize();
     void rasterizeMaxElevation();

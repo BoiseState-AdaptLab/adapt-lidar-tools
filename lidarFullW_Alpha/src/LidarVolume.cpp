@@ -138,12 +138,12 @@ void LidarVolume::rasterizeMaxElevation(){
 
         //Save the max and mins of the max elevations
         if(raster[i*j_extent] > elev_high){
-          elev_high = k;
+          elev_high = j;
         }
         if(raster[i*j_extent] < elev_low){
-          elev_low = k;
+          elev_low = j;
         }
-        //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
+        //std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
         break;
       }
     }
@@ -158,20 +158,18 @@ void LidarVolume::rasterizeMinElevation(){
 
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
-      raster[i*j_extent+j] = -1;
-      for(k=bb_k_min;k>=bb_k_max;k++){
-        if(volume[position(i,j,k)] != NULL){
-          raster[i*j_extent+j] = k;
-          //store the maz and mins of the min elevation
-          if(raster[i*j_extent+j] > elev_high){
-            elev_high = k;
-          }
-          if(raster[i*j_extent+j] < elev_low){
-            elev_low = k;
-          }
-          //std::cout << "Raster: " << raster[i*j_extent+j] <<std::endl;
-          break;
+      raster[i*j_extent] = -1;
+      if(volume[position(i,j)] != NULL){
+        raster[i*j_extent] = j;
+        //store the maz and mins of the min elevation
+        if(raster[i*j_extent] > elev_high){
+          elev_high = j;
         }
+        if(raster[i*j_extent] < elev_low){
+          elev_low = j;
+        }
+        //std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
+        break;
       }
     }
   }
@@ -183,7 +181,7 @@ void LidarVolume::display(){
   int i,j;
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
-      printf("%3d ",raster[i*j_extent+j]);
+      printf("%3d ",raster[i*j_extent]);
     }
     printf("\n");
   }

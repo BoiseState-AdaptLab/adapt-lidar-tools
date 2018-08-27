@@ -143,7 +143,7 @@ void LidarVolume::rasterizeMaxElevation(){
         if(raster[i*j_extent] < elev_low){
           elev_low = j;
         }
-        //std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
+        std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
         break;
       }
     }
@@ -168,7 +168,7 @@ void LidarVolume::rasterizeMinElevation(){
         if(raster[i*j_extent] < elev_low){
           elev_low = j;
         }
-        //std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
+        std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
         break;
       }
     }

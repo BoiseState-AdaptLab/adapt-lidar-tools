@@ -96,8 +96,8 @@ int main (int argc, char *argv[]) {
     }
 
     // FOR TESTING PURPOSES
-    // std::cout<< "This is our display" << std::endl;
-    // intermediateData.display();
+    std::cout<< "This is our display" << std::endl;
+    intermediateData.display();
 
     // Save the image to a PNG file
     // The 'title' string is stored as part of the PNG file

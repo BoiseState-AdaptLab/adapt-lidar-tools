@@ -30,7 +30,6 @@ LidarVolume::LidarVolume(){
 
   i_extent = 0;
   j_extent = 0;
-  k_extent = 0;
 
   currentPeak = 0;
   numOfPeaks = 5;
@@ -62,22 +61,20 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 
   i_extent = bb_i_max - bb_i_min + 1;
   j_extent = bb_j_max - bb_j_min + 1;
-  k_extent = bb_k_max - bb_k_min + 1;
 }
 
 
-//allocate memory with a 3d array of the data
+//allocate memory with a 2d array of the data
 void LidarVolume::allocateMemory(){
-  // we are going to allocate a 3D array of space that will hold peak
+  // we are going to allocate a 2D array of space that will hold peak
   // information (we don't know how many per volume)
   unsigned int size = i_extent*j_extent;  //To preven overflow during calloc
   volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*), size);
   
   if(volume==NULL){
-    perror("PERROR: ");
+    perror("ERROR ATTEMPTING TO ALLOCATE LidarVolume Data: ");
   }
-
-  raster = (int*)calloc(sizeof(int),i_extent*j_extent);
+  // this is where you would allocate the raster IF you decide to use it
 }
 
 
@@ -87,7 +84,7 @@ void LidarVolume::deallocateMemory(){
 }
 
 
-//k is most contiguous
+//j is most contiguous
 //i is the least contiguous
 int LidarVolume::position(int i, int j){
   return j + (i* j_extent);
@@ -273,12 +270,17 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   int x, y;
   for (y=0 ; y<i_extent ; y++) {
     for (x=0 ; x<j_extent ; x++) {
-      // unsigned char r,g,b;
-      // setRGB(&r,&g,&b,raster[y*j_extent + x]);
-      heights[x] = raster[y*j_extent + x];
-      // r_row[x] = r;
-      // g_row[x] = g;
-      // b_row[x] = b;
+      double maxZ = noData;
+      std::vector<Peak>* myPoints = volume[position(y,x)];
+      if(myPoints != NULL){
+        for(std::vector<Peak>::iterator it = myPoints->begin(); 
+            it != myPoints->end(); ++it){
+          if((*it).z > maxZ){
+            maxZ = (*it).z;
+          }
+        }
+      }
+      heights[x] = maxZ;
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html

@@ -221,7 +221,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, nCols, nRows, 1,GDT_UInt16 , NULL);
+  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_Float32 , NULL);
 
   double noData = -99999.9;
 
@@ -261,7 +261,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   //int* heights = (int*)calloc(sizeof(int),j_extent);
-  GUInt16 *heights = (GUInt16*)calloc(sizeof(GUInt16),j_extent);
+  GDT_Float32 *heights = (GDT_Float32*)calloc(sizeof(GDT_Float32),j_extent);
 
 
   CPLErr retval;

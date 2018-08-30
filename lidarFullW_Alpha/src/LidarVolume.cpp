@@ -221,7 +221,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_Float32 , NULL);
+  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_Float64 , NULL);
 
   double noData = -99999.9;
 
@@ -261,7 +261,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
   //int* heights = (int*)calloc(sizeof(int),j_extent);
-  float *heights = (float*)calloc(sizeof(float),j_extent);
+  double *heights = (double*)calloc(sizeof(double),j_extent);
 
 
   CPLErr retval;
@@ -285,7 +285,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
     retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
-                                       heights, nCols, 1, GDT_Float32, 0, NULL);
+                                       heights, nCols, 1, GDT_Float64, 0, NULL);
     
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");

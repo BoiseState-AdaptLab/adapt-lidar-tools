@@ -54,11 +54,9 @@ TEST_F(LidarVolumeTest, testBoundingBox){
     
     int known_i_extent= known_i_max - known_i_min + 1;
     int known_j_extent= known_j_max - known_j_min + 1;
-    int known_k_extent= known_k_max - known_k_min + 1;
 
     EXPECT_EQ(known_i_extent, lv.i_extent);
     EXPECT_EQ(known_j_extent, lv.j_extent);
-    EXPECT_EQ(known_k_extent, lv.k_extent);
     
 }
 

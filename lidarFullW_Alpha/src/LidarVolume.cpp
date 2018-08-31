@@ -105,7 +105,7 @@ void LidarVolume::insert_peak(Peak *peak){
   if(volume[p] == NULL){
     volume[p] = new std::vector<Peak>();
   }
-  volume[p]->push_back(*peak);  
+  volume[p]->push_back(*peak);
 }
 
 
@@ -221,9 +221,9 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_Float64 , NULL);
+  newDS = driverTiff->Create(filename, nCols, nRows, 1, GDT_Float32 , NULL);
 
-  double noData = -99999.9;
+  float noData = -99999.9;
 
   //Used in transform
   double min_x = bb_x_min_padded;
@@ -256,13 +256,7 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   newDS->SetProjection(pszSRS_WKT);
   CPLFree(pszSRS_WKT);
 
-
-  unsigned char *r_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
-  unsigned char *g_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
-  unsigned char *b_row = (unsigned char*)calloc(sizeof(unsigned char),j_extent);
-  //int* heights = (int*)calloc(sizeof(int),j_extent);
-  double *heights = (double*)calloc(sizeof(double),j_extent);
-
+  float *heights = (float*)calloc(sizeof(float),j_extent);
 
   CPLErr retval;
 
@@ -270,22 +264,23 @@ void LidarVolume::writeImage(const char* filename, const char* title){
   int x, y;
   for (y=0 ; y<i_extent ; y++) {
     for (x=0 ; x<j_extent ; x++) {
-      double maxZ = noData;
+     float maxZ = noData;
       std::vector<Peak>* myPoints = volume[position(y,x)];
       if(myPoints != NULL){
         for(std::vector<Peak>::iterator it = myPoints->begin(); 
             it != myPoints->end(); ++it){
-          if((*it).z > maxZ){
-            maxZ = (*it).z;
+          if((*it).z_activation > maxZ){
+            maxZ = (float)(*it).z_activation; 
           }
         }
       }
       heights[x] = maxZ;
+      //std::cout<< "In x loop: Height[" << x <<"]= maxZ = " << maxZ << std::endl;
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
     retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
-                                       heights, nCols, 1, GDT_Float64, 0, NULL);
+                                       heights, nCols, 1, GDT_Float32, 0, NULL);
     
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");

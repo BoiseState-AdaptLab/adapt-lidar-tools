@@ -21,5 +21,8 @@ Peak::Peak(){
   x_activation = 0;
   y_activation = 0;
   z_activation = 0;
-
+  
+  x = 0.;
+  y = 0.;
+  z = 0.;
 }

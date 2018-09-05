@@ -22,13 +22,13 @@ class Peak{
     int triggering_location; //Peak activation time - calc using triggering_amp
 
     //(triggering_location) * dx + x_first
-    int x_activation;
+    double x_activation;
 
     //(triggering_location) * dy + y_first
-    int y_activation;
+    double y_activation;
 
     //(peak_triggering_location) * dz + z_first
-    int z_activation;
+    double z_activation;
 
     //holds peak location in the xyz space
     double x, y, z;

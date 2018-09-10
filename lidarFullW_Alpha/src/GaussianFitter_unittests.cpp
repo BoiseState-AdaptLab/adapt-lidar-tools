@@ -491,7 +491,7 @@ TEST_F(GaussianFitterTest, max_iter_4){
 }
 
 //Exceeding max no of iterations
-TEST_F(GaussianFitterTest, max_iter_5){
+TEST_F(GaussianFitterTest, max_iter_6){
 
   // create a vector of integers
   std::vector<int> idxData;
@@ -514,16 +514,19 @@ TEST_F(GaussianFitterTest, max_iter_5){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guessPeaks(ampData);
-  EXPECT_EQ(3,guesses.size());
-  EXPECT_EQ(25,ampData[guesses[0]]);
-  EXPECT_EQ(13,ampData[guesses[1]]);
-  EXPECT_EQ(132,ampData[guesses[2]]);
-  EXPECT_EQ(22,ampData[guesses[2]]);
+  EXPECT_EQ(7,guesses.size());
+  EXPECT_EQ(88,ampData[guesses[0]]);
+  EXPECT_EQ(34,ampData[guesses[1]]);
+  EXPECT_EQ(20,ampData[guesses[2]]);
+  EXPECT_EQ(25,ampData[guesses[3]]);
+  EXPECT_EQ(13,ampData[guesses[4]]);
+  EXPECT_EQ(132,ampData[guesses[5]]);
+  EXPECT_EQ(22,ampData[guesses[6]]);
 
   std::cerr << "After guessPeaks before find Peaks\n";
   int count = fitter.findPeaks(&peaks,ampData,idxData);
 
-  EXPECT_EQ(4,count);
+  EXPECT_EQ(7,count);
   for(int i=0;i<count;i++){
     std::cerr<<peaks[i].amp<<std::endl;
   }

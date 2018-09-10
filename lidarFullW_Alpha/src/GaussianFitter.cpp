@@ -469,6 +469,7 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> data){
     }
   }
   noise_level = ((float)max)*.09;
+  std::cerr << "Noise = " << noise_level << std::endl;
   if(noise_level < 6){
     noise_level = 6;
   }

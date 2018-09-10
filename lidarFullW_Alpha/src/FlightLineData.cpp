@@ -306,3 +306,17 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
   return peaks->size();
 }
 
+void split_description(std::string s){
+  std::string s = "random example /wooo";
+  std::string delimiter = ">=";
+
+  size_t pos = 0;
+  std::string token;
+  while ((pos = s.find(delimiter)) != std::string::npos) {
+      token = s.substr(0, pos);
+      std::cout << token << std::endl;
+      s.erase(0, pos + delimiter.length());
+  }
+  std::cout << s << std::endl;
+}
+

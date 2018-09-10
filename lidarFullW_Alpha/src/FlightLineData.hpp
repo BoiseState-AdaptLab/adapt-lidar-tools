@@ -59,6 +59,7 @@ class FlightLineData{
     bool hasNextPulse();
     void getNextPulse(PulseData* pd);;
     int calc_xyz_activation(std::vector<Peak> *peaks);
+    void split_description(std::string s);
 
   private:
     PULSEreadOpener pOpener;

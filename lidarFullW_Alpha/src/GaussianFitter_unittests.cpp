@@ -483,6 +483,24 @@ TEST_F(GaussianFitterTest, max_iter_4){
   for(int i=0;i<count;i++){
     std::cerr<<peaks[i].amp<<std::endl;
   }
+
+  // experiment with smoothing
+  for(int i=2; i<ampData.size()-1;i++){
+    if(ampData[i] < 7){
+      int temp = (ampData[i-2] + ampData[i-1]+ampData[i]+ampData[i+1])/4;
+      if(abs(temp-ampData[i])<2){
+        ampData[i] = temp; 
+      }
+    }
+  }
+  std::cerr << "--Second Try--\n " << std::endl;
+  count = fitter.find_peaks(&peaks,ampData,idxData);
+
+  EXPECT_EQ(5,count);
+  for(int i=0;i<count;i++){
+    std::cerr<<peaks[i].amp<<",";
+    std::cerr<<peaks[i].location<<std::endl;
+  }
 }
 
 //Exceeding max no of iterations

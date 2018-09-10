@@ -257,6 +257,9 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   int status;
   gsl_set_error_handler(handler);
 
+  //Empty the results vector just to be sure
+  results->clear();
+
   //figure out how many items there are in the ampData
   size_t n = ampData.size();
 
@@ -383,7 +386,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         // }
         // std::cerr << std::endl ;
       }
-      else if(peak->amp > max || peak->amp < 0){
+      else if(peak->amp > 2.0*max || peak->amp < 0){
 
         }
       else{
@@ -405,22 +408,22 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         std::cerr<< idxData[i] << " ";
       }
       std::cerr << std::endl ;
-      //peakCount = 0;
+      peakCount = 0;
   }
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
-  // for (i = 0; i < n; ++i){
-  //     double ti = fit_data.t[i];
-  //     double yi = fit_data.y[i];
-  //     double fi = gaussianSum(x, ti);
-  //     printf("%f %f %f\n", ti, yi, fi);
-  //   }
+  for (i = 0; i < n; ++i){
+      double ti = fit_data.t[i];
+      double yi = fit_data.y[i];
+      double fi = gaussianSum(x, ti);
+      printf("%f %f %f\n", ti, yi, fi);
+  }
 
   gsl_vector_free(f);
   gsl_vector_free(x);
   gsl_rng_free(r);
 
-  return peakCount;
+  return results->size();
 }
 
 

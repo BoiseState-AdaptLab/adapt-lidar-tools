@@ -491,7 +491,7 @@ TEST_F(GaussianFitterTest, max_iter_4){
 }
 
 //Exceeding max no of iterations
-TEST_F(GaussianFitterTest, max_iter_6){
+TEST_F(GaussianFitterTest, max_iter_5){
 
   // create a vector of integers
   std::vector<int> idxData;

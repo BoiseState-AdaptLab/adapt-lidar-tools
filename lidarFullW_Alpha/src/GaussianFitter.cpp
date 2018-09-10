@@ -393,7 +393,6 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   }
   else{
       // FOR TESTING PURPOSES
-      std::cerr << std::endl << "Exceeding max no of iterations: " << std::endl;
       std::cerr << "Amplitudes: " << std::endl;
 
       for(int i=0; i< (int)ampData.size(); i++){

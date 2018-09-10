@@ -51,6 +51,7 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_x_max = pReader->header.max_x;
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
+  std::cout << "header.geoascii_params " << pReader->header.geoascii_params << std::endl;
 
   fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
 

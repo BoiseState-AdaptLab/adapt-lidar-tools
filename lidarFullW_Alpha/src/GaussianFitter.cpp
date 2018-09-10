@@ -249,7 +249,7 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
 
 //Find the peaks and return the peak count
-int GaussianFitter::findPeaks(std::vector<Peak>* results,
+int GaussianFitter::find_peaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
 
@@ -261,7 +261,7 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
   size_t n = ampData.size();
 
   //figure out how many peaks there are in the data
-  std::vector<int> guesses = guessPeaks(ampData);
+  std::vector<int> guesses = guess_peaks(ampData);
   size_t peakCount = guesses.size();
 
   // FOR TESTING PURPOSES
@@ -371,6 +371,10 @@ int GaussianFitter::findPeaks(std::vector<Peak>* results,
        (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
                                           );
       if(peak->triggering_location > n || peak->triggering_location <0){
+
+        if(peak->amp > max || peak->amp < 0){
+
+        }
         //Print amplitude information that is causing the error
         // std::cerr << "\nTriggering location: "<< peak->triggering_location \
         //           << " not in range: " << n <<std::endl;
@@ -446,20 +450,20 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
 
 // Estimate of peaks to be supplied to the gaussian fitter based on
 // first difference gradient
-std::vector<int> GaussianFitter::guessPeaks(std::vector<int> data){
+std::vector<int> GaussianFitter::guess_peaks(std::vector<int> data){
 
   //std::vector<int> data = calculateFirstDifferences(ampData);
   std::vector<int> peaksLocation;
 
   //Level up to and including which peaks will be excluded
   //For the unaltered wave, noise_level = 16
-  //for the scond derivative of the wave, noise_level = 3
+  //for the second derivative of the wave, noise_level = 3
   //
   // this is creating guesses for a guassian fitter that does not do
-  // well if we have guesses that have an amplitde more than an order
-  // of magnitute apart. We are going to set the nose level to be the
+  // well if we have guesses that have an amplitude more than an order
+  // of magnitute apart. We are going to set the noise level to be the
   // max value/ 10 - max*.05;
-  int max = 0;
+  max = 0;
   for(int i = 0; i<(int)data.size(); i++){
     if(data[i]>max){
       max = data[i];

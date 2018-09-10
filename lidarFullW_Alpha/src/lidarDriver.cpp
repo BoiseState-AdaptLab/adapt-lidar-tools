@@ -59,7 +59,7 @@ int main (int argc, char *argv[]) {
         //   std::cout << pd.returningWave[i] << " " ;
         // }
 
-        int peak_count = fitter.findPeaks(&peaks, pd.returningWave,
+        int peak_count = fitter.find_peaks(&peaks, pd.returningWave,
                                           pd.returningIdx);
 
 

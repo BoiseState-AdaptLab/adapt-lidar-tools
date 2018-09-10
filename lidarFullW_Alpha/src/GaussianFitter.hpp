@@ -18,10 +18,13 @@
 class GaussianFitter{
 
   public:
-    int findPeaks(std::vector<Peak>* results,std::vector<int> ampData,
+    int find_peaks(std::vector<Peak>* results,std::vector<int> ampData,
                   std::vector<int> idxData);
     int noise_level;
-    std::vector<int> guessPeaks(std::vector<int> ampData);
+    std::vector<int> guess_peaks(std::vector<int> ampData);
+
+    //The max peak amplitude of each set of returning waves
+    int max; 
 
   private:
     int getNumPeaks();

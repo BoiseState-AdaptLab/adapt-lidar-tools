@@ -311,13 +311,14 @@ TEST_F(GaussianFitterTest, NayaniClipped8){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
+  EXPECT_EQ(3,guesses.size());
   EXPECT_EQ(26,guesses[0]);
   EXPECT_EQ(221,guesses[1]);
+  EXPECT_EQ(21,guesses[1]);
   
   int count = fitter.find_peaks(&peaks,ampData,idxData);
 
-  EXPECT_EQ(2,count);
+  EXPECT_EQ(3,count);
   for(int i=0;i<count;i++){
     std::cerr<<peaks[i].amp<<std::endl;
   }

@@ -354,7 +354,7 @@ TEST_F(GaussianFitterTest, max_iter_1){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(2,guesses.size());
   EXPECT_EQ(150,ampData[guesses[0]]);
   EXPECT_EQ(25,ampData[guesses[1]]);
 

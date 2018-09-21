@@ -49,19 +49,19 @@ int main (int argc, char *argv[]) {
     // gets the raw data from the file
     rawData.getNextPulse(&pd);
     try{
+      // as long as the pulse has a returning wave it finds
+      // the peaks in that wave
       if(!pd.returningIdx.empty()){
-        // as long as the pulse has a returning wave it finds
-        // the peaks in that wave
-        int i;
 
         // FOR TESTING PURPOSES
         // for(i=0; i<(int)pd.returningWave.size(); i++){
         //   std::cout << pd.returningWave[i] << " " ;
         // }
 
+        // Smooth the data and test result
+        pd.smoothing_expt(&pd.returningWave);
         int peak_count = fitter.find_peaks(&peaks, pd.returningWave,
                                           pd.returningIdx);
-
 
         // foreach peak - find activation point
         //              - calculate x,y,z
@@ -90,3 +90,4 @@ int main (int argc, char *argv[]) {
 
     return 0;
 }
+

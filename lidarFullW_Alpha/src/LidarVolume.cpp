@@ -125,7 +125,7 @@ int LidarVolume::gps_to_voxel_y(double y){
 //Rasterize for max elevation
 void LidarVolume::rasterizeMaxElevation(){
 
-  int i,j,k;
+  int i,j;
 
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
@@ -151,7 +151,7 @@ void LidarVolume::rasterizeMaxElevation(){
 //Rasterize for min elevation
 void LidarVolume::rasterizeMinElevation(){
 
-  int i,j,k;
+  int i,j;
 
   for(i=bb_i_min;i<bb_i_max;i++){
     for(j=bb_j_min;j<bb_j_max;j++){
@@ -188,9 +188,8 @@ void LidarVolume::display(){
 }
 
 
-// This function actually writes out the PNG image file. The string 'title' is
-// also written into the image file
-void LidarVolume::writeImage(const char* filename, const char* title){
+// This function actually writes out the GEOTIF file.
+void LidarVolume::writeImage(const char* filename){
 
   //GDAL uses drivers to format all data sets so this registers the drivers
   GDALAllRegister();
@@ -364,6 +363,6 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
 
 
 int LidarVolume::toTif(std::string filename){
-  writeImage(filename.c_str(), "This is a super fun test");
+  writeImage(filename.c_str());
   return 0;
 }

@@ -315,23 +315,41 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
 
     // Create a better guess by using a better width
+    int guess = -1;
     int half_ampData_guess = ampData[guesses[i]]/2;
     int idx_lo=0,idx_hi=0;
     // look low
+    int prev = ampData[guesses[i]];
     for(j=guesses[i];j>0;j--){
+      if(ampData[j] > prev){
+        break;
+      }
+      prev = ampData[j];
       if(ampData[j] < half_ampData_guess){
         idx_lo = j;
+        guess = (idxData[guesses[i]] - j)*2;
         break;
       }
     }
     // look hi
-    for(j=guesses[i];j<n;j++){
-      if(ampData[j] < half_ampData_guess){
-        idx_hi = j;
-        break;
+    if (guess<0){
+      prev = ampData[guesses[i]];
+      for(j=guesses[i];j<n;j++){
+        if(ampData[j] > prev){
+          break;
+        }
+        prev = ampData[j];
+        if(ampData[j] < half_ampData_guess){
+          idx_hi = j;
+          guess = (j-i)*2;
+          break;
+        }
       }
     }
-    int guess = idx_hi-idx_lo-1;
+    if(guess<0){
+      guess = 4;
+    }
+    std::cerr << "Guess: " << guess <<std::endl;
     if(guess > 20){guess = 10;}
     gsl_vector_set(x, i*3+2, guess);
   }
@@ -408,16 +426,27 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         std::cerr<< idxData[i] << " ";
       }
       std::cerr << std::endl ;
+
       peakCount = 0;
+      
+      // PRINT DATA AND MODEL FOR TESTING PURPOSES
+      for (i = 0; i < n; ++i){
+        double ti = fit_data.t[i];
+        double yi = fit_data.y[i];
+        double fi = gaussianSum(x, ti);
+        printf("%f %f %f\n", ti, yi, fi);
+      }
   }
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
+  /*
   for (i = 0; i < n; ++i){
       double ti = fit_data.t[i];
       double yi = fit_data.y[i];
       double fi = gaussianSum(x, ti);
       printf("%f %f %f\n", ti, yi, fi);
   }
+*/
 
   gsl_vector_free(f);
   gsl_vector_free(x);

@@ -59,7 +59,7 @@ int main (int argc, char *argv[]) {
         // }
 
         // Smooth the data and test result
-        pd.smoothing_expt(&pd.returningWave);
+        fitter.smoothing_expt(&pd.returningWave);
         int peak_count = fitter.find_peaks(&peaks, pd.returningWave,
                                           pd.returningIdx);
 

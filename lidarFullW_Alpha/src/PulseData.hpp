@@ -26,8 +26,6 @@ public:
                    std::vector<int> *waveArray);
   void setReturning(std::vector<int> *idxArray,
                     std::vector<int> *waveArray);
-  void smoothing_expt(std::vector<int> *waveArray);
-
 };
 
 #endif /* PULSEDATA_HPP_ */

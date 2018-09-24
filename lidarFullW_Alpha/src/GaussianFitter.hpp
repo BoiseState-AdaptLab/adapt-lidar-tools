@@ -22,6 +22,7 @@ class GaussianFitter{
                   std::vector<int> idxData);
     int noise_level;
     std::vector<int> guess_peaks(std::vector<int> ampData);
+    void smoothing_expt(std::vector<int> *waveArray);
 
     //The max peak amplitude of each set of returning waves
     int max; 

@@ -430,7 +430,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       peakCount = 0;
       
       // PRINT DATA AND MODEL FOR TESTING PURPOSES
-      for (i = 0; i < n; ++i){
+      for (int i = 0; i < n; ++i){
         double ti = fit_data.t[i];
         double yi = fit_data.y[i];
         double fi = gaussianSum(x, ti);
@@ -573,5 +573,20 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> data){
   // }
 
   return peaksLocation;
+}
+
+/* Experiment with smoothing */
+void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
+
+  for(int i=2; i<waveArray->size()-1;i++){
+    if(waveArray->at(i) < 7){
+      int temp = (waveArray->at(i-2) + waveArray->at(i-1) +
+                  waveArray->at(i)+waveArray->at(i+1))/4;
+
+      if(abs(temp-waveArray->at(i))<2){
+        waveArray->at(i) = temp;
+      }
+    }
+  }
 }
 

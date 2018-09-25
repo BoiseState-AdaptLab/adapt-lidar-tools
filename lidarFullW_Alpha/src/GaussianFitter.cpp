@@ -341,7 +341,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         prev = ampData[j];
         if(ampData[j] < half_ampData_guess){
           idx_hi = j;
-          guess = (j-i)*2;
+          guess = (j-idxData[peak_guesses_loc[i]])*2;
           break;
         }
       }

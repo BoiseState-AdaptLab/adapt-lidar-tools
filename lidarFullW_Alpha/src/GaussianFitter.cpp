@@ -264,8 +264,8 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   size_t n = ampData.size();
 
   //figure out how many peaks there are in the data
-  std::vector<int> guesses = guess_peaks(ampData);
-  size_t peakCount = guesses.size();
+  std::vector<int> peak_guesses_loc = guess_peaks(ampData);
+  size_t peakCount = peak_guesses_loc.size();
 
   // FOR TESTING PURPOSES
   // fprintf(stderr, "Peak count is %d\n", peakCount);
@@ -311,30 +311,30 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   //this is a guess starting point
   int j;
   for(i=0; i< peakCount; i++){
-    gsl_vector_set(x, i*3+0, ampData[guesses[i]]);
-    gsl_vector_set(x, i*3+1, idxData[guesses[i]]);
+    gsl_vector_set(x, i*3+0, ampData[peak_guesses_loc[i]]);
+    gsl_vector_set(x, i*3+1, idxData[peak_guesses_loc[i]]);
 
     // Create a better guess by using a better width
     int guess = -1;
-    int half_ampData_guess = ampData[guesses[i]]/2;
+    int half_ampData_guess = ampData[peak_guesses_loc[i]]/2;
     int idx_lo=0,idx_hi=0;
     // look low
-    int prev = ampData[guesses[i]];
-    for(j=guesses[i];j>0;j--){
+    int prev = ampData[peak_guesses_loc[i]];
+    for(j=peak_guesses_loc[i];j>0;j--){
       if(ampData[j] > prev){
         break;
       }
       prev = ampData[j];
       if(ampData[j] < half_ampData_guess){
         idx_lo = j;
-        guess = (idxData[guesses[i]] - j)*2;
+        guess = (idxData[peak_guesses_loc[i]] - j)*2;
         break;
       }
     }
     // look hi
     if (guess<0){
-      prev = ampData[guesses[i]];
-      for(j=guesses[i];j<n;j++){
+      prev = ampData[peak_guesses_loc[i]];
+      for(j=peak_guesses_loc[i];j<n;j++){
         if(ampData[j] > prev){
           break;
         }

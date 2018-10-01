@@ -356,13 +356,15 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
 
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
-  std::cout << "Before Solve system: \n" <<std::endl;
+  std::cout << "Gaussian sum based on guesses - before solve system:" <<std::endl;
   for (int i = 0; i < n; ++i){
     double ti = fit_data.t[i];
     // double yi = fit_data.y[i];
     double fi = gaussianSum(x, ti);
     printf("%f ", fi);
   }
+  std::cout << std::endl;
+  std::cout << std::endl;
 
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
@@ -424,7 +426,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       }
     }
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
-    std::cout << "In solve system and not failed: \n" <<std::endl;
+    std::cout << "Gaussian sum in solve system and not failed:" <<std::endl;
     for (int i = 0; i < n; ++i){
       double ti = fit_data.t[i];
       // double yi = fit_data.y[i];
@@ -432,10 +434,11 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       printf("%f ", fi);
     }
     std::cout << std::endl;
+    std::cout << std::endl;
   }
   else{
       // FOR TESTING PURPOSES
-      std::cout << "In solve system and failed: \n" <<std::endl;
+      std::cout << "In solve system and failed:" <<std::endl;
       std::cerr << "Amplitudes: " << std::endl;
 
       for(int i=0; i< (int)ampData.size(); i++){
@@ -451,6 +454,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       peakCount = 0;
       
       // PRINT DATA AND MODEL FOR TESTING PURPOSES
+      std::cout << "Gaussian sum in solve system failed:" <<std::endl;
       for (int i = 0; i < n; ++i){
         double ti = fit_data.t[i];
         double yi = fit_data.y[i];

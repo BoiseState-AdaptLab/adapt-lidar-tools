@@ -28,7 +28,7 @@ FlightLineData::FlightLineData(){
   beam_divergence  = 0;
   minimal_range  = 0;
   maximal_range  = 0;
-  string geoascii_params = "";
+  std::string geoascii_params = "";
 
   next_pulse_exists = false;
 }
@@ -58,10 +58,11 @@ void FlightLineData::setFlightLineData(std::string fileName){
   size_t pos = 0;
   std::string utm;
   std::string geog_cs;
-  while ((pos = s.find(delimiter)) != std::string::npos) {
-      token = s.substr(0, pos);
+  std::string token;
+  while ((pos = geoascii_params.find(delimiter)) != std::string::npos) {
+      token = geoascii_params.substr(0, pos);
       std::cout << token << std::endl;
-      s.erase(0, pos + delimiter.length());
+      geoascii_params.erase(0, pos + delimiter.length());
   }
 
   std::cout << "header.geoascii_params " << pReader->header.geoascii_params << std::endl;

@@ -41,6 +41,7 @@ class FlightLineData{
     double beam_divergence;
     double minimal_range;
     double maximal_range;
+    std::string geoascii_params;
 
     //Depends on whether there is a next pulse
     bool next_pulse_exists;

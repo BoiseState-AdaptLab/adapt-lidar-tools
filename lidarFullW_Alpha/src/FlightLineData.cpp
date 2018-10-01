@@ -28,6 +28,7 @@ FlightLineData::FlightLineData(){
   beam_divergence  = 0;
   minimal_range  = 0;
   maximal_range  = 0;
+  string geoascii_params = "";
 
   next_pulse_exists = false;
 }
@@ -51,7 +52,20 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_x_max = pReader->header.max_x;
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
+  
+  std::string geoascii_params = pReader->header.geoascii_params;
+  std::string delimiter = "\\";
+  size_t pos = 0;
+  std::string utm;
+  std::string geog_cs;
+  while ((pos = s.find(delimiter)) != std::string::npos) {
+      token = s.substr(0, pos);
+      std::cout << token << std::endl;
+      s.erase(0, pos + delimiter.length());
+  }
+
   std::cout << "header.geoascii_params " << pReader->header.geoascii_params << std::endl;
+
 
   fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
 

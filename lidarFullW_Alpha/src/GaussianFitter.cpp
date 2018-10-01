@@ -327,7 +327,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       prev = ampData[j];
       if(ampData[j] < half_ampData_guess){
         idx_lo = j;
-        guess = (idxData[peak_guesses_loc[i]] - j)*2;
+        guess = (idxData[peak_guesses_loc[i]] - j -1);
         break;
       }
     }
@@ -341,7 +341,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         prev = ampData[j];
         if(ampData[j] < half_ampData_guess){
           idx_hi = j;
-          guess = (j-idxData[peak_guesses_loc[i]])*2;
+          guess = (j-idxData[peak_guesses_loc[i]] -1);
           break;
         }
       }
@@ -349,7 +349,8 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     if(guess<0){
       guess = 4;
     }
-    std::cerr << "Guess: " << guess <<std::endl;
+    std::cerr << "Guess: amp " << ampData[peak_guesses_loc[i]] <<
+                       " time " << idxData[peak_guesses_loc[i]] << " width:" << guess <<std::endl;
     if(guess > 20){guess = 10;}
     gsl_vector_set(x, i*3+2, guess);
   }

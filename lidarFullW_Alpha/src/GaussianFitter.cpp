@@ -358,7 +358,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
   std::cout << "Before Solve system: \n" <<std::endl;
   for (int i = 0; i < n; ++i){
-    // double ti = fit_data.t[i];
+    double ti = fit_data.t[i];
     // double yi = fit_data.y[i];
     double fi = gaussianSum(x, ti);
     printf("%f\n", fi);

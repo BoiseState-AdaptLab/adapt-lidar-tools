@@ -354,6 +354,18 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     gsl_vector_set(x, i*3+2, guess);
   }
 
+
+  // PRINT DATA AND MODEL FOR TESTING PURPOSES
+  std::cout << "Before Solve system: \n" <<std::endl;
+  for (int i = 0; i < n; ++i){
+    // double ti = fit_data.t[i];
+    // double yi = fit_data.y[i];
+    double fi = gaussianSum(x, ti);
+    printf("%f\n", fi);
+  }
+
+
+
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
   //fdf_params.trs = gsl_multifit_nlinear_trs_lm;
   fdf_params.scale = gsl_multifit_nlinear_scale_more;
@@ -415,6 +427,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   }
   else{
       // FOR TESTING PURPOSES
+      std::cout << "In solve system and failed: \n" <<std::endl;
       std::cerr << "Amplitudes: " << std::endl;
 
       for(int i=0; i< (int)ampData.size(); i++){
@@ -440,6 +453,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
   /*
+  std::cout << "After Solve system: \n" <<std::endl;
   for (i = 0; i < n; ++i){
       double ti = fit_data.t[i];
       double yi = fit_data.y[i];
@@ -574,6 +588,7 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> data){
 
   return peaksLocation;
 }
+
 
 /* Experiment with smoothing */
 void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){

@@ -361,9 +361,8 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     double ti = fit_data.t[i];
     // double yi = fit_data.y[i];
     double fi = gaussianSum(x, ti);
-    printf("%f\n", fi);
+    printf("%f ", fi);
   }
-
 
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
@@ -424,6 +423,15 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         results->push_back(*peak);
       }
     }
+    // PRINT DATA AND MODEL FOR TESTING PURPOSES
+    std::cout << "In solve system and not failed: \n" <<std::endl;
+    for (int i = 0; i < n; ++i){
+      double ti = fit_data.t[i];
+      // double yi = fit_data.y[i];
+      double fi = gaussianSum(x, ti);
+      printf("%f ", fi);
+    }
+    std::cout << std::endl;
   }
   else{
       // FOR TESTING PURPOSES

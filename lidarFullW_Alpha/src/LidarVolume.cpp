@@ -270,7 +270,7 @@ void LidarVolume::writeImage(const char* filename){
             it != myPoints->end(); ++it){
           if((*it).z_activation > maxZ){
             maxZ = (float)(*it).z_activation; 
-	    std::cout << maxZ << std::endl;
+	    //std::cout << "maxZ " << maxZ << std::endl;
           }
         }
       }

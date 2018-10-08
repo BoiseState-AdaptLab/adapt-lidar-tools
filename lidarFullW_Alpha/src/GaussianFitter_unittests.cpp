@@ -312,15 +312,14 @@ TEST_F(GaussianFitterTest, NayaniClipped8){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(3,guesses.size());
+  EXPECT_EQ(2,guesses.size());
   EXPECT_EQ(26,ampData[guesses[0]]);
   EXPECT_EQ(221,ampData[guesses[1]]);
-  EXPECT_EQ(21,ampData[guesses[2]]);
   
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
 
-  EXPECT_EQ(3,count);
+  EXPECT_EQ(2,count);
   for(int i=0;i<count;i++){
     std::cerr<<peaks[i].amp<<std::endl;
   }
@@ -471,39 +470,39 @@ TEST_F(GaussianFitterTest, max_iter_4){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(5,guesses.size());
+  EXPECT_EQ(4,guesses.size());
   EXPECT_EQ(88,ampData[guesses[0]]);
   EXPECT_EQ(34,ampData[guesses[1]]);
   EXPECT_EQ(9,ampData[guesses[2]]);
-  EXPECT_EQ(9,ampData[guesses[3]]);
-  EXPECT_EQ(20,ampData[guesses[4]]);
+  EXPECT_EQ(20,ampData[guesses[3]]);
 
 
   std::cerr << "--After guess_peaks before find Peaks--\n " << std::endl;
+  fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
 
-  EXPECT_EQ(5,count);
+  EXPECT_EQ(4,count);
   for(int i=0;i<count;i++){
     std::cerr<<peaks[i].amp<<std::endl;
   }
 
   // experiment with smoothing
-  for(int i=2; i<ampData.size()-1;i++){
-    if(ampData[i] < 7){
-      int temp = (ampData[i-2] + ampData[i-1]+ampData[i]+ampData[i+1])/4;
-      if(abs(temp-ampData[i])<2){
-        ampData[i] = temp; 
-      }
-    }
-  }
-  std::cerr << "--Second Try--\n " << std::endl;
-  count = fitter.find_peaks(&peaks,ampData,idxData);
+  //for(int i=2; i<ampData.size()-1;i++){
+  //  if(ampData[i] < 7){
+  //    int temp = (ampData[i-2] + ampData[i-1]+ampData[i]+ampData[i+1])/4;
+  //    if(abs(temp-ampData[i])<2){
+  //      ampData[i] = temp; 
+  //    }
+  //  }
+  //}
+  //std::cerr << "--Second Try--\n " << std::endl;
+  //count = fitter.find_peaks(&peaks,ampData,idxData);
 
-  EXPECT_EQ(5,count);
-  for(int i=0;i<count;i++){
-    std::cerr<<peaks[i].amp<<",";
-    std::cerr<<peaks[i].location<<std::endl;
-  }
+  //EXPECT_EQ(4,count);
+  //for(int i=0;i<count;i++){
+  //  std::cerr<<peaks[i].amp<<",";
+  //  std::cerr<<peaks[i].location<<std::endl;
+  //}
 }
 
 //Exceeding max no of iterations
@@ -530,7 +529,7 @@ TEST_F(GaussianFitterTest, max_iter_5){
   GaussianFitter fitter;
   std::vector<Peak> peaks;
   std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(7,guesses.size());
+  ASSERT_EQ(7,guesses.size());
   EXPECT_EQ(88,ampData[guesses[0]]);
   EXPECT_EQ(34,ampData[guesses[1]]);
   EXPECT_EQ(20,ampData[guesses[2]]);

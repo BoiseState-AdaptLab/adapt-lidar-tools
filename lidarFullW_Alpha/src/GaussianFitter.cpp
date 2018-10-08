@@ -349,23 +349,30 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     if(guess<0){
       guess = 4;
     }
-    std::cerr << "Guess: amp " << ampData[peak_guesses_loc[i]] <<
-                       " time " << idxData[peak_guesses_loc[i]] << " width:" << guess <<std::endl;
+    
+    #ifdef DEBUG
+      std::cerr << "Guess: amp " << ampData[peak_guesses_loc[i]] <<
+                   " time " << idxData[peak_guesses_loc[i]] << 
+                   " width:" << guess <<std::endl;
+    #endif
+    
     if(guess > 20){guess = 10;}
     gsl_vector_set(x, i*3+2, guess);
   }
 
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
-  std::cout << "Gaussian sum based on guesses - before solve system:" <<std::endl;
-  for (int i = 0; i < n; ++i){
-    double ti = fit_data.t[i];
-    // double yi = fit_data.y[i];
-    double fi = gaussianSum(x, ti);
-    printf("%f ", fi);
-  }
-  std::cout << std::endl;
-  std::cout << std::endl;
+  #ifdef DEBUG
+    std::cout << "Gaussian sum based on guesses - before solve system:" <<std::endl;
+    for (int i = 0; i < n; ++i){
+      double ti = fit_data.t[i];
+      // double yi = fit_data.y[i];
+      double fi = gaussianSum(x, ti);
+      printf("%f ", fi);
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+  #endif
 
 
   fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
@@ -426,18 +433,21 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         results->push_back(*peak);
       }
     }
-    // PRINT DATA AND MODEL FOR TESTING PURPOSES
-    std::cout << "Gaussian sum in solve system and not failed:" <<std::endl;
-    for (int i = 0; i < n; ++i){
-      double ti = fit_data.t[i];
-      // double yi = fit_data.y[i];
-      double fi = gaussianSum(x, ti);
-      printf("%f ", fi);
-    }
-    std::cout << std::endl;
-    std::cout << std::endl;
+    #ifdef DEBUG
+      // PRINT DATA AND MODEL FOR TESTING PURPOSES
+      std::cout << "Gaussian sum in solve system and not failed:" <<std::endl;
+      for (int i = 0; i < n; ++i){
+        double ti = fit_data.t[i];
+        // double yi = fit_data.y[i];
+        double fi = gaussianSum(x, ti);
+        printf("%f ", fi);
+      }
+      std::cout << std::endl;
+      std::cout << std::endl;
+    #endif
   }
   else{
+    #ifdef DEBUG
       // FOR TESTING PURPOSES
       std::cout << "In solve system and failed:" <<std::endl;
       std::cerr << "Amplitudes: " << std::endl;
@@ -451,9 +461,11 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         std::cerr<< idxData[i] << " ";
       }
       std::cerr << std::endl ;
+    #endif
 
-      peakCount = 0;
-      
+    peakCount = 0;
+    
+    #ifdef DEBUG  
       // PRINT DATA AND MODEL FOR TESTING PURPOSES
       std::cout << "Gaussian sum in solve system failed:" <<std::endl;
       for (int i = 0; i < n; ++i){
@@ -462,18 +474,8 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         double fi = gaussianSum(x, ti);
         printf("%f %f %f\n", ti, yi, fi);
       }
+    #endif
   }
-
-  // PRINT DATA AND MODEL FOR TESTING PURPOSES
-  /*
-  std::cout << "After Solve system: \n" <<std::endl;
-  for (i = 0; i < n; ++i){
-      double ti = fit_data.t[i];
-      double yi = fit_data.y[i];
-      double fi = gaussianSum(x, ti);
-      printf("%f %f %f\n", ti, yi, fi);
-  }
-*/
 
   gsl_vector_free(f);
   gsl_vector_free(x);
@@ -529,7 +531,12 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> data){
     }
   }
   noise_level = ((float)max)*.09;
-  std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09  << std::endl;
+  
+  #ifdef DEBUG
+    std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09  
+              << std::endl;
+  #endif
+  
   if(noise_level < 6){
     noise_level = 6;
   }

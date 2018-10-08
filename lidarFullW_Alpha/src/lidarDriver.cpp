@@ -83,11 +83,13 @@ int main (int argc, char *argv[]) {
     // stream.str("");
 
   }
-    // Save the image to a geotiff file
-    // The 'title' string is stored as part of the file
-    printf("Saving TIFF...\n");
-    intermediateData.toTif("tifTest.tif");
+ 
+ std::cerr << fitter.get_fail() << std::endl;
+  // Save the image to a geotiff file
+  // The 'title' string is stored as part of the file
+  printf("Saving TIFF...\n");
+  intermediateData.toTif("tifTest.tif");
 
-    return 0;
+  return 0;
 }
 

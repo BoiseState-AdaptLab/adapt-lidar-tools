@@ -16,16 +16,19 @@
 #include <vector>
 
 class GaussianFitter{
-
-  public:
+  
+public:
     int find_peaks(std::vector<Peak>* results,std::vector<int> ampData,
                   std::vector<int> idxData);
     int noise_level;
     std::vector<int> guess_peaks(std::vector<int> ampData);
     void smoothing_expt(std::vector<int> *waveArray);
+    GaussianFitter();
+    int get_fail();
 
     //The max peak amplitude of each set of returning waves
     int max; 
+    int fail;
 
   private:
     int getNumPeaks();
@@ -33,6 +36,8 @@ class GaussianFitter{
     void calculateSecondDifference();
     int medianOfFive(int a, int b, int c, int d, int e);
     void calculateSmoothSecondDifference();
+    void incr_fail();
+
 
 };
 

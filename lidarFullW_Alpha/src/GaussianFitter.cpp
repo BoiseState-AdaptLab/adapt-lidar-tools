@@ -7,6 +7,19 @@
 #include <math.h>
 #include <algorithm>
 
+
+GaussianFitter::GaussianFitter(){
+  fail = 0;
+}
+
+void GaussianFitter::incr_fail(){
+  fail++;
+}
+
+int GaussianFitter::get_fail(){
+  return fail;
+}
+
 struct data
 {
   double *t;
@@ -18,7 +31,7 @@ struct data
 //model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
 double gaussianSum(const gsl_vector * x,const double t)
 {
-
+T: 
   int i = 0;
   double value = 0.;
   for(i=0;i<(x->size/3);i++){
@@ -464,6 +477,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     #endif
 
     peakCount = 0;
+    incr_fail();
     
     #ifdef DEBUG  
       // PRINT DATA AND MODEL FOR TESTING PURPOSES

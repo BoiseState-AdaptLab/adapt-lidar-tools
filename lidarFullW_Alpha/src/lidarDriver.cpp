@@ -84,7 +84,10 @@ int main (int argc, char *argv[]) {
 
   }
  
- std::cerr << fitter.get_fail() << std::endl;
+ std::cerr << "Total: " << fitter.get_total() << std::endl;
+ std::cerr << "Pass: " << fitter.get_pass() << std::endl;
+ std::cerr << "Fail: " << fitter.get_fail() << std::endl;
+
   // Save the image to a geotiff file
   // The 'title' string is stored as part of the file
   printf("Saving TIFF...\n");

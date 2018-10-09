@@ -10,6 +10,24 @@
 
 GaussianFitter::GaussianFitter(){
   fail = 0;
+  pass = 0;
+  total = 0;
+}
+
+void GaussianFitter::incr_total(){
+  total++;
+}
+
+int GaussianFitter::get_total(){
+  return total;
+
+}
+void GaussianFitter::incr_pass(){
+  pass++;
+}
+
+int GaussianFitter::get_pass(){
+  return pass;
 }
 
 void GaussianFitter::incr_fail(){
@@ -265,6 +283,7 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 int GaussianFitter::find_peaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
+  incr_total();
 
   //Error handling
   int status;
@@ -395,6 +414,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
   if(!solve_system(x, &fdf, &fdf_params)){
+    incr_pass();
     //this loop is going through every peak
     for(i=0; i< peakCount; i++){
       Peak* peak = new Peak();

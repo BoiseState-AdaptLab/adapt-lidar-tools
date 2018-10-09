@@ -25,10 +25,13 @@ public:
     void smoothing_expt(std::vector<int> *waveArray);
     GaussianFitter();
     int get_fail();
+    int get_pass();
+    int get_total();
 
-    //The max peak amplitude of each set of returning waves
-    int max; 
+    int max; //The max peak amplitude of each set of returning waves
     int fail;
+    int pass;
+    int total;
 
   private:
     int getNumPeaks();
@@ -37,6 +40,8 @@ public:
     int medianOfFive(int a, int b, int c, int d, int e);
     void calculateSmoothSecondDifference();
     void incr_fail();
+    void incr_pass();
+    void incr_total();
 
 
 };

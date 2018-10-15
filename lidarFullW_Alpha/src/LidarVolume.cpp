@@ -251,7 +251,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   newDS->SetGeoTransform(transform);
   oSRS.SetUTM(utm, TRUE);
   // oSRS.SetWellKnownGeogCS("NAD83");
-  oSRS.SetWellKnownGeogCS(geog_cs);
+  oSRS.SetWellKnownGeogCS(geog_cs.c_str());
   oSRS.exportToWkt(&pszSRS_WKT);
   newDS->SetProjection(pszSRS_WKT);
   CPLFree(pszSRS_WKT);

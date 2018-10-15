@@ -29,7 +29,11 @@ FlightLineData::FlightLineData(){
   beam_divergence  = 0;
   minimal_range  = 0;
   maximal_range  = 0;
-  std::string geoascii_params = "";
+  
+  geoascii_params = "";
+  utm_str = "";
+  geog_cs = "";
+  utm = 0;
 
   next_pulse_exists = false;
 }
@@ -54,7 +58,7 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
   
-  std::string geoascii_params = pReader->header.geoascii_params;
+  geoascii_params = pReader->header.geoascii_params;
   
   // Vector of string to save tokens 
   std::vector <std::string> tokens; 
@@ -69,9 +73,11 @@ void FlightLineData::setFlightLineData(std::string fileName){
       tokens.push_back(intermediate); 
   } 
       
-  std::string utm = tokens[0];
-  std::string geog_cs = tokens[1];
+  utm_str = tokens[0];
+  utm = stoi(utm_str);
+  geog_cs = tokens[1];
 
+  std::cout << "utm_str: " << utm_str << std::endl;
   std::cout << "utm: " << utm << std::endl;
   std::cout << "geog_cs: "<< geog_cs << std::endl;
 

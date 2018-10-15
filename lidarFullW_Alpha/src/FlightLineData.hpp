@@ -42,6 +42,9 @@ class FlightLineData{
     double minimal_range;
     double maximal_range;
     std::string geoascii_params;
+    std::string utm_str;
+    std::string geog_cs;
+    int utm;
 
     //Depends on whether there is a next pulse
     bool next_pulse_exists;

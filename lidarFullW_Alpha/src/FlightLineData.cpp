@@ -64,25 +64,28 @@ void FlightLineData::setFlightLineData(std::string fileName){
   // Vector of string to save tokens 
   std::vector <std::string> tokens; 
      
-  // stringstream class check1 
+  // use stringstream to parse
   std::stringstream geo_stream(geoascii_params); 
       
   std::string intermediate; 
       
-  // Tokenizing w.r.t. space ' ' 
+  // Tokenizing w.r.t. '/' 
   while(getline(geo_stream, intermediate, '/')){ 
       tokens.push_back(intermediate); 
   } 
       
   utm_str = tokens[0];
+  
+  // Parsing UTM string to get an int 
   std::stringstream temp_s1(tokens[0]); 
-  std:: string temp;
+  std:: string temp;  
+  //Tokenizing w.r.t. ' '
   while(getline(temp_s1, intermediate, ' ')){ 
       temp = intermediate; 
   } 
-
   std::stringstream temp_s2(temp);
   temp_s2 >> utm;
+
   geog_cs = tokens[1];
 
   std::cout << "utm_str: " << utm_str << std::endl;

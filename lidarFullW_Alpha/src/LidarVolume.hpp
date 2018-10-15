@@ -73,7 +73,7 @@ class LidarVolume{
     void display();
 
 
-    int toTif(std::string filename);
+    int toTif(std::string filename, std::string geog_cs, int utm);
 
 
     // This takes the float value 'val', converts it to red, green &

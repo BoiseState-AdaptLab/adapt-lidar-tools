@@ -189,7 +189,7 @@ void LidarVolume::display(){
 
 
 // This function actually writes out the GEOTIF file.
-void LidarVolume::writeImage(const char* filename){
+void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm){
 
   //GDAL uses drivers to format all data sets so this registers the drivers
   GDALAllRegister();
@@ -249,8 +249,9 @@ void LidarVolume::writeImage(const char* filename){
   OGRSpatialReference oSRS;
   char *pszSRS_WKT = NULL;
   newDS->SetGeoTransform(transform);
-  oSRS.SetUTM(11, TRUE);
-  oSRS.SetWellKnownGeogCS("NAD83");
+  oSRS.SetUTM(utm, TRUE);
+  // oSRS.SetWellKnownGeogCS("NAD83");
+  oSRS.SetWellKnownGeogCS(geog_cs);
   oSRS.exportToWkt(&pszSRS_WKT);
   newDS->SetProjection(pszSRS_WKT);
   CPLFree(pszSRS_WKT);
@@ -362,7 +363,7 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
 }
 
 
-int LidarVolume::toTif(std::string filename){
-  writeImage(filename.c_str());
+int LidarVolume::toTif(std::string filename, std::string geog_cs, int utm){
+  writeImage(filename.c_str(), geog_cs, utm);
   return 0;
 }

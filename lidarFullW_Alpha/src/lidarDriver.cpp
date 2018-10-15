@@ -91,7 +91,7 @@ int main (int argc, char *argv[]) {
   // Save the image to a geotiff file
   // The 'title' string is stored as part of the file
   printf("Saving TIFF...\n");
-  intermediateData.toTif("tifTest.tif");
+  intermediateData.toTif("tifTest.tif", rawData.geog_cs, rawData.utm);
 
   return 0;
 }

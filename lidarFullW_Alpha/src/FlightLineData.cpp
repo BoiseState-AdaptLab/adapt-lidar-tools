@@ -59,13 +59,21 @@ void FlightLineData::setFlightLineData(std::string fileName){
   std::string utm;
   std::string geog_cs;
   std::string token;
-  while ((pos = geoascii_params.find(delimiter)) != std::string::npos) {
-      token = geoascii_params.substr(0, pos);
-      std::cout << token << std::endl;
-      geoascii_params.erase(0, pos + delimiter.length());
-  }
+
+  utm = strtok (str," ");
+  utm = strtok (NULL,"/");
+  geog_cs = strtok (NULL,"/");
+
+
+  // while ((pos = geoascii_params.find(delimiter)) != std::string::npos) {
+  //     token = geoascii_params.substr(0, pos);
+  //     std::cout << token << std::endl;
+  //     geoascii_params.erase(0, pos + delimiter.length());
+  // }
 
   std::cout << "header.geoascii_params " << pReader->header.geoascii_params << std::endl;
+  std::cout << "utm: " << utm << std::endl;
+  std::cout << "geog_cs: "<< geog_cs << std::endl;
 
 
   fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);

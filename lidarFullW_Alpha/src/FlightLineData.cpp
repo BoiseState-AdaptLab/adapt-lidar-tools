@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <string>
 #include "FlightLineData.hpp"
 
 //Default constructor
@@ -64,17 +65,24 @@ void FlightLineData::setFlightLineData(std::string fileName){
   std::vector <std::string> tokens; 
      
   // stringstream class check1 
-  std::stringstream check1(geoascii_params); 
+  std::stringstream geo_stream(geoascii_params); 
       
   std::string intermediate; 
       
   // Tokenizing w.r.t. space ' ' 
-  while(getline(check1, intermediate, '/')){ 
+  while(getline(geo_stream, intermediate, '/')){ 
       tokens.push_back(intermediate); 
   } 
       
   utm_str = tokens[0];
-  utm = stoi(utm_str);
+  std::stringstream temp_s1(tokens[0]); 
+  std:: string temp;
+  while(getline(temp_s1, intermediate, ' ')){ 
+      temp = intermediate; 
+  } 
+
+  std::stringstream temp_s2(temp);
+  temp_s2 >> utm;
   geog_cs = tokens[1];
 
   std::cout << "utm_str: " << utm_str << std::endl;

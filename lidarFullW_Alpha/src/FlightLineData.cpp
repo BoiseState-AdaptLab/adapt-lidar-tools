@@ -3,6 +3,7 @@
 // Author: ravi
 
 #include <iostream>
+#include <sstream>
 #include "FlightLineData.hpp"
 
 //Default constructor
@@ -55,31 +56,24 @@ void FlightLineData::setFlightLineData(std::string fileName){
   
   std::string geoascii_params = pReader->header.geoascii_params;
   
-  std::string utm;
-  std::string geog_cs;
-  std::string token;
-    
-    // Vector of string to save tokens 
-    vector <string> tokens; 
+  // Vector of string to save tokens 
+  std::vector <std::string> tokens; 
+     
+  // stringstream class check1 
+  std::stringstream check1(geoascii_params); 
       
-    // stringstream class check1 
-    stringstream check1(geoascii_params); 
+  std::string intermediate; 
       
-    string intermediate; 
+  // Tokenizing w.r.t. space ' ' 
+  while(getline(check1, intermediate, '/')){ 
+      tokens.push_back(intermediate); 
+  } 
       
-    // Tokenizing w.r.t. space ' ' 
-    while(getline(check1, intermediate, ' /')){ 
-        tokens.push_back(intermediate); 
-    } 
-      
-    // Printing the token vector 
-    for(int i = 0; i < tokens.size(); i++){
-        cout << tokens[i] << '\n'; 
-    }
+  std::string utm = tokens[0];
+  std::string geog_cs = tokens[1];
 
-  std::cout << "header.geoascii_params " << pReader->header.geoascii_params << std::endl;
-  // std::cout << "utm: " << utm << std::endl;
-  // std::cout << "geog_cs: "<< geog_cs << std::endl;
+  std::cout << "utm: " << utm << std::endl;
+  std::cout << "geog_cs: "<< geog_cs << std::endl;
 
 
   fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);

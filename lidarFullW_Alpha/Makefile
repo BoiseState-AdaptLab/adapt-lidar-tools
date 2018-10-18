@@ -82,8 +82,8 @@ $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
                                  $(OBJ)/GaussianFitter_unittests.o \
 						         $(LIB)/gtest_main.a $(OBJ)/Peak.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib \
-		-lpulsewaves -lm -I/home/ravi/tools/gsl-2.4/include -lgsl \
-		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib -lgdal
+		-lpulsewaves -lm -lgsl \
+		-lgslcblas -lgdal
 
 $(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
                                  $(OBJ)/FlightLineData.o $(OBJ)/PulseData.o \
@@ -97,7 +97,7 @@ $(BIN)/LidarVolume_unittests: $(OBJ)/LidarVolume_unittests.o \
                               $(OBJ)/LidarVolume.o $(OBJ)/FlightLineData.o \
                               $(OBJ)/WaveGPSInformation.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -L/home/ravi/tools/gsl-2.4/lib -lpng -lgdal
+		$(PULSE_DIR)/lib -lpulsewaves -lgdal
 
 $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
@@ -105,7 +105,7 @@ $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 
 # Builds specific object files
 $(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I/home/ravi/tools/gsl-2.4/include -c \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c \
 		-o $@ $^
 
 $(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp
@@ -125,8 +125,7 @@ $(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
 
 $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 	$(CXX) -g -fpermissive -c -o $@ $^ -lm \
-		-I/home/ravi/tools/gsl-2.4/include -lgsl -lgslcblas \
-		-L/home/ravi/tools/gsl-2.4/lib
+		-lgsl -lgslcblas	
 
 # Builds all object files
 $(OBJ)/%.o: $(SRC)/%.cpp
@@ -140,8 +139,8 @@ $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
 					$(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
 					$(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -I/home/ravi/tools/gsl-2.4/include -lgsl \
-		-lgslcblas -L/home/ravi/tools/gsl-2.4/lib -lpng
+		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
+		-lgslcblas -lpng
 
 $(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^

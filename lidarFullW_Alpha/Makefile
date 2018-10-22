@@ -131,6 +131,16 @@ $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 $(OBJ)/%.o: $(SRC)/%.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS)
 
+# Builds the info tool 
+pls-info: $(BIN)/pls-info
+
+$(BIN)/pls-info: $(OBJ)/GetPLSDetails.o $(OBJ)/PulseData.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
+		$(PULSE_DIR)/lib -lpulsewaves
+
+$(OBJ)/GetPLSDetails.o: $(SRC)/GetPLSDetails.cpp
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+
 # Builds the driver file 
 lidarDriver: $(BIN)/lidarDriver
 
@@ -144,6 +154,8 @@ $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
 
 $(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+
+
 
 # A phony target is one that is not really the name of a file; rather it 
 # is just a name for a recipe to be executed when you make an explicit request. 

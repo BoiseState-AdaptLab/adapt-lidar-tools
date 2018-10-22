@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <sstream>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 #include "PulseData.hpp"
@@ -10,8 +11,9 @@ int main (int argc, char *argv[]) {
   PULSEreadOpener pOpener;
   PULSEreader *pReader;
 
-  if(argc < 3){
-    std::cerr << "Usage: " << argv[0] << " -f <path to .pls file>" <<std::endl;
+  if(argc < 2){
+    std::cerr << "Usage: " << argv[0] << " <path to .pls file>" <<std::endl;
+    exit(EXIT_FAILURE);
   }
 
   std::string fileName  = argv[1];
@@ -36,22 +38,10 @@ int main (int argc, char *argv[]) {
       tokens.push_back(intermediate); 
   } 
       
-  utm_str = tokens[0];
-  
-  // Parsing UTM string to get an int 
-  std::stringstream temp_s1(tokens[0]); 
-  std:: string temp;  
-  //Tokenizing w.r.t. ' '
-  while(getline(temp_s1, intermediate, ' ')){ 
-      temp = intermediate; 
-  } 
-  std::stringstream temp_s2(temp);
-  temp_s2 >> utm;
+  std::string utm_str = tokens[0];
+  std::string geog_cs = tokens[1];
 
-  geog_cs = tokens[1];
-
-  std::cout << "utm_str: " << utm_str << std::endl;
-  std::cout << "utm: " << utm << std::endl;
-  std::cout << "geog_cs: "<< geog_cs << std::endl;
+  std::cout << "\nUTM: " << utm_str << std::endl;
+  std::cout << "Geog_cs: "<< geog_cs << std::endl;
 
 }

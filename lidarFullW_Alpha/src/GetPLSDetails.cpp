@@ -38,6 +38,8 @@ int main (int argc, char *argv[]) {
   double  bb_y_min = pReader->header.min_y;
   double  bb_y_max = pReader->header.max_y;
 
+  int number_of_pulses =  pReader->header.number_of_pulses;
+
   pReader->close();
   delete pReader;
 
@@ -70,8 +72,9 @@ int main (int argc, char *argv[]) {
     std::cout << "-";
   }
   std::cout << std::endl;
+  std::cout << "No of pulses: " << number_of_pulses << std::endl;
 
-  std::cout << "UTM: " << utm_str << std::endl;
+  std::cout << "\nUTM: " << utm_str << std::endl;
   std::cout << "Geog_cs: "<< geog_cs << std::endl;
 
   std::cout << "\nMin x: "<< bb_x_min << std::endl;

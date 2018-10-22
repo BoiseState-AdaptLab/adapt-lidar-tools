@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <sstream>
+#include <math.h>
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 #include "PulseData.hpp"
@@ -33,7 +34,12 @@ int main (int argc, char *argv[]) {
   * first and the last points of the sampled parts of the returning 
   * waveforms of all pulses.*/
   double  bb_x_min = pReader->header.min_x;
+  double  bb_x_max = pReader->header.max_x;
+  double  bb_y_min = pReader->header.min_y;
   double  bb_y_max = pReader->header.max_y;
+
+  pReader->close();
+  delete pReader;
 
   double bb_i_min = 0;
   double bb_j_min = 0;
@@ -57,22 +63,29 @@ int main (int argc, char *argv[]) {
   std::string utm_str = tokens[0];
   std::string geog_cs = tokens[1];
 
-  std::cout << "\n Reading all information from the header of: " <<  argv[1]
+  std::cout << "\nReading information from the header of: " <<  argv[1]
             << std::endl;
+  std::cout << "----------------------------------------";
+  for(int i = 0; i < strlen(argv[1]); i++){
+    std::cout << "-";
+  }
+  std::cout << std::endl;
 
-  std::cout << "\nUTM: " << utm_str << std::endl;
+  std::cout << "UTM: " << utm_str << std::endl;
   std::cout << "Geog_cs: "<< geog_cs << std::endl;
 
   std::cout << "\nMin x: "<< bb_x_min << std::endl;
   std::cout << "Max y: "<< bb_y_max << std::endl;
 
+  std::cout << "\nCalculating i, j max, mins and extents:"<< std::endl;
+  std::cout << "---------------------------------------"<< std::endl;
   std::cout << "\nBounding box 'i' min: "<< bb_i_min << std::endl;
   std::cout << "Bounding box 'i' max: "<< bb_i_max << std::endl;
   std::cout << "Bounding box 'j' min: "<< bb_j_min << std::endl;
   std::cout << "Bounding box 'j' max: "<< bb_j_max << std::endl;
 
   std::cout << "\nBounding box 'i' extent: "<< i_extent << std::endl;
-  std::cout << "Bounding box 'i' extent: "<< j_extent << std::endl;
+  std::cout << "Bounding box 'j' extent: "<< j_extent << std::endl;
   std::cout << std::endl;
 
 }

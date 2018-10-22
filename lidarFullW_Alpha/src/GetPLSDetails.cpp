@@ -10,8 +10,8 @@ int main (int argc, char *argv[]) {
   PULSEreadOpener pOpener;
   PULSEreader *pReader;
 
-  if(argc < 2){
-    std::cerr << "Usage: " << argv[0] << " <fileName.pls>" <<std::endl;
+  if(argc < 3){
+    std::cerr << "Usage: " << argv[0] << " -f <path to .pls file>" <<std::endl;
   }
 
   std::string fileName  = argv[1];

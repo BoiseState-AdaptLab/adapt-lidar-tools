@@ -11,12 +11,12 @@
 //Default constructor
 LidarVolume::LidarVolume(){
   //initialize to zero
-  bb_x_min_padded = 0;
-  bb_y_min_padded = 0;
-  bb_z_min_padded = 0;
-  bb_x_max_padded = 0;
-  bb_y_max_padded = 0;
-  bb_z_max_padded = 0;
+  bb_x_min = 0;
+  bb_y_min = 0;
+  bb_z_min = 0;
+  bb_x_max = 0;
+  bb_y_max = 0;
+  bb_z_max = 0;
 
   bb_i_min = 0;
   bb_j_min = 0;
@@ -45,19 +45,19 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   max_z = ld_zMax;
   min_z = ld_zMin;
 
-  bb_x_min_padded = ld_xMin;
-  bb_y_min_padded = ld_yMin;
-  bb_z_min_padded = ld_zMin;
-  bb_x_max_padded = ld_xMax;
-  bb_y_max_padded = ld_yMax;
-  bb_z_max_padded = ld_zMax;
+  bb_x_min = ld_xMin;
+  bb_y_min = ld_yMin;
+  bb_z_min = ld_zMin;
+  bb_x_max = ld_xMax;
+  bb_y_max = ld_yMax;
+  bb_z_max = ld_zMax;
 
   bb_i_min = 0;
   bb_j_min = 0;
   bb_k_min = 0;
-  bb_i_max = (int) (ceil(bb_x_max_padded)) - (floor(bb_x_min_padded));
-  bb_j_max = (int) (ceil(bb_y_max_padded)) - (floor(bb_y_min_padded));
-  bb_k_max = (int) (ceil(bb_z_max_padded)) - (floor(bb_z_min_padded));
+  bb_i_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
+  bb_j_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
+  bb_k_max = (int) (ceil(bb_z_max)) - (floor(bb_z_min));
 
   i_extent = bb_i_max - bb_i_min + 1;
   j_extent = bb_j_max - bb_j_min + 1;
@@ -112,12 +112,12 @@ void LidarVolume::insert_peak(Peak *peak){
 //Convert peak x, y and z values to
 //i, j and k which identifies the voxel space they belong to
 int LidarVolume::gps_to_voxel_x(double x){
-  int voxel_x = (x - bb_x_min_padded);
+  int voxel_x = (x - bb_x_min);
   return voxel_x;
 }
 
 int LidarVolume::gps_to_voxel_y(double y){
-  int voxel_y = (y - bb_y_min_padded);
+  int voxel_y = (y - bb_y_min);
   return voxel_y;
 }
 
@@ -225,8 +225,8 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   float noData = -99999.9;
 
   //Used in transform
-  double min_x = bb_x_min_padded;
-  double max_y = bb_y_max_padded;
+  double min_x = bb_x_min;
+  double max_y = bb_y_max;
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at

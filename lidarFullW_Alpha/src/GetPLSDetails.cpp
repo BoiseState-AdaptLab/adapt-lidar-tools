@@ -24,14 +24,21 @@ int main (int argc, char *argv[]) {
     exit (EXIT_FAILURE);
   }
 
+  /* This record is simply an array of ASCII data. It contains one or 
+  * many strings separated by null or space characters which are referenced 
+  * by position from tags in the GeoKeyDirectory */
   std::string geoascii_params = pReader->header.geoascii_params;
-  // Vector of string to save tokens 
-  std::vector <std::string> tokens; 
-     
-  // use stringstream to parse
-  std::stringstream geo_stream(geoascii_params); 
+
+  /* The min and max fields describe the bounding box that includes the 
+  * first and the last points of the sampled parts of the returning 
+  * waveforms of all pulses.*/
+  double  bb_x_min = pReader->header.min_x;
+  double  bb_y_max = pReader->header.max_y;
+  
+  std::vector <std::string> tokens; /* vector of strings to store tokens */
+  std::stringstream geo_stream(geoascii_params); /* Use stringStream to parse */
       
-  std::string intermediate; 
+  std::string intermediate; /* Store temporary strings */ 
       
   // Tokenizing w.r.t. '/' 
   while(getline(geo_stream, intermediate, '/')){ 
@@ -43,5 +50,9 @@ int main (int argc, char *argv[]) {
 
   std::cout << "\nUTM: " << utm_str << std::endl;
   std::cout << "Geog_cs: "<< geog_cs << std::endl;
+
+  std::cout << "\nMin x: "<< bb_x_min << std::endl;
+  std::cout << "Max y: "<< bb_y_max << std::endl;
+  std::cout << std::endl;
 
 }

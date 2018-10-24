@@ -68,7 +68,7 @@ int main (int argc, char *argv[]) {
   std::cout << "\nReading information from the header of: " <<  argv[1]
             << std::endl;
   std::cout << "----------------------------------------";
-  for(int i = 0; i < strlen(argv[1]); i++){
+  for(std::size_t i = 0; i < strlen(argv[1]); i++){
     std::cout << "-";
   }
   std::cout << std::endl;

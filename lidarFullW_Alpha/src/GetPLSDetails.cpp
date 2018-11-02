@@ -78,6 +78,8 @@ int main (int argc, char *argv[]) {
   std::cout << "Geog_cs: "<< geog_cs << std::endl;
 
   std::cout << "\nMin x: "<< bb_x_min << std::endl;
+  std::cout << "Max x: "<< bb_x_max << std::endl;
+  std::cout << "Min y: "<< bb_y_min << std::endl;
   std::cout << "Max y: "<< bb_y_max << std::endl;
 
   std::cout << "\nCalculating i, j max, mins and extents:"<< std::endl;

@@ -27,19 +27,19 @@ class LidarVolume{
     double bb_y_max;
     double bb_z_max;
 
-    int bb_i_min;
-    int bb_j_min;
-    int bb_k_min;
-    int bb_i_max;
-    int bb_j_max;
-    int bb_k_max;
+    int bb_x_idx_min;
+    int bb_y_idx_min;
+    int bb_z_idx_min;
+    int bb_x_idx_max;
+    int bb_y_idx_max;
+    int bb_z_idx_max;
 
     double max_z;
     double min_z;
 
     //extent of x, y, and z as calculated from the pulse data (max - min)
-    int i_extent;
-    int j_extent;
+    int x_idx_extent;
+    int y_idx_extent;
 
     //number of peaks to be saved into
     int numOfPeaks;

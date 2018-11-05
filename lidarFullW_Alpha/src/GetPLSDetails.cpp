@@ -43,14 +43,14 @@ int main (int argc, char *argv[]) {
   pReader->close();
   delete pReader;
 
-  double bb_i_min = 0;
-  double bb_j_min = 0;
-  int bb_i_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
-  int bb_j_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
+  double bb_x_idx_min = 0;
+  double bb_y_idx_min = 0;
+  int bb_x_idx_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
+  int bb_y_idx_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
 
   /* extent of x and yas calculated from the pulse data (max - min) */
-  double i_extent = bb_i_max - bb_i_min + 1;
-  double j_extent = bb_j_max - bb_j_min + 1;
+  double i_extent = bb_x_idx_max - bb_x_idx_min + 1;
+  double j_extent = bb_y_idx_max - bb_y_idx_min + 1;
   
   std::vector <std::string> tokens; /* vector of strings to store tokens */
   std::stringstream geo_stream(geoascii_params); /* Use stringStream to parse */
@@ -86,13 +86,13 @@ int main (int argc, char *argv[]) {
 
   std::cout << "\nCalculating i, j max, mins and extents:"<< std::endl;
   std::cout << "---------------------------------------"<< std::endl;
-  std::cout << "\nBounding box 'i' min: "<< bb_i_min << std::endl;
-  std::cout << "Bounding box 'i' max: "<< bb_i_max << std::endl;
-  std::cout << "Bounding box 'j' min: "<< bb_j_min << std::endl;
-  std::cout << "Bounding box 'j' max: "<< bb_j_max << std::endl;
+  std::cout << "\nBounding box 'x_idx' min: "<< bb_x_idx_min << std::endl;
+  std::cout << "Bounding box 'x_idx' max: "<< bb_x_idx_max << std::endl;
+  std::cout << "Bounding box 'y_idx' min: "<< bb_y_idx_min << std::endl;
+  std::cout << "Bounding box 'y_idx' max: "<< bb_y_idx_max << std::endl;
 
-  std::cout << "\nBounding box 'i' extent: "<< i_extent << std::endl;
-  std::cout << "Bounding box 'j' extent: "<< j_extent << std::endl;
+  std::cout << "\nBounding box 'x_idx' extent: "<< i_extent << std::endl;
+  std::cout << "Bounding box 'y_idx' extent: "<< j_extent << std::endl;
   std::cout << std::endl;
 
 }

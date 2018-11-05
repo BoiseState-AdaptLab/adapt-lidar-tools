@@ -18,18 +18,18 @@ LidarVolume::LidarVolume(){
   bb_y_max = 0;
   bb_z_max = 0;
 
-  bb_i_min = 0;
-  bb_j_min = 0;
-  bb_k_min = 0;
-  bb_i_max = 0;
-  bb_j_max = 0;
-  bb_k_max = 0;
+  bb_x_idx_min = 0;
+  bb_y_idx_min = 0;
+  bb_z_idx_min = 0;
+  bb_z_idx_max = 0;
+  bb_y_idx_max = 0;
+  bb_z_idx_max = 0;
 
   max_z = 0;
   min_z = 0;
 
-  i_extent = 0;
-  j_extent = 0;
+  x_idx_extent = 0;
+  y_idx_extent = 0;
 
   currentPeak = 0;
   numOfPeaks = 5;
@@ -52,15 +52,15 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   bb_y_max = ld_yMax;
   bb_z_max = ld_zMax;
 
-  bb_i_min = 0;
-  bb_j_min = 0;
-  bb_k_min = 0;
-  bb_i_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
-  bb_j_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
-  bb_k_max = (int) (ceil(bb_z_max)) - (floor(bb_z_min));
+  bb_x_idx_min = 0;
+  bb_y_idx_min = 0;
+  bb_z_idx_min = 0;
+  bb_z_idx_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
+  bb_y_idx_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
+  bb_z_idx_max = (int) (ceil(bb_z_max)) - (floor(bb_z_min));
 
-  i_extent = bb_i_max - bb_i_min + 1;
-  j_extent = bb_j_max - bb_j_min + 1;
+  x_idx_extent = bb_z_idx_max - bb_x_idx_min + 1;
+  y_idx_extent = bb_y_idx_max - bb_y_idx_min + 1;
 }
 
 
@@ -68,7 +68,7 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 2D array of space that will hold peak
   // information (we don't know how many per volume)
-  unsigned int size = i_extent*j_extent;  //To preven overflow during calloc
+  unsigned int size = x_idx_extent*y_idx_extent;  //To preven overflow during calloc
   volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*), size);
   
   if(volume==NULL){
@@ -87,7 +87,7 @@ void LidarVolume::deallocateMemory(){
 //j is most contiguous
 //i is the least contiguous
 int LidarVolume::position(int i, int j){
-  return j + (i* j_extent);
+  return j + (i* y_idx_extent);
 }
 
 
@@ -96,7 +96,7 @@ void LidarVolume::insert_peak(Peak *peak){
   unsigned int j = gps_to_voxel_y(peak->y_activation);
 
   //No need to check for i, j, k < 0 because they are unsigned ints
-  if((int) i>i_extent || (int)j> j_extent){
+  if((int) i>x_idx_extent || (int)j> y_idx_extent){
     std::cerr << "ERROR: Invalid peak ignored\n";
     return;
   }
@@ -127,20 +127,20 @@ void LidarVolume::rasterizeMaxElevation(){
 
   int i,j;
 
-  for(i=bb_i_min;i<bb_i_max;i++){
-    for(j=bb_j_min;j<bb_j_max;j++){
-      raster[i*j_extent] = -1;
+  for(i=bb_x_idx_min;i<bb_z_idx_max;i++){
+    for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
+      raster[i*y_idx_extent] = -1;
       if(volume[position(i,j)] != NULL){
-        raster[i*j_extent] = j;
+        raster[i*y_idx_extent] = j;
 
         //Save the max and mins of the max elevations
-        if(raster[i*j_extent] > elev_high){
+        if(raster[i*y_idx_extent] > elev_high){
           elev_high = j;
         }
-        if(raster[i*j_extent] < elev_low){
+        if(raster[i*y_idx_extent] < elev_low){
           elev_low = j;
         }
-        std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
+        std::cout << "Raster: " << raster[i*y_idx_extent] <<std::endl;
         break;
       }
     }
@@ -153,19 +153,19 @@ void LidarVolume::rasterizeMinElevation(){
 
   int i,j;
 
-  for(i=bb_i_min;i<bb_i_max;i++){
-    for(j=bb_j_min;j<bb_j_max;j++){
-      raster[i*j_extent] = -1;
+  for(i=bb_x_idx_min;i<bb_z_idx_max;i++){
+    for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
+      raster[i*y_idx_extent] = -1;
       if(volume[position(i,j)] != NULL){
-        raster[i*j_extent] = j;
+        raster[i*y_idx_extent] = j;
         //store the maz and mins of the min elevation
-        if(raster[i*j_extent] > elev_high){
+        if(raster[i*y_idx_extent] > elev_high){
           elev_high = j;
         }
-        if(raster[i*j_extent] < elev_low){
+        if(raster[i*y_idx_extent] < elev_low){
           elev_low = j;
         }
-        std::cout << "Raster: " << raster[i*j_extent] <<std::endl;
+        std::cout << "Raster: " << raster[i*y_idx_extent] <<std::endl;
         break;
       }
     }
@@ -176,9 +176,9 @@ void LidarVolume::rasterizeMinElevation(){
 void LidarVolume::display(){
 
   int i,j;
-  for(i=bb_i_min;i<bb_i_max;i++){
-    for(j=bb_j_min;j<bb_j_max;j++){
-      printf("%3d ",raster[i*j_extent]);
+  for(i=bb_x_idx_min;i<bb_z_idx_max;i++){
+    for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
+      printf("%3d ",raster[i*y_idx_extent]);
     }
     printf("\n");
   }
@@ -199,12 +199,12 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
 
   //From raster
   //-1 because of zero indexing
-  int nCols = i_extent;
-  int nRows = j_extent;
+  int nCols = x_idx_extent;
+  int nRows = y_idx_extent;
 
   //FOR TESTING PURPOSES
-  std::cout << "nCols = i_extent = " << nCols << std::endl;
-  std::cout << "nRows = j_extent = " << nRows << std::endl;
+  std::cout << "nCols = x_idx_extent = " << nCols << std::endl;
+  std::cout << "nRows = y_idx_extent = " << nRows << std::endl;
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -220,7 +220,8 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, i_extent, j_extent, 1, GDT_Float32 , NULL);
+  newDS = driverTiff->Create(filename, x_idx_extent, y_idx_extent, 1, 
+                              GDT_Float32 , NULL);
 
   float noData = -99999.9;
 
@@ -257,15 +258,15 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
 printf( "%s\n", pszSRS_WKT );
   CPLFree(pszSRS_WKT);
 
-  //float *heights = (float*)calloc(sizeof(float),j_extent);
-  float *heights = (float*)calloc(i_extent, sizeof(float));
+  //float *heights = (float*)calloc(sizeof(float),y_idx_extent);
+  float *heights = (float*)calloc(x_idx_extent, sizeof(float));
 
   CPLErr retval;
 
   // Write image data
   int x, y;
-  for (y=0 ; y<j_extent ; y++) {
-    for (x=0 ; x<i_extent ; x++) {
+  for (y=0 ; y<y_idx_extent ; y++) {
+    for (x=0 ; x<x_idx_extent ; x++) {
      float maxZ = noData;
       std::vector<Peak>* myPoints = volume[position(y,x)];
       if(myPoints != NULL){
@@ -282,16 +283,17 @@ printf( "%s\n", pszSRS_WKT );
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
-    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, i_extent,1,
-                                       heights, i_extent, 1, GDT_Float32, 0, 0, NULL);
+    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, x_idx_extent,1,
+                                                heights, x_idx_extent, 1, 
+                                                GDT_Float32, 0, 0, NULL);
     
     fprintf(stderr,"Writing band: %d\n",y);
-    fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",i_extent,nCols,
-                                                         j_extent,nRows);
+    fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
+                                                         y_idx_extent,nRows);
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
-        fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",i_extent,nCols,
-                                                             j_extent,nRows);
+        fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
+                                                           y_idx_extent,nRows);
     }
   }
 
@@ -313,7 +315,7 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
     *b=0;
     return;
   }
-  double normalized_z = (val - bb_k_min) / (bb_k_max - bb_k_min);
+  double normalized_z = (val - bb_z_idx_min) / (bb_z_idx_max - bb_z_idx_min);
 
   //invert and group
   double inverted_group=(1 - normalized_z)/0.25;
@@ -325,8 +327,8 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
   int fractional_part=floor(255*(inverted_group - integer_part));
 
   // FOR TESTING PURPOSES
-  // std::cout << "max k = " << bb_k_max << std::endl;
-  // std::cout << "min k = " << bb_k_min << std::endl;
+  // std::cout << "max k = " << bb_z_idx_max << std::endl;
+  // std::cout << "min k = " << bb_z_idx_min << std::endl;
   // std::cout << "int val = " << val << std::endl;
   // std::cout << "Normalized z = " << normalized_z << std::endl;
   // std::cout << "Inverted group = " << inverted_group << std::endl;

@@ -38,25 +38,25 @@ TEST_F(LidarVolumeTest, testBoundingBox){
                       fld.bb_z_min,fld.bb_z_max);
     
 
-    int known_i_min = 0;
-    int known_j_min = 0;
-    int known_k_min = 0;
-    int known_i_max= (int) (ceil(516211.942 + 10)) - (floor(516209.586 - 10));
-    int known_j_max= (int) (ceil(4767923.621 + 10)) - (floor(4767921.375 - 10));    
-    int known_k_max= (int) (ceil(2093.581 + 10)) - (floor(2084.585 - 10));
+    int known_x_idx_min = 0;
+    int known_y_idx_min = 0;
+    int known_z_idx_min = 0;
+    int known_x_idx_max= (int) (ceil(516211.942 + 10)) - (floor(516209.586 - 10));
+    int known_y_idx_max= (int) (ceil(4767923.621 + 10)) - (floor(4767921.375 - 10));    
+    int known_z_idx_max= (int) (ceil(2093.581 + 10)) - (floor(2084.585 - 10));
   
-    EXPECT_EQ(known_i_min, lv.bb_i_min);
-    EXPECT_EQ(known_j_min, lv.bb_j_min);
-    EXPECT_EQ(known_k_min, lv.bb_k_min);
-    EXPECT_EQ(known_i_max, lv.bb_i_max);
-    EXPECT_EQ(known_j_max, lv.bb_j_max);
-    EXPECT_EQ(known_k_max, lv.bb_k_max);
+    EXPECT_EQ(known_x_idx_min, lv.bb_x_idx_min);
+    EXPECT_EQ(known_y_idx_min, lv.bb_y_idx_min);
+    EXPECT_EQ(known_z_idx_min, lv.bb_z_idx_min);
+    EXPECT_EQ(known_x_idx_max, lv.bb_x_idx_max);
+    EXPECT_EQ(known_y_idx_max, lv.bb_y_idx_max);
+    EXPECT_EQ(known_z_idx_max, lv.bb_z_idx_max);
     
-    int known_i_extent= known_i_max - known_i_min + 1;
-    int known_j_extent= known_j_max - known_j_min + 1;
+    int known_x_idx_extent= known_x_idx_max - known_x_idx_min + 1;
+    int known_y_idx_extent= known_y_idx_max - known_y_idx_min + 1;
 
-    EXPECT_EQ(known_i_extent, lv.i_extent);
-    EXPECT_EQ(known_j_extent, lv.j_extent);
+    EXPECT_EQ(known_x_idx_extent, lv.x_idx_extent);
+    EXPECT_EQ(known_y_idx_extent, lv.y_idx_extent);
     
 }
 

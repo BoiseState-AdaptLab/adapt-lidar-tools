@@ -199,12 +199,12 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
 
   //From raster
   //-1 because of zero indexing
-  int nCols = j_extent;
-  int nRows = i_extent;
+  int nCols = i_extent;
+  int nRows = j_extent;
 
   //FOR TESTING PURPOSES
-  // std::cout << "nCols = i_extent = " << nCols << std::endl;
-  // std::cout << "nRows = j_extent = " << nRows << std::endl;
+  std::cout << "nCols = i_extent = " << nCols << std::endl;
+  std::cout << "nRows = j_extent = " << nRows << std::endl;
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -220,7 +220,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, nRows, nCols, 1, GDT_Float32 , NULL);
+  newDS = driverTiff->Create(filename, i_extent, j_extent, 1, GDT_Float32 , NULL);
 
   float noData = -99999.9;
 
@@ -258,14 +258,14 @@ printf( "%s\n", pszSRS_WKT );
   CPLFree(pszSRS_WKT);
 
   //float *heights = (float*)calloc(sizeof(float),j_extent);
-  float *heights = (float*)calloc(j_extent, sizeof(float));
+  float *heights = (float*)calloc(i_extent, sizeof(float));
 
   CPLErr retval;
 
   // Write image data
   int x, y;
-  for (y=0 ; y<i_extent ; y++) {
-    for (x=0 ; x<j_extent ; x++) {
+  for (y=0 ; y<j_extent ; y++) {
+    for (x=0 ; x<i_extent ; x++) {
      float maxZ = noData;
       std::vector<Peak>* myPoints = volume[position(y,x)];
       if(myPoints != NULL){
@@ -282,16 +282,16 @@ printf( "%s\n", pszSRS_WKT );
     }
 
     // Refer to http://www.gdal.org/classGDALRasterBand.html
-    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, 0, nRows, nCols,
-                                       heights, nRows, nCols, GDT_Float32, 0, 0, NULL);
+    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, i_extent,1,
+                                       heights, i_extent, 1, GDT_Float32, 0, 0, NULL);
     
-    //fprintf(stderr,"Writing band: %d\n",y);
-    //fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
-                                                         //i_extent,nRows);
+    fprintf(stderr,"Writing band: %d\n",y);
+    fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",i_extent,nCols,
+                                                         j_extent,nRows);
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
-        fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
-                                                             i_extent,nRows);
+        fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",i_extent,nCols,
+                                                             j_extent,nRows);
     }
   }
 

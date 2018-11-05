@@ -244,7 +244,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   transform[2] = 0;
   transform[3] = max_y;
   transform[4] = 0;
-  transform[5] = 1;
+  transform[5] = -1;
 
   OGRSpatialReference oSRS;
   char *pszSRS_WKT = NULL;

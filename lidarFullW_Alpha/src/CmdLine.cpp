@@ -33,7 +33,7 @@ void CmdLine::setUsageMessage()
          << "  :Generate a Geotif file with max elevations" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
-  buffer << "       pathToExecutable -f ../src/140823_183115_1_clipped_test.pls\n" << std::endl;
+  buffer << "       bin/lidarDriver -f ../src/140823_183115_1_clipped_test.pls" << std::endl;
   usageMessage.append(buffer.str());
 }
 
@@ -44,10 +44,7 @@ std::string CmdLine::getUsageMessage(){
 
 // Default constructor
 CmdLine::CmdLine(){
-  // enter default values
-  noise_level = 3;
   printUsageMessage = false;
-  exceptionFlag = false;
   exeName = "";
   setUsageMessage();
 }
@@ -58,39 +55,6 @@ std::string CmdLine::getInputFileName(){
 }
 
 
-/****************************************************************************
-*
-* Custom exceptions
-*
-****************************************************************************/
-
-// Custom exceptions for no command line arguments
-struct CmdLineException : public exception{
-  const char * what() const throw(){
-    std::cout << getUsageMessage() << std::endl;
-    return "No command line arguments exception caught\n";
-  }
-};
-
-
-// Custom exception for missing argument
-struct missingArgException : public exception{
-  const char * what() const throw(){
-    std::cout << getUsageMessage() << std::endl;
-    return "Missing argument option exception caught\n";
-  }
-};
-
-// Custom exception for invalid option
-struct invalidOptionException : public exception{
-  const char * what() const throw(){
-    std::cout << getUsageMessage() << std::endl;
-    return "Invalid option exception caught\n";
-  }
-};
-
-
-
 // Function that parses the command line arguments
 void CmdLine::parse(int argc,char *argv[]){
   char optionChar;  //Option character
@@ -99,8 +63,9 @@ void CmdLine::parse(int argc,char *argv[]){
   /* If the program is run without any command line arguments, display
    * the correct program usage and quit.*/
   if(argc < 2){
+    std::cout << "\nNo command line arguments" <<std::endl;
+    std::cout << "-------------------------" <<std::endl;
     printUsageMessage = true;
-    throw CmdLineException();
   }
 
   exeName.append(argv[0]);
@@ -133,10 +98,16 @@ void CmdLine::parse(int argc,char *argv[]){
         break;
       case ':':
         // Missing option argument
-        throw missingArgException();
+	std::cout << "\nMissing arguments" <<std::endl;
+    	std::cout << "------------------" <<std::endl;
+        printUsageMessage = true;
+	break;
       default:
         // Invalid option
-        throw invalidOptionException();
+	std::cout << "\nInvalid option" <<std::endl;
+    	std::cout << "---------------" <<std::endl;
+        printUsageMessage = true;
+	break;
     }
   }
   // For non option input

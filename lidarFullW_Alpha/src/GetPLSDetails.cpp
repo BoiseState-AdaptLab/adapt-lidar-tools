@@ -78,6 +78,8 @@ int main (int argc, char *argv[]) {
   std::cout << "Geog_cs: "<< geog_cs << std::endl;
 
   std::cout << "\nMin x: "<< bb_x_min << std::endl;
+  std::cout << "Max x: "<< bb_x_max << std::endl;
+  std::cout << "Min y: "<< bb_y_min << std::endl;
   std::cout << "Max y: "<< bb_y_max << std::endl;
 
   fprintf(stdout,"\nMin x: %Lf\nMax y: %Lf\n",bb_x_min,bb_y_max);

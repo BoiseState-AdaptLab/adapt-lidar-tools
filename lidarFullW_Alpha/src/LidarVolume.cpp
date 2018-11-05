@@ -254,6 +254,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   oSRS.SetWellKnownGeogCS(geog_cs.c_str());
   oSRS.exportToWkt(&pszSRS_WKT);
   newDS->SetProjection(pszSRS_WKT);
+printf( "%s\n", pszSRS_WKT );
   CPLFree(pszSRS_WKT);
 
   float *heights = (float*)calloc(sizeof(float),j_extent);
@@ -283,6 +284,9 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
     retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, nCols, 1,
                                        heights, nCols, 1, GDT_Float32, 0, NULL);
     
+    //fprintf(stderr,"Writing band: %d\n",y);
+    //fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,
+                                                         //i_extent,nRows);
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",j_extent,nCols,

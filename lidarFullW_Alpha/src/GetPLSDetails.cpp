@@ -33,10 +33,10 @@ int main (int argc, char *argv[]) {
   /* The min and max fields describe the bounding box that includes the 
   * first and the last points of the sampled parts of the returning 
   * waveforms of all pulses.*/
-  double  bb_x_min = pReader->header.min_x;
-  double  bb_x_max = pReader->header.max_x;
-  double  bb_y_min = pReader->header.min_y;
-  double  bb_y_max = pReader->header.max_y;
+  long double  bb_x_min = pReader->header.min_x;
+  long double  bb_x_max = pReader->header.max_x;
+  long double  bb_y_min = pReader->header.min_y;
+  long double  bb_y_max = pReader->header.max_y;
 
   int number_of_pulses =  pReader->header.number_of_pulses;
 
@@ -45,8 +45,8 @@ int main (int argc, char *argv[]) {
 
   double bb_i_min = 0;
   double bb_j_min = 0;
-  double bb_i_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
-  double bb_j_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
+  int bb_i_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
+  int bb_j_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
 
   /* extent of x and yas calculated from the pulse data (max - min) */
   double i_extent = bb_i_max - bb_i_min + 1;
@@ -79,6 +79,8 @@ int main (int argc, char *argv[]) {
 
   std::cout << "\nMin x: "<< bb_x_min << std::endl;
   std::cout << "Max y: "<< bb_y_max << std::endl;
+
+  fprintf(stdout,"\nMin x: %Lf\nMax y: %Lf\n",bb_x_min,bb_y_max);
 
   std::cout << "\nCalculating i, j max, mins and extents:"<< std::endl;
   std::cout << "---------------------------------------"<< std::endl;

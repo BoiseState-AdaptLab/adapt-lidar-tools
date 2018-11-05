@@ -49,8 +49,8 @@ int main (int argc, char *argv[]) {
   int bb_y_idx_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
 
   /* extent of x and yas calculated from the pulse data (max - min) */
-  double i_extent = bb_x_idx_max - bb_x_idx_min + 1;
-  double j_extent = bb_y_idx_max - bb_y_idx_min + 1;
+  double x_idx_extent = bb_x_idx_max - bb_x_idx_min + 1;
+  double y_idx_extent = bb_y_idx_max - bb_y_idx_min + 1;
   
   std::vector <std::string> tokens; /* vector of strings to store tokens */
   std::stringstream geo_stream(geoascii_params); /* Use stringStream to parse */
@@ -91,8 +91,8 @@ int main (int argc, char *argv[]) {
   std::cout << "Bounding box 'y_idx' min: "<< bb_y_idx_min << std::endl;
   std::cout << "Bounding box 'y_idx' max: "<< bb_y_idx_max << std::endl;
 
-  std::cout << "\nBounding box 'x_idx' extent: "<< i_extent << std::endl;
-  std::cout << "Bounding box 'y_idx' extent: "<< j_extent << std::endl;
+  std::cout << "\nBounding box 'x_idx' extent: "<< x_idx_extent << std::endl;
+  std::cout << "Bounding box 'y_idx' extent: "<< y_idx_extent << std::endl;
   std::cout << std::endl;
 
 }

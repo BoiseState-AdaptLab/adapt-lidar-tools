@@ -57,6 +57,40 @@ std::string CmdLine::getInputFileName(){
   return inputFileName;
 }
 
+
+/****************************************************************************
+*
+* Custom exceptions
+*
+****************************************************************************/
+
+// Custom exceptions for no command line arguments
+struct CmdLineException : public exception{
+  const char * what() const throw(){
+    std::cout << getUsageMessage() << std::endl;
+    return "No command line arguments exception caught\n";
+  }
+};
+
+
+// Custom exception for missing argument
+struct missingArgException : public exception{
+  const char * what() const throw(){
+    std::cout << getUsageMessage() << std::endl;
+    return "Missing argument option exception caught\n";
+  }
+};
+
+// Custom exception for invalid option
+struct invalidOptionException : public exception{
+  const char * what() const throw(){
+    std::cout << getUsageMessage() << std::endl;
+    return "Invalid option exception caught\n";
+  }
+};
+
+
+
 // Function that parses the command line arguments
 void CmdLine::parse(int argc,char *argv[]){
   char optionChar;  //Option character
@@ -110,36 +144,3 @@ void CmdLine::parse(int argc,char *argv[]){
     printUsageMessage = true;
   }
 }
-
-
-
-/****************************************************************************
-*
-* Custom exceptions
-*
-****************************************************************************/
-
-// Custom exceptions for no command line arguments
-struct CmdLineException : public exception{
-  const char * what() const throw(){
-    std::cout << getUsageMessage() << std::endl;
-    return "No command line arguments exception caught\n";
-  }
-};
-
-
-// Custom exception for missing argument
-struct missingArgException : public exception{
-  const char * what() const throw(){
-    std::cout << getUsageMessage() << std::endl;
-    return "Missing argument option exception caught\n";
-  }
-};
-
-// Custom exception for invalid option
-struct invalidOptionException : public exception{
-  const char * what() const throw(){
-    std::cout << getUsageMessage() << std::endl;
-    return "Invalid option exception caught\n";
-  }
-};

@@ -55,11 +55,11 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
   bb_x_idx_min = 0;
   bb_y_idx_min = 0;
   bb_z_idx_min = 0;
-  bb_z_idx_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
+  bb_x_idx_max = (int) (ceil(bb_x_max)) - (floor(bb_x_min));
   bb_y_idx_max = (int) (ceil(bb_y_max)) - (floor(bb_y_min));
   bb_z_idx_max = (int) (ceil(bb_z_max)) - (floor(bb_z_min));
 
-  x_idx_extent = bb_z_idx_max - bb_x_idx_min + 1;
+  x_idx_extent = bb_x_idx_max - bb_x_idx_min + 1;
   y_idx_extent = bb_y_idx_max - bb_y_idx_min + 1;
 }
 
@@ -127,7 +127,7 @@ void LidarVolume::rasterizeMaxElevation(){
 
   int i,j;
 
-  for(i=bb_x_idx_min;i<bb_z_idx_max;i++){
+  for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
     for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
       raster[i*y_idx_extent] = -1;
       if(volume[position(i,j)] != NULL){
@@ -153,7 +153,7 @@ void LidarVolume::rasterizeMinElevation(){
 
   int i,j;
 
-  for(i=bb_x_idx_min;i<bb_z_idx_max;i++){
+  for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
     for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
       raster[i*y_idx_extent] = -1;
       if(volume[position(i,j)] != NULL){
@@ -176,7 +176,7 @@ void LidarVolume::rasterizeMinElevation(){
 void LidarVolume::display(){
 
   int i,j;
-  for(i=bb_x_idx_min;i<bb_z_idx_max;i++){
+  for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
     for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
       printf("%3d ",raster[i*y_idx_extent]);
     }

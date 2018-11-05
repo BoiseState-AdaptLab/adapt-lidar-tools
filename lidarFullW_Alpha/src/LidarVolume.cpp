@@ -203,8 +203,8 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   int nRows = y_idx_extent;
 
   //FOR TESTING PURPOSES
-  //std::cout << "nCols = x_idx_extent = " << nCols << std::endl;
-  //std::cout << "nRows = y_idx_extent = " << nRows << std::endl;
+  std::cerr << "nCols = x_idx_extent = " << nCols << std::endl;
+  std::cerr << "nRows = y_idx_extent = " << nRows << std::endl;
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -251,20 +251,20 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   char *pszSRS_WKT = NULL;
   newDS->SetGeoTransform(transform);
   oSRS.SetUTM(utm, TRUE);
-  // oSRS.SetWellKnownGeogCS("NAD83");
   oSRS.SetWellKnownGeogCS(geog_cs.c_str());
   oSRS.exportToWkt(&pszSRS_WKT);
   newDS->SetProjection(pszSRS_WKT);
-printf( "%s\n", pszSRS_WKT );
   CPLFree(pszSRS_WKT);
 
   //float *heights = (float*)calloc(sizeof(float),y_idx_extent);
   float *heights = (float*)calloc(x_idx_extent, sizeof(float));
+  std::cerr << "Mallocd heights. In LidarVolume.cpp:261" << std::endl;
 
   CPLErr retval;
 
   // Write image data
   int x, y;
+  std::cerr << "Entering write image loop. In LidarVolume.cpp:268" << std::endl;
   for (y=0 ; y<y_idx_extent ; y++) {
     for (x=0 ; x<x_idx_extent ; x++) {
      float maxZ = noData;
@@ -287,9 +287,11 @@ printf( "%s\n", pszSRS_WKT );
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
     
-    //fprintf(stderr,"Writing band: %d\n",y);
+    fprintf(stderr,"In writeImage loop. Writing band: %d. In LidarVolume.cpp:290\n",y);
     //fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
     //                                                     y_idx_extent,nRows);
+    fprintf(stderr,"In writeImage loop. x=%d y=%d. In LidarVolume.cpp:293 \n",x,y);
+    //std::cerr << "Heights: " << heights <<std::endl;
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,

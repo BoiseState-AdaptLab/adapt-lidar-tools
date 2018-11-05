@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <malloc.h>
-#include <png.h>
 #include <cstring>
 #include <string>
 

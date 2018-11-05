@@ -41,6 +41,7 @@ int main (int argc, char *argv[]) {
   std::ostringstream stream;
   GaussianFitter fitter;
   std::vector<Peak> peaks;
+  std::cerr << "Starting finding peaks. In lidarDriver:44" << std::endl; 
   while(rawData.hasNextPulse()){
     // make sure that we have an empty vector
     for(int i=0; i<(int)peaks.size(); i++){
@@ -90,7 +91,7 @@ int main (int argc, char *argv[]) {
 
   // Save the image to a geotiff file
   // The 'title' string is stored as part of the file
-  printf("Saving TIFF...\n");
+  std::cerr << "Peak finding complete. Going to start writing GeoTIF. In lidarDriver:94" << std::endl; 
   intermediateData.toTif("tifTest.tif", rawData.geog_cs, rawData.utm);
 
   return 0;

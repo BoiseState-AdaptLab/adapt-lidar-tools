@@ -20,6 +20,7 @@ using namespace std;
 // Custom exceptions for no command line arguments
 struct CmdLineException : public exception{
   const char * what() const throw(){
+    std::cout << getUsageMessage() << std::endl;
     return "No command line arguments exception caught\n";
   }
 };
@@ -56,10 +57,10 @@ void CmdLine::setUsageMessage()
 {
   std::stringstream buffer;
   buffer << "\nUsage: " << std::endl;
-  buffer << "       pathToExecutable [-option argument]+" << std::endl;
-  buffer << "\nOption:  " << std::endl;
+  buffer << "       path_to_executable [-option argument]+" << std::endl;
+  buffer << "Option:  " << std::endl;
   buffer << "       -f  <path to pls file>"
-         << "  (Generate a Geotif file based on max elevation)" << std::endl;
+         << "  :Generate a Geotif file with max elevations" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
   buffer << "       pathToExecutable -f ../src/140823_183115_1_clipped_test.pls\n" << std::endl;
@@ -129,11 +130,9 @@ void CmdLine::parse(int argc,char *argv[]){
         break;
       case ':':
         // Missing option argument
-        exceptionFlag = true;
         throw missingArgException();
       default:
         // Invalid option
-        exceptionFlag = true;
         throw invalidOptionException();
     }
   }

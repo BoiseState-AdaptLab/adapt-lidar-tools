@@ -88,12 +88,12 @@ void FlightLineData::setFlightLineData(std::string fileName){
 
   geog_cs = tokens[1];
 
-  std::cout << "utm_str: " << utm_str << std::endl;
-  std::cout << "utm: " << utm << std::endl;
-  std::cout << "geog_cs: "<< geog_cs << std::endl;
+  //std::cout << "utm_str: " << utm_str << std::endl;
+  //std::cout << "utm: " << utm << std::endl;
+  //std::cout << "geog_cs: "<< geog_cs << std::endl;
 
 
-  fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
+  //fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
 
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {

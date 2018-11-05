@@ -203,8 +203,8 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   int nRows = y_idx_extent;
 
   //FOR TESTING PURPOSES
-  std::cout << "nCols = x_idx_extent = " << nCols << std::endl;
-  std::cout << "nRows = y_idx_extent = " << nRows << std::endl;
+  //std::cout << "nCols = x_idx_extent = " << nCols << std::endl;
+  //std::cout << "nRows = y_idx_extent = " << nRows << std::endl;
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -287,9 +287,9 @@ printf( "%s\n", pszSRS_WKT );
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
     
-    fprintf(stderr,"Writing band: %d\n",y);
-    fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
-                                                         y_idx_extent,nRows);
+    //fprintf(stderr,"Writing band: %d\n",y);
+    //fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
+    //                                                     y_idx_extent,nRows);
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,

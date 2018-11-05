@@ -29,10 +29,7 @@ private:
 public:
   // help parameters
   bool printUsageMessage;
-  bool exceptionFlag;
 
-  //User inputted noise leve
-  int noise_level;
 
   CmdLine();
 
@@ -44,7 +41,6 @@ public:
   void setInputFileName(char *args);
   void setInputFileName(std::string filename);
   std::string getInputFileName();
-  bool get_max_elev_flag();
 };
 
 #endif /* CMDLINE_HPP_ */

@@ -13,36 +13,6 @@ using namespace std;
 
 /****************************************************************************
 *
-* Custom exceptions
-*
-****************************************************************************/
-
-// Custom exceptions for no command line arguments
-struct CmdLineException : public exception{
-  const char * what() const throw(){
-    std::cout << getUsageMessage() << std::endl;
-    return "No command line arguments exception caught\n";
-  }
-};
-
-
-// Custom exception for missing argument
-struct missingArgException : public exception{
-  const char * what() const throw(){
-    return "Missing argument option exception caught\n";
-  }
-};
-
-// Custom exception for invalid option
-struct invalidOptionException : public exception{
-  const char * what() const throw(){
-    return "Invalid option exception caught\n";
-  }
-};
-
-
-/****************************************************************************
-*
 * Begin CmdLine functions
 *
 ****************************************************************************/
@@ -123,7 +93,6 @@ void CmdLine::parse(int argc,char *argv[]){
       case 'f': //Generate a geotif file of max elevations
         fArg = optarg;
         setInputFileName(fArg);
-        max_elev_flag = true;
         break;
       case 'h':
         printUsageMessage = true;
@@ -143,7 +112,34 @@ void CmdLine::parse(int argc,char *argv[]){
 }
 
 
-// Return peakFlag value
-bool CmdLine::get_max_elev_flag(){
-  return max_elev_flag;
-}
+
+/****************************************************************************
+*
+* Custom exceptions
+*
+****************************************************************************/
+
+// Custom exceptions for no command line arguments
+struct CmdLineException : public exception{
+  const char * what() const throw(){
+    std::cout << getUsageMessage() << std::endl;
+    return "No command line arguments exception caught\n";
+  }
+};
+
+
+// Custom exception for missing argument
+struct missingArgException : public exception{
+  const char * what() const throw(){
+    std::cout << getUsageMessage() << std::endl;
+    return "Missing argument option exception caught\n";
+  }
+};
+
+// Custom exception for invalid option
+struct invalidOptionException : public exception{
+  const char * what() const throw(){
+    std::cout << getUsageMessage() << std::endl;
+    return "Invalid option exception caught\n";
+  }
+};

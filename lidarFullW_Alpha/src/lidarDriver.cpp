@@ -23,7 +23,7 @@ int main (int argc, char *argv[]) {
 
   if(cmdLineArgs.printUsageMessage == true) {
     std::cout << cmdLineArgs.getUsageMessage() << std::endl;
-    return 0;
+    return 1;
   }
 
   // Create a flight line data object

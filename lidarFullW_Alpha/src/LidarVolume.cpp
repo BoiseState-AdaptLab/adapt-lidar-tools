@@ -21,7 +21,7 @@ LidarVolume::LidarVolume(){
   bb_x_idx_min = 0;
   bb_y_idx_min = 0;
   bb_z_idx_min = 0;
-  bb_z_idx_max = 0;
+  bb_x_idx_max = 0;
   bb_y_idx_max = 0;
   bb_z_idx_max = 0;
 
@@ -291,7 +291,6 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
     //fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
     //                                                     y_idx_extent,nRows);
     fprintf(stderr,"In writeImage loop. x=%d y=%d. In LidarVolume.cpp:293 \n",x,y);
-    //std::cerr << "Heights: " << heights <<std::endl;
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,

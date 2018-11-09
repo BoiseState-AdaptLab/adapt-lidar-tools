@@ -69,12 +69,18 @@ void LidarVolume::allocateMemory(){
   // we are going to allocate a 2D array of space that will hold peak
   // information (we don't know how many per volume)
   unsigned int size = x_idx_extent*y_idx_extent;  //To preven overflow during calloc
-  volume = (std::vector<Peak>**) calloc (sizeof(std::vector<Peak>*), size);
-  
+  int x_idx,y_idx;
+  volume = (std::vector<Peak>**) malloc (sizeof(std::vector<Peak>*)*size);
   if(volume==NULL){
     perror("ERROR ATTEMPTING TO ALLOCATE LidarVolume Data: ");
   }
-  // this is where you would allocate the raster IF you decide to use it
+  // set all values to NULL (remember NULL is not guaranteed to be all 0
+  // bits and so we can't just use calloc
+  for(y_idx=0;y_idx<y_idx_extent;y_idx++){
+    for(x_idx=0;x_idx<x_idx_extent;x_idx++){
+      volume[position(y_idx,x_idx)] = NULL;
+    }
+  }
 }
 
 
@@ -87,20 +93,22 @@ void LidarVolume::deallocateMemory(){
 //j is most contiguous
 //i is the least contiguous
 int LidarVolume::position(int i, int j){
-  return j + (i* y_idx_extent);
+  return j + (i* x_idx_extent);
 }
 
-
+/* insert_peak
+ * Note that this is an unordered list
+ */
 void LidarVolume::insert_peak(Peak *peak){
-  unsigned int i = gps_to_voxel_x(peak->x_activation);
-  unsigned int j = gps_to_voxel_y(peak->y_activation);
+  unsigned int x_idx = gps_to_voxel_x(peak->x_activation);
+  unsigned int y_idx = gps_to_voxel_y(peak->y_activation);
 
-  //No need to check for i, j, k < 0 because they are unsigned ints
-  if((int) i>x_idx_extent || (int)j> y_idx_extent){
+  // make sure we are in our bounding box
+  if((int)x_idx > x_idx_extent || (int) y_idx > y_idx_extent){
     std::cerr << "ERROR: Invalid peak ignored\n";
     return;
   }
-  unsigned long int p = position(i,j);
+  unsigned long int p = position(y_idx,x_idx);
 
   if(volume[p] == NULL){
     volume[p] = new std::vector<Peak>();
@@ -112,12 +120,12 @@ void LidarVolume::insert_peak(Peak *peak){
 //Convert peak x, y and z values to
 //i, j and k which identifies the voxel space they belong to
 int LidarVolume::gps_to_voxel_x(double x){
-  int voxel_x = (x - bb_x_min);
+  int voxel_x = (int)(x - bb_x_min);
   return voxel_x;
 }
 
 int LidarVolume::gps_to_voxel_y(double y){
-  int voxel_y = (y - bb_y_min);
+  int voxel_y = (int)(y - bb_y_min);
   return voxel_y;
 }
 
@@ -125,6 +133,8 @@ int LidarVolume::gps_to_voxel_y(double y){
 //Rasterize for max elevation
 void LidarVolume::rasterizeMaxElevation(){
 
+  std::cerr << "This function is not implemented" << std::endl;
+  return;
   int i,j;
 
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
@@ -151,6 +161,8 @@ void LidarVolume::rasterizeMaxElevation(){
 //Rasterize for min elevation
 void LidarVolume::rasterizeMinElevation(){
 
+  std::cerr << "This function is not implemented" << std::endl;
+  return;
   int i,j;
 
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
@@ -175,6 +187,8 @@ void LidarVolume::rasterizeMinElevation(){
 
 void LidarVolume::display(){
 
+  std::cerr << "This function is not implemented" << std::endl;
+  return;
   int i,j;
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
     for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
@@ -225,10 +239,6 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
 
   float noData = -99999.9;
 
-  //Used in transform
-  double min_x = bb_x_min;
-  double max_y = bb_y_max;
-
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at
   //position (transform[0],transform[3]).
@@ -238,12 +248,11 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   //  adfGeoTransform[3] /* top left y */
   //  adfGeoTransform[4] /* 0 */
   //  adfGeoTransform[5] /* n-s pixel resolution (negative value) */
-
   double transform[6];
-  transform[0] = min_x;
+  transform[0] = bb_x_min;
   transform[1] = 1;
   transform[2] = 0;
-  transform[3] = max_y;
+  transform[3] = bb_y_max;
   transform[4] = 0;
   transform[5] = -1;
 
@@ -282,15 +291,13 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
       //std::cout<< "In x loop: Height[" << x <<"]= maxZ = " << maxZ << std::endl;
     }
 
+    fprintf(stderr,"In writeImage loop. Writing band: %d,%d. In %s:%d\n",x,y,__FILE__,__LINE__);
     // Refer to http://www.gdal.org/classGDALRasterBand.html
     retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, x_idx_extent,1,
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
+    fprintf(stderr,"In writeImage loop. Writing band: %d,%d. In %s:%d\n",x,y,__FILE__,__LINE__);
     
-    fprintf(stderr,"In writeImage loop. Writing band: %d. In LidarVolume.cpp:290\n",y);
-    //fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
-    //                                                     y_idx_extent,nRows);
-    fprintf(stderr,"In writeImage loop. x=%d y=%d. In LidarVolume.cpp:293 \n",x,y);
     if(retval != CE_None){
         fprintf(stderr,"Error during writing band: 1\n");
         fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,

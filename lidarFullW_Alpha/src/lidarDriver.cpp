@@ -26,6 +26,7 @@ int main (int argc, char *argv[]) {
     return 1;
   }
 
+  std::cout << "\nProcessing  " << argv[2] << std::endl;
   // Create a flight line data object
   std::string fileName = cmdLineArgs.getInputFileName();
   FlightLineData rawData;
@@ -41,7 +42,11 @@ int main (int argc, char *argv[]) {
   std::ostringstream stream;
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::cerr << "Starting finding peaks. In lidarDriver:44" << std::endl; 
+  
+  #ifdef DEBUG
+    std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
+  #endif 
+
   while(rawData.hasNextPulse()){
     // make sure that we have an empty vector
     for(int i=0; i<(int)peaks.size(); i++){
@@ -79,21 +84,30 @@ int main (int argc, char *argv[]) {
     }
 
     // FOR TESTING PURPOSES
-    // pd.displayPulseData(&stream);
-    // std::cout << stream.str() << std::endl;
-    // stream.str("");
+    #ifdef DEBUG
+      pd.displayPulseData(&stream);
+      std::cout << stream.str() << std::endl;
+      stream.str("");
+    #endif
 
   }
- 
-  //std::cerr << "Total: " << fitter.get_total() << std::endl;
-  //std::cerr << "Pass: " << fitter.get_pass() << std::endl;
-  //std::cerr << "Fail: " << fitter.get_fail() << std::endl;
+  
+  #ifdef DEBUG
+    std::cerr << "Total: " << fitter.get_total() << std::endl;
+    std::cerr << "Pass: " << fitter.get_pass() << std::endl;
+    std::cerr << "Fail: " << fitter.get_fail() << std::endl;
+  #endif
 
+  #ifdef DEBUG
+    std::cerr << "Peak finding complete. Going to start writing GeoTIF. In lidarDriver:94" << std::endl; 
+  #endif
+  
   // Save the image to a geotiff file
   // The 'title' string is stored as part of the file
-  std::cerr << "Peak finding complete. Going to start writing GeoTIF. In lidarDriver:94" << std::endl; 
+  std::cout << "Writing GeoTIFF " << std::endl;
   intermediateData.toTif("tifTest.tif", rawData.geog_cs, rawData.utm);
-
+  std::cout << "All done!\n " << std::endl;
+  
   return 0;
 }
 

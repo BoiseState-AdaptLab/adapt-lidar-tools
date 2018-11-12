@@ -99,7 +99,7 @@ TEST_F(CmdLineTest, missingCmdLineArg) {
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 1;
   strncpy(commonArgSpace[0],"test",5);
-  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+  EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests missing short option arguments
@@ -108,7 +108,7 @@ TEST_F(CmdLineTest, missingShortOptArg) {
   numberOfArgs = 2;
   strncpy(commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-f",3);
-  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+  EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests missing long option arguments
@@ -117,7 +117,7 @@ TEST_F(CmdLineTest, missingLongOptArg) {
   numberOfArgs = 2;
   strncpy(commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"--file",7);
-  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+  EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests invalid short command line options
@@ -126,7 +126,7 @@ TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
   numberOfArgs = 2;
   strncpy( commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-s",3);
-  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+  EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 // Tests invalid long command line options
@@ -135,7 +135,7 @@ TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
   numberOfArgs = 2;
   strncpy( commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"--who",6);
-  EXPECT_ANY_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+  EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
 

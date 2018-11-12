@@ -68,7 +68,7 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 2D array of space that will hold peak
   // information (we don't know how many per volume)
-  unsigned int size = x_idx_extent*y_idx_extent;  //To preven overflow during calloc
+  unsigned int size = x_idx_extent*y_idx_extent;  //To prevent overflow during calloc
   int x_idx,y_idx;
   volume = (std::vector<Peak>**) malloc (sizeof(std::vector<Peak>*)*size);
   if(volume==NULL){
@@ -105,7 +105,7 @@ void LidarVolume::insert_peak(Peak *peak){
 
   // make sure we are in our bounding box
   if((int)x_idx > x_idx_extent || (int) y_idx > y_idx_extent){
-    std::cerr << "ERROR: Invalid peak ignored\n";
+    std::cerr << "ERROR: Invalid peak ignored" << std::endl;
     return;
   }
   unsigned long int p = position(y_idx,x_idx);
@@ -135,6 +135,7 @@ void LidarVolume::rasterizeMaxElevation(){
 
   std::cerr << "This function is not implemented" << std::endl;
   return;
+  
   int i,j;
 
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
@@ -163,6 +164,7 @@ void LidarVolume::rasterizeMinElevation(){
 
   std::cerr << "This function is not implemented" << std::endl;
   return;
+
   int i,j;
 
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
@@ -189,6 +191,7 @@ void LidarVolume::display(){
 
   std::cerr << "This function is not implemented" << std::endl;
   return;
+  
   int i,j;
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
     for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
@@ -217,8 +220,10 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   int nRows = y_idx_extent;
 
   //FOR TESTING PURPOSES
-  std::cerr << "nCols = x_idx_extent = " << nCols << std::endl;
-  std::cerr << "nRows = y_idx_extent = " << nRows << std::endl;
+  #ifdef DEBUG
+    std::cerr << "nCols = x_idx_extent = " << nCols << std::endl;
+    std::cerr << "nRows = y_idx_extent = " << nRows << std::endl;
+  #endif
 
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff;
@@ -267,13 +272,20 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
 
   //float *heights = (float*)calloc(sizeof(float),y_idx_extent);
   float *heights = (float*)calloc(x_idx_extent, sizeof(float));
-  std::cerr << "Mallocd heights. In LidarVolume.cpp:261" << std::endl;
+
+  #ifdef DEBUG
+    std::cerr << "Mallocd heights. In "<< __FILE__ << ":" << __LINE__ << std::endl;
+  #endif
 
   CPLErr retval;
 
   // Write image data
   int x, y;
-  std::cerr << "Entering write image loop. In LidarVolume.cpp:268" << std::endl;
+
+  #ifdef DEBUG
+    std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
+  #endif
+
   for (y=0 ; y<y_idx_extent ; y++) {
     for (x=0 ; x<x_idx_extent ; x++) {
      float maxZ = noData;
@@ -290,18 +302,21 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
       heights[x] = maxZ;
       //std::cout<< "In x loop: Height[" << x <<"]= maxZ = " << maxZ << std::endl;
     }
-
-    fprintf(stderr,"In writeImage loop. Writing band: %d,%d. In %s:%d\n",x,y,__FILE__,__LINE__);
+    #ifdef DEBUG
+      std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
+    #endif
+    
     // Refer to http://www.gdal.org/classGDALRasterBand.html
     retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, x_idx_extent,1,
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
-    fprintf(stderr,"In writeImage loop. Writing band: %d,%d. In %s:%d\n",x,y,__FILE__,__LINE__);
+    #ifdef DEBUG
+      std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
+    #endif
     
     if(retval != CE_None){
-        fprintf(stderr,"Error during writing band: 1\n");
-        fprintf(stderr,"%d cols %d ncols %d rows %d nRows\n",x_idx_extent,nCols,
-                                                           y_idx_extent,nRows);
+        std::cerr << "Error during writing band: 1 "<< std::endl;
+        std::cerr << x_idx_extent << " cols " << nCols << " ncols " << y_idx_extent << " rows " << nRows << " nRows" << std::endl;
     }
   }
 

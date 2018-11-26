@@ -24,3 +24,8 @@
 ehthumbs.db
 Thumbs.db
 .directory
+
+# Generated output files
+########################
+.tif
+.csv

@@ -27,5 +27,5 @@ Thumbs.db
 
 # Generated output files
 ########################
-.tif
-.csv
+*.tif
+*.csv

@@ -62,6 +62,14 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("someFileName",cmd2.getInputFileName());
+
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
+  strncpy(commonArgSpace[1],"-g",3);
+  ASSERT_NO_THROW({
+    cmd3.parse(numberOfArgs, commonArgSpace);
+  });
+  ASSERT_FALSE(cmd3.useGaussianFitting);
 }
 
 // Tests valid long command line options
@@ -85,6 +93,13 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("file",cmd2.getInputFileName());
 
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 2;
+  strncpy(commonArgSpace[1], "--guess", 8);
+  ASSERT_NO_THROW({
+        cmd3.parse(numberOfArgs, commonArgSpace);
+  });
+  ASSERT_TRUE(cmd3.useGaussianFitting);
 }
 
 

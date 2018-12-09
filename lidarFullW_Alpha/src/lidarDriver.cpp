@@ -47,6 +47,12 @@ int main (int argc, char *argv[]) {
     std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
   #endif 
 
+  //if(!cmdLineArgs.useGaussianFitting) {
+    //std::cerr << "Estimating peaks" << std::endl;
+  //} else {
+    //std::cerr << "Finding peaks with gaussian fitting" << std::endl;
+  //}  
+
   while(rawData.hasNextPulse()){
     // make sure that we have an empty vector
     for(int i=0; i<(int)peaks.size(); i++){
@@ -66,8 +72,14 @@ int main (int argc, char *argv[]) {
 
         // Smooth the data and test result
         fitter.smoothing_expt(&pd.returningWave);
-        int peak_count = fitter.find_peaks(&peaks, pd.returningWave,
-                                          pd.returningIdx);
+
+	// Check parameter for using gaussian fitting or estimating
+	int peak_count;
+	if(!cmdLineArgs.useGaussianFitting)
+                peak_count = fitter.guess_peaks(pd.returningWave).size();
+        else
+                peak_count = fitter.find_peaks(&peaks, pd.returningWave,
+                                                  pd.returningIdx);
 
         // foreach peak - find activation point
         //              - calculate x,y,z

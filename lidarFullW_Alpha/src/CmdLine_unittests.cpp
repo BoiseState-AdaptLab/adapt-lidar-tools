@@ -99,7 +99,7 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   ASSERT_NO_THROW({
         cmd3.parse(numberOfArgs, commonArgSpace);
   });
-  ASSERT_TRUE(cmd3.useGaussianFitting);
+  ASSERT_FALSE(cmd3.useGaussianFitting);
 }
 
 

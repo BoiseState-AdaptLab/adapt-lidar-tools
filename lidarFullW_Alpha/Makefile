@@ -175,7 +175,7 @@ $(BIN)/lidarDriver: $(OBJ)/lidarDriver.o $(OBJ)/CmdLine.o \
 		-lgslcblas -lpng
 
 $(OBJ)/lidarDriver.o: $(SRC)/lidarDriver.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++11 -c -o $@ $^
 
 
 
@@ -205,4 +205,3 @@ clean:
 	rm -f $(OBJ)/*
 	rm -f $(LIB)/*
 	rm -f $(SRC)/*.o
-	

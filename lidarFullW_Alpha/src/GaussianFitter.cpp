@@ -340,11 +340,12 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   fdf.p = p;
   fdf.params = &fit_data;
 
+  // TODO: this work needs to be pulled into a function guess_peaks
   //this is a guess starting point
   int j;
   for(i=0; i< peakCount; i++){
-    gsl_vector_set(x, i*3+0, ampData[peak_guesses_loc[i]]);
-    gsl_vector_set(x, i*3+1, idxData[peak_guesses_loc[i]]);
+    gsl_vector_set(x, i*3+0, ampData[peak_guesses_loc[i]]);// stays
+    gsl_vector_set(x, i*3+1, idxData[peak_guesses_loc[i]]);// stays
 
     // Create a better guess by using a better width
     int guess = -1;
@@ -389,7 +390,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     #endif
     
     if(guess > 20){guess = 10;}
-    gsl_vector_set(x, i*3+2, guess);
+    gsl_vector_set(x, i*3+2, guess); // stays
   }
 
 

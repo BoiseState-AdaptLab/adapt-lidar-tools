@@ -9,10 +9,12 @@ file_name = ""
 
 def main(band_num, input_file):
   #Make sure input file is .tif
+  if input_file == "-i":
+    Finish(0)
   last_slash = input_file.rfind("/") + 1;
   global file_name
   file_name = input_file[last_slash:]
-  print ("\nProcessing {}\n".format(file_name))
+  print ("\n\33[32mProcessing:\33[0m {}\n".format(file_name))
   if not input_file.endswith(".tif"):
     print ("Invalid file\nFile types supported: .tif")
     Finish(1)        
@@ -30,12 +32,14 @@ def main(band_num, input_file):
     print (e);
     Finish(1)
 
-
-  print ("[ NO DATA VALUE ] = ", band.GetNoDataValue());
-  print ("[ MIN ] = ", band.GetMinimum());
-  print ("[ MAX ] = ", band.GetMaximum());
-  print ("[ SCALE ] = ", band.GetScale());
-  print ("[ UNIT TYPE ] = ", band.GetUnitType());
+  if band.GetNoDataValue() == None:
+    band.SetNoDataValue(-99999)
+  if "-i" in sys.argv:
+    print ("[ NO DATA VALUE ] = ", band.GetNoDataValue());
+    print ("[ MIN ] = ", band.GetMinimum());
+    print ("[ MAX ] = ", band.GetMaximum());
+    print ("[ SCALE ] = ", band.GetScale());
+    print ("[ UNIT TYPE ] = ", band.GetUnitType());
   ctable = band.GetColorTable()
 
   if ctable is None:
@@ -57,9 +61,11 @@ def Data(band):
   #Print data to file
   print ("\nWriting data to file")
   global file_name
-  output = open(os.path.join(os.path.dirname(__file__), "../outputs/tif_data/") + file_name[:-4] + ".out", 'w')
+  output = open(os.path.join(os.path.dirname(__file__), "../tif/data/") + file_name[:-4] + ".out", 'w')
+  print (band.YSize)
+  output.write("Max Y = {}\n\n".format(band.YSize))
   for i in range(band.YSize):
-    output.write("y = {}) ".format(i))
+    output.write("y = {}: ".format(i))
     scanline = band.ReadRaster(xoff=0, yoff=i,
                                xsize=band.XSize, ysize=1,
                                buf_xsize=band.XSize, buf_ysize=1,
@@ -68,10 +74,10 @@ def Data(band):
     #Print out data
     for val in tuple_of_floats:
       #Check for data
-      if not (val > -100000 and val <-99998):
-        output.write(str(val) + ", ")
+      if not (val > band.GetNoDataValue() - 1 and val < band.GetNoDataValue() + 1):
+        output.write("{}, ".format(str(val)))
       else:
-        output.write("No Data, ")
+        output.write("NA, ")
     output.write("\n\n") 
   output.close()
   Finish(0);
@@ -79,7 +85,8 @@ def Data(band):
 def Usage():
   print("""
   Usage:
-  $ python gettifinfo.py input-raster
+  $ python gettifinfo.py input-raster [-i]
+      -i: Prints extra information about the tif file
   """)
   sys.exit(1)
 
@@ -95,7 +102,7 @@ def Finish(err):
 
 if __name__ == '__main__':
 
-  if len( sys.argv ) < 2:
+  if len( sys.argv ) < 2 or len( sys.argv ) < 3 and "-i" in sys.argv:
     print ("""
     [ ERROR ] you must supply at least one argument:
     1) input raster

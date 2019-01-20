@@ -75,7 +75,7 @@ void CmdLine::parse(int argc,char *argv[]){
   {
       {"file", required_argument, NULL, 'f'},
       {"help", no_argument, NULL, 'h'},
-      {"guess", no_argument, NULL, 'g'},
+      {"firstdiff", no_argument, NULL, 'd'},
       {0, 0, 0, 0}
   };
 
@@ -87,7 +87,7 @@ void CmdLine::parse(int argc,char *argv[]){
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hf:g",
+  while((optionChar = getopt_long (argc, argv, ":hf:d",
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information
@@ -98,7 +98,7 @@ void CmdLine::parse(int argc,char *argv[]){
       case 'h':
         printUsageMessage = true;
         break;
-      case 'g':
+      case 'd':
 	useGaussianFitting = false;
 	break;
       case ':':

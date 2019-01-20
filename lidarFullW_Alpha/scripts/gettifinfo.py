@@ -62,8 +62,7 @@ def Data(band):
   print ("\nWriting data to file")
   global file_name
   output = open(os.path.join(os.path.dirname(__file__), "../tif/data/") + file_name[:-4] + ".out", 'w')
-  print (band.YSize)
-  output.write("Max Y = {}\n\n".format(band.YSize))
+  output.write("Max Y = {}\n\n".format(band.YSize - 1))
   for i in range(band.YSize):
     output.write("y = {}: ".format(i))
     scanline = band.ReadRaster(xoff=0, yoff=i,

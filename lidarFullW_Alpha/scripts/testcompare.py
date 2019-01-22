@@ -1,3 +1,7 @@
+#File name: testcompare.py
+#Created on: 20-January-2019
+#Author: Aaron Orenstein
+
 import sys
 import subprocess
 import os

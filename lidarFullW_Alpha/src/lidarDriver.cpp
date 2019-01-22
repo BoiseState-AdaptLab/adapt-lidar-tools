@@ -87,7 +87,8 @@ int main (int argc, char *argv[]) {
 	int peak_count;
 	if(cmdLineArgs.useGaussianFitting == false){
           std::vector<int> peak_guesses_loc = fitter.guess_peaks(
-                                                   pd.returningWave);
+                                                   pd.returningWave,
+						   pd.returningIdx);
           for(std::vector<int>::iterator it = peak_guesses_loc.begin();
               it != peak_guesses_loc.end();++it){
             Peak* newPeak = new Peak();

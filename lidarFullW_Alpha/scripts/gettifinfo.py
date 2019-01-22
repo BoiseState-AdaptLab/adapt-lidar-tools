@@ -1,3 +1,7 @@
+#File name: gettifinfo.py
+#Created on: 17-December-2018
+#Author: Aaron Orenstein
+
 from osgeo import gdal
 import sys
 import struct

@@ -1,3 +1,7 @@
+#File name: compareout.py
+#Created on: 22-December-2018
+#Author: Aaron Orenstein
+
 import sys
 import subprocess
 import os

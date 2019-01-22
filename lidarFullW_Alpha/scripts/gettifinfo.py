@@ -4,8 +4,9 @@ import struct
 import os
 gdal.UseExceptions();
 
-files_complete = 0
+input_files = []
 file_name = ""
+custom_path = ""
 
 def main(band_num, input_file):
   #Make sure input file is .tif
@@ -61,51 +62,70 @@ def Data(band):
   #Print data to file
   print ("\nWriting data to file")
   global file_name
-  output = open(os.path.join(os.path.dirname(__file__), "../tif/data/") + file_name[:-4] + ".out", 'w')
+  global custom_path
+  output = open(custom_path + file_name[:-4] + ".out", 'w')
   output.write("Max Y = {}\n\n".format(band.YSize - 1))
   for i in range(band.YSize):
-    output.write("y = {}: ".format(i))
     scanline = band.ReadRaster(xoff=0, yoff=i,
                                xsize=band.XSize, ysize=1,
                                buf_xsize=band.XSize, buf_ysize=1,
                                buf_type=gdal.GDT_Float32)
     tuple_of_floats = struct.unpack('f' * band.XSize, scanline)
+    if len(tuple_of_floats) != 0:
+      output.write("y = {}: ".format(i))
     #Print out data
-    for val in tuple_of_floats:
-      #Check for data
+    for idx, val in enumerate(tuple_of_floats):
+      last = idx == len(tuple_of_floats) - 1
+      #Get data
       if not (val > band.GetNoDataValue() - 1 and val < band.GetNoDataValue() + 1):
-        output.write("{}, ".format(str(val)))
+        output.write(str(val) + ("" if last else ", "))
       else:
-        output.write("NA, ")
+        output.write("NA" + ("" if last else ", "))
     output.write("\n\n") 
   output.close()
   Finish(0);
 
-def Usage():
-  print("""
-  Usage:
-  $ python gettifinfo.py input-raster [-i]
-      -i: Prints extra information about the tif file
-  """)
-  sys.exit(1)
-
 def Finish(err):
-  global files_complete
-  files_complete += 1
+  input_files.pop(0)
   #Check for extra input files
-  if len( sys.argv ) >= 2 + files_complete:
-    main(1, sys.argv[1 + files_complete])
+  if len(input_files) > 0:
+    main(1, input_files[0])
   else:
     print ("\nNo more files\n")
     sys.exit(err)
 
 if __name__ == '__main__':
+  usage = """
+    Usage:
+    $ python {} input-raster1 [input-raster2 ...] [i] [-p path_name]
+        -i: prints extra information about the tif file
+    	-p path_name: Output file destination from your current location
+    """.format(sys.argv[0])
 
-  if len( sys.argv ) < 2 or len( sys.argv ) < 3 and "-i" in sys.argv:
+  #Check arguments
+  i = 1
+  while i < len(sys.argv):
+    if sys.argv[i] == "-p":
+      #Make sure next argument is a valid path
+      i += 1
+      if len(sys.argv) == i or not os.path.isdir(sys.argv[i]):
+        print ("""
+    [ Error ] invalid or missing path
+
+    {}""".format(usage))
+        sys.exit(1)
+      else:
+        custom_path = sys.argv[i]
+    elif sys.argv[i] != '-i':
+      #Store any input files
+      input_files.append(sys.argv[i])
+    i += 1
+  if len(input_files) == 0:
     print ("""
-    [ ERROR ] you must supply at least one argument:
+    [ Error ] you must supply at least 1 argument:
     1) input raster
-    """);
-    Usage();
+
+    {}""".format(usage))
+    sys.exit(1)
 
 main(1, sys.argv[1]);

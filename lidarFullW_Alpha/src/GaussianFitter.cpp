@@ -590,7 +590,7 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> ampData, std::vect
 
     if(ampData[i] > noise_level){
       // sloping down
-      if(ampData[i+1] < ampdata[i]){
+      if(ampData[i+1] < ampData[i]){
         // were we sloping up before?
         if(grad == 1){
           //record the peak
@@ -612,7 +612,7 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> ampData, std::vect
         }
         grad = -1;
       // sloping up
-      }else if(ampData[i+1] > ampdata[i]){
+      }else if(ampData[i+1] > ampData[i]){
         //was flat
         if(grad == 0){
           // need to look back to before going flat. If we were
@@ -634,11 +634,13 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> ampData, std::vect
 
     }
 
+    size_t n = ampData.size();
+
     //this is a guess starting point
     int j;
     for(i=0; i< peakCount; i++){
-      gsl_vector_set(x, i*3+0, ampData[peak_guesses_loc[i]]);// stays
-      gsl_vector_set(x, i*3+1, idxData[peak_guesses_loc[i]]);// stays
+      //gsl_vector_set(x, i*3+0, ampData[peak_guesses_loc[i]]);// stays
+      //gsl_vector_set(x, i*3+1, idxData[peak_guesses_loc[i]]);// stays
 
       // Create a better guess by using a better width
       int guess = -1;
@@ -683,7 +685,7 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<int> ampData, std::vect
       #endif
 
       if(guess > 20){guess = 10;}
-      gsl_vector_set(x, i*3+2, guess); // stays
+      //gsl_vector_set(x, i*3+2, guess); // stays
     }
   }
 

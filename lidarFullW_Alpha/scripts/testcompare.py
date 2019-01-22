@@ -5,7 +5,7 @@
 import sys
 import subprocess
 import os
-from pathlib2 import Path
+from pathlib import Path
 
 loc = os.path.dirname(__file__)
 
@@ -69,10 +69,10 @@ def Compare(actual, expected, test_name):
       #Highlight differences in red
       if char1 != char2 and actual_diff.find("\33[31m") <= actual_diff.find("\33[0m"):
         actual_diff += "\33[31m"
-	expected_diff += "\33[31m"
+        expected_diff += "\33[31m"
       elif actual_diff.find("\33[31m") > actual_diff.find("\33[0m"):
         actual_diff += "\33[0m"
-	expected_diff += "\33[0m"
+        expected_diff += "\33[0m"
       actual_diff += char1
       expected_diff += char2
     print ("\nExpected: {}\nActual: {}".format(expected_diff, actual_diff))

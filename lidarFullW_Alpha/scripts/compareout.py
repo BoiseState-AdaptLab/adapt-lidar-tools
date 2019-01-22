@@ -7,7 +7,7 @@ import subprocess
 import os
 import time
 import datetime
-from pathlib2 import Path
+from pathlib import Path
 
 input_files = ["",""]
 custom_path = ""
@@ -87,19 +87,19 @@ def Compare():
     for k in range(2):
       if len(contents[k]) == 0:
         pos[k] = -1
-	continue
+        continue
       #Find the y value of the current line
       beginning = line[k].find(":") + 2
       #While that y value is not the correct value, check the next line
       for pos[k] in range(len(contents[k])):
         #Get y value of new line
-	line[k] = contents[k][pos[k]]
-	beginning = line[k].find(": ") + 2
+        line[k] = contents[k][pos[k]]
+        beginning = line[k].find(": ") + 2
         if line[k][:beginning] == "y = {}: ".format(i):
-	  break
+          break
         elif len(contents[k]) == pos[k] + 1:
-	  pos[k] = -1
-	  break
+          pos[k] = -1
+          break
     #Write the current y value to the 'raw' file
     outputs[0].write("y = {}: ".format(i))
     outputs[1].write("y = {}: ".format(i))
@@ -126,8 +126,8 @@ def Compare():
       #Get all data points
       while ", " in line[0]:
         cut = line[0].find(", ")
-	data[m].append(line[0][:cut])
-	line[0] = line[0][cut + 2:]
+        data[m].append(line[0][:cut])
+        line[0] = line[0][cut + 2:]
       #Get last data point
       data[m].append(line[0][:-1])
       line.pop(0)
@@ -186,7 +186,7 @@ if __name__ == '__main__':
         custom_path = sys.argv[j]
     else:
       #Store any input files
-      for k in xrange(len(input_files)):
+      for k in range(len(input_files)):
         if input_files[k] == "":
           input_files[k] = sys.argv[j]
           break

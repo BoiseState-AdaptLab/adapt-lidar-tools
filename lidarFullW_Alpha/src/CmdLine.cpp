@@ -31,6 +31,9 @@ void CmdLine::setUsageMessage()
   buffer << "Option:  " << std::endl;
   buffer << "       -f  <path to pls file>"
          << "  :Generate a Geotif file with max elevations" << std::endl;
+  buffer << "Option:  " << std::endl;
+  buffer << "       -d"
+         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
   buffer << "       bin/lidarDriver -f ../src/140823_183115_1_clipped_test.pls" << std::endl;
@@ -87,7 +90,7 @@ void CmdLine::parse(int argc,char *argv[]){
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hf:d",
+  while((optionChar = getopt_long (argc, argv, ":hdf:",
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information

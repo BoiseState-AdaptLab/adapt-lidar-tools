@@ -50,7 +50,7 @@ def Compare():
   if not maxY == int(contents[B][0][8:]):
     print("Tif data files are not of equal length.\n" +
           "File A has a max y of {}. File B has a max y of {}."
-	  .format(maxY[A], maxY[B]))
+	  .format(maxY, int(contents[B][0][8:])))
     return
   #Remove every line that doesn't start with 'y'
   #These do not contain data
@@ -184,6 +184,8 @@ if __name__ == '__main__':
         sys.exit(1)
       else:
         custom_path = sys.argv[j]
+        if custom_path[-1:] != "/":
+          custom_path += "/"
     else:
       #Store any input files
       for k in range(len(input_files)):

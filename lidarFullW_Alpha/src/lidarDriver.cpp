@@ -86,15 +86,7 @@ int main (int argc, char *argv[]) {
         // Check parameter for using gaussian fitting or estimating
 	int peak_count;
 	if(cmdLineArgs.useGaussianFitting == false){
-          std::vector<int> peak_guesses_loc = fitter.guess_peaks(
-                                                   pd.returningWave,
-						   pd.returningIdx);
-          for(std::vector<int>::iterator it = peak_guesses_loc.begin();
-              it != peak_guesses_loc.end();++it){
-            Peak* newPeak = new Peak();
-            newPeak->location = *it;
-            peaks.push_back(*newPeak);
-          }
+          fitter.guess_peaks(&peaks, pd.returningWave, pd.returningIdx);
           peak_count = peaks.size();
 	} else {
           peak_count = fitter.find_peaks(&peaks, pd.returningWave,

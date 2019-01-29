@@ -21,7 +21,10 @@ public:
     int find_peaks(std::vector<Peak>* results,std::vector<int> ampData,
                   std::vector<int> idxData);
     int noise_level;
-    std::vector<int> guess_peaks(std::vector<int> ampData, std::vector<int> idxData);
+    std::vector<int> guess_peaks(std::vector<Peak>* results, 
+                                std::vector<int> ampData, 
+                                std::vector<int> idxData);
+    std::vector<int> peak_guesses_loc;
     void smoothing_expt(std::vector<int> *waveArray);
     GaussianFitter();
     int get_fail();

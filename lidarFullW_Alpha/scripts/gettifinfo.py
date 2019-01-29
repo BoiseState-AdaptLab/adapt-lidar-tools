@@ -75,8 +75,7 @@ def Data(band):
                                buf_xsize=band.XSize, buf_ysize=1,
                                buf_type=gdal.GDT_Float32)
     tuple_of_floats = struct.unpack('f' * band.XSize, scanline)
-    if len(tuple_of_floats) != 0:
-      output.write("y = {}: ".format(i))
+    output.write("y = {}: ".format(i))
     #Print out data
     for idx, val in enumerate(tuple_of_floats):
       last = idx == len(tuple_of_floats) - 1
@@ -120,6 +119,8 @@ if __name__ == '__main__':
         sys.exit(1)
       else:
         custom_path = sys.argv[i]
+        if custom_path[-1:] != "/":
+          custom_path += "/"
     elif sys.argv[i] != '-i':
       #Store any input files
       input_files.append(sys.argv[i])

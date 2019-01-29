@@ -291,14 +291,11 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   //figure out how many items there are in the ampData
   size_t n = ampData.size();
 
-  //get fwhm estimates
-  std::vector<int> fwhm_guesses = guess_peaks(results, ampData, idxData);
-  
-  //Empty the results vector
-  results->clear();
+  //get guessed peaks
+  guess_peaks(results, ampData, idxData);
 
   //Figure out how many peaks there are
-  size_t peakCount = peak_guesses_loc.size();
+  size_t peakCount = results->size();
 
   // FOR TESTING PURPOSES
   // fprintf(stderr, "Peak count is %d\n", peakCount);
@@ -344,11 +341,13 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   //this is a guess starting point
   int j;
   for(i=0; i< peakCount; i++){
-    gsl_vector_set(x, i*3+0, ampData[peak_guesses_loc[i]]);
-    gsl_vector_set(x, i*3+1, idxData[peak_guesses_loc[i]]);
-    gsl_vector_set(x, i*3+2, fwhm_guesses[i]);
+    gsl_vector_set(x, i*3+0, (*results)[i].amp);
+    gsl_vector_set(x, i*3+1, (*results)[i].location);
+    gsl_vector_set(x, i*3+2, (*results)[i].fwhm);
   }
 
+  //Clear results so we can use the gaussian fitter method
+  results->clear();
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
   #ifdef DEBUG
@@ -503,16 +502,13 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
 // Estimate of peaks to be supplied to the gaussian fitter based on
 // first difference gradient
 // Returns guesses of full width half maximum
-std::vector<int> GaussianFitter::guess_peaks(std::vector<Peak>* results, 
+int GaussianFitter::guess_peaks(std::vector<Peak>* results, 
                                              std::vector<int> ampData, std::vector<int> idxData){
 
   //std::vector<int> data = calculateFirstDifferences(ampData);
 
   //Empty our results vector just to be sure
   results->clear();
-
-  //Make sure our peak guesses vector is empty
-  peak_guesses_loc.clear();
 
   //Level up to and including which peaks will be excluded
   //For the unaltered wave, noise_level = 16
@@ -537,7 +533,6 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<Peak>* results,
   if(noise_level < 6){
     noise_level = 6;
   }
-  int wideStart = -1;  //The start of any current wide peak
 
   //Sign of gradient:
   // =  1 for increasing
@@ -545,6 +540,8 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<Peak>* results,
   // = -1 for decreasing OR level, but previously decreasing
   //A sharp peak is identified by grad=1 -> grad=-1
   //A wide  peak is identified by grad=0 -> grad=-1
+  std::vector<int> peak_guesses_loc; //Store peaks x-values here
+  int wideStart = -1; //The start of any current wide peak
   int prev_grad = -1;
   int grad = -1;
   for(int i = 0; i<(int)ampData.size(); i++){
@@ -602,8 +599,6 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<Peak>* results,
   //Figure out how many peaks there are
   size_t peakCount = peak_guesses_loc.size();
 
-  //this is a guess starting point
-  std::vector<int> fwhm_guesses;
   int j;
   for(int i=0; i< peakCount; i++){
     // Create a better guess by using a better width
@@ -647,9 +642,6 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<Peak>* results,
       " width:" << guess <<std::endl;
     #endif
      if(guess > 20){guess = 10;}
-    
-    //Store guess
-    fwhm_guesses.push_back(guess);
       
     //Create a peak
     Peak* peak = new Peak();
@@ -665,7 +657,7 @@ std::vector<int> GaussianFitter::guess_peaks(std::vector<Peak>* results,
   //   std::cerr << peak_guesses_loc[i] << " ";
   // }
   
-  return fwhm_guesses;
+  return results->size();
 }
 
 

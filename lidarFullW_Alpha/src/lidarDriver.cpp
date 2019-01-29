@@ -86,8 +86,7 @@ int main (int argc, char *argv[]) {
         // Check parameter for using gaussian fitting or estimating
 	int peak_count;
 	if(cmdLineArgs.useGaussianFitting == false){
-          fitter.guess_peaks(&peaks, pd.returningWave, pd.returningIdx);
-          peak_count = peaks.size();
+          peak_count = fitter.guess_peaks(&peaks, pd.returningWave, pd.returningIdx);
 	} else {
           peak_count = fitter.find_peaks(&peaks, pd.returningWave,
                                          pd.returningIdx);

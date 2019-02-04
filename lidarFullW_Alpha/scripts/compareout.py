@@ -7,7 +7,7 @@ import subprocess
 import os
 import time
 import datetime
-from pathlib import Path
+from pathlib2 import Path
 
 input_files = ["",""]
 custom_path = ""
@@ -119,7 +119,11 @@ def Compare():
     line[B] = line[B][beginning:]
 
     #0 = both no data, 1 = A has data, 2 = B has data, 3 = both have data
-    comparison_results = [0,0,0,0]
+    comparison = [0,0,0,0]
+    #This holds the differences in values
+    differences = []
+    #This holds the numbers for each file
+    amp_data = [[],[]]
     #Get the data
     data = [[],[]]
     for m in range(0, 2):
@@ -141,27 +145,39 @@ def Compare():
         outputs[1].write(", ")
       if not a == "NA" and not b == "NA":
         outputs[1].write("[{}|{}]".format(a, b))
-        comparison_results[3] += 1
+        comparison[3] += 1
+	amp_data[A].append(float(a))
+	amp_data[B].append(float(b))
+        differences.append(float(a) - float(b))
       elif not a == "NA" and b == "NA":
         outputs[1].write("[{}|NA]".format(a))
-        comparison_results[1] += 1
+        comparison[1] += 1
+	amp_data[A].append(float(a))
       elif a == "NA" and not b == "NA":
         outputs[1].write("[NA|{}]".format(b))
-        comparison_results[2] += 1
+        comparison[2] += 1
+        amp_data[B].append(float(b))
       elif a == "NA" and b == "NA":
         outputs[1].write("NA")
-        comparison_results[0] += 1
+        comparison[0] += 1
       first = False
     
     outputs[1].write("\n\n")
     #remove the completed line
     contents[A].pop(pos[A])
     contents[B].pop(pos[B])
-    #Write frequency of comparison results to the 'simple' file
-    outputs[0].write("total data points: {}\nneither: {}\nonly A: {}\nonly B: {}\nboth: {}\n\n"
-                     .format(sum(comparison_results), comparison_results[0], comparison_results[1],
-                     comparison_results[2], comparison_results[3]))
-  print ("Comparison complete\nResults have been written to the compare_{}.out files\n".format(j))
+    #Get averages of data and differences
+    a_avg = "n/a" if len(amp_data[A]) == 0 else sum(amp_data[A])/len(amp_data[A])
+    b_avg = "n/a" if len(amp_data[B]) == 0 else sum(amp_data[B])/len(amp_data[B])
+    dif_avg = "n/a" if len(differences) == 0 else sum(differences)/len(differences)
+    #Write analysis into file
+    outputs[0].write(
+    "total data points: {}\nneither: {}\nonly A: {}\nonly B: {}\nboth: {}\n".format(
+    sum(comparison), comparison[0], comparison[1], comparison[2], comparison[3])
+    + "average A: {}\naverage B: {}\naverage difference (A - B): {}\n\n".format(
+    a_avg, b_avg, dif_avg))
+  print ("Comparison complete\nResults have been written to the compare_{}.out files\n"
+         .format(j))
 
 if __name__ == '__main__':
   usage = """

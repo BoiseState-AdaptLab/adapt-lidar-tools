@@ -7,7 +7,7 @@ import subprocess
 import os
 import time
 import datetime
-from pathlib2 import Path
+from pathlib import Path
 
 input_files = ["",""]
 custom_path = ""
@@ -146,13 +146,13 @@ def Compare():
       if not a == "NA" and not b == "NA":
         outputs[1].write("[{}|{}]".format(a, b))
         comparison[3] += 1
-	amp_data[A].append(float(a))
-	amp_data[B].append(float(b))
+        amp_data[A].append(float(a))
+        amp_data[B].append(float(b))
         differences.append(float(a) - float(b))
       elif not a == "NA" and b == "NA":
         outputs[1].write("[{}|NA]".format(a))
         comparison[1] += 1
-	amp_data[A].append(float(a))
+        amp_data[A].append(float(a))
       elif a == "NA" and not b == "NA":
         outputs[1].write("[NA|{}]".format(b))
         comparison[2] += 1

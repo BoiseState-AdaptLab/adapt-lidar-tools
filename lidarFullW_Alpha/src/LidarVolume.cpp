@@ -242,7 +242,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   newDS = driverTiff->Create(filename, x_idx_extent, y_idx_extent, 1, 
                               GDT_Float32 , NULL);
 
-  float noData = -99999.9;
+  float noData = -9999;
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at

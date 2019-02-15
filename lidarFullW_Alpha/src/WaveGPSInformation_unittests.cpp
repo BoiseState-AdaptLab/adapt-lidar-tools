@@ -2,13 +2,14 @@
 // Created on: 17-June-2017
 // Author: ravi
 
-// This test requres the sample 140823_183115_1_clipped_test.pls file
+// This test requires the sample 140823_183115_1_clipped_test.pls file
 // and its corresponding wvs file to be in the etc directory to run
 
 #include "WaveGPSInformation.hpp"
 #include "pulsereader.hpp"
 #include "pulsewriter.hpp"
 #include "gtest/gtest.h"
+#include <fstream>
 
 
 class WaveGPSInformationTest: public testing::Test{
@@ -43,7 +44,14 @@ TEST_F(WaveGPSInformationTest, checkValues){
 
 
 
-  std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
+  std::string fileNameCorrect =  "../etc/140823_183115_1_clipped_test.pls";
+
+  /*
+   * Test that the file exists and can be opened before trying to use it in the test case
+   */
+  ASSERT_TRUE(std::ifstream(fileNameCorrect.c_str()));
+
+
 
   /*
    * This section reads the wave and GPS file

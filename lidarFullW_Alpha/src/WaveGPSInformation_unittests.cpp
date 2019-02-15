@@ -44,7 +44,7 @@ TEST_F(WaveGPSInformationTest, checkValues){
 
 
 
-  std::string fileNameCorrect =  "../etc/140823_183115_1_clipped_test.pls";
+  std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
 
   /*
    * Test that the file exists and can be opened before trying to use it in the test case

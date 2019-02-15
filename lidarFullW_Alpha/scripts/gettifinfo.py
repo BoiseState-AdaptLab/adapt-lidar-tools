@@ -3,13 +3,20 @@
 #Author: Aaron Orenstein
 
 from osgeo import gdal
+from PIL import Image
+import numpy as np
 import sys
 import struct
 import os
 gdal.UseExceptions();
 
+#Aaray of inputed file names
 input_files = []
+
+#Name of current file
 file_name = ""
+
+#Path to output file
 custom_path = ""
 
 def main(band_num, input_file):
@@ -18,6 +25,7 @@ def main(band_num, input_file):
     Finish(0)
   last_slash = input_file.rfind("/") + 1;
   global file_name
+  #Cut down string to just filename.tif
   file_name = input_file[last_slash:]
   print ("\n\33[32mProcessing:\33[0m {}\n".format(file_name))
   if not input_file.endswith(".tif"):
@@ -29,14 +37,16 @@ def main(band_num, input_file):
   if raster is None:
     print ('Unable to open %s' % input_file);
     Finish(1)
-
+  
+  #Get raster band
   try:
     band = raster.GetRasterBand(band_num)
   except (RuntimeError, e):
     print ('No band %i found' % band_num);
     print (e);
     Finish(1)
-
+  
+  #Print out band info if requested
   if band.GetNoDataValue() == None:
     band.SetNoDataValue(-99999)
   if "-i" in sys.argv:
@@ -47,6 +57,7 @@ def main(band_num, input_file):
     print ("[ UNIT TYPE ] = ", band.GetUnitType());
   ctable = band.GetColorTable()
 
+  #Check for color table
   if ctable is None:
     print ('No ColorTable found');
   else:
@@ -56,36 +67,82 @@ def main(band_num, input_file):
       if not entry:
         continue;
       print ("[ COLOR ENTRY RGB ] = ", ctable.GetColorEntryAsRGB( i, entry ));
-
+  
+  #Get the data
   Data(band);
 
 def Data(band):
-  raster_array = band.ReadAsArray();
-  no_value = band.GetNoDataValue();
-  #Go through each piece of the band
+  #Go through each data point in the band
   #Print data to file
   print ("\nWriting data to file")
+  #Get the current file name and path for output
   global file_name
   global custom_path
+  #Create output file
   output = open(custom_path + file_name[:-4] + ".out", 'w')
   output.write("Max Y = {}\n\n".format(band.YSize - 1))
+  #Get no data value
+  no_data = band.GetNoDataValue()
+  #Store max and min values and max length at all y values
+  max_length, max_val, min_val = 0, no_data, no_data
+  #Data will be stored here
+  data = []
+  #Go through each y value
   for i in range(band.YSize):
+    #Read the raster
     scanline = band.ReadRaster(xoff=0, yoff=i,
                                xsize=band.XSize, ysize=1,
                                buf_xsize=band.XSize, buf_ysize=1,
                                buf_type=gdal.GDT_Float32)
+    #Get data for all x values
     tuple_of_floats = struct.unpack('f' * band.XSize, scanline)
     output.write("y = {}: ".format(i))
-    #Print out data
+    #Check if number of x values is bigger than previously seen
+    if len(tuple_of_floats) - 1 > max_length:
+      max_length = len(tuple_of_floats) - 1
+    data.append([])
+    #Go through every x value
     for idx, val in enumerate(tuple_of_floats):
+      #Check if it's the last x value
       last = idx == len(tuple_of_floats) - 1
-      #Get data
-      if not (val > band.GetNoDataValue() - 1 and val < band.GetNoDataValue() + 1):
+      #Make sure the data is not the no data value
+      if not (val > no_data - 1 and val < no_data + 1):
+        #Write data to output file and add it do the data list
         output.write(str(val) + ("" if last else ", "))
+        data[i].append(val)
+        #Check for max or min value
+        if val > max_val or max_val == no_data:
+          max_val = val
+        if val < min_val or min_val == no_data:
+          min_val = val
       else:
+        #Write 'NA' for no data and indicate it in data list
         output.write("NA" + ("" if last else ", "))
+        data[i].append(no_data)
     output.write("\n\n") 
   output.close()
+  #Create Image
+  print ("Creating Image\n")
+  #Width is the size of the largest x value found
+  #Height is the number of y values
+  w, h = max_length + 1, band.YSize
+  #Create an array that store RGB values for each data point
+  color_data = np.zeros((h, w, 3), dtype=np.uint8)
+  #Loop through each x value for each y value
+  for idx1, vals in enumerate(data):
+    for idx2, val in enumerate(vals):
+      #data color is gray, darkness is proportional to the fraction of range
+      #no data color id blue
+      #TODO heatmap coloring
+      color = 255 * (val - min_val) / (max_val - min_val)
+      #write color value to array
+      #The loop goes from 0 to maxY of tif data but top left of picture, y=0 for the color array,
+      #is maxY of data so we work backwards from the maxY of the color data to 0 of the color data
+      color_data[idx1, idx2] = [color, color, color] if val != no_data else [0, 0, 255]
+  #Create the image
+  im = Image.fromarray(color_data, "RGB")
+  im.save(custom_path + file_name[:-4] + ".jpg")
+  print ("Image Created\nSaved to {}".format(custom_path + file_name[:-4] + ".jpg"))
   Finish(0);
 
 def Finish(err):

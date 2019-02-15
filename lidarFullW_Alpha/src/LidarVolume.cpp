@@ -141,7 +141,7 @@ void LidarVolume::rasterizeMaxElevation(){
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
     for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
       raster[i*y_idx_extent] = -1;
-      if(volume[position(i,j)] != NULL){
+      if(volume[position(j,i)] != NULL){
         raster[i*y_idx_extent] = j;
 
         //Save the max and mins of the max elevations
@@ -170,7 +170,7 @@ void LidarVolume::rasterizeMinElevation(){
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
     for(j=bb_y_idx_min;j<bb_y_idx_max;j++){
       raster[i*y_idx_extent] = -1;
-      if(volume[position(i,j)] != NULL){
+      if(volume[position(j,i)] != NULL){
         raster[i*y_idx_extent] = j;
         //store the maz and mins of the min elevation
         if(raster[i*y_idx_extent] > elev_high){
@@ -242,7 +242,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   newDS = driverTiff->Create(filename, x_idx_extent, y_idx_extent, 1, 
                               GDT_Float32 , NULL);
 
-  float noData = -9999;
+  float noData = -99999.99;
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at
@@ -276,7 +276,6 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   #ifdef DEBUG
     std::cerr << "Mallocd heights. In "<< __FILE__ << ":" << __LINE__ << std::endl;
   #endif
-
   CPLErr retval;
 
   // Write image data

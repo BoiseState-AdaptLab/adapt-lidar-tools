@@ -29,3 +29,10 @@ Thumbs.db
 ########################
 *.tif
 *.csv
+
+# IDE specific files (CLion)
+###########################
+.idea/
+cmake-build-debug/
+CMakeLists.txt
+

@@ -5,6 +5,7 @@
 from osgeo import gdal
 from PIL import Image
 import numpy as np
+import math
 import sys
 import struct
 import os
@@ -127,18 +128,38 @@ def Data(band):
   #Height is the number of y values
   w, h = max_length + 1, band.YSize
   #Create an array that store RGB values for each data point
+  #PIL conventions index colors for an image as [y,x]
   color_data = np.zeros((h, w, 3), dtype=np.uint8)
+  #These are the colors for each coloring 'tier'
+  #(low) dark green, yellow, red (high)
+  colors = [[0,128,0],[255,255,0],[255,0,0]]
+  num_colors = len(colors) - 1
   #Loop through each x value for each y value
   for idx1, vals in enumerate(data):
     for idx2, val in enumerate(vals):
-      #data color is gray, darkness is proportional to the fraction of range
-      #no data color id blue
-      #TODO heatmap coloring
-      color = 255 * (val - min_val) / (max_val - min_val)
-      #write color value to array
-      #The loop goes from 0 to maxY of tif data but top left of picture, y=0 for the color array,
-      #is maxY of data so we work backwards from the maxY of the color data to 0 of the color data
-      color_data[idx1, idx2] = [color, color, color] if val != no_data else [0, 0, 255]
+      #Normalize value between 0 and 1
+      val_frac = (val - min_val) / (max_val - min_val)
+      #Set color tiers
+      tier1, tier2 = 0, 0
+      #This is the distance between value and lower tier
+      between_frac = 0
+      if val_frac >= 0:
+        #If the value is 0 or lower, keep at lowest tier
+        if val_frac >= 1:
+          #If the value is 1 or higher, set to highest tier
+          tier1, tier2 = num_colors, num_colors
+        else:
+          #Find low tier and high tier
+          tier1 = math.floor(val_frac * num_colors)
+          tier2 = tier1 + 1
+          #Find distance between the value and the low tier (0-1)
+          between_frac = (val_frac * num_colors) - tier1
+      #Create color
+      red = (colors[tier2][0] - colors[tier1][0]) * between_frac + colors[tier1][0]
+      green = (colors[tier2][1] - colors[tier1][1]) * between_frac + colors[tier1][1]
+      blue = (colors[tier2][2] - colors[tier1][2]) * between_frac + colors[tier1][2]
+      #write color value to array, PIL conventions want input coords as [y, x]
+      color_data[idx1, idx2] = [red, green, blue] if val != no_data else [255, 255, 255]
   #Create the image
   im = Image.fromarray(color_data, "RGB")
   im.save(custom_path + file_name[:-4] + ".jpg")

@@ -47,11 +47,12 @@ TEST_F(GaussianFitterTest, NayaniClipped1){
 
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
+  std::vector<Peak> peaks;
+  fitter.guess_peaks(&peaks, ampData, idxData);
 
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(200,ampData[guesses[0]]);
-  EXPECT_EQ(34 ,ampData[guesses[1]]);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(200,peaks.at(0).amp);
+  EXPECT_EQ(34 ,peaks.at(1).amp);
 
 }
 
@@ -77,9 +78,10 @@ TEST_F(GaussianFitterTest, NayaniClipped2){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(1,guesses.size());
-  EXPECT_EQ(235,ampData[guesses[0]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+
+  EXPECT_EQ(1,peaks.size());
+  EXPECT_EQ(235,peaks.at(0).amp);
 }
 
 TEST_F(GaussianFitterTest, gaussianFitter){
@@ -103,9 +105,9 @@ TEST_F(GaussianFitterTest, gaussianFitter){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(1,guesses.size());
-  EXPECT_EQ(240,ampData[guesses[0]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(1,peaks.size());
+  EXPECT_EQ(240,peaks.at(0).amp);
 }
 
 TEST_F(GaussianFitterTest, NayaniClipped3){
@@ -130,9 +132,9 @@ TEST_F(GaussianFitterTest, NayaniClipped3){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(1,guesses.size());
-  EXPECT_EQ(238,ampData[guesses[0]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(1,peaks.size());
+  EXPECT_EQ(238,peaks.at(0).amp);
 
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -168,9 +170,9 @@ TEST_F(GaussianFitterTest, NayaniClipped4){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(1,guesses.size());
-  EXPECT_EQ(240,ampData[guesses[0]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(1,peaks.size());
+  EXPECT_EQ(240,peaks.at(0).amp);
 
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -205,10 +207,10 @@ TEST_F(GaussianFitterTest, NayaniClipped5){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(150,ampData[guesses[0]]);
-  EXPECT_EQ(146,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(150,peaks.at(0).amp);
+  EXPECT_EQ(146,peaks.at(1).amp);
 
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -243,10 +245,10 @@ TEST_F(GaussianFitterTest, NayaniClipped6){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(193,ampData[guesses[0]]);
-  EXPECT_EQ(151,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(193,peaks.at(0).amp);
+  EXPECT_EQ(151,peaks.at(1).amp);
   
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -281,10 +283,10 @@ TEST_F(GaussianFitterTest, NayaniClipped7){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(98,ampData[guesses[0]]);
-  EXPECT_EQ(168,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(98,peaks.at(0).amp);
+  EXPECT_EQ(168,peaks.at(1).amp);
 
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -318,10 +320,10 @@ TEST_F(GaussianFitterTest, NayaniClipped8){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(26,ampData[guesses[0]]);
-  EXPECT_EQ(221,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(26,peaks.at(0).amp);
+  EXPECT_EQ(221,peaks.at(1).amp);
   
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -363,10 +365,10 @@ TEST_F(GaussianFitterTest, max_iter_1){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(150,ampData[guesses[0]]);
-  EXPECT_EQ(25,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(150,peaks.at(0).amp);
+  EXPECT_EQ(25,peaks.at(1).amp);
 
 
   fitter.smoothing_expt(&ampData);
@@ -402,10 +404,10 @@ TEST_F(GaussianFitterTest, max_iter_2){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(139,ampData[guesses[0]]);
-  EXPECT_EQ(26,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(139,peaks.at(0).amp);
+  EXPECT_EQ(26,peaks.at(1).amp);
 
 
   fitter.smoothing_expt(&ampData);
@@ -441,10 +443,10 @@ TEST_F(GaussianFitterTest, max_iter_3){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(164,ampData[guesses[0]]);
-  EXPECT_EQ(33,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(164,peaks.at(0).amp);
+  EXPECT_EQ(33,peaks.at(1).amp);
 
 
   fitter.smoothing_expt(&ampData);
@@ -480,12 +482,12 @@ TEST_F(GaussianFitterTest, max_iter_4){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(4,guesses.size());
-  EXPECT_EQ(88,ampData[guesses[0]]);
-  EXPECT_EQ(34,ampData[guesses[1]]);
-  EXPECT_EQ(9,ampData[guesses[2]]);
-  EXPECT_EQ(20,ampData[guesses[3]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(4,peaks.size());
+  EXPECT_EQ(88,peaks.at(0).amp);
+  EXPECT_EQ(34,peaks.at(1).amp);
+  EXPECT_EQ(9,peaks.at(2).amp);
+  EXPECT_EQ(20,peaks.at(3).amp);
 
 
   fitter.smoothing_expt(&ampData);
@@ -522,15 +524,15 @@ TEST_F(GaussianFitterTest, max_iter_5){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  ASSERT_EQ(7,guesses.size());
-  EXPECT_EQ(88,ampData[guesses[0]]);
-  EXPECT_EQ(34,ampData[guesses[1]]);
-  EXPECT_EQ(20,ampData[guesses[2]]);
-  EXPECT_EQ(25,ampData[guesses[3]]);
-  EXPECT_EQ(13,ampData[guesses[4]]);
-  EXPECT_EQ(132,ampData[guesses[5]]);
-  EXPECT_EQ(22,ampData[guesses[6]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  ASSERT_EQ(7,peaks.size());
+  EXPECT_EQ(88,peaks.at(0).amp);
+  EXPECT_EQ(34,peaks.at(1).amp);
+  EXPECT_EQ(20,peaks.at(2).amp);
+  EXPECT_EQ(25,peaks.at(3).amp);
+  EXPECT_EQ(13,peaks.at(4).amp);
+  EXPECT_EQ(132,peaks.at(5).amp);
+  EXPECT_EQ(22,peaks.at(6).amp);
 
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -566,10 +568,10 @@ TEST_F(GaussianFitterTest, trig_loc_1){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(183,ampData[guesses[0]]);
-  EXPECT_EQ(172,ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(183,peaks.at(0).amp);
+  EXPECT_EQ(172,peaks.at(1).amp);
 
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);
@@ -605,10 +607,10 @@ TEST_F(GaussianFitterTest, trig_loc_2){
   // now that we have the input vectors call the gaussianFitter
   GaussianFitter fitter;
   std::vector<Peak> peaks;
-  std::vector<int> guesses = fitter.guess_peaks(ampData);
-  EXPECT_EQ(2,guesses.size());
-  EXPECT_EQ(143, ampData[guesses[0]]);
-  EXPECT_EQ(135, ampData[guesses[1]]);
+  fitter.guess_peaks(&peaks, ampData, idxData);
+  EXPECT_EQ(2,peaks.size());
+  EXPECT_EQ(143, peaks.at(0).amp);
+  EXPECT_EQ(135, peaks.at(1).amp);
 
   fitter.smoothing_expt(&ampData);
   int count = fitter.find_peaks(&peaks,ampData,idxData);

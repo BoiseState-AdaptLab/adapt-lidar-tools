@@ -259,7 +259,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   transform[2] = 0;
   transform[3] = bb_y_max;
   transform[4] = 0;
-  transform[5] = -1;
+  transform[5] = -1;	//Always -1
 
   OGRSpatialReference oSRS;
   char *pszSRS_WKT = NULL;
@@ -285,7 +285,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
     std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
   #endif
 
-  for (y=0 ; y<y_idx_extent ; y++) {
+  for (y=y_idx_extent-1; y>=0 ; y--) {
     for (x=0 ; x<x_idx_extent ; x++) {
      float maxZ = noData;
       std::vector<Peak>* myPoints = volume[position(y,x)];
@@ -306,7 +306,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
     #endif
     
     // Refer to http://www.gdal.org/classGDALRasterBand.html
-    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, x_idx_extent,1,
+    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y_idx_extent-y, x_idx_extent,1,
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
     #ifdef DEBUG

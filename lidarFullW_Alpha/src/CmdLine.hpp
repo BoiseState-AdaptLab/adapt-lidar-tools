@@ -26,7 +26,7 @@ private:
   // else, use smooth second difference 
   bool max_elev_flag;
 
-  void parse(int argc, char *argv[]);
+
 
 public:
   // help parameters
@@ -38,7 +38,7 @@ public:
   CmdLine();
 
 
-
+  void parse(int argc, char *argv[]);
   void setUsageMessage();
   std::string getUsageMessage();
 

@@ -123,3 +123,34 @@ void CmdLine::parse(int argc,char *argv[]){
     printUsageMessage = true;
   }
 }
+
+int CmdLine::parse_args(int argc, char *argv[], std::string &fileName) {
+  parse(argc, argv);
+  //if arguments were invalid or did not parse correctly
+  if (printUsageMessage == true) {
+    std::cout << getUsageMessage() << std::endl;
+    return 1;
+  }
+  //try to get the fileName
+  fileName = getInputFileName();
+  //if file not found
+  if (!std::ifstream(fileName.c_str())) {
+    std::cout << "File " << fileName << " not found." << std::endl;
+    std::cout << getUsageMessage() << std::endl;
+    return 1;
+  }
+  return 0;
+}
+
+
+std::string CmdLine::getTrimmedFileName(){
+   size_t start = inputFileName.find_last_of("/");
+   if(start==string::npos){
+     start = 0;
+   }else{
+     start++;
+   }
+   size_t end = inputFileName.find_last_of(".");
+   int len = end - start;
+   return inputFileName.substr(start,len);
+}

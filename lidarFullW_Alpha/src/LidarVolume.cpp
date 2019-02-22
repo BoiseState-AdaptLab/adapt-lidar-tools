@@ -306,7 +306,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
     #endif
     
     // Refer to http://www.gdal.org/classGDALRasterBand.html
-    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y_idx_extent-y, x_idx_extent,1,
+    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
     #ifdef DEBUG

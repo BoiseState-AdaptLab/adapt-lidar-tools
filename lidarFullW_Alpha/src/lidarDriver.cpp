@@ -16,19 +16,15 @@
 
 typedef std::chrono::high_resolution_clock Clock;
 
+CmdLine cmdLineArgs;
+
 // Lidar driver
 int main (int argc, char *argv[]) {
 
-  // Parse the command line args
-  CmdLine cmdLineArgs;
-  cmdLineArgs.parse(argc,argv);
-
-  if(cmdLineArgs.printUsageMessage == true) {
-    std::cout << cmdLineArgs.getUsageMessage() << std::endl;
-    return 1;
-  }
-
-  std::string fileName = cmdLineArgs.getInputFileName();
+  // Parse and validate the command line args
+    if(!cmdLineArgs.parse_args(argc,argv)){
+        exit(1);
+    }
 
   //Collect start time
   Clock::time_point t1 = Clock::now();
@@ -36,7 +32,7 @@ int main (int argc, char *argv[]) {
   std::cout << "\nProcessing  " << argv[2] << std::endl;
   // Create a flight line data object
   FlightLineData rawData;
-  rawData.setFlightLineData(fileName);
+  rawData.setFlightLineData(cmdLineArgs.getInputFileName());
 
   LidarVolume intermediateData;
   intermediateData.setBoundingBox(rawData.bb_x_min,rawData.bb_x_max,
@@ -51,17 +47,17 @@ int main (int argc, char *argv[]) {
   
   #ifdef DEBUG
     std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
-  #endif 
+  #endif
 
   //Name file base on method used
-  std::string trimmedFileName = fileName.substr(0, fileName.find_first_of("."));
+  std::string trimmedFileName = cmdLineArgs.getTrimmedFileName();
   if(cmdLineArgs.useGaussianFitting == false) {//!cmdLineArgs.useGaussianFitting) {
     std::cerr << "Finding peaks with first difference" << std::endl;
     trimmedFileName += "_firstDiff";
   } else {
     std::cerr << "Finding peaks with gaussian fitting" << std::endl;
     trimmedFileName += "_gaussian";
-  }  
+  }
 
   while(rawData.hasNextPulse()){
     // make sure that we have an empty vector
@@ -138,4 +134,5 @@ int main (int argc, char *argv[]) {
 
   return 0;
 }
+
 

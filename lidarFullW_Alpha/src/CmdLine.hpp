@@ -26,6 +26,8 @@ private:
   // else, use smooth second difference 
   bool max_elev_flag;
 
+
+
 public:
   // help parameters
   bool printUsageMessage;
@@ -35,14 +37,16 @@ public:
 
   CmdLine();
 
-  void parse(int argc, char *argv[]);
 
+  void parse(int argc, char *argv[]);
   void setUsageMessage();
   std::string getUsageMessage();
-
+  void check_input_file_exists();
   void setInputFileName(char *args);
   void setInputFileName(std::string filename);
+  int parse_args(int argc, char *argv[]);
   std::string getInputFileName();
+  std::string getTrimmedFileName();
 };
 
 #endif /* CMDLINE_HPP_ */

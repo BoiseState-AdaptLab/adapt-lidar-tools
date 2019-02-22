@@ -123,3 +123,49 @@ void CmdLine::parse(int argc,char *argv[]){
     printUsageMessage = true;
   }
 }
+
+/**
+ * check if the input file exists, print error message if not
+ */
+void CmdLine::check_input_file_exists() {
+    if (!std::ifstream(getInputFileName().c_str())) {
+        std::cout << "File " << getInputFileName() << " not found." << std::endl;
+        printUsageMessage = true;
+    }
+}
+
+
+/**
+ * parse the command line arguments and validate them, return
+ * 1 if all arguments parsed, else 0
+ * @param argc the count of arguments in argv
+ * @param argv the command line arguments
+ * @return 1 (true) if all input passed validation, 0 (false) otherwise
+ */
+int CmdLine::parse_args(int argc, char *argv[]) {
+    int rtn = 1;
+    parse(argc, argv);
+    check_input_file_exists();
+    //if arguments were invalid or did not parse correctly
+    if (printUsageMessage) {
+        std::cout << getUsageMessage() << std::endl;
+        rtn = 0;
+    }
+
+    return rtn;
+}
+
+/*
+ * return just the input file name, stripped of leading path info and trailing extension info
+ */
+std::string CmdLine::getTrimmedFileName(){
+   size_t start = inputFileName.find_last_of("/");
+   if(start==string::npos){
+     start = 0;
+   }else{
+     start++;
+   }
+   size_t end = inputFileName.find_last_of(".");
+   int len = end - start;
+   return inputFileName.substr(start,len);
+}

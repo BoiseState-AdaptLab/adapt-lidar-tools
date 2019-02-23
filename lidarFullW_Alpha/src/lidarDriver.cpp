@@ -21,10 +21,9 @@ typedef std::chrono::high_resolution_clock Clock;
 // Lidar driver
 int main (int argc, char *argv[]) {
 
-  // Parse the command line args
+  // Parse and validate the command line args
     CmdLine cmdLineArgs;
-    std::string fileName;
-    if(cmdLineArgs.parse_args(argc,argv,fileName)==1){
+    if(!cmdLineArgs.parse_args(argc,argv)){
         exit(1);
     }
 
@@ -34,7 +33,7 @@ int main (int argc, char *argv[]) {
   std::cout << "\nProcessing  " << argv[2] << std::endl;
   // Create a flight line data object
   FlightLineData rawData;
-  rawData.setFlightLineData(fileName);
+  rawData.setFlightLineData(cmdLineArgs.getInputFileName());
 
   LidarVolume intermediateData;
   intermediateData.setBoundingBox(rawData.bb_x_min,rawData.bb_x_max,

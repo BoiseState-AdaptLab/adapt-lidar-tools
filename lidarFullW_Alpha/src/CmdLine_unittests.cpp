@@ -63,13 +63,21 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("someFileName",cmd2.getInputFileName());
 
+
+
+}
+
+
+TEST_F(CmdLineTest, fileNameNotFound){
   optind = 0; // Need to reset optind to 0 for each test
-  numberOfArgs = 2;
-  strncpy(commonArgSpace[1],"-g",3);
+  numberOfArgs = 3;
+  strncpy(commonArgSpace[1],"-f",3);
+  strncpy(commonArgSpace[2],"someFileName",13);
   ASSERT_NO_THROW({
-    cmd3.parse(numberOfArgs, commonArgSpace);
-  });
-  ASSERT_FALSE(cmd3.useGaussianFitting);
+                    cmd2.parse_args(numberOfArgs, commonArgSpace);
+                  });
+  ASSERT_TRUE(cmd2.printUsageMessage);
+  ASSERT_EQ("someFileName",cmd2.getInputFileName());
 }
 
 // Tests valid long command line options
@@ -93,14 +101,9 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("file",cmd2.getInputFileName());
 
-  optind = 0; // Need to reset optind to 0 for each test
-  numberOfArgs = 2;
-  strncpy(commonArgSpace[1], "--guess", 8);
-  ASSERT_NO_THROW({
-        cmd3.parse(numberOfArgs, commonArgSpace);
-  });
-  ASSERT_FALSE(cmd3.useGaussianFitting);
+
 }
+
 
 
 /****************************************************************************
@@ -124,6 +127,26 @@ TEST_F(CmdLineTest, missingShortOptArg) {
   strncpy(commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-f",3);
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+}
+
+TEST_F(CmdLineTest, unsupportedShortArg) {
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 2;
+    strncpy(commonArgSpace[1], "-g", 3);
+    ASSERT_NO_THROW({
+                        cmd3.parse(numberOfArgs, commonArgSpace);
+                    });
+    ASSERT_TRUE(cmd.printUsageMessage);
+}
+
+TEST_F(CmdLineTest, unsupportedLongArg) {
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 2;
+    strncpy(commonArgSpace[1], "--guess", 8);
+    ASSERT_NO_THROW({
+                        cmd3.parse(numberOfArgs, commonArgSpace);
+                    });
+    ASSERT_TRUE(cmd.printUsageMessage);
 }
 
 // Tests missing long option arguments

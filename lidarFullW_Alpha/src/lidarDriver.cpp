@@ -56,20 +56,31 @@ int main (int argc, char *argv[]) {
   return 0;
 }
 
+
+/**
+ * parses the raw data from input file into a FlightLineData object
+ * @param data the FlightLineData object to store the raw data in
+ */
 void parse_data(FlightLineData &data){
     data.setFlightLineData(cmdLineArgs.getInputFileName());
 }
 
-void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
-    fitted_data.setBoundingBox(raw_data.bb_x_min, raw_data.bb_x_max,
-                               raw_data.bb_y_min, raw_data.bb_y_max,
-                               raw_data.bb_z_min, raw_data.bb_z_max);
-    fitted_data.allocateMemory();
 
+/**
+ * fits the raw data using either gaussian or first difference fitting
+ * @param raw_data reference to FlightLineData object that holds raw data
+ * @param fitted_data reference to LidarVolume object to store fit data in
+ */
+void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
     PulseData pd;
     std::ostringstream stream;
     GaussianFitter fitter;
     std::vector<Peak> peaks;
+
+    fitted_data.setBoundingBox(raw_data.bb_x_min, raw_data.bb_x_max,
+                               raw_data.bb_y_min, raw_data.bb_y_max,
+                               raw_data.bb_z_min, raw_data.bb_z_max);
+    fitted_data.allocateMemory();
 
     #ifdef DEBUG
         std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
@@ -127,7 +138,6 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
           std::cout << stream.str() << std::endl;
           stream.str("");
     #endif
-
     }
 
     #ifdef DEBUG
@@ -137,6 +147,12 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
     #endif
 
 }
+
+/**
+ * create the output as specified by the command line arguments
+ * @param raw_data the parsed FlightLineData
+ * @param fitted_data the fitted LidarVolume data
+ */
 
 void produce_product(FlightLineData &raw_data, LidarVolume &fitted_data){
     #ifdef DEBUG

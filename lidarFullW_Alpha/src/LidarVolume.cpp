@@ -283,11 +283,11 @@ void LidarVolume::writeImage(CmdLine &cmdLine, std::string geog_cs, int utm){
     std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
   #endif
 
-  bool max = cmdLine.useGaussianFitting;
+  bool max = cmdLine.max_elevation_flag;
   for (y=y_idx_extent-1; y>=0 ; y--) {
     for (x=0 ; x<x_idx_extent ; x++) {
-      float maxZ = noData;
-      float minZ = std::numeric_limits<float>::max();
+        float maxZ = noData;
+        float minZ = std::numeric_limits<float>::max();
       std::vector<Peak> *myPoints = volume[position(y, x)];
       if (myPoints != NULL) {
         for (std::vector<Peak>::iterator it = myPoints->begin();

@@ -85,7 +85,7 @@ void CmdLine::parse(int argc,char *argv[]){
 
   // getopt_long stores the option index here.
   int option_index = 0;
-
+    max_elevation_flag = false;
   /* Using getopt_long to get the arguments with an option.
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments

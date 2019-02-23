@@ -16,13 +16,12 @@
 
 typedef std::chrono::high_resolution_clock Clock;
 
-
+CmdLine cmdLineArgs;
 
 // Lidar driver
 int main (int argc, char *argv[]) {
 
   // Parse and validate the command line args
-    CmdLine cmdLineArgs;
     if(!cmdLineArgs.parse_args(argc,argv)){
         exit(1);
     }

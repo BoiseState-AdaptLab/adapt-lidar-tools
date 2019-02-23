@@ -136,7 +136,7 @@ TEST_F(CmdLineTest, unsupportedShortArg) {
     ASSERT_NO_THROW({
                         cmd3.parse(numberOfArgs, commonArgSpace);
                     });
-    ASSERT_TRUE(cmd.printUsageMessage);
+    ASSERT_TRUE(cmd3.printUsageMessage);
 }
 
 TEST_F(CmdLineTest, unsupportedLongArg) {
@@ -146,7 +146,7 @@ TEST_F(CmdLineTest, unsupportedLongArg) {
     ASSERT_NO_THROW({
                         cmd3.parse(numberOfArgs, commonArgSpace);
                     });
-    ASSERT_TRUE(cmd.printUsageMessage);
+    ASSERT_TRUE(cmd3.printUsageMessage);
 }
 
 // Tests missing long option arguments
@@ -165,6 +165,7 @@ TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
   strncpy( commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-s",3);
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+  ASSERT_TRUE(cmd.printUsageMessage);
 }
 
 // Tests invalid long command line options
@@ -176,6 +177,70 @@ TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
+// Tests for input file names beginning in the root path
+TEST_F(CmdLineTest, rootBasedFilePathTrim) {
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 3;
+    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[1],"-f",6);
+    strncpy(commonArgSpace[2],"/etc/test/inputfile1.pls",30);
+    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd2.printUsageMessage);
+    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
+    ASSERT_EQ("/etc/test/inputfile1.pls",cmd2.getInputFileName());
+}
+
+// Tests for input file names beginning in sibling path
+TEST_F(CmdLineTest, siblingBasedFilePathTrim) {
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 3;
+    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[1],"-f",6);
+    strncpy(commonArgSpace[2],"../etc/test/inputfile1.pls",30);
+    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd2.printUsageMessage);
+    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
+    ASSERT_EQ("../etc/test/inputfile1.pls",cmd2.getInputFileName());
+}
+
+// Tests for input file names beginning in child path
+TEST_F(CmdLineTest, childBasedFilePathTrim) {
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 3;
+    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[1],"-f",6);
+    strncpy(commonArgSpace[2],"etc/test/inputfile1.pls",30);
+    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd2.printUsageMessage);
+    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
+    ASSERT_EQ("etc/test/inputfile1.pls",cmd2.getInputFileName());
+}
+
+// Tests for input file names beginning in same path
+TEST_F(CmdLineTest, selfBasedFilePathTrim) {
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 3;
+    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[1],"-f",6);
+    strncpy(commonArgSpace[2],"inputfile1.pls",30);
+    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd2.printUsageMessage);
+    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
+    ASSERT_EQ("inputfile1.pls",cmd2.getInputFileName());
+}
+
+// Tests for input file names beginning in sibling path and filename contains dots
+TEST_F(CmdLineTest, siblingBasedFilePathTrimDotFileName) {
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 3;
+    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[1],"-f",6);
+    strncpy(commonArgSpace[2],"../etc/test/input.file.1.pls",30);
+    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd2.printUsageMessage);
+    ASSERT_EQ("input.file.1",cmd2.getTrimmedFileName());
+    ASSERT_EQ("../etc/test/input.file.1.pls",cmd2.getInputFileName());
+}
 
 /* Call RUN_ALL_TESTS() in main().
 

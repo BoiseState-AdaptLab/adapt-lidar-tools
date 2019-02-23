@@ -162,5 +162,5 @@ void produce_product(FlightLineData &raw_data, LidarVolume &fitted_data){
     // Save the image to a geotiff file
     // The 'title' string is stored as part of the file
     std::cout << "Writing GeoTIFF " << std::endl;
-    fitted_data.toTif(cmdLineArgs.get_output_filename(), raw_data.geog_cs, raw_data.utm);
+    fitted_data.toTif(cmdLineArgs, raw_data.geog_cs, raw_data.utm);
 }

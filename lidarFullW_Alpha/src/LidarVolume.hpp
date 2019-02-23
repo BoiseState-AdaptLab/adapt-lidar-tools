@@ -12,6 +12,11 @@
 #include <malloc.h>
 #include <cstring>
 #include <string>
+#include "CmdLine.hpp"
+#include "gdal.h"
+#include "gdal_priv.h"
+#include "ogr_spatialref.h"
+#include <iostream>
 
 class LidarVolume{
 
@@ -72,7 +77,7 @@ class LidarVolume{
     void display();
 
 
-    int toTif(std::string filename, std::string geog_cs, int utm);
+    int toTif(CmdLine &, std::string geog_cs, int utm);
 
 
     // This takes the float value 'val', converts it to red, green &
@@ -80,7 +85,7 @@ class LidarVolume{
     // location pointed to by 'ptr'
     void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val);
 
-    void writeImage(const char* filename, std::string geog_cs, int utm);
+    void writeImage(CmdLine &, std::string geog_cs, int utm);
 
 
 

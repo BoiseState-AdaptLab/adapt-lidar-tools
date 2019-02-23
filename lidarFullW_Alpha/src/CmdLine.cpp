@@ -102,7 +102,7 @@ void CmdLine::parse(int argc,char *argv[]){
         printUsageMessage = true;
         break;
       case 'd':
-	useGaussianFitting = false;
+	    useGaussianFitting = false;
 	break;
       case ':':
         // Missing option argument
@@ -168,4 +168,15 @@ std::string CmdLine::getTrimmedFileName(){
    size_t end = inputFileName.find_last_of(".");
    int len = end - start;
    return inputFileName.substr(start,len);
+}
+
+/**
+ * get the output filename based on the command line arguments and input filename
+ * @return the output filename
+ */
+std::string CmdLine::get_output_filename() {
+    std::string output_filename = getTrimmedFileName();
+    //Name file base on method used
+    std::string fit_type = useGaussianFitting ? "_gaussian.tif" : "_firstDiff.tif";
+    return output_filename + fit_type;
 }

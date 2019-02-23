@@ -47,6 +47,7 @@ public:
   int parse_args(int argc, char *argv[]);
   std::string getInputFileName();
   std::string getTrimmedFileName();
+  std::string get_output_filename();
 };
 
 #endif /* CMDLINE_HPP_ */

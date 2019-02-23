@@ -49,15 +49,11 @@ int main (int argc, char *argv[]) {
     std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
   #endif
 
-  //Name file base on method used
-  std::string trimmedFileName = cmdLineArgs.getTrimmedFileName();
-  if(cmdLineArgs.useGaussianFitting == false) {//!cmdLineArgs.useGaussianFitting) {
-    std::cerr << "Finding peaks with first difference" << std::endl;
-    trimmedFileName += "_firstDiff";
-  } else {
-    std::cerr << "Finding peaks with gaussian fitting" << std::endl;
-    trimmedFileName += "_gaussian";
-  }
+
+    std::string fit_type = cmdLineArgs.useGaussianFitting? "gaussian fitting" : "first difference";
+    std::cerr << "Finding peaks with " << fit_type << std::endl;
+
+
 
   while(rawData.hasNextPulse()){
     // make sure that we have an empty vector
@@ -124,7 +120,7 @@ int main (int argc, char *argv[]) {
   // Save the image to a geotiff file
   // The 'title' string is stored as part of the file
   std::cout << "Writing GeoTIFF " << std::endl;
-  intermediateData.toTif(trimmedFileName + ".tif", rawData.geog_cs, rawData.utm);
+  intermediateData.toTif(cmdLineArgs.get_output_filename(), rawData.geog_cs, rawData.utm);
   
   //Get end time
   //Compute total run time and convert to appropriate units

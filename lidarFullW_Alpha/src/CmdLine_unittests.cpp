@@ -177,6 +177,12 @@ TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
 }
 
+/****************************************************************************
+*
+* Begin filename trimming tests
+*
+****************************************************************************/
+
 // Tests for input file names beginning in the root path
 TEST_F(CmdLineTest, rootBasedFilePathTrim) {
     optind = 0; // Need to reset optind to 0 for each test
@@ -240,6 +246,34 @@ TEST_F(CmdLineTest, siblingBasedFilePathTrimDotFileName) {
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("input.file.1",cmd2.getTrimmedFileName());
     ASSERT_EQ("../etc/test/input.file.1.pls",cmd2.getInputFileName());
+}
+
+
+/****************************************************************************
+*
+* Begin output filename tests
+*
+****************************************************************************/
+
+TEST_F(CmdLineTest, output_filename_gaussian){
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 3;
+    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[1],"-f",6);
+    strncpy(commonArgSpace[2],"inputfile1.pls",15);
+    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    ASSERT_EQ("inputfile1_gaussian.tif",cmd.get_output_filename());
+}
+
+TEST_F(CmdLineTest, output_filename_first_diff){
+    optind = 0; // Need to reset optind to 0 for each test
+    numberOfArgs = 4;
+    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[1],"-f",5);
+    strncpy(commonArgSpace[2],"inputfile1.pls",15);
+    strncpy(commonArgSpace[3],"-d",5);
+    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    ASSERT_EQ("inputfile1_firstDiff.tif",cmd.get_output_filename());
 }
 
 /* Call RUN_ALL_TESTS() in main().

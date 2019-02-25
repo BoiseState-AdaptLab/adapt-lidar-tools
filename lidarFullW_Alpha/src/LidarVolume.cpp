@@ -241,6 +241,7 @@ void LidarVolume::writeImage(CmdLine &cmdLine, std::string geog_cs, int utm){
                               GDT_Float32 , NULL);
 
   float noData = -99999.99;
+  const float maxFloat = std::numeric_limits<float>::max();
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at
@@ -287,33 +288,31 @@ void LidarVolume::writeImage(CmdLine &cmdLine, std::string geog_cs, int utm){
   for (y=y_idx_extent-1; y>=0 ; y--) {
     for (x=0 ; x<x_idx_extent ; x++) {
         float maxZ = noData;
-        float minZ = std::numeric_limits<float>::max();
+        float minZ = maxFloat;
       std::vector<Peak> *myPoints = volume[position(y, x)];
       if (myPoints != NULL) {
         for (std::vector<Peak>::iterator it = myPoints->begin();
              it != myPoints->end(); ++it) {
           //check if max or min we want
           if (max) {
-            if ((*it).z_activation > maxZ) {
-              maxZ = (float) (*it).z_activation;
+            if (it->z_activation > maxZ) {
+              maxZ = (float) it->z_activation;
             }
           } else {
-            if ((*it).z_activation < minZ) {
-              minZ = (float) (*it).z_activation;
+            if (it->z_activation < minZ) {
+              minZ = (float) it->z_activation;
             }
           }
-
           //std::cout << "maxZ " << maxZ << std::endl;
-
         }
       }
-      heights[x] = max ? maxZ : minZ;
+      heights[x] = max ? maxZ : (minZ == maxFloat ? noData:minZ );
       //std::cout<< "In x loop: Height[" << x <<"]= maxZ = " << maxZ << std::endl;
     }
     #ifdef DEBUG
       std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
     #endif
-    
+
     // Refer to http://www.gdal.org/classGDALRasterBand.html
     retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
                                                 heights, x_idx_extent, 1, 

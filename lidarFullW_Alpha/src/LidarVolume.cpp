@@ -3,10 +3,7 @@
 // Author: ravi
 
 #include "LidarVolume.hpp"
-#include "gdal.h"
-#include "gdal_priv.h"
-#include "ogr_spatialref.h"
-#include <iostream>
+
 
 //Default constructor
 LidarVolume::LidarVolume(){
@@ -135,7 +132,7 @@ void LidarVolume::rasterizeMaxElevation(){
 
   std::cerr << "This function is not implemented" << std::endl;
   return;
-  
+
   int i,j;
 
   for(i=bb_x_idx_min;i<bb_x_idx_max;i++){
@@ -206,7 +203,7 @@ void LidarVolume::display(){
 
 
 // This function actually writes out the GEOTIF file.
-void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm){
+void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm){
 
   //GDAL uses drivers to format all data sets so this registers the drivers
   GDALAllRegister();
@@ -239,10 +236,12 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   //      GDALDataType eType,      //type of raster
   //      char **   papszOptions   //driver specific control parameters
   //      )
-  newDS = driverTiff->Create(filename, x_idx_extent, y_idx_extent, 1, 
+
+  newDS = driverTiff->Create(outputFilename.c_str(), x_idx_extent, y_idx_extent, 1,
                               GDT_Float32 , NULL);
 
   float noData = -99999.99;
+  const float maxFloat = std::numeric_limits<float>::max();
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at
@@ -259,7 +258,7 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
   transform[2] = 0;
   transform[3] = bb_y_max;
   transform[4] = 0;
-  transform[5] = -1;
+  transform[5] = -1;	//Always -1
 
   OGRSpatialReference oSRS;
   char *pszSRS_WKT = NULL;
@@ -285,28 +284,37 @@ void LidarVolume::writeImage(const char* filename, std::string geog_cs, int utm)
     std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
   #endif
 
-  for (y=0 ; y<y_idx_extent ; y++) {
+  bool max = maxElevationFlag;
+  for (y=y_idx_extent-1; y>=0 ; y--) {
     for (x=0 ; x<x_idx_extent ; x++) {
-     float maxZ = noData;
-      std::vector<Peak>* myPoints = volume[position(y,x)];
-      if(myPoints != NULL){
-        for(std::vector<Peak>::iterator it = myPoints->begin(); 
-            it != myPoints->end(); ++it){
-          if((*it).z_activation > maxZ){
-            maxZ = (float)(*it).z_activation; 
-	    //std::cout << "maxZ " << maxZ << std::endl;
+        float maxZ = noData;
+        float minZ = maxFloat;
+      std::vector<Peak> *myPoints = volume[position(y, x)];
+      if (myPoints != NULL) {
+        for (std::vector<Peak>::iterator it = myPoints->begin();
+             it != myPoints->end(); ++it) {
+          //check if max or min we want
+          if (max) {
+            if (it->z_activation > maxZ) {
+              maxZ = (float) it->z_activation;
+            }
+          } else {
+            if (it->z_activation < minZ) {
+              minZ = (float) it->z_activation;
+            }
           }
+          //std::cout << "maxZ " << maxZ << std::endl;
         }
       }
-      heights[x] = maxZ;
+      heights[x] = max ? maxZ : (minZ == maxFloat ? noData:minZ );
       //std::cout<< "In x loop: Height[" << x <<"]= maxZ = " << maxZ << std::endl;
     }
     #ifdef DEBUG
       std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
     #endif
-    
+
     // Refer to http://www.gdal.org/classGDALRasterBand.html
-    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y, x_idx_extent,1,
+    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
     #ifdef DEBUG
@@ -392,7 +400,7 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
 }
 
 
-int LidarVolume::toTif(std::string filename, std::string geog_cs, int utm){
-  writeImage(filename.c_str(), geog_cs, utm);
+int LidarVolume::toTif(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm){
+  writeImage(outputFilename, maxElevationFlag, geog_cs, utm);
   return 0;
 }

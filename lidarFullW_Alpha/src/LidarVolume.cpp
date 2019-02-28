@@ -203,7 +203,7 @@ void LidarVolume::display(){
 
 
 // This function actually writes out the GEOTIF file.
-void LidarVolume::writeImage(CmdLine &cmdLine, std::string geog_cs, int utm){
+void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm){
 
   //GDAL uses drivers to format all data sets so this registers the drivers
   GDALAllRegister();
@@ -237,7 +237,7 @@ void LidarVolume::writeImage(CmdLine &cmdLine, std::string geog_cs, int utm){
   //      char **   papszOptions   //driver specific control parameters
   //      )
 
-  newDS = driverTiff->Create(cmdLine.get_output_filename().c_str(), x_idx_extent, y_idx_extent, 1,
+  newDS = driverTiff->Create(outputFilename.c_str(), x_idx_extent, y_idx_extent, 1,
                               GDT_Float32 , NULL);
 
   float noData = -99999.99;
@@ -284,7 +284,7 @@ void LidarVolume::writeImage(CmdLine &cmdLine, std::string geog_cs, int utm){
     std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
   #endif
 
-  bool max = cmdLine.max_elevation_flag;
+  bool max = maxElevationFlag;
   for (y=y_idx_extent-1; y>=0 ; y--) {
     for (x=0 ; x<x_idx_extent ; x++) {
         float maxZ = noData;
@@ -400,7 +400,7 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
 }
 
 
-int LidarVolume::toTif(CmdLine &cmdLineArgs, std::string geog_cs, int utm){
-  writeImage(cmdLineArgs, geog_cs, utm);
+int LidarVolume::toTif(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm){
+  writeImage(outputFilename, maxElevationFlag, geog_cs, utm);
   return 0;
 }

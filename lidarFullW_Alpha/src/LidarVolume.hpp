@@ -77,7 +77,7 @@ class LidarVolume{
     void display();
 
 
-    int toTif(CmdLine &, std::string geog_cs, int utm);
+    int toTif(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm);
 
 
     // This takes the float value 'val', converts it to red, green &
@@ -85,7 +85,7 @@ class LidarVolume{
     // location pointed to by 'ptr'
     void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val);
 
-    void writeImage(CmdLine &, std::string geog_cs, int utm);
+    void writeImage(std:string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm);
 
 
 

@@ -15,14 +15,14 @@
 #include <chrono>
 
 typedef std::chrono::high_resolution_clock Clock;
-void parse_data(FlightLineData &);
-void fit_data(FlightLineData &, LidarVolume &);
-void produce_product(FlightLineData &, LidarVolume &);
-
-CmdLine cmdLineArgs;
+void parse_data(FlightLineData &, std::string inputFileName);
+void fit_data(FlightLineData &, LidarVolume &, bool useGaussianFitting);
+void produce_product(FlightLineData &, LidarVolume &, std::string outputFilename, bool maxElevationFlag);
 
 // Lidar driver
 int main (int argc, char *argv[]) {
+
+    CmdLine cmdLineArgs;
 
   // Parse and validate the command line args
     if(!cmdLineArgs.parse_args(argc,argv)){
@@ -39,18 +39,18 @@ int main (int argc, char *argv[]) {
   LidarVolume intermediateData;
 
   //parse the data
-  parse_data(rawData);
+  parse_data(rawData, cmdLineArgs.getInputFileName(), cmdLineArgs.max_elevation_flag);
 
   //fit data
-  fit_data(rawData,intermediateData);
+  fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting);
 
   //produce the product
-  produce_product(rawData,intermediateData);
-  
+  produce_product(rawData, intermediateData, cmdLineArgs.get_output_filename(), cmdLineArgs.max_elevation_flag);
+
   //Get end time
   //Compute total run time and convert to appropriate units
   Clock::time_point t2 = Clock::now();
-  double diff = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count(); 
+  double diff = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count();
   std::cout << "All done!\nTime elapsed: " << diff << " seconds\n" << std::endl;
 
   return 0;
@@ -61,8 +61,8 @@ int main (int argc, char *argv[]) {
  * parses the raw data from input file into a FlightLineData object
  * @param data the FlightLineData object to store the raw data in
  */
-void parse_data(FlightLineData &data){
-    data.setFlightLineData(cmdLineArgs.getInputFileName());
+void parse_data(FlightLineData &data, std::string inputFileName){
+    data.setFlightLineData(inputFileName);
 }
 
 
@@ -71,7 +71,7 @@ void parse_data(FlightLineData &data){
  * @param raw_data reference to FlightLineData object that holds raw data
  * @param fitted_data reference to LidarVolume object to store fit data in
  */
-void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
+void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussianFitting) {
     PulseData pd;
     std::ostringstream stream;
     GaussianFitter fitter;
@@ -86,7 +86,7 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
         std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
     #endif
 
-    std::string fit_type = cmdLineArgs.useGaussianFitting ? "gaussian fitting" : "first difference";
+    std::string fit_type = useGaussianFitting ? "gaussian fitting" : "first difference";
     std::cerr << "Finding peaks with " << fit_type << std::endl;
 
     while (raw_data.hasNextPulse()) {
@@ -111,7 +111,7 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
 
                 // Check parameter for using gaussian fitting or estimating
                 int peak_count;
-                if (cmdLineArgs.useGaussianFitting == false) {
+                if (useGaussianFitting == false) {
                     peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
                                                     pd.returningIdx);
                 } else {
@@ -154,7 +154,7 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data) {
  * @param fitted_data the fitted LidarVolume data
  */
 
-void produce_product(FlightLineData &raw_data, LidarVolume &fitted_data){
+void produce_product(FlightLineData &raw_data, LidarVolume &fitted_data, std::string outputFilename, bool maxElevationFlag){
     #ifdef DEBUG
         std::cerr << "Peak finding complete. Going to start writing GeoTIF. In lidarDriver:94" << std::endl;
     #endif
@@ -162,5 +162,5 @@ void produce_product(FlightLineData &raw_data, LidarVolume &fitted_data){
     // Save the image to a geotiff file
     // The 'title' string is stored as part of the file
     std::cout << "Writing GeoTIFF " << std::endl;
-    fitted_data.toTif(cmdLineArgs, raw_data.geog_cs, raw_data.utm);
+    fitted_data.toTif(outputFilename, maxElevationFlag, raw_data.geog_cs, raw_data.utm);
 }

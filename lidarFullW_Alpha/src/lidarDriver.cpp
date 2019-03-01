@@ -39,7 +39,7 @@ int main (int argc, char *argv[]) {
   LidarVolume intermediateData;
 
   //parse the data
-  parse_data(rawData, cmdLineArgs.getInputFileName(), cmdLineArgs.max_elevation_flag);
+  parse_data(rawData, cmdLineArgs.getInputFileName());
 
   //fit data
   fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting);

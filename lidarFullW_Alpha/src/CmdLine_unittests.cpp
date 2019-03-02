@@ -62,9 +62,17 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("someFileName",cmd2.getInputFileName());
+  ASSERT_EQ(true,cmd2.max_elevation_flag);
 
-
-
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 3;
+  strncpy(commonArgSpace[1],"-e",3);
+  strncpy(commonArgSpace[2],"min",4);
+  ASSERT_NO_THROW({
+    cmd3.parse(numberOfArgs, commonArgSpace);
+  });
+  ASSERT_FALSE(cmd3.printUsageMessage);
+  ASSERT_EQ(false,cmd3.max_elevation_flag);
 }
 
 
@@ -100,7 +108,17 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("file",cmd2.getInputFileName());
+  ASSERT_EQ(true,cmd2.max_elevation_flag);
 
+  optind = 0; // Need to reset optind to 0 for each test
+  numberOfArgs = 3;
+  strncpy(commonArgSpace[1],"-e",3);
+  strncpy(commonArgSpace[2],"min",4);
+  ASSERT_NO_THROW({
+    cmd3.parse(numberOfArgs, commonArgSpace);
+  });
+  ASSERT_FALSE(cmd3.printUsageMessage);
+  ASSERT_EQ(false,cmd3.max_elevation_flag);
 
 }
 

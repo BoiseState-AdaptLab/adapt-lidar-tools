@@ -21,7 +21,7 @@ class Tif:
     file_name = file_name[last_slash:]
     #Make sure file is of type .tif
     if not file_name.endswith(".tif"):
-      print ("Invalid file: {}\nFile types supported: .tif".format(
+      print ("Invalid file: {}\nFile types supported: .tif\n".format(
              file_name))
       return
     
@@ -41,7 +41,7 @@ class Tif:
 
   #Get tif data
   def getData(self):
-    print ("\n\33[32mProcessing:\33[0m {}\n".format(self.file_name))
+    print ("\33[32mProcessing:\33[0m {}\n".format(self.file_name))
 
     #Obtain raster
     raster = gdal.Open(self.file_name_full)
@@ -137,24 +137,17 @@ class Tif:
     return color_data
 
   def getComparisonImgData(self, tif2):
-    if tif2.maxY != self.maxY:
-      print ("[ Error ] Tif files are not comparable as they are not of the same length")
-      return None
-
     #Get tif2 details
-    data2 = tif2.data 
+    data2 = tif2.data
     #Get width and height
-    w, h = max(data2.shape[1], self.data.shape[1]), self.data.shape[0]
+    w = min(data2.shape[1], self.data.shape[1])
+    h = min(data2.shape[0], self.data.shape[0])
     #Create color array, h is num of rows, w is num of colums
     color_data = np.zeros((h, w, 3), dtype=np.uint8)
     
-    #Cycle through data
+    #Go through each y value
     for y, (vals1, vals2) in enumerate(zip(self.data, data2)):
-      #Make rows have equal length
-      while len(vals1) < len(vals2):
-        vals1.append(self.no_value)
-      while len(vals1) > len(vals2):
-        vals2.appen(tif2.no_value)
+      #Go through each x value
       for x, (val1, val2) in enumerate(zip(vals1, vals2)):
         no_value1 = val1 == self.no_value
         no_value2 = val2 == tif2.no_value

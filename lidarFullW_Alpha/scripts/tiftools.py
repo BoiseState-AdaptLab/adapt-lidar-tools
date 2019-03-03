@@ -16,7 +16,8 @@ from tif import Tif
 gdal.UseExceptions()
 
 def main(arg_set, path):
-  print (arg_set)
+  #For debugging
+  #print (arg_set)
   global args
   #Check if user called a comparison or not
   if 'c' not in arg_set[0]:
@@ -31,21 +32,34 @@ def main(arg_set, path):
     if arg_set not in args:
       return tif
   else:
+    print ("\33[32mBeginning comparison\33[0m\n")
     #Create tif objects to compare
     tifA = main([arg_set[1], arg_set[2]], path)
     tifB = main([arg_set[3], arg_set[4]], path)
-    #Find unused comparison number
-    j = 1
-    while (Path(path + "compare_{}_simple.out".format(j)).is_file() or
-           Path(path + "compare_{}_raw.out".format(j)).is_file() or
-           Path(path + "compare_{}.jpg".format(j)).is_file()):
-      j += 1
-    #Check if we are writing an output and/or creating an image
-    if 'w' in arg_set[0]:
-      compareData(tifA, tifB, path, j)
-    if 'i' in arg_set[0]:
-      writeCompareImg(tifA, tifB, path, j)
-  
+    #Make sure tif files are of equal length
+    ans = "y"
+    if tifA.maxY != tifB.maxY:
+      print ("[ Error ] tif files are not of equal length")
+      print ("File A has a max Y of {}. File B has a max Y of {}\n"
+             .format(tifA.maxY, tifB.maxY))
+      ans = ""
+      while ans != "y" and ans != "n":
+        ans = input("Continue comparison? (y/n) ")
+    if ans is "y":
+      #Find unused comparison number
+      j = 1
+      while (Path(path + "compare_{}_simple.out".format(j)).is_file() or
+             Path(path + "compare_{}_raw.out".format(j)).is_file() or
+             Path(path + "compare_{}.jpg".format(j)).is_file()):
+        j += 1
+      #Check if we are writing an output and/or creating an image
+      if 'w' in arg_set[0]:
+        compareData(tifA, tifB, path, j)
+      if 'i' in arg_set[0]:
+        writeCompareImg(tifA, tifB, path, j)
+    else:
+      print("Skipping...")  
+
   #Get rid of this arg_set and move on to the next arg_set
   args.pop(0)
   if (len(args) > 0):
@@ -54,7 +68,7 @@ def main(arg_set, path):
 def writeData(tif, path):
   #Go through each data point in the band
   #Print data to file
-  print ("\nWriting data to file")
+  print ("Writing data to file\n")
   #Get data
   data = tif.data
   #Create output file
@@ -76,6 +90,7 @@ def writeData(tif, path):
         output.write("NA" + ("" if last else ", "))
     output.write("\n\n") 
   output.close()
+  print ("Data written to {}\n".format(path + tif.file_name[:-4] + ".out"))
 
 #Writes image data to a jpg
 def writeImage(tif, path):
@@ -86,15 +101,11 @@ def writeImage(tif, path):
   print("Image written to {}\n".format(path + tif.file_name[:-4] + '.jpg'))
 
 def compareData(tifA, tifB, path, compare_no):
+  print ("Writing comparison to file\n")
   A = 0
   B = 1
-  #Get max Y's from the first line of the file
-  if not tifA.maxY == tifB.maxY:
-    print("Tif data files are not of equal length.\n" +
-          "File A has a max y of {}. File B has a max y of {}."
-	  .format(tifA.maxY, tifB.maxY))
-    return
-  
+  #Get smallest maxY
+  maxY = min(tifA.maxY, tifB.maxY)
   #Create file to write to
   #'Simple' has the totals for each comparison result
   #'Raw' has the comparison for every data point
@@ -105,14 +116,13 @@ def compareData(tifA, tifB, path, compare_no):
     out.write("Created at {}\n".format(datetime.datetime.fromtimestamp(time.time()).
               strftime('%Y-%m-%d %H:%M:%S')))
     out.write("file A is {}, file B is {}\n".format(tifA.file_name, tifB.file_name))
-    out.write("Max Y = {}\n".format(tifA.maxY))
+    out.write("Max Y = {}\n".format(maxY))
   outputs[0].write("The simple file contains the totals for each comparison result for each y-value\n\n")
   outputs[1].write("The raw file contains the comparison result for each data point\n\n")
 
   #Begin comparison
-  print ("\33[32mBeginning comparison\33[0m\n")
   #Cycle through the data for each y value
-  for y in range(tifA.maxY + 1):
+  for y in range(maxY + 1):
     #Write the current y value to the 'raw' file
     outputs[0].write("y = {}: ".format(y))
     outputs[1].write("y = {}: ".format(y))
@@ -163,15 +173,16 @@ def compareData(tifA, tifB, path, compare_no):
       sum(comparison), comparison[0], comparison[1], comparison[2], comparison[3])
       + "average A: {}\naverage B: {}\naverage difference (A - B): {}\n\n".format(
       a_avg, b_avg, dif_avg))
-  print ("Comparison complete\nResults have been written to the compare_{}.out files\n"
+  print ("Results have been written to the compare_{}.out files\n"
          .format(compare_no))
 
 def writeCompareImg(tif1, tif2, path, compare_no):
+  print ("Creating comparison heatmap")
   #Get color data
   color_data = tif1.getComparisonImgData(tif2)
   im = Image.fromarray(color_data, 'RGB')
   im.save("{}compare_{}.jpg".format(path, compare_no))
-  print ("Comparison complete\nImage has been written to compare_{}.jpg\n".format(compare_no))
+  print ("Heatmap has been saved to compare_{}.jpg\n".format(compare_no))
 
 def isTif(file_name):
   return file_name[file_name.rfind("/") + 1:].endswith(".tif")

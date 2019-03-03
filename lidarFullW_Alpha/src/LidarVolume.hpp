@@ -12,7 +12,6 @@
 #include <malloc.h>
 #include <cstring>
 #include <string>
-#include "CmdLine.hpp"
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "ogr_spatialref.h"

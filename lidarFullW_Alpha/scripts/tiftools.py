@@ -270,7 +270,7 @@ if __name__ == '__main__':
   #Check if we have any arguments
   if len(args) == 0:
     print ("""
-    [ Error ] you must supply at least 1 argument:
+    [ Error ] you must supply at least 2 arguments:
     1) -iw input_raster
     OR
     1) -iwc [-iw] input_raster1 [-iw] input_raster2

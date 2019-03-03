@@ -169,11 +169,10 @@ class Tif:
           color_data[y, x] = [0,255,0] 
         #Else analyze the data
         else:
-          #Get difference and average and dif/avg
-          dif = abs(val1 - val2)
-          avg = (val1 + val2) / 2
-          #Get dif/avg up to 1, this is our color fraction
-          frac = min(1, dif / avg)
+          #Get difference between the values
+          dif = val1 - val2
+          #Get dif/min_value from 0 to 1, this is our color fraction
+          frac = abs(min(1, dif / min(val1, val2)))
           #Get color val out of frac
           #First 255 goes from white to main color
           #Second 255 goes from main color to black

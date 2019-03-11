@@ -19,7 +19,7 @@ void setup_flight_data(FlightLineData &data, std::string inputFileName);
 void fit_data(FlightLineData &, LidarVolume &, bool useGaussianFitting);
 void produce_product(FlightLineData &, LidarVolume &, std::string outputFilename, bool maxElevationFlag);
 void setup_lidar_volume(FlightLineData &, LidarVolume &);
-int parse_pulse(PulseData &, std::vector<Peak> &, bool , int &);
+int parse_pulse(PulseData &, std::vector<Peak> &, GaussianFitter &, bool , int &);
 void add_peaks_to_volume(LidarVolume &,std::vector<Peak> &, int );
 
 // Lidar driver
@@ -96,7 +96,7 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussi
         try {
             // as long as the pulse has a returning wave it finds
             // the peaks in that wave
-			if(parse_pulse(pd, peaks, useGaussianFitting, peak_count)) {
+			if(parse_pulse(pd, peaks, fitter, useGaussianFitting, peak_count)) {
 				// foreach peak - find activation point
 				//              - calculate x,y,z
 				peak_count = raw_data.calc_xyz_activation(&peaks);
@@ -156,8 +156,8 @@ void add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak> &peaks, in
  * @param peak_count count of found peaks returned
  * @return -1 if the pulse was empty, otherwise 1
  */
-int parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, bool use_gaussian_fitting, int &peak_count){
-	GaussianFitter fitter;
+int parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
+&peak_count){
 
 	if (pulse.returningIdx.empty()) {
 		return -1;

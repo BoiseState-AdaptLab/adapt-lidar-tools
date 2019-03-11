@@ -49,8 +49,9 @@ int main (int argc, char *argv[]) {
   produce_product(rawData, intermediateData, cmdLineArgs.get_output_filename(), cmdLineArgs.max_elevation_flag);
 
   //Get end time
-  //Compute total run time and convert to appropriate units
   Clock::time_point t2 = Clock::now();
+
+  //Compute total run time and convert to appropriate units
   double diff = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count();
   std::cout << "All done!\nTime elapsed: " << diff << " seconds\n" << std::endl;
 
@@ -82,11 +83,16 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussi
 
     #ifdef DEBUG
         std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
-    #endif
+	#endif
+
+        //setup the lidar volume bounding and allocate memory
 	setup_lidar_volume(raw_data, fitted_data);
+
+	//message the user
     std::string fit_type = useGaussianFitting ? "gaussian fitting" : "first difference";
     std::cerr << "Finding peaks with " << fit_type << std::endl;
 
+    //parse each pulse
     while (raw_data.hasNextPulse()) {
         // make sure that we have an empty vector
 	    peaks.clear();
@@ -152,6 +158,7 @@ void add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak> &peaks, in
  * parse the individual pulse and find its peaks
  * @param pulse the pulse wave to parse
  * @param peaks the empty vector to add peaks to
+ * @param fitter the gaussian fitter object to use for smoothing and fitting
  * @param use_gaussian_fitting flag to indicate fitter type
  * @param peak_count count of found peaks returned
  * @return -1 if the pulse was empty, otherwise 1
@@ -187,6 +194,8 @@ int parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitt
  * create the output as specified by the command line arguments
  * @param raw_data the parsed FlightLineData
  * @param fitted_data the fitted LidarVolume data
+ * @param outputFilename name for the output file
+ * @param maxElevationFlag flag to indicate elevation type
  */
 void produce_product(FlightLineData &raw_data, LidarVolume &fitted_data, std::string outputFilename, bool
 maxElevationFlag){

@@ -190,18 +190,16 @@ def isTif(file_name):
 if __name__ == '__main__':
   usage = """
     Usage:
-    $ python {} -iw input-raster1 -iwc [-iw] input-raster1 [-iw] input-raster2
+    $ python {} -iw input-tif  OR  -iwc [-iw] input-tif1 [-iw] input-tif2
       [-p path-name]
         input-raster: input tif file
-        -i: creates an image from the tif file or comparison
-        -w: writes data for tif file or comparison to a .out file
-        -c: compares two input files
-            use -i and -w normally for each input-raster
+        -i input-tif: creates an image from the tif file or comparison
+        -w input-tif: writes data for tif file or comparison to a .out file
+        -c input-tif1 input-tif2: compares two input files
+            use -i and -w normally for each input-tif
     	-p path-name: Output file destination from your current location
     """.format(sys.argv[0])
 
-  #Check arguments
-  i = 1
   #Stores custom path
   custom_path = ""
   #Store any relevent arguments
@@ -209,8 +207,10 @@ if __name__ == '__main__':
   #Store previous arg
   prev_arg = ""
   
+  i = 1
   while i < len(sys.argv):
     arg = sys.argv[i]
+    #If the argument is -p, make sure a path was provided
     if arg == "-p":
       #Make sure next argument is a valid path
       i += 1
@@ -233,8 +233,8 @@ if __name__ == '__main__':
         if 'c' in args[-1][0] and 'c' in arg:
           print ("[ Error ] 'c' needs two input files\nSkipping")
           args.pop()
-        #If the working arg has -i or -w and current arg is some -
-        #The -i/-w does not have its input file
+        #If the working arg has -i or -w and current arg is some '-'
+        #Then -i/-w does not have its input file
         elif 'c' not in prev_arg and '.' not in prev_arg:
           print ("[ Error ] 'w' and 'i' need an input file\nSkipping")
           args.pop()

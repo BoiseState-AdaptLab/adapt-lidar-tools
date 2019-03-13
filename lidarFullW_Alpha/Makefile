@@ -115,7 +115,7 @@ $(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
 
-$(BIN)/LidarVolume_unittests: $(OBJ)/LidarVolume_unittests.o $(OBJ)/CmdLine.o \
+$(BIN)/LidarVolume_unittests: $(OBJ)/LidarVolume_unittests.o \
                               $(OBJ)/LidarVolume.o $(OBJ)/FlightLineData.o \
                               $(OBJ)/WaveGPSInformation.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \

@@ -21,7 +21,7 @@ Note: Both 'w' and 'i' are not required however at least one must be provided be
 python tiftools.py -ciw [-iw] input-tif1 [-iw] input-tif2 [-p pathname]
 
 	-c input-tif1 input-tif2: Compares the two tif files
-	-i input-tif1 input-tif2: Creates a .jpg heatmap of the differences in the two files' data on a gradient from white through red to black
+	-i input-tif1 input-tif2: Creates a .jpg heatmap of the differences in the two files' data on a gradient
 	-w input-tif1 input-tif2: Creates 1) a .out text file containing both tif files' raw data shown side by side  
 					  2) a .out text file containing various statistics about the comparison
 
@@ -30,4 +30,4 @@ python tiftools.py -ciw [-iw] input-tif1 [-iw] input-tif2 [-p pathname]
 
 	-p path-name: Writes all output files to the spacified path from the working directory
 
-Note: For each individual tif file, an argument beforehand is optional and no argument will produce no files for that tif files
+	Note: For each individual tif file, an argument beforehand is optional and no argument will produce no files for that tif file

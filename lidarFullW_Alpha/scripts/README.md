@@ -20,7 +20,7 @@ python tiftools.py -iw input-tif [-p path-name]
 ### Compare two tif files
 
 <pre>
-python tiftools.py -ciw [-iw] input-tif1 [-iw] input-tif2 [-p pathname]
+python tiftools.py -c[iw] [-iw] input-tif1 [-iw] input-tif2 [-p pathname]
     -c input-tif1 input-tif2: Compares the two tif files
     -i input-tif1 input-tif2: Creates a .jpg heatmap of the differences in the two files' data on a gradient
     -w input-tif1 input-tif2: Creates 1) a .out text file containing both tif files' raw data shown side by side  

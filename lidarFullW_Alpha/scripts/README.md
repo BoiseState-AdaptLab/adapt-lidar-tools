@@ -1,11 +1,10 @@
-## tiftools
+# tiftools
 
-Contains programs to extract data from tif files in various formats
-
+Contains a program to extract data from tif files in various formats
 
 ## Usage
 
-The below two usages may be used any number of times in the same command
+The below usages may be used any number of times in the same command as long as they are given the correct number of arguments
 
 ### Analyze a tif file
 
@@ -15,7 +14,7 @@ python tiftools.py -iw input-tif [-p path-name]
 	-w input-tif: Creates a .out text file containing the tif file's raw data
 	-p path-name: Writes all output files to the specified path from the working directory
 
-Note: Both 'w' and 'i' are not rquired however at least one argument must be provided before the input file
+Note: Both 'w' and 'i' are not required however at least one must be provided before the input file
 
 ### Compare two tif files
 
@@ -31,5 +30,4 @@ python tiftools.py -ciw [-iw] input-tif1 [-iw] input-tif2 [-p pathname]
 
 	-p path-name: Writes all output files to the spacified path from the working directory
 
-Note: For each individual tif file, an argument beforehand is optional  
-      Providing no argument will produce no output files for the individual tif file
+Note: For each individual tif file, an argument beforehand is optional and no argument will produce no files for that tif files

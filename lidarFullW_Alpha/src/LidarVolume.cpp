@@ -240,8 +240,15 @@ void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, 
   newDS = driverTiff->Create(outputFilename.c_str(), x_idx_extent, y_idx_extent, 1,
                               GDT_Float32 , NULL);
 
+
   float noData = -99999.99;
   const float maxFloat = std::numeric_limits<float>::max();
+
+  //encode the noData value as metadata in this band
+  newDS->GetRasterBand(1)->SetNoDataValue(noData);
+
+  //add a description to the band
+  newDS  ->GetRasterBand(1)->SetDescription(maxElevationFlag ? "Max Elevation" : "Min Elevation");
 
   //In a north up image, transform[1] is the pixel width, and transform[5] is
   //the pixel height. The upper left corner of the upper left pixel is at

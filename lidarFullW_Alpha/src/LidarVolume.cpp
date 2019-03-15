@@ -34,6 +34,9 @@ LidarVolume::LidarVolume(){
   elev_high = -1;
   elev_low = 99999;
 
+  no_data = -99999.99;
+  min_elev = 99999.99;
+
 }
 
 void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
@@ -202,30 +205,155 @@ void LidarVolume::display(){
 }
 
 
-// This function actually writes out the GEOTIF file.
-void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm){
+//// This function actually writes out the GEOTIF file.
+//void LidarVolume::writeImage(std::string outputFilename, std::string geog_cs, int utm){
+//	std::cerr << "This function is not implemented" << std::endl;
+//	return;
+//  //GDAL uses drivers to format all data sets so this registers the drivers
+//  GDALAllRegister();
+//
+//  //Setup gdal datasets
+//  GDALDataset *newDS;
+//
+//  //From raster
+//  //-1 because of zero indexing
+//  int nCols = x_idx_extent;
+//  int nRows = y_idx_extent;
+//
+//  //FOR TESTING PURPOSES
+//  #ifdef DEBUG
+//    std::cerr << "nCols = x_idx_extent = " << nCols << std::endl;
+//    std::cerr << "nRows = y_idx_extent = " << nRows << std::endl;
+//  #endif
+//
+//  //Represents the output file format. This is used only to write data sets
+//  GDALDriver *driverTiff;
+//
+//  driverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
+//
+//  //To create a new dataset
+//  // Create(
+//  //      const char *pszFilename, //the name of the dataset to create
+//  //      int nXSize,              //width of created raster in pixels(cols)
+//  //      int nYSize,              //height of created raster in pixels(rows)
+//  //      int nBands,              //number of bands
+//  //      GDALDataType eType,      //type of raster
+//  //      char **   papszOptions   //driver specific control parameters
+//  //      )
+//
+//  newDS = driverTiff->Create(outputFilename.c_str(), x_idx_extent, y_idx_extent, 3,
+//                              GDT_Float32 , NULL);
+//	newDS->GetRasterBand(1)->SetNoDataValue(no_data);
+//	newDS->GetRasterBand(2)->SetNoDataValue(no_data);
+//	newDS->GetRasterBand(3)->SetNoDataValue(no_data);
+//	newDS->GetRasterBand(1)->SetDescription("Max Elevation");
+//	newDS->GetRasterBand(2)->SetDescription("Min Elevation");
+//	newDS->GetRasterBand(3)->SetDescription("Max-Min Elevation");
+//
+// // float noData = -99999.99;
+// // const float maxFloat = std::numeric_limits<float>::max();
+//
+//  //In a north up image, transform[1] is the pixel width, and transform[5] is
+//  //the pixel height. The upper left corner of the upper left pixel is at
+//  //position (transform[0],transform[3]).
+//  //  adfGeoTransform[0] /* top left x */
+//  //  adfGeoTransform[1] /* w-e pixel resolution */
+//  //  adfGeoTransform[2] /* 0 */
+//  //  adfGeoTransform[3] /* top left y */
+//  //  adfGeoTransform[4] /* 0 */
+//  //  adfGeoTransform[5] /* n-s pixel resolution (negative value) */
+//  double transform[6];
+//  transform[0] = bb_x_min;
+//  transform[1] = 1;
+//  transform[2] = 0;
+//  transform[3] = bb_y_max;
+//  transform[4] = 0;
+//  transform[5] = -1;	//Always -1
+//
+//  OGRSpatialReference oSRS;
+//  char *pszSRS_WKT = NULL;
+//  newDS->SetGeoTransform(transform);
+//  oSRS.SetUTM(utm, TRUE);
+//  oSRS.SetWellKnownGeogCS(geog_cs.c_str());
+//  oSRS.exportToWkt(&pszSRS_WKT);
+//  newDS->SetProjection(pszSRS_WKT);
+//  CPLFree(pszSRS_WKT);
+//
+//  //float *heights = (float*)calloc(sizeof(float),y_idx_extent);
+//  float *heights = (float*)calloc(x_idx_extent, sizeof(float));
+//  float *min_heights = (float*)calloc(x_idx_extent, sizeof(float));
+//  float *diff_heights = (float*)calloc(x_idx_extent, sizeof(float));
+//
+//  #ifdef DEBUG
+//    std::cerr << "Mallocd heights. In "<< __FILE__ << ":" << __LINE__ << std::endl;
+//  #endif
+//  CPLErr retval;
+//
+//  // Write image data
+//  int x, y;
+//
+//  #ifdef DEBUG
+//    std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
+//  #endif
+//
+//  //bool max = maxElevationFlag;
+//  for (y=y_idx_extent-1; y>=0 ; y--) {
+//    for (x=0 ; x<x_idx_extent ; x++) {
+//        //float maxZ = noData;
+//        //float minZ = maxFloat;
+//      std::vector<Peak> *myPoints = volume[position(y, x)];
+//   //   float max_peak = get_z_activation_extreme(myPoints,true);
+//   //   float min_peak = get_z_activation_extreme(myPoints,false);
+//  //    float diff = get_z_activation_diff(myPoints);
+//  //    heights[x] = max_peak;
+//  //    min_heights[x] = min_peak;
+//  //    diff_heights[x] = diff;
+//
+//    }
+//    #ifdef DEBUG
+//      std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
+//    #endif
+//
+//    // Refer to http://www.gdal.org/classGDALRasterBand.html
+//    retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
+//                                                heights, x_idx_extent, 1,
+//                                                GDT_Float32, 0, 0, NULL);
+//    if(retval != CE_None){
+//      std::cerr << "Error during writing band: 1 "<< std::endl;
+//      std::cerr << x_idx_extent << " cols " << nCols << " ncols " << y_idx_extent << " rows " << nRows << " nRows" << std::endl;
+//    }
+//
+//
+//	  retval = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
+//	                                             min_heights, x_idx_extent, 1,
+//	                                             GDT_Float32, 0, 0, NULL);
+//    if(retval != CE_None){
+//      std::cerr << "Error during writing band: 1 "<< std::endl;
+//      std::cerr << x_idx_extent << " cols " << nCols << " ncols " << y_idx_extent << " rows " << nRows << " nRows" << std::endl;
+//    }
+//
+//	  retval = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
+//	                                             diff_heights, x_idx_extent, 1,
+//	                                             GDT_Float32, 0, 0, NULL);
+//
+//    #ifdef DEBUG
+//      std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
+//    #endif
+//
+//    if(retval != CE_None){
+//        std::cerr << "Error during writing band: 1 "<< std::endl;
+//        std::cerr << x_idx_extent << " cols " << nCols << " ncols " << y_idx_extent << " rows " << nRows << " nRows" << std::endl;
+//    }
+//
+//
+//  }
+//
+//  GDALClose((GDALDatasetH)newDS);
+//  GDALDestroyDriverManager();
+//}
 
-  //GDAL uses drivers to format all data sets so this registers the drivers
-  GDALAllRegister();
 
-  //Setup gdal datasets
-  GDALDataset *newDS;
 
-  //From raster
-  //-1 because of zero indexing
-  int nCols = x_idx_extent;
-  int nRows = y_idx_extent;
-
-  //FOR TESTING PURPOSES
-  #ifdef DEBUG
-    std::cerr << "nCols = x_idx_extent = " << nCols << std::endl;
-    std::cerr << "nRows = y_idx_extent = " << nRows << std::endl;
-  #endif
-
-  //Represents the output file format. This is used only to write data sets
-  GDALDriver *driverTiff;
-
-  driverTiff = GetGDALDriverManager()->GetDriverByName("GTiff");
 
   //To create a new dataset
   // Create(
@@ -278,6 +406,8 @@ void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, 
 
   //float *heights = (float*)calloc(sizeof(float),y_idx_extent);
   float *heights = (float*)calloc(x_idx_extent, sizeof(float));
+  float *min_heights = (float*)calloc(x_idx_extent, sizeof(float));
+  float *diff_heights = (float*)calloc(x_idx_extent, sizeof(float));
 
   #ifdef DEBUG
     std::cerr << "Mallocd heights. In "<< __FILE__ << ":" << __LINE__ << std::endl;
@@ -291,30 +421,19 @@ void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, 
     std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
   #endif
 
-  bool max = maxElevationFlag;
+  //bool max = maxElevationFlag;
   for (y=y_idx_extent-1; y>=0 ; y--) {
     for (x=0 ; x<x_idx_extent ; x++) {
-        float maxZ = noData;
-        float minZ = maxFloat;
+        //float maxZ = noData;
+        //float minZ = maxFloat;
       std::vector<Peak> *myPoints = volume[position(y, x)];
-      if (myPoints != NULL) {
-        for (std::vector<Peak>::iterator it = myPoints->begin();
-             it != myPoints->end(); ++it) {
-          //check if max or min we want
-          if (max) {
-            if (it->z_activation > maxZ) {
-              maxZ = (float) it->z_activation;
-            }
-          } else {
-            if (it->z_activation < minZ) {
-              minZ = (float) it->z_activation;
-            }
-          }
-          //std::cout << "maxZ " << maxZ << std::endl;
-        }
-      }
-      heights[x] = max ? maxZ : (minZ == maxFloat ? noData:minZ );
-      //std::cout<< "In x loop: Height[" << x <<"]= maxZ = " << maxZ << std::endl;
+      float max_peak = get_z_activation_extreme(myPoints,true);
+      float min_peak = get_z_activation_extreme(myPoints,false);
+      float diff = get_z_activation_diff(myPoints);
+      heights[x] = max_peak;
+      min_heights[x] = min_peak;
+      diff_heights[x] = diff;
+
     }
     #ifdef DEBUG
       std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
@@ -324,6 +443,24 @@ void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, 
     retval = newDS->GetRasterBand(1)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
                                                 heights, x_idx_extent, 1, 
                                                 GDT_Float32, 0, 0, NULL);
+    if(retval != CE_None){
+      std::cerr << "Error during writing band: 1 "<< std::endl;
+      std::cerr << x_idx_extent << " cols " << nCols << " ncols " << y_idx_extent << " rows " << nRows << " nRows" << std::endl;
+    }
+
+
+	  retval = newDS->GetRasterBand(2)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
+	                                             min_heights, x_idx_extent, 1,
+	                                             GDT_Float32, 0, 0, NULL);
+    if(retval != CE_None){
+      std::cerr << "Error during writing band: 1 "<< std::endl;
+      std::cerr << x_idx_extent << " cols " << nCols << " ncols " << y_idx_extent << " rows " << nRows << " nRows" << std::endl;
+    }
+
+	  retval = newDS->GetRasterBand(3)->RasterIO(GF_Write, 0, y_idx_extent-y-1, x_idx_extent,1,
+	                                             diff_heights, x_idx_extent, 1,
+	                                             GDT_Float32, 0, 0, NULL);
+
     #ifdef DEBUG
       std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
     #endif
@@ -332,10 +469,57 @@ void LidarVolume::writeImage(std::string outputFilename, bool maxElevationFlag, 
         std::cerr << "Error during writing band: 1 "<< std::endl;
         std::cerr << x_idx_extent << " cols " << nCols << " ncols " << y_idx_extent << " rows " << nRows << " nRows" << std::endl;
     }
+
+
   }
 
   GDALClose((GDALDatasetH)newDS);
   GDALDestroyDriverManager();
+}
+
+
+
+float LidarVolume::get_z_activation_diff(std::vector<Peak> *peaks){
+	float max_z = no_data;
+	float min_z = min_elev;
+	if(peaks==NULL || peaks->empty()){
+		return no_data;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		//check if max or min we want
+		if ((float)it->z_activation > max_z) {
+			max_z = (float) it->z_activation;
+		}
+		if ((float)it->z_activation < min_z) {
+			min_z = (float) it->z_activation;
+		}
+
+	}
+
+	return max_z - min_z;
+}
+
+float LidarVolume::get_z_activation_extreme(std::vector<Peak> *peaks, bool max_flag){
+	float max_z = no_data;
+	float min_z = min_elev;
+	if(peaks==NULL || peaks->empty()){
+		return no_data;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		//check if max or min we want
+		if (max_flag) {
+			if ((float)it->z_activation > max_z) {
+				max_z = (float) it->z_activation;
+			}
+		} else {
+			if ((float)it->z_activation < min_z) {
+				min_z = (float) it->z_activation;
+			}
+		}
+	}
+	return max_flag ? max_z : min_z;
 }
 
 
@@ -407,7 +591,14 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
 }
 
 
-int LidarVolume::toTif(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm){
-  writeImage(outputFilename, maxElevationFlag, geog_cs, utm);
-  return 0;
-}
+//int LidarVolume::toTif(std::string outputFilename, std::string geog_cs, int utm){
+//	std::cerr << "This function is not implemented" << std::endl;
+//	return 0;
+//  writeImage(outputFilename, geog_cs, utm);
+//  return 0;
+//}
+
+
+
+
+

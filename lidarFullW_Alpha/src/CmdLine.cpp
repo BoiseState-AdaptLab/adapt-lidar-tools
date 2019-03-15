@@ -10,7 +10,7 @@
 #include "CmdLine.hpp"
 
 using namespace std;
-
+static std::string product_desc[4] = {"","max_elev","min_elev","max-min_elev"}; //off by one to match index to
 
 /****************************************************************************
 *
@@ -90,7 +90,17 @@ void CmdLine::parse(int argc,char *argv[]){
   };
 
 
-  // getopt_long stores the option index here.
+	/**
+	 * TODO - implement the numeric options in the menu
+	 * mock the selection of max-min products until implemented
+	 */
+	//selected_products.push_back(3);
+	/**
+	 * remove the section above after implementation
+	 */
+
+
+	// getopt_long stores the option index here.
   int option_index = 0;
   /* Using getopt_long to get the arguments with an option.
    * ":hf:s:" indicate that option 'h' is without arguments while
@@ -114,8 +124,10 @@ void CmdLine::parse(int argc,char *argv[]){
           e_arg = optarg;
           if (strncmp(e_arg,"min",5)==0){
               max_elevation_flag = false;
+	          selected_products.push_back(2);
           }else if(strncmp(e_arg,"max",5)==0){
               max_elevation_flag = true;
+	          selected_products.push_back(1);
           }
           break;
       case ':':
@@ -169,8 +181,9 @@ int CmdLine::parse_args(int argc, char *argv[]) {
     return rtn;
 }
 
-/*
- * return just the input file name, stripped of leading path info and trailing extension info
+/**
+ * get the input file name, stripped of leading path info and trailing extension info
+ * @return input file name stripped of path or extension information
  */
 std::string CmdLine::getTrimmedFileName(){
    size_t start = inputFileName.find_last_of("/");
@@ -186,13 +199,23 @@ std::string CmdLine::getTrimmedFileName(){
 
 /**
  * get the output filename based on the command line arguments and input filename
+ * @param product_id the id of the product to produce
  * @return the output filename
  */
-std::string CmdLine::get_output_filename() {
+std::string CmdLine::get_output_filename(int product_id) {
     std::string output_filename = getTrimmedFileName();
     //Name file base on method used
     std::string file_type = ".tif";
     std::string fit_type = useGaussianFitting ? "_gaussian" : "_firstDiff";
-    std::string elev_type = max_elevation_flag ? "_max_elev" : "_min_elev";
-    return output_filename + elev_type + fit_type + file_type;
+    std::string prod_desc = "_" +product_desc[product_id];
+    return output_filename +  prod_desc + fit_type + file_type;
+}
+
+/**
+ * get the description of the product being produced
+ * @param product_id the product id
+ * @return the short description of the product
+ */
+std::string CmdLine::get_product_desc(int product_id){
+	return product_desc[product_id];
 }

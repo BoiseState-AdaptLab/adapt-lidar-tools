@@ -11,6 +11,7 @@
 #include <fstream>
 #include <getopt.h>
 #include <sstream>
+#include <vector>
 
 class CmdLine{
 
@@ -47,7 +48,9 @@ public:
   int parse_args(int argc, char *argv[]);
   std::string getInputFileName();
   std::string getTrimmedFileName();
-  std::string get_output_filename();
+  std::string get_output_filename(int);
+  std::string get_product_desc(int);
+  std::vector<int> selected_products;
 };
 
 #endif /* CMDLINE_HPP_ */

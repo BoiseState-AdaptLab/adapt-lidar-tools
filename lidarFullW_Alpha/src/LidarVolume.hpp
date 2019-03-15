@@ -40,6 +40,9 @@ class LidarVolume{
     double max_z;
     double min_z;
 
+	double no_data;
+    double min_elev;
+
     //extent of x, y, and z as calculated from the pulse data (max - min)
     int x_idx_extent;
     int y_idx_extent;
@@ -76,7 +79,7 @@ class LidarVolume{
     void display();
 
 
-    int toTif(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm);
+    int toTif(std::string outputFilename, std::string geog_cs, int utm);
 
 
     // This takes the float value 'val', converts it to red, green &
@@ -84,9 +87,7 @@ class LidarVolume{
     // location pointed to by 'ptr'
     void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val);
 
-    void writeImage(std::string outputFilename, bool maxElevationFlag, std::string geog_cs, int utm);
-
-
+    void writeImage(std::string outputFilename, std::string geog_cs, int utm);
 
 };
 

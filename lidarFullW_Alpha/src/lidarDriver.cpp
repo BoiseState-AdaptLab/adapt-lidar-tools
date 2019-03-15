@@ -17,10 +17,18 @@
 typedef std::chrono::high_resolution_clock Clock;
 void setup_flight_data(FlightLineData &data, std::string inputFileName);
 void fit_data(FlightLineData &, LidarVolume &, bool useGaussianFitting);
-void produce_product(FlightLineData &, LidarVolume &, std::string outputFilename, bool maxElevationFlag);
+void produce_product(LidarVolume &, GDALDataset *, int );
 void setup_lidar_volume(FlightLineData &, LidarVolume &);
 int parse_pulse(PulseData &, std::vector<Peak> &, GaussianFitter &, bool , int &);
 void add_peaks_to_volume(LidarVolume &,std::vector<Peak> &, int );
+GDALDriver * setup_gdal_driver();
+GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int x_idx_extent,
+                            int y_idx_extent);
+void geo_orient_gdal(LidarVolume &, GDALDataset *, std::string , int );
+float get_z_activation_extreme(std::vector<Peak> *peaks, bool);
+float get_z_activation_diff(std::vector<Peak> *peaks);
+const double NO_DATA = -99999.99;
+const double MAX_ELEV = 99999.99;
 
 // Lidar driver
 int main (int argc, char *argv[]) {
@@ -45,8 +53,30 @@ int main (int argc, char *argv[]) {
   //fit data
   fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting);
 
-  //produce the product
-  produce_product(rawData, intermediateData, cmdLineArgs.get_output_filename(), cmdLineArgs.max_elevation_flag);
+  //Represents the output file format. This is used only to write data sets
+  GDALDriver *driverTiff = setup_gdal_driver();
+
+  //produce the product(s)
+  for(const int& prod : cmdLineArgs.selected_products){
+	  std::cout << "Writing GeoTIFF " << std::endl;
+	  //represents the tiff file
+	  GDALDataset *gdal_ds;
+	  //Setup gdal dataset for this product
+	  gdal_ds = setup_gdal_ds(driverTiff, cmdLineArgs.get_output_filename(prod).c_str(),cmdLineArgs
+			  .get_product_desc(prod), intermediateData.x_idx_extent,intermediateData.y_idx_extent);
+
+	  //orient the tiff correctly
+	  geo_orient_gdal(intermediateData,gdal_ds, rawData.geog_cs, rawData.utm);
+
+	  //write the tiff data
+	  produce_product(intermediateData, gdal_ds, prod);
+
+	  //kill it with fire!
+	  GDALClose((GDALDatasetH) gdal_ds);
+  }
+
+  GDALDestroyDriverManager();
+
 
   //Get end time
   Clock::time_point t2 = Clock::now();
@@ -58,6 +88,24 @@ int main (int argc, char *argv[]) {
   return 0;
 }
 
+/**
+ * setup the gdal dataset (file) with metadata
+ * @param tiff_driver pointer to the GTiff driver
+ * @param filename the filename for the output
+ * @param band_desc the description for the band data
+ * @param x_idx_extent the x extent value
+ * @param y_idx_extent the y extent value
+ * @return a pointer to a GDALDataset object with the provided metadata
+ */
+
+GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int x_idx_extent,
+		int y_idx_extent){
+	GDALDataset * gdal_ds;
+	gdal_ds = tiff_driver->Create(filename.c_str(), x_idx_extent, y_idx_extent, 1, GDT_Float32, NULL);
+	gdal_ds->GetRasterBand(1)->SetNoDataValue(NO_DATA);
+	gdal_ds->GetRasterBand(1)->SetDescription(band_desc.c_str());
+	return gdal_ds;
+}
 
 /**
  * creates FlightLineData object from the raw data in the input file
@@ -108,6 +156,7 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussi
 				peak_count = raw_data.calc_xyz_activation(&peaks);
 
 				add_peaks_to_volume(fitted_data, peaks, peak_count);
+
 			}
         } catch (const char *msg) {
             std::cerr << msg << std::endl;
@@ -191,20 +240,157 @@ int parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitt
 }
 
 /**
- * create the output as specified by the command line arguments
- * @param raw_data the parsed FlightLineData
- * @param fitted_data the fitted LidarVolume data
- * @param outputFilename name for the output file
- * @param maxElevationFlag flag to indicate elevation type
+ * write the fitted lidar volume data to the given GDAL dataset
+ * @param fitted_data the populated lidar volume
+ * @param gdal_ds pointer to a prepared dataset to populate
+ * @param prod_id the id (type) of the product to generate
  */
-void produce_product(FlightLineData &raw_data, LidarVolume &fitted_data, std::string outputFilename, bool
-maxElevationFlag){
-    #ifdef DEBUG
-        std::cerr << "Peak finding complete. Going to start writing GeoTIF. In lidarDriver:94" << std::endl;
-    #endif
 
-    // Save the image to a geotiff file
-    // The 'title' string is stored as part of the file
-    std::cout << "Writing GeoTIFF " << std::endl;
-    fitted_data.toTif(outputFilename, maxElevationFlag, raw_data.geog_cs, raw_data.utm);
+void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id) {
+	CPLErr retval;
+	//indexes
+	int x, y;
+	//place to hold the elevations
+	float *elevation = (float *) calloc(fitted_data.x_idx_extent, sizeof(float));
+
+	#ifdef DEBUG
+		std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
+	#endif
+
+	//loop through every pixel position
+	for (y = fitted_data.y_idx_extent - 1; y >= 0; y--) {
+		for (x = 0; x < fitted_data.x_idx_extent; x++) {
+			//get the vector of found peaks at this pixel
+			std::vector<Peak> *peaks = fitted_data.volume[fitted_data.position(y, x)];
+			//decide what to do with the peak data at this pixel
+			switch (prod_id) {
+				case 1 ://max elev
+					elevation[x] = get_z_activation_extreme(peaks, true);
+					break;
+				case 2 : //min elev
+					elevation[x] = get_z_activation_extreme(peaks, false);
+					break;
+				case 3 : //max-min
+					elevation[x] = get_z_activation_diff(peaks);
+					break;
+				default:
+					//std::cout << "Product #" << prod_id << " not implemented" << std::endl;
+					break;
+			}
+		}
+	#ifdef DEBUG
+			std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
+	#endif
+		//add the elevation data to the raster, one column at a time
+		// Refer to http://www.gdal.org/classGDALRasterBand.html
+		retval = gdal_ds->GetRasterBand(1)->RasterIO(GF_Write, 0, fitted_data.y_idx_extent - y - 1, fitted_data.x_idx_extent, 1, elevation,
+		                                             fitted_data.x_idx_extent, 1, GDT_Float32, 0, 0, NULL);
+		if (retval != CE_None) {
+			std::cerr << "Error during writing band: 1 " << std::endl;
+		}
+	}
+
+	free(elevation);
+
+}
+
+/**
+ * setup the GDAL manager and get the GTiff driver
+ * @return pointer to the GTiff driver
+ */
+GDALDriver * setup_gdal_driver(){
+	//bring up the driver for all GDAL interactions
+	GDALAllRegister();
+	return GetGDALDriverManager()->GetDriverByName("GTiff");
+}
+
+
+/**
+ * set the orientation on the gdal file to align with the lidar volume data
+ * @param fitted_data lidar volume with fitted data
+ * @param gdal_ds the gdal dataset
+ * @param geog_cs
+ * @param utm
+ */
+void geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds, std::string geog_cs, int utm){
+	//In a north up image, transform[1] is the pixel width, and transform[5] is
+	//the pixel height. The upper left corner of the upper left pixel is at
+	//position (transform[0],transform[3]).
+	//  adfGeoTransform[0] /* top left x */
+	//  adfGeoTransform[1] /* w-e pixel resolution */
+	//  adfGeoTransform[2] /* 0 */
+	//  adfGeoTransform[3] /* top left y */
+	//  adfGeoTransform[4] /* 0 */
+	//  adfGeoTransform[5] /* n-s pixel resolution (negative value) */
+	double transform[6];
+	transform[0] = fitted_data.bb_x_min;
+	transform[1] = 1;
+	transform[2] = 0;
+	transform[3] = fitted_data.bb_y_max;
+	transform[4] = 0;
+	transform[5] = -1;	//Always -1
+
+	OGRSpatialReference oSRS;
+	char *pszSRS_WKT = nullptr;
+	gdal_ds->SetGeoTransform(transform);
+	oSRS.SetUTM(utm, TRUE);
+	oSRS.SetWellKnownGeogCS(geog_cs.c_str());
+	oSRS.exportToWkt(&pszSRS_WKT);
+	gdal_ds->SetProjection(pszSRS_WKT);
+	CPLFree(pszSRS_WKT);
+}
+
+/**
+ * get the difference between max and min z_activation data for a set of peaks
+ * @param peaks the peaks to evaluate
+ * @return the difference between the maximal and minimal element values, or NO_DATA if no peaks
+ */
+float get_z_activation_diff(std::vector<Peak> *peaks){
+	float max_z = NO_DATA;
+	float min_z = MAX_ELEV;
+	if(peaks==NULL || peaks->empty()){
+		return NO_DATA;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		//check if max or min we want
+		if ((float)it->z_activation > max_z) {
+			max_z = (float) it->z_activation;
+		}
+		if ((float)it->z_activation < min_z) {
+			min_z = (float) it->z_activation;
+		}
+
+	}
+
+	return max_z - min_z;
+}
+
+
+/**
+ * get the maximal or minimal peak from the vector
+ * @param peaks set of peaks to evaluate
+ * @param max_flag True = return maximum value, false = return minimum value
+ * @return the smallest or largest value in the set, or NO_DATA if no peaks
+ */
+float get_z_activation_extreme(std::vector<Peak> *peaks, bool max_flag){
+	float max_z = NO_DATA;
+	float min_z = MAX_ELEV;
+	if(peaks==NULL || peaks->empty()){
+		return NO_DATA;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		//check if max or min we want
+		if (max_flag) {
+			if ((float)it->z_activation > max_z) {
+				max_z = (float) it->z_activation;
+			}
+		} else {
+			if ((float)it->z_activation < min_z) {
+				min_z = (float) it->z_activation;
+			}
+		}
+	}
+	return max_flag ? max_z : min_z;
 }

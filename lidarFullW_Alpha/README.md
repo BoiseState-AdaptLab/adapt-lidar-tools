@@ -8,18 +8,20 @@ stored in a separate Waves file that must be in the same directory and have the
 same base name as the *.pls file, but have the ending *.wvs.
 
 ## Products
-### AR
+Each product is associated with a number. Comma-separated lists of these numbers can be given as
+an input to the program to specify what products should be generated.
+### 1: AR
 raw amplitude data
-### AE
+### 2: AE
 Estimated amplitude using Gaussian fitting
-### Full Width Half Maximum (fwhm)
+### 3: Full Width Half Maximum (fwhm)
 Estimated pulse width
-### Elevation
+### 4: Elevation
 Height on Z axis(Elevation from mean sea level (MSL))
-### Peaks
+### 5: Peaks
 Number of peaks
-### Back Scatter Cross Section
-### Rise time
+### 6: Back Scatter Cross Section
+### 7: Rise time
 leading edge (Number of time bins between 10% and 90% of maximum amplitude at rising edge of each pulse)
-### Total Energy
+### 9: Total Energy
 Total energy from the estimated wave (summation of all amplitudes from wave triggering location to the wave end). Wave triggering location is found by the location that has amplitude value of max amplitude * 1/e(1). 

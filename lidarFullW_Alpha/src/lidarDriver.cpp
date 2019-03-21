@@ -264,7 +264,7 @@ void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id
 			std::vector<Peak> *peaks = fitted_data.volume[fitted_data.position(y, x)];
 			//decide what to do with the peak data at this pixel
 			switch (prod_id) {
-				case 1 ://max elev
+				case 1 : //max elev
 					elevation[x] = get_z_activation_extreme(peaks, true);
 					break;
 				case 2 : //min elev

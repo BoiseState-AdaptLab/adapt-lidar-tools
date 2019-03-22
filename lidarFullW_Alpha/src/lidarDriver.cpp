@@ -45,7 +45,7 @@ int main (int argc, char *argv[]) {
   //Collect start time
   Clock::time_point t1 = Clock::now();
 
-  std::cout << "\nProcessing  " << argv[2] << std::endl;
+  std::cout << "\nProcessing  " << cmdLineArgs.getInputFileName().c_str() << std::endl;
 
   //ingest the raw flight data into an object
   setup_flight_data(rawData, cmdLineArgs.getInputFileName());

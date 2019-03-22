@@ -2,14 +2,12 @@
 // Created on: 17-May-2017
 // Author: ravi
 
-#include <iostream>
-#include <fstream>
-#include <getopt.h>
-#include <sstream>
-#include <cstring>
+
 #include "CmdLine.hpp"
 
 using namespace std;
+
+
 static std::string product_desc[4] = {"","max_elev","min_elev","max-min_elev"}; //off by one to match index to
 
 /****************************************************************************
@@ -109,15 +107,15 @@ void CmdLine::parse(int argc,char *argv[]){
       case 'd':
         useGaussianFitting = false;
 	      break;
-      case 'e': { // Without curly braces wrapping this case, there are compilation errors
+      case 'e':  {// Without curly braces wrapping this case, there are compilation errors
         e_arg = optarg;
         std::stringstream ss(e_arg);
         while(ss.good()) {
-            string substr;
+        	string substr;
             getline(ss, substr, ',');
             int arg;
             try {
-                arg = std::stoi(substr);
+                arg = atoi(substr.c_str());
             } catch (std::invalid_argument e) {
                 std::cout << "\nProduct list could not be converted into integers" <<std::endl;
                 std::cout << "-------------------------" <<std::endl;
@@ -126,12 +124,13 @@ void CmdLine::parse(int argc,char *argv[]){
             }
 
             //Just making sure it doesn't try pushing broken data to selected_products
-            if (printUsageMessage)
-                break;
-
+            if (printUsageMessage) {
+	            break;
+            }
             selected_products.push_back(arg);
         }
-        break; }
+        break;
+        }
       case ':':
         // Missing option argument
 		    std::cout << "\nMissing arguments" <<std::endl;

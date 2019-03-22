@@ -12,6 +12,9 @@
 #include <getopt.h>
 #include <sstream>
 #include <vector>
+#include <cstring>
+#include <stdexcept>
+#include <stdlib.h>
 
 class CmdLine{
 

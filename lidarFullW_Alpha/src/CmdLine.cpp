@@ -32,7 +32,10 @@ void CmdLine::setUsageMessage()
          << "  :Generate a Geotif file" << std::endl;
   buffer << "Option:  " << std::endl;
   buffer << "       -e  <list>"
-         << "  :Products to generate; list should be a comma-separated list of numbers" << std::endl;
+         << "  :Products to generate; valid ways to format the list include:" << std::endl;
+  buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
+  buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
+  buffer << "                   -e \" 1 , 2 , 3 \"   (white-space allowed inside quotes)" << std::endl;
   buffer << "Option:  " << std::endl;
   buffer << "       -d"
          << "  :Disables gaussian fitter, using first diff method instead" << std::endl;

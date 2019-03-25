@@ -2,14 +2,12 @@
 // Created on: 17-May-2017
 // Author: ravi
 
-#include <iostream>
-#include <fstream>
-#include <getopt.h>
-#include <sstream>
-#include <cstring>
+
 #include "CmdLine.hpp"
 
 using namespace std;
+
+
 static std::string product_desc[4] = {"","max_elev","min_elev","max-min_elev"}; //off by one to match index to
 
 /****************************************************************************
@@ -33,14 +31,17 @@ void CmdLine::setUsageMessage()
   buffer << "       -f  <path to pls file>"
          << "  :Generate a Geotif file" << std::endl;
   buffer << "Option:  " << std::endl;
-  buffer << "       -e  {min, max}"
-         << "  :elevation type for Geotif output" << std::endl;
+  buffer << "       -e  <list>"
+         << "  :Products to generate; valid ways to format the list include:" << std::endl;
+  buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
+  buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
+  buffer << "                   -e \" 1 , 2 , 3 \"   (white-space allowed inside quotes)" << std::endl;
   buffer << "Option:  " << std::endl;
   buffer << "       -d"
          << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
-  buffer << "       bin/lidarDriver -f ../etc/140823_183115_1_clipped_test.pls -e max" << std::endl;
+  buffer << "       bin/lidarDriver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2" << std::endl;
   usageMessage.append(buffer.str());
 }
 
@@ -89,17 +90,6 @@ void CmdLine::parse(int argc,char *argv[]){
       {0, 0, 0, 0}
   };
 
-
-	/**
-	 * TODO - implement the numeric options in the menu
-	 * mock the selection of max-min products until implemented
-	 */
-	//selected_products.push_back(3);
-	/**
-	 * remove the section above after implementation
-	 */
-
-
 	// getopt_long stores the option index here.
   int option_index = 0;
   /* Using getopt_long to get the arguments with an option.
@@ -118,28 +108,42 @@ void CmdLine::parse(int argc,char *argv[]){
         printUsageMessage = true;
         break;
       case 'd':
-	    useGaussianFitting = false;
-	    break;
-      case 'e':
-          e_arg = optarg;
-          if (strncmp(e_arg,"min",5)==0){
-              max_elevation_flag = false;
-	          selected_products.push_back(2);
-          }else if(strncmp(e_arg,"max",5)==0){
-              max_elevation_flag = true;
-	          selected_products.push_back(1);
-          }
-          break;
+        useGaussianFitting = false;
+	      break;
+      case 'e':  {// Without curly braces wrapping this case, there are compilation errors
+        e_arg = optarg;
+        std::stringstream ss(e_arg);
+        while(ss.good()) {
+        	string substr;
+            getline(ss, substr, ',');
+            int arg;
+            try {
+                arg = atoi(substr.c_str());
+            } catch (std::invalid_argument e) {
+                std::cout << "\nProduct list could not be converted into integers" <<std::endl;
+                std::cout << "-------------------------" <<std::endl;
+                printUsageMessage = true;
+                break;
+            }
+
+            //Just making sure it doesn't try pushing broken data to selected_products
+            if (printUsageMessage) {
+	            break;
+            }
+            selected_products.push_back(arg);
+        }
+        break;
+        }
       case ':':
         // Missing option argument
-		std::cout << "\nMissing arguments" <<std::endl;
-    	std::cout << "------------------" <<std::endl;
+		    std::cout << "\nMissing arguments" <<std::endl;
+    	  std::cout << "------------------" <<std::endl;
         printUsageMessage = true;
-		break;
+        break;
       default:
         // Invalid option
-		std::cout << "\nInvalid option" <<std::endl;
-    	std::cout << "---------------" <<std::endl;
+		    std::cout << "\nInvalid option" <<std::endl;
+    	  std::cout << "---------------" <<std::endl;
         printUsageMessage = true;
 
     }

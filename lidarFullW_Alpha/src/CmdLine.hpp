@@ -38,7 +38,7 @@ public:
   // use find_peaks parameter
   // True = use gaussian fitting, False = only guess
   bool useGaussianFitting;
-  bool max_elevation_flag;
+ // bool max_elevation_flag;
   CmdLine();
 
 

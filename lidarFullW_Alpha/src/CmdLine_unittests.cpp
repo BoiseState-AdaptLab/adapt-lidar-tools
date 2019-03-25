@@ -48,6 +48,7 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
   numberOfArgs = 2;
   strncpy(commonArgSpace[0],"test",5);
   strncpy(commonArgSpace[1],"-h",3);
+
   ASSERT_NO_THROW({
     cmd.parse(numberOfArgs, commonArgSpace);
   });
@@ -62,7 +63,6 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("someFileName",cmd2.getInputFileName());
-  ASSERT_EQ(true,cmd2.max_elevation_flag);
 
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 3;
@@ -72,7 +72,6 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
     cmd3.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_FALSE(cmd3.printUsageMessage);
-  ASSERT_EQ(false,cmd3.max_elevation_flag);
 }
 
 
@@ -108,17 +107,15 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
   });
   ASSERT_FALSE(cmd2.printUsageMessage);
   ASSERT_EQ("file",cmd2.getInputFileName());
-  ASSERT_EQ(true,cmd2.max_elevation_flag);
 
   optind = 0; // Need to reset optind to 0 for each test
   numberOfArgs = 3;
-  strncpy(commonArgSpace[1],"-e",3);
+  strncpy(commonArgSpace[1],"--elevation",13);
   strncpy(commonArgSpace[2],"2",4);
   ASSERT_NO_THROW({
     cmd3.parse(numberOfArgs, commonArgSpace);
   });
   ASSERT_FALSE(cmd3.printUsageMessage);
-  ASSERT_EQ(false,cmd3.max_elevation_flag);
 
 }
 
@@ -353,7 +350,7 @@ TEST_F(CmdLineTest, output_filename_max_min_gaussian){
   strncpy(commonArgSpace[3],"-e",4);
   strncpy(commonArgSpace[4],"3",4);
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-  ASSERT_EQ("inputfile1_max-min_elev_gaussian.tif",cmd.get_output_filename(2));
+  ASSERT_EQ("inputfile1_max-min_elev_gaussian.tif",cmd.get_output_filename(3));
 }
 
 TEST_F(CmdLineTest, output_filename_max_min_first_diff){
@@ -366,7 +363,7 @@ TEST_F(CmdLineTest, output_filename_max_min_first_diff){
   strncpy(commonArgSpace[4],"-e",4);
   strncpy(commonArgSpace[5],"3",4);
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-  ASSERT_EQ("inputfile1_max-min_elev_firstDiff.tif",cmd.get_output_filename(2));
+  ASSERT_EQ("inputfile1_max-min_elev_firstDiff.tif",cmd.get_output_filename(3));
 }
 
 /* Call RUN_ALL_TESTS() in main().

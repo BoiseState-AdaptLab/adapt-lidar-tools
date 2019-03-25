@@ -401,6 +401,9 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
             sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
        (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
                                           );
+      //Print out Gaussian Fitter equation
+      //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - " << peak->location << ")/" << c << "]^2)" << std::endl;
+
       if(peak->triggering_location > n || peak->triggering_location <0){
 
        
@@ -647,7 +650,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
     Peak* peak = new Peak();
     peak->amp = ampData[peak_guesses_loc[i]];
     peak->location = idxData[peak_guesses_loc[i]];
-    peak->fwhm = guess * 2;
+    peak->fwhm = guess;
     results->push_back(*peak);
   }
 

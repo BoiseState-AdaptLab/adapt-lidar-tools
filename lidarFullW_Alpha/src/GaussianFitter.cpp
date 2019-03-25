@@ -481,8 +481,7 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
   int first, second, fDiff, count = 0;
   std::vector<int> firstDifference;
 
-  for(int i = 0; i< (int)ampData.size(); i++){
-    //TODO: Fix bounding errors i+1, i+2
+  for(int i = 0; i< (int)ampData.size()-2; i++){
   	first = ampData[i+1];
     second = ampData[i+2];
 
@@ -546,11 +545,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
   int wideStart = -1; //The start of any current wide peak
   int prev_grad = -1;
   int grad = -1;
-  for(int i = 0; i<(int)ampData.size(); i++){
+  for(int i = 0; i<(int)ampData.size()-1; i++){
 
     if(ampData[i] > noise_level){
       // sloping down
-      //TODO: Fix bounding error i+1
       if(ampData[i+1] < ampData[i]){
         // were we sloping up before?
         if(grad == 1){
@@ -574,7 +572,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
         grad = -1;
       // sloping up
       /**
- * TODO: fix the bounding error i+1
  */
       }else if(ampData[i+1] > ampData[i]){
         //was flat

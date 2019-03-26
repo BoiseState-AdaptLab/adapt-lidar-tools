@@ -13,19 +13,6 @@ public:
 
 protected:
 
-	virtual void SetUp(){
-		numberOfArgs = 10;
-		maxLengthOfArg = 256;
-		commonArgSpace = allocateTestArgs(numberOfArgs,maxLengthOfArg);
-	}
-
-	static char** allocateTestArgs(int N,int M){
-		char** someArgs = (char**)malloc(sizeof(char*)*N);
-		for(int i=0;i<10;i++){
-			someArgs[i] = (char*)malloc(sizeof(char)*M);
-		}
-		return someArgs;
-	}
 
 	char** commonArgSpace;
 	int numberOfArgs;

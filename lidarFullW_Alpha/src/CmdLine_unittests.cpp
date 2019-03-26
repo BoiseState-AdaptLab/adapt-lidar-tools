@@ -26,7 +26,7 @@ class CmdLineTest : public testing::Test {
     return someArgs;
   }
 
-  void TearDown() override {
+  void TearDown()  {
   	for (int i=0 ;i<10;i++){
   		free(commonArgSpace[i]);
   	}

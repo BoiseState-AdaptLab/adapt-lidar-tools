@@ -10,6 +10,8 @@ Peak::Peak(){
   location = 0;   
   fwhm = 0;       
 
+  is_final_peak = false;
+
   fwhm_t_positive = 0;   
   fwhm_t_negative = 0;
 

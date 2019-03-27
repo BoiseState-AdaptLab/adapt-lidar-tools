@@ -12,6 +12,7 @@ class Peak{
     double location;    //The time location of peak occurence
     double fwhm;        //Full width at half maximum - the width of the peak
 
+    int positionInWave; //Variable that indicates position in the wave
     bool is_final_peak; //Keeps track of whether this is final peak in wave
 
     //the time locations of the half maximum(amp/2)

@@ -10,6 +10,7 @@ Peak::Peak(){
   location = 0;   
   fwhm = 0;       
 
+  //positionInWave //No default value currently
   is_final_peak = false;
 
   fwhm_t_positive = 0;   

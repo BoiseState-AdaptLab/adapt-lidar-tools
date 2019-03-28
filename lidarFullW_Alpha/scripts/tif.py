@@ -3,7 +3,7 @@
 #Author: Aaron Orenstein
 
 from osgeo import gdal
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import math
 import sys
@@ -65,7 +65,7 @@ class Tif:
     #Get the data from the band and return a 2D list
     print ("Getting Data\n")
     
-    #Data will be stored here, y = rows, x = colums
+    #Data will be stored here, y = rows, x = columns
     data = np.full((band.YSize, band.XSize), self.no_value, dtype=float)
     #Go through each y value
     for y in range(band.YSize):
@@ -89,23 +89,50 @@ class Tif:
     self.data = data
  
   #Create image color data
-  def getImgData(self):
-    #Create the image
+  def createImage(self, path):
+    #Dimension conventions
+    #Width (w) is always measured in columnns
+    #Height (h) is always measured in rows
+    #Each column and row has a width/height of 1 pixel (px)
+
     print ("Creating Image\n")
-    #Width is the number of columns
-    #Height is the number of rows
-    w, h = self.data.shape[1], self.data.shape[0]
+
+    #Get dimensions of data
+    data_w, data_h = self.data.shape[1], self.data.shape[0]
     #Min/max values of the data array
     data_values = [i for i in self.data.flatten() if i != self.no_value]
     max_val, min_val = max(data_values), min(data_values)
+    #Get the string of these values rounded to 2 decimal places
+    max_str, min_str = str(round(max_val, 2)), str(round(min_val, 2))
+
+    #Calculate width of the key
+    #1/2 goes to min/max text and spacing, 1/2 goes to sample gradient
+    key_w = math.floor(max(100, data_h / 4, data_w / 2))
+    #Create biggest string possible for min/max, 2 spaces for spacing
+    test_text = max_str + min_str + "  "
+    #Scale font size to that test_text and key_w / 2
+    font_type = 'times-new-roman.ttf'
+    font_size = 1
+    font = ImageFont.truetype(font_type, font_size)
+    while font.getsize(test_text)[0] < key_w / 2:
+      font_size += 1
+      font = ImageFont.truetype(font_type, font_size)
+    font = ImageFont.truetype(font_type, font_size - 1)
+    #Find height of the key in rows
+    key_h = font.getsize(test_text)[1]
+    #Calculate dimensions of image
+    #Width encompasses both the data and the key
+    #Height includes the data, the key, and vertical spacing
+    img_w, img_h = max(data_w, key_w), data_h + math.floor(key_h * 7 / 5)
+
     #Create an array that store RGB values for each data point
-    #h = number of rows, w = number of collums
-    color_data = np.full((h, w, 3), 255, dtype=np.uint8)
+    color_data = np.full((img_h, img_w, 3), 255, dtype=np.uint8)
     #These are the colors for each coloring 'tier'
     #(low) dark green, yellow, red (high)
-    colors = [[0,128,0],[255,255,0],[255,0,0]]
-    num_colors = len(colors) - 1
+    colors = [[0,71,0],[255,255,0],[255,0,0]]
 
+    #Calculate image displacement (If key is bigger than image)
+    dx = 0 if data_w >= key_w else math.floor((key_w - data_w) / 2)
     #Loop through each y value for each x value
     for y, vals in enumerate(self.data):
       for x, val in enumerate(vals):
@@ -113,37 +140,79 @@ class Tif:
         if val != self.no_value:
           #Normalize value between 0 and 1
           val_frac = (val - min_val) / (max_val - min_val)
-          #Set color tiers
-          tier1, tier2 = 0, 0
-          #This is the distance between value and lower tier
-          between_frac = 0
-          if val_frac >= 0:
-            #If the value is 0 or lower, keep at lowest tier
-            if val_frac >= 1:
-              #If the value is 1 or higher, set to highest tier
-              tier1, tier2 = num_colors, num_colors
-            else:
-              #Find low tier and high tier
-              tier1 = math.floor(val_frac * num_colors)
-              tier2 = tier1 + 1
-              #Find distance between the value and the low tier (0-1)
-            between_frac = (val_frac * num_colors) - tier1
-          #Create color
-          red = (colors[tier2][0] - colors[tier1][0]) * between_frac + colors[tier1][0]
-          green = (colors[tier2][1] - colors[tier1][1]) * between_frac + colors[tier1][1]
-          blue = (colors[tier2][2] - colors[tier1][2]) * between_frac + colors[tier1][2]
           #write color value to array, inputted as [row, col]
-          color_data[y, x] = [red, green, blue]
-    return color_data
+          color_data[y, x + dx] = getHeatMapColor(colors, val_frac)
+
+    #Write data to image
+    img = Image.fromarray(color_data, 'RGB')
+    draw = ImageDraw.Draw(img)
+    #Calculate vertical spacing and sample gradient length
+    vert_space = math.floor(key_h / 5)
+    grad_len = math.floor(key_w / 2)
+    #Get half the verticle offset of text to center text wth gradient
+    vert_offset = math.floor(font.getoffset(test_text)[1] / 2)
+    #Write min value into image
+    x_offset = 0 if data_w <= key_w else math.floor((data_w - key_w) / 2)
+    draw.text((x_offset, data_h + vert_space - vert_offset),
+              min_str + ' ', (0,0,0), font=font)
+    #Draw color gradient into image
+    x_offset += font.getsize(min_str + ' ')[0]
+    for i in range(grad_len):
+      #Get current color
+      color = getHeatMapColor(colors, i / grad_len)
+      #Draw a vertical line, width = 1px (1 col), height = key height
+      draw.line((x_offset + i, data_h + vert_space, x_offset + i,
+                img_h - vert_space), fill=color)
+    #Write max value into image
+    x_offset += i
+    draw.text((x_offset, data_h + vert_space - vert_offset),
+              ' ' + max_str, (0,0,0), font=font)
+    #Save image
+    img.save(path + self.file_name[:-4] + '.jpg')
 
   def getComparisonImgData(self, tif2):
+    #Dimension conventions
+    #Width (w) is always measured in columnns
+    #Height (h) is always measured in rows
+    #Each column and row has a width/height of 1 pixel (px)
+
+    print ("Creating Image\n")
+
     #Get tif2 details
     data2 = tif2.data
     #Get width and height
-    w = min(data2.shape[1], self.data.shape[1])
-    h = min(data2.shape[0], self.data.shape[0])
-    #Create color array, h is num of rows, w is num of colums
-    color_data = np.zeros((h, w, 3), dtype=np.uint8)
+    data_w = min(data2.shape[1], self.data.shape[1])
+    data_h = min(data2.shape[0], self.data.shape[0])
+    #Get width of key text, >= 100
+    key_w = math.floor(max(100, data_h / 4, data_w / 2))
+    #Get max difference and create a string of it rounded to 2 decimals
+    tmp = max([abs(a - b) for a, b in zip(self.data.flatten(), data2.flatten())
+                   if a != self.no_value and b != tif2.no_value])
+    max_dif = str(round(tmp, 2))
+    #Get largest string in the key between the max/min difference text
+    #And the file A/file B text, with spaces
+    test_text = max(["0  " + max_dif, "File AFile B"], key=len)
+    #Scale font size to that test_text and key_w / 2
+    font_type = 'times-new-roman.ttf'
+    font_size = 1
+    font = ImageFont.truetype(font_type, font_size)
+    while font.getsize(test_text)[0] < key_w / 2:
+      font_size += 1
+      font = ImageFont.truetype(font_type, font_size)
+    font = ImageFont.truetype(font_type, font_size - 1)
+    print (font_size)
+    #Find height of the key in rows, x2 for both lines of text 
+    key_h = font.getsize(test_text)[1] * 2
+
+    #Get image dimensions
+    #Width encompanses key and data
+    #Height includes the data, the key, and vertical spacing
+    img_w = max(key_w, data_w)
+    img_h = data_h + math.floor(key_h * 13 / 10)
+    #Create color array
+    color_data = np.zeros((img_h, img_w, 3), dtype=np.uint8)
+    #Colors- white (lowest), red, black (highest)
+    colors = [[255,255,255], [255,0,0], [0,0,0]]
     
     #Go through each y value
     for y, (vals1, vals2) in enumerate(zip(self.data, data2)):
@@ -151,7 +220,7 @@ class Tif:
       for x, (val1, val2) in enumerate(zip(vals1, vals2)):
         no_value1 = val1 == self.no_value
         no_value2 = val2 == tif2.no_value
-        #If nether has data, color is med gray
+        #If neither has data, color is med gray
         if no_value1 and no_value2:
           color_data[y, x] = [128,128,128]
         #If only A has data, color is blue
@@ -162,16 +231,30 @@ class Tif:
           color_data[y, x] = [0,255,0] 
         #Else analyze the data
         else:
-          #Get difference between the values
-          dif = val1 - val2
-          #Get dif/min_value from 0 to 1, this is our color fraction
-          frac = abs(min(1, dif / min(val1, val2)))
-          #Get color val out of frac
-          #First 255 goes from white to main color
-          #Second 255 goes from main color to black
-          support_color = 255 * (1 - min(1, frac * 2))
-          main_color = 255 * (1 - max(0, (frac - .5) * 2)) 
-          #write color value to array, inputted as [row, col]
-          color_data[y, x] = [main_color, support_color, support_color]
+          frac = abs(val1 - val2) / min(val1, val2)
+          color_data[y, x] = getHeatMapColor(colors, frac)
 
     return color_data
+
+def getHeatMapColor(colors, val_frac):
+  num_colors = len(colors) - 1
+  #Set color tiers
+  tier1, tier2 = 0, 0
+  #This is the distance between value and lower tier
+  between_frac = 0
+  if val_frac >= 0:
+    #If the value is 0 or lower, keep at lowest tier
+    if val_frac >= 1:
+      #If the value is 1 or higher, set to highest tier
+      tier1, tier2 = num_colors, num_colors
+    else:
+      #Find low tier and high tier
+      tier1 = math.floor(val_frac * num_colors)
+      tier2 = tier1 + 1
+      #Find distance between the value and the low tier (0-1)
+    between_frac = (val_frac * num_colors) - tier1
+  #Create color
+  red = (colors[tier2][0] - colors[tier1][0]) * between_frac + colors[tier1][0]
+  green = (colors[tier2][1] - colors[tier1][1]) * between_frac + colors[tier1][1]
+  blue = (colors[tier2][2] - colors[tier1][2]) * between_frac + colors[tier1][2]
+  return (int(red), int(green), int(blue))

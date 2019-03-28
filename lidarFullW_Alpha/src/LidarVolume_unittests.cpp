@@ -61,7 +61,7 @@ TEST_F(LidarVolumeTest, testBoundingBox){
 }
 
 TEST_F(LidarVolumeTest, testPosition){
-  std::string file_name =  "/home/ravi/downloads/140823_152425_1.pls";
+  std::string file_name =  "etc/140823_152425_1.pls";
   FlightLineData fld;
   EXPECT_NO_THROW (fld.setFlightLineData(file_name));
   

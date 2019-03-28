@@ -1,92 +1,11 @@
-// File name: lidarDriver.cpp
-// Created on: 17-May-2017
-// Author: ravi
+//
+// Created by arezaii on 3/24/19.
+//
 
-#include "CmdLine.hpp"
-#include "FlightLineData.hpp"
-#include "WaveGPSInformation.hpp"
-#include "LidarVolume.hpp"
-#include "PulseData.hpp"
-#include "Peak.hpp"
-#include "GaussianFitter.hpp"
-#include <iostream>
-#include <iomanip>
-#include <vector>
-#include <chrono>
+#include "LidarDriver.hpp"
 
-typedef std::chrono::high_resolution_clock Clock;
-void setup_flight_data(FlightLineData &data, std::string inputFileName);
-void fit_data(FlightLineData &, LidarVolume &, bool useGaussianFitting);
-void produce_product(LidarVolume &, GDALDataset *, int );
-void setup_lidar_volume(FlightLineData &, LidarVolume &);
-int parse_pulse(PulseData &, std::vector<Peak> &, GaussianFitter &, bool , int &);
-void add_peaks_to_volume(LidarVolume &,std::vector<Peak> &, int );
-GDALDriver * setup_gdal_driver();
-GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int x_idx_extent,
-                            int y_idx_extent);
-void geo_orient_gdal(LidarVolume &, GDALDataset *, std::string , int );
-float get_z_activation_extreme(std::vector<Peak> *peaks, bool);
-float get_z_activation_diff(std::vector<Peak> *peaks);
 const double NO_DATA = -99999.99;
 const double MAX_ELEV = 99999.99;
-
-// Lidar driver
-int main (int argc, char *argv[]) {
-
-    CmdLine cmdLineArgs;
-	FlightLineData rawData;
-	LidarVolume intermediateData;
-
-  // Parse and validate the command line args
-    if(!cmdLineArgs.parse_args(argc,argv)){
-        exit(1);
-    }
-
-  //Collect start time
-  Clock::time_point t1 = Clock::now();
-
-  std::cout << "\nProcessing  " << cmdLineArgs.getInputFileName().c_str() << std::endl;
-
-  //ingest the raw flight data into an object
-  setup_flight_data(rawData, cmdLineArgs.getInputFileName());
-
-  //fit data
-  fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting);
-
-  //Represents the output file format. This is used only to write data sets
-  GDALDriver *driverTiff = setup_gdal_driver();
-
-  //produce the product(s)
-  for(const int& prod : cmdLineArgs.selected_products){
-	  std::cout << "Writing GeoTIFF " << std::endl;
-	  //represents the tiff file
-	  GDALDataset *gdal_ds;
-	  //Setup gdal dataset for this product
-	  gdal_ds = setup_gdal_ds(driverTiff, cmdLineArgs.get_output_filename(prod).c_str(),cmdLineArgs
-			  .get_product_desc(prod), intermediateData.x_idx_extent,intermediateData.y_idx_extent);
-
-	  //orient the tiff correctly
-	  geo_orient_gdal(intermediateData,gdal_ds, rawData.geog_cs, rawData.utm);
-
-	  //write the tiff data
-	  produce_product(intermediateData, gdal_ds, prod);
-
-	  //kill it with fire!
-	  GDALClose((GDALDatasetH) gdal_ds);
-  }
-
-  GDALDestroyDriverManager();
-
-
-  //Get end time
-  Clock::time_point t2 = Clock::now();
-
-  //Compute total run time and convert to appropriate units
-  double diff = std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count();
-  std::cout << "All done!\nTime elapsed: " << diff << " seconds\n" << std::endl;
-
-  return 0;
-}
 
 /**
  * setup the gdal dataset (file) with metadata
@@ -98,8 +17,9 @@ int main (int argc, char *argv[]) {
  * @return a pointer to a GDALDataset object with the provided metadata
  */
 
-GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int x_idx_extent,
-		int y_idx_extent){
+GDALDataset * LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int
+x_idx_extent,
+                            int y_idx_extent){
 	GDALDataset * gdal_ds;
 	gdal_ds = tiff_driver->Create(filename.c_str(), x_idx_extent, y_idx_extent, 1, GDT_Float32, NULL);
 	gdal_ds->GetRasterBand(1)->SetNoDataValue(NO_DATA);
@@ -112,8 +32,8 @@ GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::
  * @param data the FlightLineData object to store the raw data in
  * @param inputFileName the file name and path of the input file
  */
-void setup_flight_data(FlightLineData &data, std::string inputFileName){
-    data.setFlightLineData(inputFileName);
+void LidarDriver::setup_flight_data(FlightLineData &data, std::string inputFileName){
+	data.setFlightLineData(inputFileName);
 }
 
 /**
@@ -122,34 +42,34 @@ void setup_flight_data(FlightLineData &data, std::string inputFileName){
  * @param fitted_data reference to LidarVolume object to store fit data in
  * @param useGaussianFitting flag to indicate fitting type
  */
-void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussianFitting) {
-    PulseData pd;
-    std::ostringstream stream;
-    GaussianFitter fitter;
-    std::vector<Peak> peaks;
-    int peak_count = 0;
+void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussianFitting) {
+	PulseData pd;
+	std::ostringstream stream;
+	GaussianFitter fitter;
+	std::vector<Peak> peaks;
+	int peak_count = 0;
 
-    #ifdef DEBUG
-        std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
-	#endif
+#ifdef DEBUG
+	std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
+#endif
 
-        //setup the lidar volume bounding and allocate memory
+	//setup the lidar volume bounding and allocate memory
 	setup_lidar_volume(raw_data, fitted_data);
 
 	//message the user
-    std::string fit_type = useGaussianFitting ? "gaussian fitting" : "first difference";
-    std::cerr << "Finding peaks with " << fit_type << std::endl;
+	std::string fit_type = useGaussianFitting ? "gaussian fitting" : "first difference";
+	std::cerr << "Finding peaks with " << fit_type << std::endl;
 
-    //parse each pulse
-    while (raw_data.hasNextPulse()) {
-        // make sure that we have an empty vector
-	    peaks.clear();
+	//parse each pulse
+	while (raw_data.hasNextPulse()) {
+		// make sure that we have an empty vector
+		peaks.clear();
 
-        // gets the raw data from the file
-        raw_data.getNextPulse(&pd);
-        try {
-            // as long as the pulse has a returning wave it finds
-            // the peaks in that wave
+		// gets the raw data from the file
+		raw_data.getNextPulse(&pd);
+		try {
+			// as long as the pulse has a returning wave it finds
+			// the peaks in that wave
 			if(parse_pulse(pd, peaks, fitter, useGaussianFitting, peak_count)) {
 				// foreach peak - find activation point
 				//              - calculate x,y,z
@@ -158,23 +78,23 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussi
 				add_peaks_to_volume(fitted_data, peaks, peak_count);
 
 			}
-        } catch (const char *msg) {
-            std::cerr << msg << std::endl;
-        }
+		} catch (const char *msg) {
+			std::cerr << msg << std::endl;
+		}
 
-        // FOR TESTING PURPOSES
-    #ifdef DEBUG
-            pd.displayPulseData(&stream);
+		// FOR TESTING PURPOSES
+#ifdef DEBUG
+		pd.displayPulseData(&stream);
           std::cout << stream.str() << std::endl;
           stream.str("");
-    #endif
-    }
+#endif
+	}
 
-    #ifdef DEBUG
-        std::cerr << "Total: " << fitter.get_total() << std::endl;
+#ifdef DEBUG
+	std::cerr << "Total: " << fitter.get_total() << std::endl;
         std::cerr << "Pass: " << fitter.get_pass() << std::endl;
         std::cerr << "Fail: " << fitter.get_fail() << std::endl;
-    #endif
+#endif
 
 }
 
@@ -183,7 +103,7 @@ void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussi
  * @param raw_data the flight light data to get values from
  * @param lidar_volume the lidar volume object to allocate
  */
-void setup_lidar_volume(FlightLineData &raw_data, LidarVolume &lidar_volume){
+void LidarDriver::setup_lidar_volume(FlightLineData &raw_data, LidarVolume &lidar_volume){
 	lidar_volume.setBoundingBox(raw_data.bb_x_min, raw_data.bb_x_max,
 	                            raw_data.bb_y_min, raw_data.bb_y_max,
 	                            raw_data.bb_z_min, raw_data.bb_z_max);
@@ -196,7 +116,7 @@ void setup_lidar_volume(FlightLineData &raw_data, LidarVolume &lidar_volume){
  * @param peaks the vector of peaks to add to the lidar volume
  * @param peak_count the count of peaks in the vector ?peaks.size()?
  */
-void add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak> &peaks, int peak_count){
+void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak> &peaks, int peak_count){
 	// give each peak to lidarVolume
 	for (int i = 0; i < peak_count; i++) {
 		lidar_volume.insert_peak(&peaks[i]);
@@ -212,7 +132,7 @@ void add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak> &peaks, in
  * @param peak_count count of found peaks returned
  * @return -1 if the pulse was empty, otherwise 1
  */
-int parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
+int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
 &peak_count){
 
 	if (pulse.returningIdx.empty()) {
@@ -246,16 +166,16 @@ int parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitt
  * @param prod_id the id (type) of the product to generate
  */
 
-void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id) {
+void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id) {
 	CPLErr retval;
 	//indexes
 	int x, y;
 	//place to hold the elevations
 	float *elevation = (float *) calloc(fitted_data.x_idx_extent, sizeof(float));
 
-	#ifdef DEBUG
-		std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
-	#endif
+#ifdef DEBUG
+	std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
+#endif
 
 	//loop through every pixel position
 	for (y = fitted_data.y_idx_extent - 1; y >= 0; y--) {
@@ -278,9 +198,9 @@ void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id
 					break;
 			}
 		}
-	#ifdef DEBUG
-			std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
-	#endif
+#ifdef DEBUG
+		std::cerr << "In writeImage loop. Writing band: "<< x << "," << y << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
+#endif
 		//add the elevation data to the raster, one column at a time
 		// Refer to http://www.gdal.org/classGDALRasterBand.html
 		retval = gdal_ds->GetRasterBand(1)->RasterIO(GF_Write, 0, fitted_data.y_idx_extent - y - 1, fitted_data.x_idx_extent, 1, elevation,
@@ -298,7 +218,7 @@ void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id
  * setup the GDAL manager and get the GTiff driver
  * @return pointer to the GTiff driver
  */
-GDALDriver * setup_gdal_driver(){
+GDALDriver * LidarDriver::setup_gdal_driver(){
 	//bring up the driver for all GDAL interactions
 	GDALAllRegister();
 	return GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -312,7 +232,7 @@ GDALDriver * setup_gdal_driver(){
  * @param geog_cs
  * @param utm
  */
-void geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds, std::string geog_cs, int utm){
+void LidarDriver::geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds, std::string geog_cs, int utm){
 	//In a north up image, transform[1] is the pixel width, and transform[5] is
 	//the pixel height. The upper left corner of the upper left pixel is at
 	//position (transform[0],transform[3]).
@@ -331,7 +251,7 @@ void geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds, std::string
 	transform[5] = -1;	//Always -1
 
 	OGRSpatialReference oSRS;
-	char *pszSRS_WKT = nullptr;
+	char *pszSRS_WKT = NULL;
 	gdal_ds->SetGeoTransform(transform);
 	oSRS.SetUTM(utm, TRUE);
 	oSRS.SetWellKnownGeogCS(geog_cs.c_str());
@@ -345,7 +265,7 @@ void geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds, std::string
  * @param peaks the peaks to evaluate
  * @return the difference between the maximal and minimal element values, or NO_DATA if no peaks
  */
-float get_z_activation_diff(std::vector<Peak> *peaks){
+float LidarDriver::get_z_activation_diff(std::vector<Peak> *peaks){
 	float max_z = NO_DATA;
 	float min_z = MAX_ELEV;
 	if(peaks==NULL || peaks->empty()){
@@ -373,7 +293,7 @@ float get_z_activation_diff(std::vector<Peak> *peaks){
  * @param max_flag True = return maximum value, false = return minimum value
  * @return the smallest or largest value in the set, or NO_DATA if no peaks
  */
-float get_z_activation_extreme(std::vector<Peak> *peaks, bool max_flag){
+float LidarDriver::get_z_activation_extreme(std::vector<Peak> *peaks, bool max_flag){
 	float max_z = NO_DATA;
 	float min_z = MAX_ELEV;
 	if(peaks==NULL || peaks->empty()){

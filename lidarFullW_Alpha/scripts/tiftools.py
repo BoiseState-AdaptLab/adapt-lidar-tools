@@ -27,7 +27,7 @@ def main(arg_set, path):
     if 'w' in arg_set[0]:
       writeData(tif, path)
     if 'i' in arg_set[0]:
-      writeImage(tif, path)
+      tif.createImage(path)
     #If arg_set not in args, then it is part of a comparison so return tif
     if arg_set not in args:
       return tif

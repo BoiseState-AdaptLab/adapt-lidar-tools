@@ -172,8 +172,55 @@ TEST_F(LidarDriverTest, setup_flight_data_test){
 	EXPECT_DOUBLE_EQ (known_bb_y_max, fld.bb_y_max);
 	EXPECT_DOUBLE_EQ (known_bb_z_max, fld.bb_z_max);
 
+}
 
 
+/******************************************************************************
+*
+* Test 5
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, add_peaks_to_volume_test){
 
+	std::vector<Peak> peaks;
+	LidarVolume lidarVolume;
+	FlightLineData fld;
+	std::string filename;
+	filename = "etc/140823_183115_1_clipped_test.pls";
+
+	EXPECT_NO_THROW(driver1.setup_flight_data(fld,filename));
+
+
+	double known_amp = 142;
+	double known_loc = 19;
+	double known_fwhm = 5;
+	double known_fwhm_t_pos = 21;
+	double known_fwhm_t_neg = 16;
+	int known_pos = 0;
+	int known_triggering_amp = 13;
+	int known_triggering_loc = 14;
+	double known_x_act = 253036;
+	double known_y_act = 4330482;
+	double known_z_act = 4159;
+
+	Peak p;
+	p.amp= known_amp;
+	p.location = known_loc;
+	p.fwhm = known_fwhm;
+	p.fwhm_t_positive = known_fwhm_t_pos;
+	p.fwhm_t_negative = known_fwhm_t_neg;
+	p.position_in_wave = known_pos;
+	p.triggering_amp = known_triggering_amp;
+	p.triggering_location = known_triggering_loc;
+	p.x_activation = known_x_act;
+	p.y_activation = known_y_act;
+	p.z_activation = known_z_act;
+
+	peaks.push_back(p);
+	EXPECT_NO_THROW(driver1.setup_lidar_volume(fld,lidarVolume));
+	EXPECT_NO_THROW(driver1.add_peaks_to_volume(lidarVolume,peaks,1));
+
+
+	//EXPECT_EQ(peaks,lidarVolume.volume);
 
 }

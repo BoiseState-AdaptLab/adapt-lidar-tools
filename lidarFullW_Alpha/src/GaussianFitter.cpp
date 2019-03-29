@@ -377,8 +377,8 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       peak->amp = gsl_vector_get(x,3*i+ 0);
       peak->location = gsl_vector_get(x,3*i+ 1);
       // TODO: should this be incremented in the event the peak is below the noise level?
-      peak->position = i+1;//set the peak position
-     // i==peakCount-1 ? peak->is_final_peak = true : peak->is_final_peak = false;
+      peak->position_in_wave = i+1;//set the peak position
+      i==peakCount-1 ? peak->is_final_peak = true : peak->is_final_peak = false;
       double c = gsl_vector_get(x,3*i+ 2);
 
       //calculate fwhm: full width at half maximum

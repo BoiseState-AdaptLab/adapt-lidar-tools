@@ -26,11 +26,13 @@ public:
 	int parse_pulse(PulseData &, std::vector<Peak> &, GaussianFitter &, bool , int &);
 	void add_peaks_to_volume(LidarVolume &,std::vector<Peak> &, int );
 	GDALDriver * setup_gdal_driver();
-	GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int x_idx_extent,
-	                            int y_idx_extent);
+	GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc,
+			int x_idx_extent, int y_idx_extent);
 	void geo_orient_gdal(LidarVolume &, GDALDataset *, std::string , int );
 	float get_z_activation_extreme(std::vector<Peak> *peaks, bool);
 	float get_z_activation_diff(std::vector<Peak> *peaks);
+	float get_amplitude_extreme(std::vector<Peak> *peaks, bool max_flag, int return_pos);
+	float get_amplitude_mean(std::vector<Peak> *peaks, int return_pos);
 };
 
 

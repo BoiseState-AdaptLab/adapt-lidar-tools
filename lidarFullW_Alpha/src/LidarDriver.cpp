@@ -18,8 +18,7 @@ const double MAX_ELEV = 99999.99;
  */
 
 GDALDataset * LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int
-x_idx_extent,
-                            int y_idx_extent){
+x_idx_extent, int y_idx_extent){
 	GDALDataset * gdal_ds;
 	gdal_ds = tiff_driver->Create(filename.c_str(), x_idx_extent, y_idx_extent, 1, GDT_Float32, NULL);
 	gdal_ds->GetRasterBand(1)->SetNoDataValue(NO_DATA);
@@ -184,14 +183,60 @@ void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds
 			std::vector<Peak> *peaks = fitted_data.volume[fitted_data.position(y, x)];
 			//decide what to do with the peak data at this pixel
 			switch (prod_id) {
-				case 1 : //max elev
+				//TODO: should these elevations all be first/last/all as well?
+				case 1 : //max elevation
 					elevation[x] = get_z_activation_extreme(peaks, true);
 					break;
-				case 2 : //min elev
+				case 2 : //min elevation
 					elevation[x] = get_z_activation_extreme(peaks, false);
 					break;
-				case 3 : //max-min
+				case 3 : //max-min elevation
 					elevation[x] = get_z_activation_diff(peaks);
+					break;
+				case 4 : //mean first amplitude
+					elevation[x] = get_amplitude_mean(peaks,0);
+					break;
+				case 5 : //min first amplitude
+					elevation[x] = get_amplitude_extreme(peaks, false, 0);
+					break;
+				case 6 : //max first amplitude
+					elevation[x] = get_amplitude_extreme(peaks, true, 0);
+					break;
+				case 7: //std-dev first amplitude
+					break;
+				case 8: //skewness first amplitude
+					break;
+				case 9: //kurtosis first amplitude
+					break;
+				case 10: //mean last amplitude
+					elevation[x] = get_amplitude_mean(peaks,1);
+					break;
+				case 11: //min last amplitude
+					elevation[x] = get_amplitude_extreme(peaks,false,1);
+					break;
+				case 12: //max last amplitude
+					elevation[x] = get_amplitude_extreme(peaks,true,1);
+					break;
+				case 13: //std-dev last amplitude
+					break;
+				case 14: //skewness last amplitude
+					break;
+				case 15: //kurtosis last amplitude
+					break;
+				case 16: //mean all amplitude
+					elevation[x] = get_amplitude_mean(peaks,2);
+					break;
+				case 17: //min all amplitude
+					elevation[x] = get_amplitude_extreme(peaks,false,2);
+					break;
+				case 18: //max all amplitude
+					elevation[x] = get_amplitude_extreme(peaks,true,2);
+					break;
+				case 19: //std-dev all amplitude
+					break;
+				case 20: //skewness all amplitude
+					break;
+				case 21: //kurtosis all amplitude
 					break;
 				default:
 					//std::cout << "Product #" << prod_id << " not implemented" << std::endl;
@@ -313,4 +358,95 @@ float LidarDriver::get_z_activation_extreme(std::vector<Peak> *peaks, bool max_f
 		}
 	}
 	return max_flag ? max_z : min_z;
+}
+
+
+float LidarDriver::get_amplitude_extreme(std::vector<Peak> *peaks, bool max_flag, int return_pos){
+	float max_amp = NO_DATA;
+	float min_amp = MAX_ELEV;
+	bool no_countable_peaks = true;
+	if(peaks==NULL || peaks->empty()){
+		return NO_DATA;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		//check what type of returns to evaluate
+		switch (return_pos){
+			case 0: //first
+				if(it->position_in_wave!=1){
+					continue;
+				}
+				no_countable_peaks = false;
+				break;
+			case 1: //last
+				if(!it->is_final_peak){
+					continue;
+				}
+				no_countable_peaks = false;
+				break;
+			case 2: //all
+				no_countable_peaks = false;
+				break;
+			default:
+				break;
+		}
+
+		//check if max or min we want
+		if (max_flag) {
+			if ((float)it->amp > max_amp) {
+				max_amp = (float) it->amp;
+			}
+		} else {
+			if ((float)it->amp < min_amp) {
+				min_amp = (float) it->amp;
+			}
+		}
+	}
+	if(no_countable_peaks){
+		return NO_DATA;
+	}else{
+		return max_flag ? max_amp : min_amp;
+	}
+
+}
+
+
+float LidarDriver::get_amplitude_mean(std::vector<Peak> *peaks, int return_pos){
+	double amp_sum  = 0;
+	int amp_count = 0;
+	bool no_countable_peaks = true;
+	if(peaks==NULL || peaks->empty()){
+		return NO_DATA;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		//check what type of returns to evaluate
+		switch (return_pos){
+			case 0: //first
+				if(it->position_in_wave!=1){
+					continue;
+				}
+				no_countable_peaks = false;
+				break;
+			case 1: //last
+				if(!it->is_final_peak){
+					continue;
+				}
+				no_countable_peaks = false;
+				break;
+			case 2: //all
+				no_countable_peaks = false;
+				break;
+			default:
+				break;
+		}
+		amp_sum += it->amp;
+		amp_count ++;
+	}
+	if(no_countable_peaks){
+		return NO_DATA;
+	}else{
+		return amp_sum/amp_count;
+	}
+
 }

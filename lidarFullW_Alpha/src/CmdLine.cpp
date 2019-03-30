@@ -8,7 +8,15 @@
 using namespace std;
 
 
-static std::string product_desc[4] = {"","max_elev","min_elev","max-min_elev"}; //off by one to match index to
+//off by one to
+// match
+// index to product ID
+static std::string product_desc[22] = {"","max_elev","min_elev","max-min_elev","mean_first_amp",
+									   "min_first_amp","max_first_amp","sd_first_amp",
+									   "skew_first_amp","kurt_first_amp","mean_last_amp","min_last_amp",
+									   "max_last_amp","sd_last_amp","skew_last_amp","kurt_last_amp","mean_all_amp",
+									   "min_all_amp","max_all_amp","sd_all_amp","skew_all_amp","kurt_all_amp"};
+
 
 /****************************************************************************
 *
@@ -147,6 +155,15 @@ void CmdLine::parse(int argc,char *argv[]){
 
     }
   }
+    selected_products.push_back(4); //mean first amp
+	selected_products.push_back(5); //min first amp
+	selected_products.push_back(6); //max first amp
+	selected_products.push_back(10); //mean last amp
+	selected_products.push_back(11); //min last amp
+	selected_products.push_back(12); //max last amp
+	selected_products.push_back(16); //mean all amp
+	selected_products.push_back(17); //min all amp
+	selected_products.push_back(18); //max all amp
   // For non option input
   if(optind < argc){
     printUsageMessage = true;

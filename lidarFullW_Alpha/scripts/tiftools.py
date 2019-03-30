@@ -50,13 +50,13 @@ def main(arg_set, path):
       j = 1
       while (Path(path + "compare_{}_simple.out".format(j)).is_file() or
              Path(path + "compare_{}_raw.out".format(j)).is_file() or
-             Path(path + "compare_{}.jpg".format(j)).is_file()):
+             Path(path + "compare_{}.png".format(j)).is_file()):
         j += 1
       #Check if we are writing an output and/or creating an image
       if 'w' in arg_set[0]:
         compareData(tifA, tifB, path, j)
       if 'i' in arg_set[0]:
-        writeCompareImg(tifA, tifB, path, j)
+        tifA.createCompareImage(tifB, path, j)
     else:
       print("Skipping...")  
 
@@ -91,14 +91,6 @@ def writeData(tif, path):
     output.write("\n\n") 
   output.close()
   print ("Data written to {}\n".format(path + tif.file_name[:-4] + ".out"))
-
-#Writes image data to a jpg
-def writeImage(tif, path):
-  #Get color data
-  color_data = tif.getImgData()
-  img = Image.fromarray(color_data, 'RGB')
-  img.save(path + tif.file_name[:-4] + '.jpg')
-  print("Image written to {}\n".format(path + tif.file_name[:-4] + '.jpg'))
 
 def compareData(tifA, tifB, path, compare_no):
   print ("Writing comparison to file\n")
@@ -175,14 +167,6 @@ def compareData(tifA, tifB, path, compare_no):
       a_avg, b_avg, dif_avg))
   print ("Results have been written to the compare_{}.out files\n"
          .format(compare_no))
-
-def writeCompareImg(tif1, tif2, path, compare_no):
-  print ("Creating comparison heatmap")
-  #Get color data
-  color_data = tif1.getComparisonImgData(tif2)
-  im = Image.fromarray(color_data, 'RGB')
-  im.save("{}compare_{}.jpg".format(path, compare_no))
-  print ("Heatmap has been saved to compare_{}.jpg\n".format(compare_no))
 
 def isTif(file_name):
   return file_name[file_name.rfind("/") + 1:].endswith(".tif")

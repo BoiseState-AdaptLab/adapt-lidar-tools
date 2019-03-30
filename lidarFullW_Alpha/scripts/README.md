@@ -30,7 +30,3 @@ python tiftools.py -c[iw] [-iw] input-tif1 [-iw] input-tif2 [-p pathname]
     -w input-tif: Creates a .out text file containing the tif file's raw data
 
     -p path-name: Writes all output files to the spacified path from the working directory
-
-<b>Note: For the comparison heatmap, green and blue denote that one tif file had data while the other did not  
-      For the gradient, white represents small differences while black represents large differences</b>
-</pre>

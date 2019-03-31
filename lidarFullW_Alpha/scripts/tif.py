@@ -211,10 +211,11 @@ class Tif:
         else:
           #Get the difference
           dif = abs(val1 - val2)
-          #Find if the difference is a new max
-          if first_compare or dif > max_dif:
-            max_dif = dif
+          #Get difference as a % of min
           frac = dif / min(val1, val2)
+          #Check if that % is our ne biggest
+          if first_compare or frac > max_dif:
+            max_dif = frac
           #Get difference statistics
           color_data[y, x] = getHeatMapColor(colors, frac)
 
@@ -225,19 +226,22 @@ class Tif:
     font_type = "times-new-roman.ttf"
     font = ImageFont.truetype(font_type, line_h)
     #Get each line of text
-    text = [" " + str(round(max_dif, 2)), " " + self.file_name,
-           " " + tif2.file_name, "Differences greater than % of min:", 
-           "25%: {}  50%: {}  100%: {}".format(1,2,3)]
+    text = ["0%  >100%", 
+            "Max Percent Difference: {}%".format(round(max_dif * 100, 2)),
+            " " + self.file_name, " " + tif2.file_name,
+            "Percent differences greater than:", 
+            "25%: {}  50%: {}  100%: {}".format(1,2,3)]
     #Find widths of each line of the legend
-    line_w = [font.getsize("0.00 " + text[0])[0] * 2,
-              font.getsize(text[1])[0] + line_h,
-              font.getsize(text[2])[0] + line_h,
-              font.getsize(text[3])[0],
-              font.getsize(text[4])[0]]
+    line_w = [font.getsize(t)[0] for t in text]
+    #Add space for difference gradient
+    line_w[0] *= 2
+    #Add space for color key
+    line_w[2] += line_h
+    line_w[3] += line_h
     #Get greatest text width
     legend_w = max(line_w)
-    #Height of the legend is five lines + 1.1 for five and 1/2 spaces
-    legend_h = math.floor(line_h * 6.1)
+    #Height of the legend is 6 lines + 1.3 for 6 1/2 spaces
+    legend_h = math.floor(line_h * 7.3)
     #Append rows for the legend
     extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
     color_data = np.vstack((color_data, extra_rows))
@@ -264,28 +268,28 @@ class Tif:
       #Difference gradient
       if i == 0:
         #Min text
-        draw.text((hor_pos, vert_pos - vert_offset), "0.00 ", (0,0,0), font=font)
-        hor_pos += font.getsize("0.00 ")[0]
+        draw.text((hor_pos, vert_pos - vert_offset), "0% ", (0,0,0), font=font)
+        hor_pos += font.getsize("0% ")[0]
         #Gradient
         for j in range(math.floor(line_w[0] / 2)):
           draw.line((hor_pos + j, vert_pos, hor_pos + j, vert_pos + line_h),
                     fill = getHeatMapColor(colors, j / (line_w[0] / 2)))
         hor_pos += j
         #Max text
-        draw.text((hor_pos, vert_pos - vert_offset), item, (0,0,0), font=font)
+        draw.text((hor_pos, vert_pos - vert_offset), " >100%", (0,0,0), font=font)
       #File names with color key
-      elif i == 1 or i == 2:
+      elif i == 2 or i == 3:
         #Make both names start where the longest starts
-        long_name = max(line_w[1], line_w[2])
+        long_name = max(line_w[2], line_w[3])
         hor_pos = math.floor((max(data_w, legend_w) - long_name) / 2)
         #File color key
         draw.rectangle((hor_pos, vert_pos, hor_pos + line_h, vert_pos + line_h),
-                  fill=((0,0,255) if i == 1 else (0,255,0)), outline=(0,0,0))
+                  fill=((0,0,255) if i == 2 else (0,255,0)), outline=(0,0,0))
         hor_pos += line_h
         #File name
         draw.text((hor_pos, vert_pos - vert_offset), item, (0,0,0), font=font)
         #No space between file A name and file B name
-        if i == 1:
+        if i == 2:
           vert_pos -= math.floor(vert_space / 2)
       #Just text
       else:

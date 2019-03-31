@@ -5,6 +5,7 @@
 #include "LidarDriver.hpp"
 #include "gtest/gtest.h"
 #include "Peak.hpp"
+#include <math.h>
 
 class LidarDriverTest: public testing::Test{
 public:
@@ -217,10 +218,292 @@ TEST_F(LidarDriverTest, add_peaks_to_volume_test){
 	p.z_activation = known_z_act;
 
 	peaks.push_back(p);
-	EXPECT_NO_THROW(driver1.setup_lidar_volume(fld,lidarVolume));
-	EXPECT_NO_THROW(driver1.add_peaks_to_volume(lidarVolume,peaks,1));
+	//EXPECT_NO_THROW(driver1.setup_lidar_volume(fld,lidarVolume));
+	//EXPECT_NO_THROW(driver1.add_peaks_to_volume(lidarVolume,peaks,1));
 
 
 	//EXPECT_EQ(peaks,lidarVolume.volume);
+
+}
+
+
+/******************************************************************************
+*
+* Test 6
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_first_amp_max_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+	               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.position_in_wave = 3 : p.position_in_wave=1;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_extreme(&peaks,true,0);
+
+	EXPECT_EQ(192.00,val);
+
+}
+
+
+/******************************************************************************
+*
+* Test 7
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_first_amp_min_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
+	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 1 ? p.position_in_wave = 3 : p.position_in_wave=1;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_extreme(&peaks,false,0);
+
+	EXPECT_EQ(2.00,val);
+
+}
+
+/******************************************************************************
+*
+* Test 8
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_first_amp_mean_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
+	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 2 ? p.position_in_wave = 3 : p.position_in_wave=1;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_mean(&peaks,0);
+
+	EXPECT_EQ(50, roundf(val));
+
+}
+
+
+/******************************************************************************
+*
+* Test 11
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_last_amp_max_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+	               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.is_final_peak = false : p.is_final_peak=true;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_extreme(&peaks,true,1);
+
+	EXPECT_EQ(192.00,val);
+
+}
+
+
+/******************************************************************************
+*
+* Test 12
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_last_amp_min_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
+	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 1 ? p.is_final_peak = false : p.is_final_peak=true;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_extreme(&peaks,false,1);
+
+	EXPECT_EQ(2.00,val);
+
+}
+
+/******************************************************************************
+*
+* Test 13
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_last_amp_mean_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
+	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.is_final_peak = false : p.is_final_peak=true;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_mean(&peaks,1);
+
+	EXPECT_EQ(38, roundf(val));
+
+}
+
+
+/******************************************************************************
+*
+* Test 14
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_all_amp_max_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+	               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_extreme(&peaks,true,2);
+
+	EXPECT_EQ(200.00,val);
+
+}
+
+
+/******************************************************************************
+*
+* Test 15
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_all_amp_min_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
+	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_extreme(&peaks,false,2);
+
+	EXPECT_EQ(1.00,val);
+
+}
+
+/******************************************************************************
+*
+* Test 16
+*
+******************************************************************************/
+TEST_F(LidarDriverTest, get_all_amp_mean_test){
+
+	std::vector<Peak> peaks;
+
+	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
+	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
+
+	float val = driver1.get_amplitude_mean(&peaks,2);
+
+	EXPECT_EQ(44, roundf(val));
 
 }

@@ -38,7 +38,7 @@ int main (int argc, char *argv[]) {
 
   //produce the product(s)
   for(const int& prod : cmdLineArgs.selected_products){
-	  std::cout << "Writing GeoTIFF " << std::endl;
+	  std::cout << "Writing GeoTIFF "<< cmdLineArgs.get_product_desc(prod) << std::endl;
 	  //represents the tiff file
 	  GDALDataset *gdal_ds;
 	  //Setup gdal dataset for this product

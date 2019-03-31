@@ -11,11 +11,16 @@ using namespace std;
 //off by one to
 // match
 // index to product ID
-static std::string product_desc[22] = {"","max_elev","min_elev","max-min_elev","mean_first_amp",
-									   "min_first_amp","max_first_amp","sd_first_amp",
-									   "skew_first_amp","kurt_first_amp","mean_last_amp","min_last_amp",
-									   "max_last_amp","sd_last_amp","skew_last_amp","kurt_last_amp","mean_all_amp",
-									   "min_all_amp","max_all_amp","sd_all_amp","skew_all_amp","kurt_all_amp"};
+static std::string product_desc[37] = {"","max_all_elev","min_all_elev","mean_all_elev","sd_all_elev","skew_all_elev",
+                                       "kurt_all_elev","max_first_elev","min_first_elev","mean_first_elev",
+                                       "sd_first_elev","skew_first_elev","kurt_first_elev",
+                                       "max_last_elev","min_last_elev","mean_last_elev",
+                                       "sd_last_elev","skew_last_elev","kurt_last_elev",
+									  "max_all_amp","min_all_amp","mean_all_amp",
+		"sd_all_amp","skew_all_amp","kurt_all_amp","max_first_amp",
+									   "min_first_amp","mean_first_amp","sd_first_amp",
+									   "skew_first_amp","kurt_first_amp","max_last_amp","min_last_amp","mean_last_amp",
+									   "sd_last_amp","skew_last_amp","kurt_last_amp"};
 
 
 /****************************************************************************
@@ -155,24 +160,42 @@ void CmdLine::parse(int argc,char *argv[]){
 
     }
   }
-    selected_products.push_back(4); //mean first amp
-	selected_products.push_back(5); //min first amp
-	selected_products.push_back(6); //max first amp
-	selected_products.push_back(7); //std-dev first amp
-	selected_products.push_back(8); //skew first amp
-	selected_products.push_back(9); //kurtosis first amp
-	selected_products.push_back(10); //mean last amp
-	selected_products.push_back(11); //min last amp
-	selected_products.push_back(12); //max last amp
-	selected_products.push_back(13); //std-dev last amp
-	selected_products.push_back(14); //skew last amp
-	selected_products.push_back(15); //kurtosis last amp
-	selected_products.push_back(16); //mean all amp
-	selected_products.push_back(17); //min all amp
-	selected_products.push_back(18); //max all amp
-	selected_products.push_back(19); //std-dev all amp
-	selected_products.push_back(20); //skew all amp
-	selected_products.push_back(21); //kurtosis all amp
+  //manually hard coding adding products for testing
+  //TODO: implement all the commmand line options to produce the products
+	selected_products.push_back(4); //std-dev all elev
+	selected_products.push_back(5); //skew all elev
+	selected_products.push_back(6); //kurtosis all elev
+	selected_products.push_back(7); //max first elev
+	selected_products.push_back(8); //min first elev
+	selected_products.push_back(9); //mean first elev
+	selected_products.push_back(10); //std-dev first elev
+	selected_products.push_back(11); //skew first elev
+	selected_products.push_back(12); //kurtosis first elev
+	selected_products.push_back(13); //max last elev
+	selected_products.push_back(14); //min last elev
+	selected_products.push_back(15); //mean last elev
+	selected_products.push_back(16); //std-dev last elev
+	selected_products.push_back(17); //skew last elev
+	selected_products.push_back(18); //kurtosis last elev
+	selected_products.push_back(19); //max all amp
+	selected_products.push_back(20); //min all amp
+	selected_products.push_back(21); //mean all amp
+	selected_products.push_back(22); //std-dev all amp
+	selected_products.push_back(23); //skew all amp
+	selected_products.push_back(24); //kurtosis all amp
+	selected_products.push_back(25); //max first amp
+	selected_products.push_back(26); //min first amp
+	selected_products.push_back(27); //mean first amp
+	selected_products.push_back(28); //std-dev first amp
+	selected_products.push_back(29); //skew first amp
+	selected_products.push_back(30); //kurtosis first amp
+	selected_products.push_back(31); //max last amp
+	selected_products.push_back(32); //min last amp
+	selected_products.push_back(33); //mean last amp
+	selected_products.push_back(34); //std-dev last amp
+	selected_products.push_back(35); //skew last amp
+	selected_products.push_back(36); //kurtosis last amp
+
   // For non option input
   if(optind < argc){
     printUsageMessage = true;

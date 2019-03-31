@@ -48,7 +48,7 @@ TEST_F(LidarDriverTest, get_z_activation_max_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_z_activation_extreme(&peaks,true);
+	float val = driver1.get_extreme(&peaks,true,2,'z');
 
 	EXPECT_EQ(200.00,val);
 
@@ -79,7 +79,7 @@ TEST_F(LidarDriverTest, get_z_activation_min_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_z_activation_extreme(&peaks,false);
+	float val = driver1.get_extreme(&peaks,false,2,'z');
 
 	EXPECT_EQ(1.00,val);
 
@@ -109,7 +109,7 @@ TEST_F(LidarDriverTest, get_z_activation_max_min_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_z_activation_diff(&peaks);
+	float val = driver1.get_extreme_diff(&peaks,'z');
 
 	EXPECT_EQ(199.00,val);
 
@@ -252,7 +252,7 @@ TEST_F(LidarDriverTest, get_first_amp_max_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_extreme(&peaks,true,0);
+	float val = driver1.get_extreme(&peaks,true,0,'a');
 
 	EXPECT_EQ(192.00,val);
 
@@ -284,7 +284,7 @@ TEST_F(LidarDriverTest, get_first_amp_min_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_extreme(&peaks,false,0);
+	float val = driver1.get_extreme(&peaks,false,0,'a');
 
 	EXPECT_EQ(2.00,val);
 
@@ -315,7 +315,7 @@ TEST_F(LidarDriverTest, get_first_amp_mean_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_mean(&peaks,0);
+	float val = driver1.get_mean(&peaks,0,'a');
 
 	EXPECT_EQ(50, roundf(val));
 
@@ -347,7 +347,7 @@ TEST_F(LidarDriverTest, get_last_amp_max_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_extreme(&peaks,true,1);
+	float val = driver1.get_extreme(&peaks,true,1,'a');
 
 	EXPECT_EQ(192.00,val);
 
@@ -379,7 +379,7 @@ TEST_F(LidarDriverTest, get_last_amp_min_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_extreme(&peaks,false,1);
+	float val = driver1.get_extreme(&peaks,false,1,'a');
 
 	EXPECT_EQ(2.00,val);
 
@@ -410,7 +410,7 @@ TEST_F(LidarDriverTest, get_last_amp_mean_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_mean(&peaks,1);
+	float val = driver1.get_mean(&peaks,1,'a');
 
 	EXPECT_EQ(38, roundf(val));
 
@@ -441,7 +441,7 @@ TEST_F(LidarDriverTest, get_all_amp_max_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_extreme(&peaks,true,2);
+	float val = driver1.get_extreme(&peaks,true,2,'a');
 
 	EXPECT_EQ(200.00,val);
 
@@ -472,7 +472,7 @@ TEST_F(LidarDriverTest, get_all_amp_min_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_extreme(&peaks,false,2);
+	float val = driver1.get_extreme(&peaks,false,2,'a');
 
 	EXPECT_EQ(1.00,val);
 
@@ -502,7 +502,7 @@ TEST_F(LidarDriverTest, get_all_amp_mean_test){
 		ptr = strtok (NULL," ");
 	}
 
-	float val = driver1.get_amplitude_mean(&peaks,2);
+	float val = driver1.get_mean(&peaks,2,'a');
 
 	EXPECT_EQ(44, roundf(val));
 

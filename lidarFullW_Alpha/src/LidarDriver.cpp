@@ -171,7 +171,8 @@ void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds
 	int x, y;
 	//place to hold the elevations
 	float *elevation = (float *) calloc(fitted_data.x_idx_extent, sizeof(float));
-
+	float avg = 0 ;
+	float dev = 0;
 #ifdef DEBUG
 	std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__ << std::endl;
 #endif
@@ -185,58 +186,82 @@ void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds
 			switch (prod_id) {
 				//TODO: should these elevations all be first/last/all as well?
 				case 1 : //max elevation
-					elevation[x] = get_z_activation_extreme(peaks, true);
+					elevation[x] = get_extreme(peaks, true,2,'z');
 					break;
 				case 2 : //min elevation
-					elevation[x] = get_z_activation_extreme(peaks, false);
+					elevation[x] = get_extreme(peaks, false,2,'z');
 					break;
 				case 3 : //max-min elevation
-					elevation[x] = get_z_activation_diff(peaks);
+					elevation[x] = get_extreme_diff(peaks,'z');
 					break;
 				case 4 : //mean first amplitude
-					elevation[x] = get_amplitude_mean(peaks,0);
+					elevation[x] = get_mean(peaks,0,'a');
 					break;
 				case 5 : //min first amplitude
-					elevation[x] = get_amplitude_extreme(peaks, false, 0);
+					elevation[x] = get_extreme(peaks, false, 0,'a');
 					break;
 				case 6 : //max first amplitude
-					elevation[x] = get_amplitude_extreme(peaks, true, 0);
+					elevation[x] = get_extreme(peaks, true, 0, 'a');
 					break;
 				case 7: //std-dev first amplitude
+					avg = get_mean(peaks, 0,'a');
+					elevation[x] = get_deviation(peaks, avg, 0, 'a');
 					break;
 				case 8: //skewness first amplitude
+					avg = get_mean(peaks, 0,'a');
+					dev = get_deviation(peaks, avg, 0, 'a');
+					elevation[x] = get_skewtosis(peaks, avg,dev, 0, 'a',3);
 					break;
 				case 9: //kurtosis first amplitude
+					avg = get_mean(peaks, 0,'a');
+					dev = get_deviation(peaks, avg, 0, 'a');
+					elevation[x] = get_skewtosis(peaks, avg,dev, 0, 'a',4);
 					break;
 				case 10: //mean last amplitude
-					elevation[x] = get_amplitude_mean(peaks,1);
+					elevation[x] = get_mean(peaks,1,'a');
 					break;
 				case 11: //min last amplitude
-					elevation[x] = get_amplitude_extreme(peaks,false,1);
+					elevation[x] = get_extreme(peaks,false,1,'a');
 					break;
 				case 12: //max last amplitude
-					elevation[x] = get_amplitude_extreme(peaks,true,1);
+					elevation[x] = get_extreme(peaks,true,1,'a');
 					break;
 				case 13: //std-dev last amplitude
+					avg = get_mean(peaks, 1,'a');
+					elevation[x] = get_deviation(peaks, avg, 1, 'a');
 					break;
 				case 14: //skewness last amplitude
+					avg = get_mean(peaks, 1,'a');
+					dev = get_deviation(peaks, avg, 1, 'a');
+					elevation[x] = get_skewtosis(peaks, avg,dev, 1, 'a',3);
 					break;
 				case 15: //kurtosis last amplitude
+					avg = get_mean(peaks, 1,'a');
+					dev = get_deviation(peaks, avg, 1, 'a');
+					elevation[x] = get_skewtosis(peaks, avg,dev, 1, 'a',4);
 					break;
 				case 16: //mean all amplitude
-					elevation[x] = get_amplitude_mean(peaks,2);
+					elevation[x] = get_mean(peaks,2,'a');
 					break;
 				case 17: //min all amplitude
-					elevation[x] = get_amplitude_extreme(peaks,false,2);
+					elevation[x] = get_extreme(peaks,false,2,'a');
 					break;
 				case 18: //max all amplitude
-					elevation[x] = get_amplitude_extreme(peaks,true,2);
+					elevation[x] = get_extreme(peaks,true,2,'a');
 					break;
 				case 19: //std-dev all amplitude
+					avg = get_mean(peaks, 2,'a');
+					elevation[x] = get_deviation(peaks, avg, 2, 'a');
 					break;
 				case 20: //skewness all amplitude
+					avg = get_mean(peaks, 2,'a');
+					dev = get_deviation(peaks, avg, 2, 'a');
+					elevation[x] = get_skewtosis(peaks, avg,dev, 2, 'a',3);
 					break;
 				case 21: //kurtosis all amplitude
+					avg = get_mean(peaks, 2,'a');
+					dev = get_deviation(peaks, avg, 2, 'a');
+					elevation[x] = get_skewtosis(peaks, avg,dev, 2, 'a',4);
 					break;
 				default:
 					//std::cout << "Product #" << prod_id << " not implemented" << std::endl;
@@ -306,64 +331,46 @@ void LidarDriver::geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds
 }
 
 /**
- * get the difference between max and min z_activation data for a set of peaks
+ * get the difference between max and min peak property data for a set of peaks in one pass
  * @param peaks the peaks to evaluate
+ * @param peak_property the property of the peaks to compare
  * @return the difference between the maximal and minimal element values, or NO_DATA if no peaks
  */
-float LidarDriver::get_z_activation_diff(std::vector<Peak> *peaks){
-	float max_z = NO_DATA;
-	float min_z = MAX_ELEV;
+float LidarDriver::get_extreme_diff(std::vector<Peak> *peaks, char peak_property){
+	float max_val = NO_DATA;
+	float min_val = MAX_ELEV;
+	float cur_val = 0;
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
 	}
 	for (std::vector<Peak>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
-		//check if max or min we want
-		if ((float)it->z_activation > max_z) {
-			max_z = (float) it->z_activation;
+		cur_val = get_peak_property(&*it,peak_property);
+
+		if (cur_val > max_val) {
+			max_val = cur_val;
 		}
-		if ((float)it->z_activation < min_z) {
-			min_z = (float) it->z_activation;
+		if (cur_val < min_val) {
+			min_val = cur_val;
 		}
 
 	}
 
-	return max_z - min_z;
+	return max_val - min_val;
 }
-
 
 /**
- * get the maximal or minimal peak from the vector
- * @param peaks set of peaks to evaluate
- * @param max_flag True = return maximum value, false = return minimum value
- * @return the smallest or largest value in the set, or NO_DATA if no peaks
+ * get the extreme (max/min) value from a set of peaks, specify the property and peak position (first, last, all)
+ * @param peaks the set of peaks to process
+ * @param max_flag flag to indicate max (true = max, false = min)
+ * @param peak_pos specify if first, last, or all peaks should be included in calculation (0=first, 1=last, 2=all)
+ * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
+ * @return the extreme property value of the set of peaks with the specified filter
  */
-float LidarDriver::get_z_activation_extreme(std::vector<Peak> *peaks, bool max_flag){
-	float max_z = NO_DATA;
-	float min_z = MAX_ELEV;
-	if(peaks==NULL || peaks->empty()){
-		return NO_DATA;
-	}
-	for (std::vector<Peak>::iterator it = peaks->begin();
-	     it != peaks->end(); ++it) {
-		//check if max or min we want
-		if (max_flag) {
-			if ((float)it->z_activation > max_z) {
-				max_z = (float) it->z_activation;
-			}
-		} else {
-			if ((float)it->z_activation < min_z) {
-				min_z = (float) it->z_activation;
-			}
-		}
-	}
-	return max_flag ? max_z : min_z;
-}
-
-
-float LidarDriver::get_amplitude_extreme(std::vector<Peak> *peaks, bool max_flag, int return_pos){
-	float max_amp = NO_DATA;
-	float min_amp = MAX_ELEV;
+float LidarDriver::get_extreme(std::vector<Peak> *peaks, bool max_flag, int peak_pos, char peak_property){
+	float max_val = NO_DATA;
+	float min_val = MAX_ELEV;
+	float cur_val = 0;
 	bool no_countable_peaks = true;
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
@@ -371,7 +378,7 @@ float LidarDriver::get_amplitude_extreme(std::vector<Peak> *peaks, bool max_flag
 	for (std::vector<Peak>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
 		//check what type of returns to evaluate
-		switch (return_pos){
+		switch (peak_pos){
 			case 0: //first
 				if(it->position_in_wave!=1){
 					continue;
@@ -390,30 +397,37 @@ float LidarDriver::get_amplitude_extreme(std::vector<Peak> *peaks, bool max_flag
 			default:
 				break;
 		}
-
+		//get current value to evaluate
+		cur_val = get_peak_property(&*it,peak_property);
 		//check if max or min we want
 		if (max_flag) {
-			if ((float)it->amp > max_amp) {
-				max_amp = (float) it->amp;
+			if (cur_val > max_val) {
+				max_val = cur_val;
 			}
 		} else {
-			if ((float)it->amp < min_amp) {
-				min_amp = (float) it->amp;
+			if (cur_val < min_val) {
+				min_val = cur_val;
 			}
 		}
 	}
 	if(no_countable_peaks){
 		return NO_DATA;
 	}else{
-		return max_flag ? max_amp : min_amp;
+		return max_flag ? max_val : min_val;
 	}
 
 }
 
-
-float LidarDriver::get_amplitude_mean(std::vector<Peak> *peaks, int return_pos){
-	double amp_sum  = 0;
-	int amp_count = 0;
+/**
+ * get the average (mean) value from a set of peaks, specify the property and peak position (first, last, all)
+ * @param peaks the set of peaks to process
+ * @param peak_pos specify if first, last, or all peaks should be included in calculation (0=first, 1=last, 2=all)
+ * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
+ * @return the mean property value of the set of peaks with the specified filter
+ */
+float LidarDriver::get_mean(std::vector<Peak> *peaks, int peak_pos, char peak_property){
+	double val_sum  = 0;
+	int val_count = 0;
 	bool no_countable_peaks = true;
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
@@ -421,7 +435,7 @@ float LidarDriver::get_amplitude_mean(std::vector<Peak> *peaks, int return_pos){
 	for (std::vector<Peak>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
 		//check what type of returns to evaluate
-		switch (return_pos){
+		switch (peak_pos){
 			case 0: //first
 				if(it->position_in_wave!=1){
 					continue;
@@ -440,13 +454,122 @@ float LidarDriver::get_amplitude_mean(std::vector<Peak> *peaks, int return_pos){
 			default:
 				break;
 		}
-		amp_sum += it->amp;
-		amp_count ++;
+		val_sum += get_peak_property(&*it,peak_property);
+		val_count ++;
 	}
 	if(no_countable_peaks){
 		return NO_DATA;
 	}else{
-		return amp_sum/amp_count;
+		return val_sum/val_count;
 	}
 
+}
+
+/**
+ * get the property value from a peak, specify the property
+ * @param peak the peak to extract data from
+ * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
+ * @return the property value of the peak
+ */
+float LidarDriver::get_peak_property(Peak *peak, char peak_property){
+	switch (peak_property){
+		case 'z':
+			return peak->z_activation;
+		case 'a':
+			return peak->amp;
+		default:
+			break;
+	}
+	std::cout << "CRITICAL ERROR! \
+                  No implemented peak property for identifier "<<peak_property<<"\n";
+	exit(EXIT_FAILURE);
+}
+
+/**
+ * get the standard deviation value from a set of peaks, specify the property and peak position (first, last, all)
+ * @param peaks the set of peaks to process
+ * @param avg the average (mean) of the set
+ * @param peak_pos specify if first, last, or all peaks should be included in calculation (0=first, 1=last, 2=all)
+ * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
+ * @return the standard deviation of the property value of the set of peaks with the specified filter
+ */
+double LidarDriver::get_deviation(std::vector<Peak> *peaks, double avg, int peak_pos, char peak_property)
+{
+	double E=0;
+	float cur_val=0;
+	int peak_count = 0;
+	if(peaks==NULL || peaks->empty()){
+		return NO_DATA;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		cur_val = get_peak_property(&*it,peak_property);
+		switch(peak_pos) {
+			case 0: //first
+				if (it->position_in_wave == 1) {
+					peak_count++;
+					E += pow(static_cast<double>(cur_val) - avg, 2);
+				}
+				break;
+			case 1: //last
+				if (it->is_final_peak) {
+					peak_count++;
+					E += pow(static_cast<double>(cur_val) - avg, 2);
+				}
+				break;
+			case 2: //all
+				peak_count++;
+				E += pow(static_cast<double>(cur_val) - avg, 2);
+		}
+	}
+	double inverse = 1.0 / static_cast<double>(peak_count);
+	return sqrt(inverse * E);
+}
+
+/**
+ * get the skewness or kurtosis (3rd/4th degree) value from a set of peaks, specify the property and peak position
+ * (first,last, all)
+ * @param peaks the set of peaks to process
+ * @param avg the average (mean) of the set
+ * @param dev the standard deviation of the set
+ * @param peak_pos specify if first, last, or all peaks should be included in calculation (0=first, 1=last, 2=all)
+ * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
+ * @param power the power of the quadratic in the calculation (3=skewness, 4=kurtosis)
+ * @return the skewness or kurtosis of the property value of the set of peaks with the specified filter
+ */
+double LidarDriver::get_skewtosis(std::vector<Peak> *peaks, double avg, double dev, int peak_pos, char
+peak_property, int power){
+	double G=0;
+	double cur_val = 0;
+	int peak_count = 0;
+	if(peaks==NULL || peaks->empty()){
+		return NO_DATA;
+	}
+	for (std::vector<Peak>::iterator it = peaks->begin();
+	     it != peaks->end(); ++it) {
+		cur_val = get_peak_property(&*it,peak_property);
+		switch (peak_pos){
+			case 0: //first peaks
+				if (it->position_in_wave == 1) {
+					peak_count++;
+					G += pow(static_cast<double>(cur_val) - avg, power);
+				}
+				break;
+			case 1: //last peaks
+				if (it->is_final_peak) {
+					peak_count++;
+					G += pow(static_cast<double>(cur_val) - avg, power);
+				}
+				break;
+			case 2: //all peaks
+				G += pow(static_cast<double>(cur_val) - avg, power);
+				peak_count ++;
+				break;
+			default:
+				break;
+		}
+
+	}
+	double inverse = 1.0 / static_cast<double>(peak_count);
+	return (inverse * G) / pow(dev,power) ;
 }

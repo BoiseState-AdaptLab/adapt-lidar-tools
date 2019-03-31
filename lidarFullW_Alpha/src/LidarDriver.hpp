@@ -29,10 +29,12 @@ public:
 	GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc,
 			int x_idx_extent, int y_idx_extent);
 	void geo_orient_gdal(LidarVolume &, GDALDataset *, std::string , int );
-	float get_z_activation_extreme(std::vector<Peak> *peaks, bool);
-	float get_z_activation_diff(std::vector<Peak> *peaks);
-	float get_amplitude_extreme(std::vector<Peak> *peaks, bool max_flag, int return_pos);
-	float get_amplitude_mean(std::vector<Peak> *peaks, int return_pos);
+	float get_extreme_diff(std::vector<Peak> *peaks, char peak_property);
+	float get_extreme(std::vector<Peak> *peaks, bool max_flag, int peak_pos, char peak_property);
+	float get_mean(std::vector<Peak> *peaks, int peak_pos, char peak_property);
+	double get_deviation(std::vector<Peak> *peaks, double avg, int peak_pos, char peak_property);
+	float get_peak_property(Peak *peak, char peak_property);
+	double get_skewtosis(std::vector<Peak> *peaks, double avg, double dev, int peak_pos, char peak_property, int power);
 };
 
 

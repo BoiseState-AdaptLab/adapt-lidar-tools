@@ -41,7 +41,7 @@ class Tif:
 
   #Get tif data
   def getData(self):
-    print ("\33[32mProcessing:\33[0m {}\n".format(self.file_name))
+    print ("\n\33[32mProcessing:\33[0m {}".format(self.file_name))
 
     #Obtain raster
     raster = gdal.Open(self.file_name_full)
@@ -63,7 +63,7 @@ class Tif:
       self.no_value = -99999
   
     #Get the data from the band and return a 2D list
-    print ("Getting Data\n")
+    print ("Getting data", end="")
     
     #Data will be stored here, y = rows, x = columns
     data = np.full((band.YSize, band.XSize), self.no_value, dtype=float)
@@ -82,7 +82,10 @@ class Tif:
         if not (val > self.no_value - 1 and val < self.no_value + 1):
           #Add data to data list, inputting as [row, col]
           data[y, x] = val
-    
+      print ("\rGetting data {}%".format(
+             round(y*100/(band.YSize-1))), end="")
+    print("")
+
     #Get max y and max x
     self.maxX, self.maxY = band.XSize - 1, band.YSize - 1
     #Save data
@@ -95,7 +98,7 @@ class Tif:
     #Height (h) is always measured in rows
     #Each column and row has a width/height of 1 pixel (px)
 
-    print ("Creating Heatmap\n")
+    print ("Creating heatmap", end="")
 
     #Get dimensions of data
     data_w, data_h = self.data.shape[1], self.data.shape[0]
@@ -120,6 +123,8 @@ class Tif:
           val_frac = (val - min_val) / (max_val - min_val)
           #write color value to array, inputted as [row, col]
           color_data[y, x] = getHeatMapColor(colors, val_frac)
+      print ("\rCreating heatmap {}%".format(
+             round(y*100/(data_h-1))), end="")
 
     #Add space for the legend
     #Height of each line of the legend is the image height / 30
@@ -169,7 +174,7 @@ class Tif:
               ' ' + max_str, (0,0,0), font=font)
     #Save image
     img.save(path + self.file_name[:-4] + '.png')
-    print ("Heatmap has been saved to {}.png\n".format(self.file_name[:-4]))
+    print ("\nHeatmap has been saved to {}.png".format(self.file_name[:-4]))
 
   def createCompareImage(self, tif2, path, compare_no):
     #Dimension conventions
@@ -177,7 +182,7 @@ class Tif:
     #Height (h) is always measured in rows
     #Each column and row has a width/height of 1 pixel (px)
 
-    print ("Creating Comparison Heatmap\n")
+    print ("Creating comparison heatmap", end="")
 
     #Get tif2 details
     data2 = tif2.data
@@ -209,15 +214,15 @@ class Tif:
           color_data[y, x] = [0,255,0] 
         #Else analyze the data
         else:
-          #Get the difference
-          dif = abs(val1 - val2)
           #Get difference as a % of min
-          frac = dif / min(val1, val2)
+          frac = abs(val1 - val2) / min(val1, val2)
           #Check if that % is our ne biggest
           if first_compare or frac > max_dif:
             max_dif = frac
           #Get difference statistics
           color_data[y, x] = getHeatMapColor(colors, frac)
+      print ("\rCreating comparison heatmap {}%".format(
+             round(y*100/(data_h-1))), end="")
 
     #Add space for the legend
     #Height of each line of the legend is the image height / 30
@@ -298,7 +303,7 @@ class Tif:
       vert_pos += line_h + vert_space
 
     img.save("{}compare_{}.png".format(path, compare_no))
-    print ("Heatmap has been saved to compare_{}.png\n".format(compare_no))
+    print ("\nHeatmap has been saved to compare_{}.png".format(compare_no))
 
 def getHeatMapColor(colors, val_frac):
   num_colors = len(colors) - 1

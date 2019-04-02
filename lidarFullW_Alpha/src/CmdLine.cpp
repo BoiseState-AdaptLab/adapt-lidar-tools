@@ -11,16 +11,18 @@ using namespace std;
 //off by one to
 // match
 // index to product ID
-static std::string product_desc[37] = {"","max_all_elev","min_all_elev","mean_all_elev","sd_all_elev","skew_all_elev",
-                                       "kurt_all_elev","max_first_elev","min_first_elev","mean_first_elev",
-                                       "sd_first_elev","skew_first_elev","kurt_first_elev",
-                                       "max_last_elev","min_last_elev","mean_last_elev",
-                                       "sd_last_elev","skew_last_elev","kurt_last_elev",
-									  "max_all_amp","min_all_amp","mean_all_amp",
-		"sd_all_amp","skew_all_amp","kurt_all_amp","max_first_amp",
-									   "min_first_amp","mean_first_amp","sd_first_amp",
-									   "skew_first_amp","kurt_first_amp","max_last_amp","min_last_amp","mean_last_amp",
-									   "sd_last_amp","skew_last_amp","kurt_last_amp"};
+static std::string product_desc[37] = {"", "max_all_elev", "min_all_elev", "mean_all_elev", "sd_all_elev",
+                                       "skew_all_elev",
+                                       "kurt_all_elev", "max_first_elev", "min_first_elev", "mean_first_elev",
+                                       "sd_first_elev", "skew_first_elev", "kurt_first_elev",
+                                       "max_last_elev", "min_last_elev", "mean_last_elev",
+                                       "sd_last_elev", "skew_last_elev", "kurt_last_elev",
+                                       "max_all_amp", "min_all_amp", "mean_all_amp",
+                                       "sd_all_amp", "skew_all_amp", "kurt_all_amp", "max_first_amp",
+                                       "min_first_amp", "mean_first_amp", "sd_first_amp",
+                                       "skew_first_amp", "kurt_first_amp", "max_last_amp", "min_last_amp",
+                                       "mean_last_amp",
+                                       "sd_last_amp", "skew_last_amp", "kurt_last_amp"};
 
 
 /****************************************************************************
@@ -49,12 +51,15 @@ void CmdLine::setUsageMessage()
   buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
   buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
   buffer << "                   -e \" 1 , 2 , 3 \" (white-space allowed inside quotes)" << std::endl;
+	buffer << "Option:  " << std::endl;
+	buffer << "       -a  <list>"
+	       << "  :Products to generate; same as -e option" <<std::endl;
   buffer << "Option:  " << std::endl;
   buffer << "       -d"
          << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
-  buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2" << std::endl;
+  buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5" << std::endl;
   usageMessage.append(buffer.str());
 }
 
@@ -99,6 +104,7 @@ void CmdLine::parse(int argc,char *argv[]){
       {"help", no_argument, NULL, 'h'},
       {"firstdiff", no_argument, NULL, 'd'},
       {"elevation", required_argument,NULL,'e'},
+      {"amplitude", required_argument,NULL,'a'},
       {0, 0, 0, 0}
   };
 
@@ -108,7 +114,7 @@ void CmdLine::parse(int argc,char *argv[]){
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hdf:e:",
+  while((optionChar = getopt_long (argc, argv, ":hdf:e:a:",
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information
@@ -146,6 +152,30 @@ void CmdLine::parse(int argc,char *argv[]){
         }
         break;
         }
+	    case 'a':  {// Without curly braces wrapping this case, there are compilation errors
+		    e_arg = optarg;
+		    std::stringstream ss(e_arg);
+		    while(ss.good()) {
+			    string substr;
+			    getline(ss, substr, ',');
+			    int arg;
+			    try {
+				    arg = 18 + atoi(substr.c_str());
+			    } catch (std::invalid_argument e) {
+			    	std::cout << "\nProduct list could not be converted into integers" <<std::endl;
+				    std::cout << "-------------------------" <<std::endl;
+				    printUsageMessage = true;
+				    break;
+			    }
+
+			    //Just making sure it doesn't try pushing broken data to selected_products
+			    if (printUsageMessage) {
+				    break;
+			    }
+			    selected_products.push_back(arg);
+		    }
+		    break;
+	    }
       case ':':
         // Missing option argument
 		    std::cout << "\nMissing arguments" <<std::endl;
@@ -160,41 +190,7 @@ void CmdLine::parse(int argc,char *argv[]){
 
     }
   }
-  //manually hard coding adding products for testing
-  //TODO: implement all the commmand line options to produce the products
-	selected_products.push_back(4); //std-dev all elev
-	selected_products.push_back(5); //skew all elev
-	selected_products.push_back(6); //kurtosis all elev
-	selected_products.push_back(7); //max first elev
-	selected_products.push_back(8); //min first elev
-	selected_products.push_back(9); //mean first elev
-	selected_products.push_back(10); //std-dev first elev
-	selected_products.push_back(11); //skew first elev
-	selected_products.push_back(12); //kurtosis first elev
-	selected_products.push_back(13); //max last elev
-	selected_products.push_back(14); //min last elev
-	selected_products.push_back(15); //mean last elev
-	selected_products.push_back(16); //std-dev last elev
-	selected_products.push_back(17); //skew last elev
-	selected_products.push_back(18); //kurtosis last elev
-	selected_products.push_back(19); //max all amp
-	selected_products.push_back(20); //min all amp
-	selected_products.push_back(21); //mean all amp
-	selected_products.push_back(22); //std-dev all amp
-	selected_products.push_back(23); //skew all amp
-	selected_products.push_back(24); //kurtosis all amp
-	selected_products.push_back(25); //max first amp
-	selected_products.push_back(26); //min first amp
-	selected_products.push_back(27); //mean first amp
-	selected_products.push_back(28); //std-dev first amp
-	selected_products.push_back(29); //skew first amp
-	selected_products.push_back(30); //kurtosis first amp
-	selected_products.push_back(31); //max last amp
-	selected_products.push_back(32); //min last amp
-	selected_products.push_back(33); //mean last amp
-	selected_products.push_back(34); //std-dev last amp
-	selected_products.push_back(35); //skew last amp
-	selected_products.push_back(36); //kurtosis last amp
+
 
   // For non option input
   if(optind < argc){

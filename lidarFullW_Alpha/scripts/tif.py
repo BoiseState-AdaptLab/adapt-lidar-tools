@@ -153,7 +153,7 @@ class Tif:
         no_value2 = val2 == tif2.no_value
         #If nether has data, color is med gray
         if no_value1 and no_value2:
-          color_data[y, x] = [128,128,128]
+          color_data[y, x] = [255,255,255]
         #If only A has data, color is blue
         elif not no_value1 and no_value2:
           color_data[y, x] = [0,0,255]

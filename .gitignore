@@ -36,3 +36,6 @@ Thumbs.db
 cmake-build-debug/
 CMakeLists.txt
 
+# Valgrind suppression files
+############################
+*.supp

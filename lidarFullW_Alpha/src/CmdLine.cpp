@@ -2,15 +2,28 @@
 // Created on: 17-May-2017
 // Author: ravi
 
-#include <iostream>
-#include <fstream>
-#include <getopt.h>
-#include <sstream>
-#include <cstring>
+
 #include "CmdLine.hpp"
 
 using namespace std;
-static std::string product_desc[4] = {"","max_elev","min_elev","max-min_elev"}; //off by one to match index to
+
+
+//off by one to
+// match
+// index to product ID
+static std::string product_desc[37] = {"", "max_all_elev", "min_all_elev", "mean_all_elev", "sd_all_elev",
+                                       "skew_all_elev",
+                                       "kurt_all_elev", "max_first_elev", "min_first_elev", "mean_first_elev",
+                                       "sd_first_elev", "skew_first_elev", "kurt_first_elev",
+                                       "max_last_elev", "min_last_elev", "mean_last_elev",
+                                       "sd_last_elev", "skew_last_elev", "kurt_last_elev",
+                                       "max_all_amp", "min_all_amp", "mean_all_amp",
+                                       "sd_all_amp", "skew_all_amp", "kurt_all_amp", "max_first_amp",
+                                       "min_first_amp", "mean_first_amp", "sd_first_amp",
+                                       "skew_first_amp", "kurt_first_amp", "max_last_amp", "min_last_amp",
+                                       "mean_last_amp",
+                                       "sd_last_amp", "skew_last_amp", "kurt_last_amp"};
+
 
 /****************************************************************************
 *
@@ -33,14 +46,20 @@ void CmdLine::setUsageMessage()
   buffer << "       -f  <path to pls file>"
          << "  :Generate a Geotif file" << std::endl;
   buffer << "Option:  " << std::endl;
-  buffer << "       -e  {min, max}"
-         << "  :elevation type for Geotif output" << std::endl;
+  buffer << "       -e  <list>"
+         << "  :Products to generate; valid ways to format the list include:" << std::endl;
+  buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
+  buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
+  buffer << "                   -e \" 1 , 2 , 3 \" (white-space allowed inside quotes)" << std::endl;
+	buffer << "Option:  " << std::endl;
+	buffer << "       -a  <list>"
+	       << "  :Products to generate; same as -e option" <<std::endl;
   buffer << "Option:  " << std::endl;
   buffer << "       -d"
          << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
   buffer << "       -h" << std::endl;
   buffer << "\nExample: " << std::endl;
-  buffer << "       bin/lidarDriver -f ../etc/140823_183115_1_clipped_test.pls -e max" << std::endl;
+  buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5" << std::endl;
   usageMessage.append(buffer.str());
 }
 
@@ -53,7 +72,6 @@ std::string CmdLine::getUsageMessage(){
 CmdLine::CmdLine(){
   printUsageMessage = false;
   useGaussianFitting = true;
-  max_elevation_flag = true;
   exeName = "";
   setUsageMessage();
 }
@@ -86,19 +104,9 @@ void CmdLine::parse(int argc,char *argv[]){
       {"help", no_argument, NULL, 'h'},
       {"firstdiff", no_argument, NULL, 'd'},
       {"elevation", required_argument,NULL,'e'},
+      {"amplitude", required_argument,NULL,'a'},
       {0, 0, 0, 0}
   };
-
-
-	/**
-	 * TODO - implement the numeric options in the menu
-	 * mock the selection of max-min products until implemented
-	 */
-	//selected_products.push_back(3);
-	/**
-	 * remove the section above after implementation
-	 */
-
 
 	// getopt_long stores the option index here.
   int option_index = 0;
@@ -106,7 +114,7 @@ void CmdLine::parse(int argc,char *argv[]){
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hdf:e:",
+  while((optionChar = getopt_long (argc, argv, ":hdf:e:a:",
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information
@@ -118,32 +126,72 @@ void CmdLine::parse(int argc,char *argv[]){
         printUsageMessage = true;
         break;
       case 'd':
-	    useGaussianFitting = false;
-	    break;
-      case 'e':
-          e_arg = optarg;
-          if (strncmp(e_arg,"min",5)==0){
-              max_elevation_flag = false;
-	          selected_products.push_back(2);
-          }else if(strncmp(e_arg,"max",5)==0){
-              max_elevation_flag = true;
-	          selected_products.push_back(1);
-          }
-          break;
+        useGaussianFitting = false;
+	      break;
+      case 'e':  {// Without curly braces wrapping this case, there are compilation errors
+        e_arg = optarg;
+        std::stringstream ss(e_arg);
+        while(ss.good()) {
+        	string substr;
+            getline(ss, substr, ',');
+            int arg;
+            try {
+                arg = atoi(substr.c_str());
+            } catch (std::invalid_argument e) {
+                std::cout << "\nProduct list could not be converted into integers" <<std::endl;
+                std::cout << "-------------------------" <<std::endl;
+                printUsageMessage = true;
+                break;
+            }
+
+            //Just making sure it doesn't try pushing broken data to selected_products
+            if (printUsageMessage) {
+	            break;
+            }
+            selected_products.push_back(arg);
+        }
+        break;
+        }
+	    case 'a':  {// Without curly braces wrapping this case, there are compilation errors
+		    e_arg = optarg;
+		    std::stringstream ss(e_arg);
+		    while(ss.good()) {
+			    string substr;
+			    getline(ss, substr, ',');
+			    int arg;
+			    try {
+				    arg = 18 + atoi(substr.c_str());
+			    } catch (std::invalid_argument e) {
+			    	std::cout << "\nProduct list could not be converted into integers" <<std::endl;
+				    std::cout << "-------------------------" <<std::endl;
+				    printUsageMessage = true;
+				    break;
+			    }
+
+			    //Just making sure it doesn't try pushing broken data to selected_products
+			    if (printUsageMessage) {
+				    break;
+			    }
+			    selected_products.push_back(arg);
+		    }
+		    break;
+	    }
       case ':':
         // Missing option argument
-		std::cout << "\nMissing arguments" <<std::endl;
-    	std::cout << "------------------" <<std::endl;
+		    std::cout << "\nMissing arguments" <<std::endl;
+    	  std::cout << "------------------" <<std::endl;
         printUsageMessage = true;
-		break;
+        break;
       default:
         // Invalid option
-		std::cout << "\nInvalid option" <<std::endl;
-    	std::cout << "---------------" <<std::endl;
+		    std::cout << "\nInvalid option" <<std::endl;
+    	  std::cout << "---------------" <<std::endl;
         printUsageMessage = true;
 
     }
   }
+
+
   // For non option input
   if(optind < argc){
     printUsageMessage = true;

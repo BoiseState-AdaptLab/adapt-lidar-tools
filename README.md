@@ -20,4 +20,4 @@ git submodule update
 From `lidarDataProcessing/lidarFullW_Alpha/`,
 
 * To make and run unit tests: `make test`
-* To make the lidarDriver: `make lidarDriver`
+* To make the geotiff-driver: `make geotiff-driver`

@@ -12,6 +12,9 @@
 #include <getopt.h>
 #include <sstream>
 #include <vector>
+#include <cstring>
+#include <stdexcept>
+#include <stdlib.h>
 
 class CmdLine{
 
@@ -35,7 +38,7 @@ public:
   // use find_peaks parameter
   // True = use gaussian fitting, False = only guess
   bool useGaussianFitting;
-  bool max_elevation_flag;
+ // bool max_elevation_flag;
   CmdLine();
 
 

@@ -376,6 +376,9 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       Peak* peak = new Peak();
       peak->amp = gsl_vector_get(x,3*i+ 0);
       peak->location = gsl_vector_get(x,3*i+ 1);
+      // TODO: should this be incremented in the event the peak is below the noise level?
+      peak->position_in_wave = i+1;//set the peak position
+      i==peakCount-1 ? peak->is_final_peak = true : peak->is_final_peak = false;
       double c = gsl_vector_get(x,3*i+ 2);
 
       //calculate fwhm: full width at half maximum
@@ -401,9 +404,12 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
             sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
        (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
                                           );
+      //Print out Gaussian Fitter equation
+      //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - " << peak->location << ")/" << c << "]^2)" << std::endl;
+
       if(peak->triggering_location > n || peak->triggering_location <0){
 
-       
+	      delete(peak);
         //Print amplitude information that is causing the error
         // std::cerr << "\nTriggering location: "<< peak->triggering_location \
         //           << " not in range: " << n <<std::endl;
@@ -415,7 +421,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         // std::cerr << std::endl ;
       }
       else if(peak->amp > 2.0*max || peak->amp < 0){
-
+			delete(peak);
         }
       else{
         //add the peak to our result
@@ -467,6 +473,8 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     #endif
   }
 
+  free(fit_data.t);
+  free(fit_data.y);
   gsl_vector_free(f);
   gsl_vector_free(x);
   gsl_rng_free(r);
@@ -481,8 +489,8 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
   int first, second, fDiff, count = 0;
   std::vector<int> firstDifference;
 
-  for(int i = 0; i< (int)ampData.size(); i++){
-    first = ampData[i+1];
+  for(int i = 0; i< (int)ampData.size()-2; i++){
+  	first = ampData[i+1];
     second = ampData[i+2];
 
     fDiff = second - first;
@@ -490,6 +498,7 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
     firstDifference.push_back(fDiff);
     count++;
 
+    //TODO: why 59?
     if(count == 59){
         count = 0;
         i = i+2;
@@ -544,7 +553,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
   int wideStart = -1; //The start of any current wide peak
   int prev_grad = -1;
   int grad = -1;
-  for(int i = 0; i<(int)ampData.size(); i++){
+  for(int i = 0; i<(int)ampData.size()-1; i++){
 
     if(ampData[i] > noise_level){
       // sloping down
@@ -570,6 +579,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
         }
         grad = -1;
       // sloping up
+      /**
+ */
       }else if(ampData[i+1] > ampData[i]){
         //was flat
         if(grad == 0){
@@ -647,7 +658,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
     Peak* peak = new Peak();
     peak->amp = ampData[peak_guesses_loc[i]];
     peak->location = idxData[peak_guesses_loc[i]];
-    peak->fwhm = guess * 2;
+    peak->fwhm = guess;
     results->push_back(*peak);
   }
 

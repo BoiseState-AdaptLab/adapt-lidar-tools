@@ -27,15 +27,16 @@ def main(arg_set, path):
     if 'w' in arg_set[0]:
       writeData(tif, path)
     if 'i' in arg_set[0]:
-      writeImage(tif, path)
+      tif.createImage(path)
     #If arg_set not in args, then it is part of a comparison so return tif
     if arg_set not in args:
       return tif
   else:
-    print ("\33[32mBeginning comparison\33[0m\n")
     #Create tif objects to compare
     tifA = main([arg_set[1], arg_set[2]], path)
-    tifB = main([arg_set[3], arg_set[4]], path)
+    tifB = main([arg_set[3], arg_set[4]], path) 
+    print ("\n\33[32mComparing: \33[0m{} and {}".format(
+           tifA.file_name, tifB.file_name))
     #Make sure tif files are of equal length
     ans = "y"
     if tifA.maxY != tifB.maxY:
@@ -50,13 +51,13 @@ def main(arg_set, path):
       j = 1
       while (Path(path + "compare_{}_simple.out".format(j)).is_file() or
              Path(path + "compare_{}_raw.out".format(j)).is_file() or
-             Path(path + "compare_{}.jpg".format(j)).is_file()):
+             Path(path + "compare_{}.png".format(j)).is_file()):
         j += 1
       #Check if we are writing an output and/or creating an image
       if 'w' in arg_set[0]:
         compareData(tifA, tifB, path, j)
       if 'i' in arg_set[0]:
-        writeCompareImg(tifA, tifB, path, j)
+        tifA.createCompareImage(tifB, path, j)
     else:
       print("Skipping...")  
 
@@ -64,19 +65,19 @@ def main(arg_set, path):
   args.pop(0)
   if (len(args) > 0):
     main(args[0], path)
+  else:
+    print ("")
 
 def writeData(tif, path):
   #Go through each data point in the band
   #Print data to file
-  print ("Writing data to file\n")
-  #Get data
-  data = tif.data
+  print ("Writing data to file", end="")
   #Create output file
   output = open(path + tif.file_name[:-4] + ".out", 'w')
   output.write("Max Y = {}\n\n".format(tif.maxY))
   
   #Go through each y value
-  for y, vals in enumerate(data):
+  for y, vals in enumerate(tif.data):
     output.write("y = {}: ".format(y))
     for x, val in enumerate(vals):
       #Check if it's the last x value
@@ -88,48 +89,47 @@ def writeData(tif, path):
       else:
         #Write 'NA' for no data and indicate it in data list
         output.write("NA" + ("" if last else ", "))
-    output.write("\n\n") 
+    output.write("\n\n")
+    print ("\rWriting data to file {}%".format(
+             round(y*100/(tif.maxY-1))), end="")
   output.close()
-  print ("Data written to {}\n".format(path + tif.file_name[:-4] + ".out"))
 
-#Writes image data to a jpg
-def writeImage(tif, path):
-  #Get color data
-  color_data = tif.getImgData()
-  img = Image.fromarray(color_data, 'RGB')
-  img.save(path + tif.file_name[:-4] + '.jpg')
-  print("Image written to {}\n".format(path + tif.file_name[:-4] + '.jpg'))
+  print ("\nData written to {}".format(path + tif.file_name[:-4] + ".out"))
 
 def compareData(tifA, tifB, path, compare_no):
-  print ("Writing comparison to file\n")
+  print ("Writing comparison to file", end="")
   A = 0
   B = 1
   #Get smallest maxY
   maxY = min(tifA.maxY, tifB.maxY)
   #Create file to write to
-  #'Simple' has the totals for each comparison result
+  #'Simple' has an analysis of the comparison
   #'Raw' has the comparison for every data point
-  outputs = [open(path + "compare_{}_simple.out".format(compare_no), 'w'),
-             open(path + "compare_{}_raw.out".format(compare_no), 'w')]
+  simple = open(path + "compare_{}_simple.out".format(compare_no), 'w')
+  raw = open(path + "compare_{}_raw.out".format(compare_no), 'w')
   #Write the date, time, and input file names on the top of the output files
-  for out in outputs:
+  for out in [simple, raw]:
     out.write("Created at {}\n".format(datetime.datetime.fromtimestamp(time.time()).
               strftime('%Y-%m-%d %H:%M:%S')))
     out.write("file A is {}, file B is {}\n".format(tifA.file_name, tifB.file_name))
     out.write("Max Y = {}\n".format(maxY))
-  outputs[0].write("The simple file contains the totals for each comparison result for each y-value\n\n")
-  outputs[1].write("The raw file contains the comparison result for each data point\n\n")
+  simple.write("The simple file contains the totals for each comparison result for each y-value\n\n")
+  raw.write("The raw file contains the comparison result for each data point\n\n")
+
+  #Store the analysis text for each y-value in the 'simple' file as a list of strings
+  text = []
+  #Store all differences and percent differences
+  difs, pct_difs = [], []
 
   #Begin comparison
   #Cycle through the data for each y value
   for y in range(maxY + 1):
-    #Write the current y value to the 'raw' file
-    outputs[0].write("y = {}: ".format(y))
-    outputs[1].write("y = {}: ".format(y))
+    #Write the current y value to each file
+    temp = "y = {}: ".format(y)
+    #simple.write("y = {}: ".format(y))
+    raw.write("y = {}: ".format(y))
     #0 = both no data, 1 = A has data, 2 = B has data, 3 = both have data
-    comparison = [0,0,0,0]
-    #This holds the differences in values
-    differences = []
+    result = [0,0,0,0]
     first = True
 
     #Compare each data point and write the result to the 'raw' file
@@ -141,48 +141,58 @@ def compareData(tifA, tifB, path, compare_no):
       #This way is will not be added after the last data point
       #However we don't want it before the first data point
       if not first:
-        outputs[1].write(", ")
+        raw.write(", ")
       if a != nvA and b != nvB:
         #Both
-        outputs[1].write("[{}|{}]".format(a, b))
-        comparison[3] += 1
-        differences.append(float(a) - float(b))
+        raw.write("[{}|{}]".format(a, b))
+        result[3] += 1
+        #Record difference and percent difference
+        difs.append(float(a) - float(b))
+        #TODO: Record percent difference and check if they are above certain threshholds
+        pct_difs.append(0)
       elif a != nvA and b == nvB:
         #Just A
-        outputs[1].write("[{}|NA]".format(a))
-        comparison[1] += 1
+        raw.write("[{}|NA]".format(a))
+        result[1] += 1
       elif a == nvA and b != nvB:
         #Just B
-        outputs[1].write("[NA|{}]".format(b))
-        comparison[2] += 1
+        raw.write("[NA|{}]".format(b))
+        result[2] += 1
       else:
         #Neither
-        outputs[1].write("NA")
-        comparison[0] += 1
+        raw.write("NA")
+        result[0] += 1
       first = False
 
-    outputs[1].write("\n\n")
-    #Get averages of data and differences
-    a_avg, b_avg = tifA.getAvg(y), tifB.getAvg(y)
-    a_avg = "n/a" if a_avg == tifA.no_value else a_avg
-    b_avg = "n/a" if b_avg == tifB.no_value else b_avg
-    dif_avg = "n/a" if len(differences) == 0 else sum(differences)/len(differences)
-    #Write analysis into file
-    outputs[0].write(
-      "total data points: {}\nneither: {}\nonly A: {}\nonly B: {}\nboth: {}\n".format(
-      sum(comparison), comparison[0], comparison[1], comparison[2], comparison[3])
-      + "average A: {}\naverage B: {}\naverage difference (A - B): {}\n\n".format(
-      a_avg, b_avg, dif_avg))
-  print ("Results have been written to the compare_{}.out files\n"
-         .format(compare_no))
+    raw.write("\n\n")
+    #Record analysis as text
+    temp += "total data points: {}\nneither: {}\n".format(sum(result), result[0])
+    temp += "only A: {}\nonly B: {}\nboth: {}\n\n".format(result[1], result[2],
+                                                          result[3])
+    text.append(temp)
+    print ("\rWriting comparison to file {}%".format(
+             round(y*100/maxY)), end="")
+  
+  #Write statistics about the data as a whole to the 'simple' file
+  #Average values for each file
+  simple.write("A Average: {}\nB Average: {}\n".format(
+               tifA.getAvg(-1), tifB.getAvg(-1)))
+  #Average difference and percent difference
+  avg_dif = "n/a" if len(difs) == 0 else sum(difs)/len(difs)
+  avg_pct_dif = "n/a" if len(pct_difs) == 0 else sum(pct_difs)/len(pct_difs)
+  simple.write("Average Difference (A - B): {}\n".format(avg_dif))
+  simple.write("Average Percent Difference: {}%\n".format(avg_pct_dif*100))
+  #TODO: write percent difference counts into file
+  #Write all the stored text to the 'simple' file
+  for txt in text:
+    simple.write(txt)
+  
+  #Close the output files
+  simple.close()
+  raw.close()
 
-def writeCompareImg(tif1, tif2, path, compare_no):
-  print ("Creating comparison heatmap")
-  #Get color data
-  color_data = tif1.getComparisonImgData(tif2)
-  im = Image.fromarray(color_data, 'RGB')
-  im.save("{}compare_{}.jpg".format(path, compare_no))
-  print ("Heatmap has been saved to compare_{}.jpg\n".format(compare_no))
+  print ("\nResults have been written to the compare_{}.out files".format(
+         compare_no))
 
 def isTif(file_name):
   return file_name[file_name.rfind("/") + 1:].endswith(".tif")
@@ -253,7 +263,8 @@ if __name__ == '__main__':
         print ("[ Error ] file must be of type tif\nSkipping")
       #Check for previous argument
       elif len(args) == 0 or '' not in args[-1]:
-        print ("[ Error ] {} requires an argument before it\nSkipping".format(arg))
+        print ("[ Error ] {} requires an argument before it\nSkipping".format(
+               arg))
       #Use input file
       else:
         #Not part of a comparison

@@ -205,7 +205,6 @@ $(OBJ)/PlsToGeotiff.o: $(SRC)/PlsToGeotiff.cpp
 test: $(TESTS)
 	clear
 	-$(BIN)/CmdLine_unittests
-	-$(BIN)/FullWaveformIngestion_unittests
 	-$(BIN)/WaveGPSInformation_unittests
 	-$(BIN)/LidarVolume_unittests
 	-$(BIN)/PulseData_unittests

@@ -284,7 +284,7 @@ TEST_F(CmdLineTest, output_filename_gaussian){
     strncpy(commonArgSpace[1],"-f",6);
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
     EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_max_elev_gaussian.tif",cmd.get_output_filename(1));
+    ASSERT_EQ("inputfile1_max_all_elev_gaussian.tif",cmd.get_output_filename(1));
 }
 
 TEST_F(CmdLineTest, output_filename_first_diff){
@@ -295,7 +295,7 @@ TEST_F(CmdLineTest, output_filename_first_diff){
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
     strncpy(commonArgSpace[3],"-d",5);
     EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_max_elev_firstDiff.tif",cmd.get_output_filename(1));
+    ASSERT_EQ("inputfile1_max_all_elev_firstDiff.tif",cmd.get_output_filename(1));
 }
 
 TEST_F(CmdLineTest, output_filename_max_gaussian){
@@ -307,7 +307,7 @@ TEST_F(CmdLineTest, output_filename_max_gaussian){
 	strncpy(commonArgSpace[3],"-e",4);
 	strncpy(commonArgSpace[4],"1",4);
 	EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-	ASSERT_EQ("inputfile1_max_elev_gaussian.tif",cmd.get_output_filename(1));
+	ASSERT_EQ("inputfile1_max_all_elev_gaussian.tif",cmd.get_output_filename(1));
 }
 
 TEST_F(CmdLineTest, output_filename_max_first_diff){
@@ -320,7 +320,7 @@ TEST_F(CmdLineTest, output_filename_max_first_diff){
 	strncpy(commonArgSpace[4],"-e",4);
 	strncpy(commonArgSpace[5],"1",4);
 	EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-	ASSERT_EQ("inputfile1_max_elev_firstDiff.tif",cmd.get_output_filename(1));
+	ASSERT_EQ("inputfile1_max_all_elev_firstDiff.tif",cmd.get_output_filename(1));
 }
 
 TEST_F(CmdLineTest, output_filename_min_gaussian){
@@ -332,7 +332,7 @@ TEST_F(CmdLineTest, output_filename_min_gaussian){
     strncpy(commonArgSpace[3],"-e",4);
     strncpy(commonArgSpace[4],"2",4);
     EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_min_elev_gaussian.tif",cmd.get_output_filename(2));
+    ASSERT_EQ("inputfile1_min_all_elev_gaussian.tif",cmd.get_output_filename(2));
 }
 
 TEST_F(CmdLineTest, output_filename_min_first_diff){
@@ -345,7 +345,7 @@ TEST_F(CmdLineTest, output_filename_min_first_diff){
     strncpy(commonArgSpace[4],"-e",4);
     strncpy(commonArgSpace[5],"2",4);
     EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_min_elev_firstDiff.tif",cmd.get_output_filename(2));
+    ASSERT_EQ("inputfile1_min_all_elev_firstDiff.tif",cmd.get_output_filename(2));
 }
 
 TEST_F(CmdLineTest, output_filename_max_min_gaussian){
@@ -357,7 +357,7 @@ TEST_F(CmdLineTest, output_filename_max_min_gaussian){
   strncpy(commonArgSpace[3],"-e",4);
   strncpy(commonArgSpace[4],"3",4);
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-  ASSERT_EQ("inputfile1_max-min_elev_gaussian.tif",cmd.get_output_filename(3));
+  ASSERT_EQ("inputfile1_mean_all_elev_gaussian.tif",cmd.get_output_filename(3));
 }
 
 TEST_F(CmdLineTest, output_filename_max_min_first_diff){
@@ -370,7 +370,7 @@ TEST_F(CmdLineTest, output_filename_max_min_first_diff){
   strncpy(commonArgSpace[4],"-e",4);
   strncpy(commonArgSpace[5],"3",4);
   EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
-  ASSERT_EQ("inputfile1_max-min_elev_firstDiff.tif",cmd.get_output_filename(3));
+  ASSERT_EQ("inputfile1_mean_all_elev_firstDiff.tif",cmd.get_output_filename(3));
 }
 
 /* Call RUN_ALL_TESTS() in main().

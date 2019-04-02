@@ -11,11 +11,10 @@ typedef std::chrono::high_resolution_clock Clock;
 // Lidar driver
 int main (int argc, char *argv[]) {
 
-	LidarDriver driver;
-
-    CmdLine cmdLineArgs;
-	FlightLineData rawData;
-	LidarVolume intermediateData;
+	LidarDriver driver; //driver object with tools
+    CmdLine cmdLineArgs; //command line options
+	FlightLineData rawData; //the raw data read from PLS + WVS files
+	LidarVolume intermediateData; //the parsed data from the LIDAR waveforms
 
   // Parse and validate the command line args
     if(!cmdLineArgs.parse_args(argc,argv)){
@@ -57,6 +56,7 @@ int main (int argc, char *argv[]) {
 
   GDALDestroyDriverManager();
 
+  intermediateData.deallocateMemory();
 
   //Get end time
   Clock::time_point t2 = Clock::now();

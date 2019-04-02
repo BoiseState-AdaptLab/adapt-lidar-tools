@@ -83,9 +83,17 @@ void LidarVolume::allocateMemory(){
   }
 }
 
-
 void LidarVolume::deallocateMemory(){
-  delete volume;
+	int x_idx,y_idx;
+	for(y_idx=0;y_idx<y_idx_extent;y_idx++){
+		for(x_idx=0;x_idx<x_idx_extent;x_idx++){
+			if(volume[position(y_idx,x_idx)] != NULL){
+				volume[position(y_idx,x_idx)]->clear();
+				delete(volume[position(y_idx,x_idx)]);
+			}
+		}
+	}
+	free(volume);
   volume = NULL; //pointing dangling pointer to null
 }
 

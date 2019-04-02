@@ -409,7 +409,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
 
       if(peak->triggering_location > n || peak->triggering_location <0){
 
-       
+	      delete(peak);
         //Print amplitude information that is causing the error
         // std::cerr << "\nTriggering location: "<< peak->triggering_location \
         //           << " not in range: " << n <<std::endl;
@@ -421,7 +421,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         // std::cerr << std::endl ;
       }
       else if(peak->amp > 2.0*max || peak->amp < 0){
-
+			delete(peak);
         }
       else{
         //add the peak to our result
@@ -473,6 +473,8 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     #endif
   }
 
+  free(fit_data.t);
+  free(fit_data.y);
   gsl_vector_free(f);
   gsl_vector_free(x);
   gsl_rng_free(r);

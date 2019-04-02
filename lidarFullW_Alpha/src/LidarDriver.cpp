@@ -80,7 +80,6 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, b
 		} catch (const char *msg) {
 			std::cerr << msg << std::endl;
 		}
-
 		// FOR TESTING PURPOSES
 #ifdef DEBUG
 		pd.displayPulseData(&stream);
@@ -88,6 +87,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, b
           stream.str("");
 #endif
 	}
+	peaks.clear();
 
 #ifdef DEBUG
 	std::cerr << "Total: " << fitter.get_total() << std::endl;

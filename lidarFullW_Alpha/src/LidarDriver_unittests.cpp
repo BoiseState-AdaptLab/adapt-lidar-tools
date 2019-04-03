@@ -459,8 +459,8 @@ TEST_F(LidarDriverTest, get_all_amp_min_test){
 
 	std::vector<Peak> peaks;
 
-    float expected = 1.00;
-    float abs_error = 0.5;
+	float expected = 1.00;
+	float abs_error = 0.5;
 
 	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
 	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
@@ -492,7 +492,8 @@ TEST_F(LidarDriverTest, get_all_amp_mean_test){
 
 	std::vector<Peak> peaks;
 
-    float abs_error = 0.005;
+	double avg = 43.71666667;
+	float abs_error = 0.005;
 
 	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
 	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
@@ -511,9 +512,7 @@ TEST_F(LidarDriverTest, get_all_amp_mean_test){
 
 	float val = driver1.get_mean(&peaks,2,'a');
 
-
-    std::cerr << "mean = "<< val << std::endl;
-	EXPECT_NEAR(44, val, abs_error);
+	EXPECT_NEAR(avg, val, abs_error);
 
 }
 
@@ -523,7 +522,10 @@ TEST_F(LidarDriverTest, get_all_amp_mean_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_all_amp_deviation_test){
-    std::vector<Peak> peaks;
+
+    std::vector<Peak> peaks
+
+    double avg = 43.71666667;
 
     double expected = 60.49459751;
     double abs_error = 0.05;
@@ -540,12 +542,12 @@ TEST_F(LidarDriverTest, get_all_amp_deviation_test){
         int z0 = atoi(ptr);
         Peak p;
         p.amp = z0;
-        peaks.push_back(p);
+        peak.push_back(p);
         i++;
         ptr = strtok (NULL," ");
     }
 
-    double val = driver1.get_deviation(&peaks, 44, 2,'a');
+    double val = driver1.get_deviation(&peaks, avg, 2,'a');
 
     EXPECT_NEAR(val, expected, abs_error);
 }
@@ -556,9 +558,10 @@ TEST_F(LidarDriverTest, get_all_amp_deviation_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_all_amp_skewtosis_skewness_test){
+
     std::vector<Peak> peaks;
 
-    double avg = 44;
+    double avg = 43.71666667;
     double stdev = 60.49459751;
 
     double expected = 1.562976715;
@@ -592,9 +595,10 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_skewness_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_all_amp_skewtosis_kurtosis_test){
+
     std::vector<Peak> peaks;
 
-    double avg = 44;
+    double avg = 43.71666667;
     double stdev = 60.49459751;
 
     double expected = 1.173542289;
@@ -628,29 +632,31 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_kurtosis_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_first_amp_deviation_test){
+
     std::vector<Peak> peaks;
 
-    double expected = 60.49459751;
+    double avg = 45.92982456
+
+    double expected = 61.28588152;
     double abs_error = 0.05;
 
-    char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
-                "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 "
-                "24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.position_in_wave = 3 : p.position_in_wave=1;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
 
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int z0 = atoi(ptr);
-        Peak p;
-        p.amp = z0;
-        peaks.push_back(p);
-        i++;
-        ptr = strtok (NULL," ");
-    }
-
-    double val = driver1.get_deviation(&peaks, 44, 0,'a');
+    double val = driver1.get_deviation(&peaks, avg, 0,'a');
 
     EXPECT_NEAR(val, expected, abs_error);
 }
@@ -661,30 +667,30 @@ TEST_F(LidarDriverTest, get_first_amp_deviation_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_first_amp_skewtosis_skewness_test){
+
     std::vector<Peak> peaks;
 
-    double avg = 44;
-    double stdev = 60.49459751;
+    double avg = 45.92982456;
+    double stdev = 61.28588152;
 
-    double expected = 1.562976715;
+    double expected = 1.492217711;
     double abs_error = 0.05;
 
-    char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
-                "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 "
-                "24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+   char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int z0 = atoi(ptr);
-        Peak p;
-        p.amp = z0;
-        peaks.push_back(p);
-        i++;
-        ptr = strtok (NULL," ");
-    }
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.position_in_wave = 3 : p.position_in_wave=1;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
 
     double val = driver1.get_skewtosis(&peaks, avg, stdev, 0, 'a', 3);
 
@@ -697,30 +703,30 @@ TEST_F(LidarDriverTest, get_first_amp_skewtosis_skewness_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_first_amp_skewtosis_kurtosis_test){
+
     std::vector<Peak> peaks;
 
-    double avg = 44;
-    double stdev = 60.49459751;
+    double avg = 45.92982456;
+    double stdev = 61.28588152;
 
-    double expected = 1.173542289;
+    double expected = 0.9358234305;
     double abs_error = 0.05;
 
-    char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
-                "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 "
-                "24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+   char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int z0 = atoi(ptr);
-        Peak p;
-        p.amp = z0;
-        peaks.push_back(p);
-        i++;
-        ptr = strtok (NULL," ");
-    }
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.position_in_wave = 3 : p.position_in_wave=1;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
 
     double val = driver1.get_skewtosis(&peaks, avg, stdev, 0, 'a', 4);
 
@@ -733,29 +739,32 @@ TEST_F(LidarDriverTest, get_first_amp_skewtosis_kurtosis_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_last_amp_deviation_test){
+
     std::vector<Peak> peaks;
 
-    double expected = 60.49459751;
+    double avg = 45.92982456;
+
+    double expected = 61.28588152;
     double abs_error = 0.05;
 
-    char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
-                "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 "
-                "24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+	               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.is_final_peak = false : p.is_final_peak=true;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
 
 
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int z0 = atoi(ptr);
-        Peak p;
-        p.amp = z0;
-        peaks.push_back(p);
-        i++;
-        ptr = strtok (NULL," ");
-    }
-
-    double val = driver1.get_deviation(&peaks, 44, 1,'a');
+    double val = driver1.get_deviation(&peaks, avg, 1,'a');
 
     EXPECT_NEAR(val, expected, abs_error);
 }
@@ -766,30 +775,30 @@ TEST_F(LidarDriverTest, get_last_amp_deviation_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_last_amp_skewtosis_skewness_test){
+
     std::vector<Peak> peaks;
 
-    double avg = 44;
+    double avg = 45.92982456;
     double stdev = 60.49459751;
 
-    double expected = 1.562976715;
+    double expected = 1.492217711;
     double abs_error = 0.05;
 
-    char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
-                "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 "
-                "24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+	               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int z0 = atoi(ptr);
-        Peak p;
-        p.amp = z0;
-        peaks.push_back(p);
-        i++;
-        ptr = strtok (NULL," ");
-    }
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.is_final_peak = false : p.is_final_peak=true;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
 
     double val = driver1.get_skewtosis(&peaks, avg, stdev, 1, 'a', 3);
 
@@ -802,34 +811,32 @@ TEST_F(LidarDriverTest, get_last_amp_skewtosis_skewness_test){
 *
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_last_amp_skewtosis_kurtosis_test){
+
     std::vector<Peak> peaks;
 
-    double avg = 44;
+    double avg = 45.92982456;
     double stdev = 60.49459751;
 
-    double expected = 1.173542289;
+    double expected = 0.9358234305;
     double abs_error = 0.05;
 
-    char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
-                "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 "
-                "24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+	               "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int z0 = atoi(ptr);
-        Peak p;
-        p.amp = z0;
-        peaks.push_back(p);
-        i++;
-        ptr = strtok (NULL," ");
-    }
+	char* ptr;
+	ptr = strtok (input," ");
+	int i=0;
+	while (ptr != NULL){
+		int z0 = atoi(ptr);
+		Peak p;
+		p.amp = z0;
+		z0== 200 ? p.is_final_peak = false : p.is_final_peak=true;
+		peaks.push_back(p);
+		i++;
+		ptr = strtok (NULL," ");
+	}
 
     double val = driver1.get_skewtosis(&peaks, avg, stdev, 1, 'a', 4);
 
     EXPECT_NEAR(val, expected, abs_error);
 }
-
-

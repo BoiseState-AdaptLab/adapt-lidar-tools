@@ -301,6 +301,8 @@ TEST_F(LidarDriverTest, get_first_amp_mean_test){
 
     double abs_error = 0.05;
 
+    double expected = 50.1346;
+
 	char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 "
 	               "35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
@@ -319,7 +321,7 @@ TEST_F(LidarDriverTest, get_first_amp_mean_test){
 
 	float val = driver1.get_mean(&peaks,0,'a');
 
-	EXPECT_NEAR(50, val, abs_error);
+	EXPECT_NEAR(expected, val, abs_error);
 
 }
 
@@ -528,7 +530,7 @@ TEST_F(LidarDriverTest, get_all_amp_deviation_test){
 
     double avg = 43.71666667;
 
-    double expected = 60.49459751;
+    double expected = 59.98835767;
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
@@ -563,9 +565,9 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_skewness_test){
     std::vector<Peak> peaks;
 
     double avg = 43.71666667;
-    double stdev = 60.49459751;
+    double stdev = 59.98835767;
 
-    double expected = 1.562976715;
+    double expected = 1.523627739;
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
@@ -599,11 +601,11 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_kurtosis_test){
 
     std::vector<Peak> peaks;
 
-    double avg = 43.71666667;
-    double stdev = 60.49459751;
+    double avg = 43.716667;
+    double stdev = 59.9883576667636;
 
-    double expected = 1.173542289;
-    double abs_error = 0.05;
+    double expected = 3.97964179113; //https://www.easycalculation.com/statistics/kurtosis.php
+	double abs_error = 0.05;
 
     char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
         "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 "
@@ -636,9 +638,9 @@ TEST_F(LidarDriverTest, get_first_amp_deviation_test){
 
     std::vector<Peak> peaks;
 
-    double avg = 45.92982456;
+	double avg = 38.3275862068966;
 
-    double expected = 61.28588152;
+    double expected = 53.3987562592582;
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
@@ -671,10 +673,10 @@ TEST_F(LidarDriverTest, get_first_amp_skewtosis_skewness_test){
 
     std::vector<Peak> peaks;
 
-    double avg = 45.92982456;
-    double stdev = 61.28588152;
+	double avg = 38.3275862068966;
+    double stdev = 53.3987562592582;
 
-    double expected = 1.492217711;
+    double expected = 1.67397950413312;
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
@@ -707,10 +709,10 @@ TEST_F(LidarDriverTest, get_first_amp_skewtosis_kurtosis_test){
 
     std::vector<Peak> peaks;
 
-    double avg = 45.92982456;
-    double stdev = 61.28588152;
+	double avg = 38.3275862068966;
+	double stdev = 53.3987562592582;
 
-    double expected = 0.9358234305;
+    double expected =  4.64158429732; //https://www.easycalculation.com/statistics/kurtosis.php
     double abs_error = 0.05;
 
    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
@@ -743,9 +745,9 @@ TEST_F(LidarDriverTest, get_last_amp_deviation_test){
 
     std::vector<Peak> peaks;
 
-    double avg = 45.92982456;
+    double avg = 38.3275862068966;
 
-    double expected = 61.28588152;
+    double expected = 53.3987562592582;
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
@@ -779,11 +781,11 @@ TEST_F(LidarDriverTest, get_last_amp_skewtosis_skewness_test){
 
     std::vector<Peak> peaks;
 
-    double avg = 45.92982456;
-    double stdev = 60.49459751;
+    double avg = 38.3275862068966;
+	double stdev = 53.3987562592582;
 
-    double expected = 1.492217711;
-    double abs_error = 0.05;
+	double expected = 1.67397950413312;
+	double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
         "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
@@ -815,10 +817,10 @@ TEST_F(LidarDriverTest, get_last_amp_skewtosis_kurtosis_test){
 
     std::vector<Peak> peaks;
 
-    double avg = 45.92982456;
-    double stdev = 60.49459751;
+	double avg = 38.3275862068966;
+	double stdev = 53.3987562592582;
 
-    double expected = 0.9358234305;
+    double expected = 4.64158429732; //https://www.easycalculation.com/statistics/kurtosis.php
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "

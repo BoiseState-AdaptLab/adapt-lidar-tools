@@ -183,8 +183,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds
 			//get the vector of found peaks at this pixel
 			std::vector<Peak> *peaks = fitted_data.volume[fitted_data.position(y, x)];
 			//decide what to do with the peak data at this pixel
-			switch (prod_id) {
-				//TODO: should these elevations all be first/last/all as well?
+			switch (prod_id) {				
 				case 1 : //max all elevation
 					pixel_values[x] = get_extreme(peaks, true,2,'z');
 					break;
@@ -322,6 +321,75 @@ void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds
 					avg = get_mean(peaks, 1,'a');
 					dev = get_deviation(peaks, avg, 1, 'a');
 					pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'a',4);
+					break;
+				case 37 : //max all width
+					pixel_values[x] = get_extreme(peaks, true,2,'w');
+					break;
+				case 38 : //min all width
+					pixel_values[x] = get_extreme(peaks, false,2,'w');
+					break;
+				case 39: //mean all width
+					pixel_values[x] = get_mean(peaks,2,'w');
+					break;
+				case 40: //std-dev all width
+					avg = get_mean(peaks, 2,'w');
+					pixel_values[x] = get_deviation(peaks, avg, 2, 'w');
+					break;
+				case 41: //skewness all width
+					avg = get_mean(peaks, 2,'w');
+					dev = get_deviation(peaks, avg, 2, 'w');
+					pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'w',3);
+					break;
+				case 42: //kurtosis all width
+					avg = get_mean(peaks, 2,'w');
+					dev = get_deviation(peaks, avg, 2, 'w');
+					pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'w',4);
+					break;
+				case 43: //max first width
+					pixel_values[x] = get_extreme(peaks, true,0,'w');
+					break;
+				case 44: //min first width
+					pixel_values[x] = get_extreme(peaks, false,0,'w');
+					break;
+				case 45 : //mean first width
+					pixel_values[x] = get_mean(peaks,0,'w');
+					break;
+				case 46: //std-dev first width
+					avg = get_mean(peaks, 0,'w');
+					pixel_values[x] = get_deviation(peaks, avg, 0, 'w');
+					break;
+				case 47: //skewness first width
+					avg = get_mean(peaks, 0,'w');
+					dev = get_deviation(peaks, avg, 0, 'w');
+					pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'w',3);
+					break;
+				case 48: //kurtosis first width
+					avg = get_mean(peaks, 0,'w');
+					dev = get_deviation(peaks, avg, 0, 'w');
+					pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'w',4);
+					break;
+				case 49: //max last width
+					pixel_values[x] = get_extreme(peaks, true,1,'w');
+					break;
+				case 50: //min last width
+					pixel_values[x] = get_extreme(peaks, false,1,'w');
+					break;
+				case 51: //mean last width
+					pixel_values[x] = get_mean(peaks,1,'w');
+					break;
+				case 52: //std-dev last width
+					avg = get_mean(peaks, 1,'w');
+					pixel_values[x] = get_deviation(peaks, avg, 1, 'w');
+					break;
+				case 53: //skewness last width
+					avg = get_mean(peaks, 1,'w');
+					dev = get_deviation(peaks, avg, 1, 'w');
+					pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'w',3);
+					break;
+				case 54: //kurtosis last width
+					avg = get_mean(peaks, 1,'w');
+					dev = get_deviation(peaks, avg, 1, 'w');
+					pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'w',4);
 					break;
 				default:
 					//std::cout << "Product #" << prod_id << " not implemented" << std::endl;
@@ -537,6 +605,8 @@ float LidarDriver::get_peak_property(Peak *peak, char peak_property){
 			return peak->z_activation;
 		case 'a':
 			return peak->amp;
+		case 'w':
+			return peak->fwhm;
 		default:
 			break;
 	}

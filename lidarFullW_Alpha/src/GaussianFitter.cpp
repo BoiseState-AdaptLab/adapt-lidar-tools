@@ -297,6 +297,10 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   //Figure out how many peaks there are
   size_t peakCount = results->size();
 
+  if (peakCount==0){
+  	return 0;
+  }
+
   // FOR TESTING PURPOSES
   // fprintf(stderr, "Peak count is %d\n", peakCount);
 
@@ -347,6 +351,9 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   }
 
   //Clear results so we can use the gaussian fitter method
+//	for (int i = 0; i < results->size(); i++) {
+//		delete(&results[i]);
+//	}
   results->clear();
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES

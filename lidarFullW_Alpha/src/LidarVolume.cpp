@@ -88,6 +88,17 @@ void LidarVolume::deallocateMemory(){
 	for(y_idx=0;y_idx<y_idx_extent;y_idx++){
 		for(x_idx=0;x_idx<x_idx_extent;x_idx++){
 			if(volume[position(y_idx,x_idx)] != NULL){
+
+//				for (std::vector<Peak>::iterator it = volume[position(y_idx,x_idx)]->begin() ; it != volume[position
+//				(y_idx,x_idx)]->end();++it)
+//				{
+//					delete (&*it);
+//					volume[position(y_idx,x_idx)]->erase(it);
+//
+//				}
+//				for (int i = volume[position(y_idx,x_idx)]->size()-1; i >=0 ; i--) {
+//					delete(volume[position(y_idx,x_idx)][i].data());
+//				}
 				volume[position(y_idx,x_idx)]->clear();
 				delete(volume[position(y_idx,x_idx)]);
 			}

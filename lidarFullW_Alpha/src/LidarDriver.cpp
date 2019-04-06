@@ -155,7 +155,7 @@ int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, Gaussia
 		                               pulse.returningIdx);
 	}
 
-	return 1;
+	return peak_count;
 }
 
 /**

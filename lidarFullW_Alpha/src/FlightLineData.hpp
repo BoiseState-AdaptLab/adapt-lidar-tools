@@ -65,6 +65,7 @@ class FlightLineData{
     int calc_xyz_activation(std::vector<Peak> *peaks);
     void split_description(std::string s);
 	void closeFlightLineData(void);
+	int parse_for_UTM_value(std::string input);
 
   private:
     PULSEreadOpener pOpener;

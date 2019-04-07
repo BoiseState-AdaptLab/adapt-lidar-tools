@@ -94,7 +94,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, b
         std::cerr << "Pass: " << fitter.get_pass() << std::endl;
         std::cerr << "Fail: " << fitter.get_fail() << std::endl;
 #endif
-
+raw_data.closeFlightLineData();
 }
 
 /**

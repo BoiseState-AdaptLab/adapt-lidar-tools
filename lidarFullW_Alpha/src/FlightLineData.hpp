@@ -64,6 +64,7 @@ class FlightLineData{
     void getNextPulse(PulseData* pd);;
     int calc_xyz_activation(std::vector<Peak> *peaks);
     void split_description(std::string s);
+	void closeFlightLineData(void);
 
   private:
     PULSEreadOpener pOpener;

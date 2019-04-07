@@ -59,7 +59,7 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
   
-  geoascii_params = pReader->header.geoascii_params;
+  geoascii_params = pReader->header.geoascii_params; //invalid read error?
   
   // Vector of string to save tokens 
   std::vector <std::string> tokens; 
@@ -131,7 +131,6 @@ void FlightLineData::setFlightLineData(std::string fileName){
   // TODO: FIXME!!
         exit(EXIT_FAILURE);
   }
-
 }
 
 // Write instrument information to a CSV
@@ -346,4 +345,8 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
   return peaks->size();
 }
 
+void FlightLineData::closeFlightLineData(){
+	pReader->close(true);
+	delete pReader;
+}
 

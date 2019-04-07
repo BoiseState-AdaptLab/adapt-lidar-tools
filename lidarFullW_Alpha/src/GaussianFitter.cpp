@@ -432,7 +432,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
         peak->position_in_wave = i+1;
         //add the peak to our result
         results->push_back(*peak);
-        delete(peak);
+       // delete(peak);
       }
       results->back().is_final_peak=true; //mark the last peak as final
     }
@@ -668,7 +668,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
     peak->location = idxData[peak_guesses_loc[i]];
     peak->fwhm = guess;
     results->push_back(*peak);
-    delete(peak);
+   // delete(peak);
   }
 
   // FOR TESTING PURPOSES

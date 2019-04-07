@@ -2,10 +2,6 @@
 // Created on: 09-November-2017
 // Author: ravi
 
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <obstack.h>
 #include "FlightLineData.hpp"
 
 //Default constructor
@@ -85,8 +81,9 @@ void FlightLineData::setFlightLineData(std::string fileName){
   }
   for (int i = 0; i<token_size;i++){
 	  if(tokens[i].find("WGS")!=std::string::npos||tokens[i].find("NAD")!=std::string::npos){
-		  geog_cs = tokens[i];
-		  break;
+		 tokens[i].erase(std::remove(tokens[i].begin(),tokens[i].end(),' '),tokens[i].end());
+		 geog_cs = tokens[i];
+		 break;
 	  }
   }
 

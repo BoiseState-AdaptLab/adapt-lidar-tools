@@ -13,6 +13,12 @@
 #include "PulseData.hpp"
 #include "Peak.hpp"
 #include "WaveGPSInformation.hpp"
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <obstack.h>
+#include <algorithm>
+
 
 class FlightLineData{
 

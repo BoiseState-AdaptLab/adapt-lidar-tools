@@ -75,11 +75,10 @@ void FlightLineData::setFlightLineData(std::string fileName){
   while(getline(geo_stream, intermediate, '/')){ 
       tokens.push_back(intermediate);
       token_size++;
-  } 
-  int found;
+  }
+
   for (int i =0; i<token_size;i++){
-  	found = tokens[i].find("UTM");
-	if(found!=std::string::npos){
+	if(tokens[i].find("UTM")!=std::string::npos){
 		utm_str = tokens[i];
 		break;
 	}

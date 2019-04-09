@@ -297,6 +297,10 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   //Figure out how many peaks there are
   size_t peakCount = results->size();
 
+  if (peakCount==0){
+  	return 0;
+  }
+
   // FOR TESTING PURPOSES
   // fprintf(stderr, "Peak count is %d\n", peakCount);
 
@@ -347,6 +351,9 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   }
 
   //Clear results so we can use the gaussian fitter method
+//	for (int i = 0; i < results->size(); i++) {
+//		delete(&results[i]);
+//	}
   results->clear();
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -376,9 +383,6 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       Peak* peak = new Peak();
       peak->amp = gsl_vector_get(x,3*i+ 0);
       peak->location = gsl_vector_get(x,3*i+ 1);
-      // TODO: should this be incremented in the event the peak is below the noise level?
-      peak->position_in_wave = i+1;//set the peak position
-      i==peakCount-1 ? peak->is_final_peak = true : peak->is_final_peak = false;
       double c = gsl_vector_get(x,3*i+ 2);
 
       //calculate fwhm: full width at half maximum
@@ -424,9 +428,13 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
 			delete(peak);
         }
       else{
+      	//set the peak position in the wave
+        peak->position_in_wave = i+1;
         //add the peak to our result
         results->push_back(*peak);
+       // delete(peak);
       }
+      results->back().is_final_peak=true; //mark the last peak as final
     }
     #ifdef DEBUG
       // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -660,6 +668,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
     peak->location = idxData[peak_guesses_loc[i]];
     peak->fwhm = guess;
     results->push_back(*peak);
+   // delete(peak);
   }
 
   // FOR TESTING PURPOSES

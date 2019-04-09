@@ -2,9 +2,6 @@
 // Created on: 09-November-2017
 // Author: ravi
 
-#include <iostream>
-#include <sstream>
-#include <string>
 #include "FlightLineData.hpp"
 
 //Default constructor
@@ -59,7 +56,7 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
   
-  geoascii_params = pReader->header.geoascii_params;
+  geoascii_params = pReader->header.geoascii_params; //invalid read error?
   
   // Vector of string to save tokens 
   std::vector <std::string> tokens; 
@@ -69,24 +66,42 @@ void FlightLineData::setFlightLineData(std::string fileName){
       
   std::string intermediate; 
       
-  // Tokenizing w.r.t. '/' 
+  // Tokenizing w.r.t. '/'
+  int token_size =0;
   while(getline(geo_stream, intermediate, '/')){ 
-      tokens.push_back(intermediate); 
-  } 
-      
-  utm_str = tokens[0];
+      tokens.push_back(intermediate);
+      token_size++;
+  }
+
+  for (int i =0; i<token_size;i++){
+	if(tokens[i].find("UTM")!=std::string::npos){
+		utm_str = tokens[i];
+		break;
+	}
+  }
+  for (int i = 0; i<token_size;i++){
+	  if(tokens[i].find("WGS")!=std::string::npos||tokens[i].find("NAD")!=std::string::npos){
+		 tokens[i].erase(std::remove(tokens[i].begin(),tokens[i].end(),' '),tokens[i].end());
+		 geog_cs = tokens[i];
+		 break;
+	  }
+  }
+
+//  utm_str = tokens[0];
   
   // Parsing UTM string to get an int 
-  std::stringstream temp_s1(tokens[0]); 
-  std:: string temp;  
-  //Tokenizing w.r.t. ' '
-  while(getline(temp_s1, intermediate, ' ')){ 
-      temp = intermediate; 
-  } 
-  std::stringstream temp_s2(temp);
-  temp_s2 >> utm;
+//  std::stringstream temp_s1(tokens[0]);
+//  std:: string temp;
+//  //Tokenizing w.r.t. ' '
+//  while(getline(temp_s1, intermediate, ' ')){
+//      temp = intermediate;
+//  }
+//  std::stringstream temp_s2(temp);
+//  temp_s2 >> utm;
 
-  geog_cs = tokens[1];
+//  geog_cs = tokens[1];
+
+  utm = parse_for_UTM_value(utm_str);
 
   //std::cout << "utm_str: " << utm_str << std::endl;
   //std::cout << "utm: " << utm << std::endl;
@@ -131,7 +146,6 @@ void FlightLineData::setFlightLineData(std::string fileName){
   // TODO: FIXME!!
         exit(EXIT_FAILURE);
   }
-
 }
 
 // Write instrument information to a CSV
@@ -346,4 +360,30 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
   return peaks->size();
 }
 
+void FlightLineData::closeFlightLineData(){
+	pReader->close(true);
+	delete pReader;
+}
 
+int FlightLineData::parse_for_UTM_value(std::string input){
+	std::stringstream stream;
+	std::string temp;
+	int utm;
+	bool UTM_found=false;
+	stream << input;
+
+	while(!stream.eof() ){
+		stream >> temp;
+		if(UTM_found){
+			if(std::stringstream(temp)>>utm){
+				return utm;
+			}
+		}
+		if(temp=="UTM"){
+			UTM_found=true;
+		}
+	}
+	std::cerr << "valid UTM value not found\n"<< std::endl;
+	exit (EXIT_FAILURE);
+
+}

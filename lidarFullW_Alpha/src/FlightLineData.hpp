@@ -13,6 +13,12 @@
 #include "PulseData.hpp"
 #include "Peak.hpp"
 #include "WaveGPSInformation.hpp"
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <obstack.h>
+#include <algorithm>
+
 
 class FlightLineData{
 
@@ -64,6 +70,8 @@ class FlightLineData{
     void getNextPulse(PulseData* pd);;
     int calc_xyz_activation(std::vector<Peak> *peaks);
     void split_description(std::string s);
+	void closeFlightLineData(void);
+	int parse_for_UTM_value(std::string input);
 
   private:
     PULSEreadOpener pOpener;

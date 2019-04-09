@@ -96,6 +96,8 @@ def writeData(tif, path):
 
   print ("\nData written to {}".format(path + tif.file_name[:-4] + ".out"))
 
+
+
 def compareData(tifA, tifB, path, compare_no):
   print ("Writing comparison to file", end="")
   A = 0
@@ -120,7 +122,12 @@ def compareData(tifA, tifB, path, compare_no):
   text = []
   #Store all differences and percent differences
   difs, pct_difs = [], []
-
+  5_perc=0
+  10_perc=0
+  25_perc=0
+  50_perc=0
+  75_perc=0
+  100_perc=0
   #Begin comparison
   #Cycle through the data for each y value
   for y in range(maxY + 1):
@@ -149,7 +156,23 @@ def compareData(tifA, tifB, path, compare_no):
         #Record difference and percent difference
         difs.append(float(a) - float(b))
         #TODO: Record percent difference and check if they are above certain threshholds
-        pct_difs.append(0)
+        pct=abs((a-b)/min.(a,b)) 
+        pct_difs.append(pct)
+
+        if pct >= .05:
+          5_perc++
+          if pct >= .1:
+            10_perc++
+            if pct >= .25:
+              25_perc++
+              if pct >= .5:
+                50_perc++
+                if pct >= .75:
+                  75_perc++
+                  if pct >= 1:
+                    100_perc++
+
+
       elif a != nvA and b == nvB:
         #Just A
         raw.write("[{}|NA]".format(a))
@@ -175,7 +198,7 @@ def compareData(tifA, tifB, path, compare_no):
   
   #Write statistics about the data as a whole to the 'simple' file
   #Average values for each file
-  simple.write("A Average: {}\nB Average: {}\n".format(
+  simple.wite("A Average: {}\nB Average: {}\n".format(
                tifA.getAvg(-1), tifB.getAvg(-1)))
   #Average difference and percent difference
   avg_dif = "n/a" if len(difs) == 0 else sum(difs)/len(difs)
@@ -183,6 +206,10 @@ def compareData(tifA, tifB, path, compare_no):
   simple.write("Average Difference (A - B): {}\n".format(avg_dif))
   simple.write("Average Percent Difference: {}%\n".format(avg_pct_dif*100))
   #TODO: write percent difference counts into file
+  simple.write("Percent differences greater than:\n")
+  simple.write("5%: {}\n10%: {}\n25%: {}".format(5_perc, 10_perc, 25_perc))
+  #do the rest of the percertages
+  simple.write("50%: {}\n75%: {}\n100%: {}".format(50_perc, 75_perc, 100_perc))
   #Write all the stored text to the 'simple' file
   for txt in text:
     simple.write(txt)

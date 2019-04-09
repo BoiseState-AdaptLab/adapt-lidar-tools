@@ -11,18 +11,21 @@ using namespace std;
 //off by one to
 // match
 // index to product ID
-static std::string product_desc[37] = {"", "max_all_elev", "min_all_elev", "mean_all_elev", "sd_all_elev",
-                                       "skew_all_elev",
-                                       "kurt_all_elev", "max_first_elev", "min_first_elev", "mean_first_elev",
-                                       "sd_first_elev", "skew_first_elev", "kurt_first_elev",
+static std::string product_desc[55] = {"", "max_all_elev", "min_all_elev", "mean_all_elev", "sd_all_elev",
+                                       "skew_all_elev","kurt_all_elev", "max_first_elev", "min_first_elev",
+                                       "mean_first_elev", "sd_first_elev", "skew_first_elev", "kurt_first_elev",
                                        "max_last_elev", "min_last_elev", "mean_last_elev",
                                        "sd_last_elev", "skew_last_elev", "kurt_last_elev",
                                        "max_all_amp", "min_all_amp", "mean_all_amp",
                                        "sd_all_amp", "skew_all_amp", "kurt_all_amp", "max_first_amp",
                                        "min_first_amp", "mean_first_amp", "sd_first_amp",
                                        "skew_first_amp", "kurt_first_amp", "max_last_amp", "min_last_amp",
-                                       "mean_last_amp",
-                                       "sd_last_amp", "skew_last_amp", "kurt_last_amp"};
+                                       "mean_last_amp", "sd_last_amp", "skew_last_amp", "kurt_last_amp",
+                                       "max_all_width", "min_all_width", "mean_all_width", "sd_all_width",
+		                               "skew_all_width","kurt_all_width", "max_first_width", "min_first_width",
+		                               "mean_first_width", "sd_first_width", "skew_first_width", "kurt_first_width",
+		                               "max_last_width", "min_last_width", "mean_last_width",
+		                               "sd_last_width", "skew_last_width", "kurt_last_width"};
 
 
 /****************************************************************************
@@ -105,6 +108,7 @@ void CmdLine::parse(int argc,char *argv[]){
       {"firstdiff", no_argument, NULL, 'd'},
       {"elevation", required_argument,NULL,'e'},
       {"amplitude", required_argument,NULL,'a'},
+      {"width", required_argument,NULL,'w'},
       {0, 0, 0, 0}
   };
 
@@ -114,7 +118,7 @@ void CmdLine::parse(int argc,char *argv[]){
    * ":hf:s:" indicate that option 'h' is without arguments while
    * option 'f' and 's' require arguments
    */
-  while((optionChar = getopt_long (argc, argv, ":hdf:e:a:",
+  while((optionChar = getopt_long (argc, argv, ":hdf:e:a:w:",
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information
@@ -163,6 +167,30 @@ void CmdLine::parse(int argc,char *argv[]){
 				    arg = 18 + atoi(substr.c_str());
 			    } catch (std::invalid_argument e) {
 			    	std::cout << "\nProduct list could not be converted into integers" <<std::endl;
+				    std::cout << "-------------------------" <<std::endl;
+				    printUsageMessage = true;
+				    break;
+			    }
+
+			    //Just making sure it doesn't try pushing broken data to selected_products
+			    if (printUsageMessage) {
+				    break;
+			    }
+			    selected_products.push_back(arg);
+		    }
+		    break;
+	    }
+	    case 'w':  {// Without curly braces wrapping this case, there are compilation errors
+		    e_arg = optarg;
+		    std::stringstream ss(e_arg);
+		    while(ss.good()) {
+			    string substr;
+			    getline(ss, substr, ',');
+			    int arg;
+			    try {
+				    arg = 36 + atoi(substr.c_str());
+			    } catch (std::invalid_argument e) {
+				    std::cout << "\nProduct list could not be converted into integers" <<std::endl;
 				    std::cout << "-------------------------" <<std::endl;
 				    printUsageMessage = true;
 				    break;

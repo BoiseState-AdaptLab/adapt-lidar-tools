@@ -122,12 +122,12 @@ def compareData(tifA, tifB, path, compare_no):
   text = []
   #Store all differences and percent differences
   difs, pct_difs = [], []
-  5_perc=0
-  10_perc=0
-  25_perc=0
-  50_perc=0
-  75_perc=0
-  100_perc=0
+  five_perc=0
+  ten_perc=0
+  twentyFive_perc=0
+  fifty_perc=0
+  seventyFive_perc=0
+  oneHundred_perc=0
   #Begin comparison
   #Cycle through the data for each y value
   for y in range(maxY + 1):
@@ -160,17 +160,17 @@ def compareData(tifA, tifB, path, compare_no):
         pct_difs.append(pct)
 
         if pct >= .05:
-          5_perc++
+          five_perc++
           if pct >= .1:
-            10_perc++
+            ten_perc++
             if pct >= .25:
-              25_perc++
+              twentyFive_perc++
               if pct >= .5:
-                50_perc++
+                fifty_perc++
                 if pct >= .75:
-                  75_perc++
+                  seventyFive_perc++
                   if pct >= 1:
-                    100_perc++
+                    oneHundred_perc++
 
 
       elif a != nvA and b == nvB:

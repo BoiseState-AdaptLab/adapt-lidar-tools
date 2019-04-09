@@ -130,13 +130,14 @@ class Tif:
     #Height of each line of the legend is the image height / 30
     line_h = math.floor(data_h / 30)
     #Create font
-    font_type = "times-new-roman.ttf"
+    font_type = __file__[:-len("tif.py")] + "times-new-roman.ttf"
+    print (font_type)
     font = ImageFont.truetype(font_type, line_h)
     #Width of the legend is the width of the text * 2 for the gradient
     test_text = "  " + min_str + max_str
     legend_w = font.getsize(test_text)[0] * 2
-    #Height of the legend is one line + .4 for two spaces
-    legend_h = math.floor(line_h * 1.4)
+    #Height of the legend is one line + 1.2 for 1 space
+    legend_h = math.floor(line_h * 2.2)
     #Append rows for the legend
     extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
     color_data = np.vstack((color_data, extra_rows))
@@ -158,7 +159,7 @@ class Tif:
     vert_offset = math.floor(font.getoffset(test_text)[1] / 2)
     #Write min value into image
     x_offset = 0 if data_w <= legend_w else math.floor((data_w - legend_w) / 2)
-    draw.text((x_offset, data_h + vert_space - vert_offset),
+    draw.text((x_offset, data_h + line_h - vert_offset),
               min_str + ' ', (0,0,0), font=font)
     #Draw color gradient into image
     x_offset += font.getsize(min_str + ' ')[0]
@@ -166,11 +167,11 @@ class Tif:
       #Get current color
       color = getHeatMapColor(colors, i / grad_len)
       #Draw a vertical line, width = 1px (1 col), height = legend height
-      draw.line((x_offset + i, data_h + vert_space, x_offset + i,
-                data_h + vert_space + line_h), fill=color)
+      draw.line((x_offset + i, data_h + line_h, x_offset + i,
+                data_h + (2 * line_h)), fill=color)
     #Write max value into image
     x_offset += i
-    draw.text((x_offset, data_h + vert_space - vert_offset),
+    draw.text((x_offset, data_h + line_h - vert_offset),
               ' ' + max_str, (0,0,0), font=font)
     #Save image
     img.save(path + self.file_name[:-4] + '.png')
@@ -203,7 +204,7 @@ class Tif:
       for x, (val1, val2) in enumerate(zip(vals1, vals2)):
         no_value1 = val1 == self.no_value
         no_value2 = val2 == tif2.no_value
-        #If neither has data, color is med gray
+        #If neither has data, color is white
         if no_value1 and no_value2:
           color_data[y, x] = [255,255,255]
         #If only A has data, color is blue
@@ -228,25 +229,26 @@ class Tif:
     #Height of each line of the legend is the image height / 30
     line_h = math.floor(data_h / 30)
     #Create font
-    font_type = "times-new-roman.ttf"
+    font_type = os.path.abspath(__file__) + "times-new-roman.ttf"
     font = ImageFont.truetype(font_type, line_h)
     #Get each line of text
-    text = ["0%  >100%", 
-            "Max Percent Difference: {}%".format(round(max_dif * 100, 2)),
-            " " + self.file_name, " " + tif2.file_name,
-            "Percent differences greater than:", 
-            "25%: {}  50%: {}  100%: {}".format(1,2,3)]
+    text = ["0%  >100%"]#,
+            #"Max Percent Difference: {}%".format(round(max_dif * 100, 2)),
+            #" " + self.file_name, " " + tif2.file_name,
+            #"Percent differences greater than:", 
+            #"25%: {}  50%: {}  100%: {}".format(1,2,3)]
     #Find widths of each line of the legend
     line_w = [font.getsize(t)[0] for t in text]
     #Add space for difference gradient
     line_w[0] *= 2
-    #Add space for color key
-    line_w[2] += line_h
-    line_w[3] += line_h
+    #Add space for color key if included
+    #line_w[2] += line_h
+    #line_w[3] += line_h
     #Get greatest text width
     legend_w = max(line_w)
-    #Height of the legend is 6 lines + 1.3 for 6 1/2 spaces
-    legend_h = math.floor(line_h * 7.3)
+    #Height of the legend is 6 lines or 1 line
+    #+2.1 for 5 1/2 spaces or +1.2 for 1 space
+    legend_h = math.floor(line_h * 2.2)
     #Append rows for the legend
     extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
     color_data = np.vstack((color_data, extra_rows))
@@ -264,7 +266,7 @@ class Tif:
     #Get vertical spacing size
     vert_space = math.floor(line_h / 5)
     #Set vertical position
-    vert_pos = data_h + vert_space
+    vert_pos = data_h + line_h
     for i, item in enumerate(text):
       #Get vertical offset of text
       vert_offset = math.floor(font.getoffset(item)[1] / 2)

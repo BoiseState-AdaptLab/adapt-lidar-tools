@@ -71,7 +71,7 @@ def main(arg_set, path):
 def writeData(tif, path):
   #Go through each data point in the band
   #Print data to file
-  print ("Writing data to file", end="")
+  print ("Writing data to file", end='')
   #Create output file
   output = open(path + tif.file_name[:-4] + ".out", 'w')
   output.write("Max Y = {}\n\n".format(tif.maxY))
@@ -99,7 +99,7 @@ def writeData(tif, path):
 
 
 def compareData(tifA, tifB, path, compare_no):
-  print ("Writing comparison to file", end="")
+  print ("Writing comparison to file", end='')
   A = 0
   B = 1
   #Get smallest maxY
@@ -194,7 +194,7 @@ def compareData(tifA, tifB, path, compare_no):
                                                           result[3])
     text.append(temp)
     print ("\rWriting comparison to file {}%".format(
-             round(y*100/maxY)), end="")
+             round(y*100/maxY)), end='')
   
   #Write statistics about the data as a whole to the 'simple' file
   #Average values for each file
@@ -207,9 +207,9 @@ def compareData(tifA, tifB, path, compare_no):
   simple.write("Average Percent Difference: {}%\n".format(avg_pct_dif*100))
   #TODO: write percent difference counts into file
   simple.write("Percent differences greater than:\n")
-  simple.write("5%: {}\n10%: {}\n25%: {}".format(5_perc, 10_perc, 25_perc))
+  simple.write("5%: {}\n10%: {}\n25%: {}".format(five_perc, ten_perc, twentyFive_perc))
   #do the rest of the percertages
-  simple.write("50%: {}\n75%: {}\n100%: {}".format(50_perc, 75_perc, 100_perc))
+  simple.write("50%: {}\n75%: {}\n100%: {}".format(fifty_perc, seventyFive_perc,oneHundred_perc))
   #Write all the stored text to the 'simple' file
   for txt in text:
     simple.write(txt)

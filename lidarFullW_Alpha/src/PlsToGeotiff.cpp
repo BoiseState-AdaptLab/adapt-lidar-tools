@@ -1,6 +1,6 @@
-// File name: lidarDriver.cpp
-// Created on: 17-May-2017
-// Author: ravi
+// File name: PlsToGeotiff.cpp
+// Created on: March 2019
+// Author: Ravi, Ahmad, Spencer
 
 #include "LidarDriver.hpp"
 #include <chrono>

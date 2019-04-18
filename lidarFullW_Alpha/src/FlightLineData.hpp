@@ -47,6 +47,7 @@ class FlightLineData{
     double beam_divergence;
     double minimal_range;
     double maximal_range;
+
     std::string geoascii_params;
     std::string utm_str;
     std::string geog_cs;
@@ -69,7 +70,6 @@ class FlightLineData{
     bool hasNextPulse();
     void getNextPulse(PulseData* pd);;
     int calc_xyz_activation(std::vector<Peak> *peaks);
-    void split_description(std::string s);
 	void closeFlightLineData(void);
 	int parse_for_UTM_value(std::string input);
 

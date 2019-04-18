@@ -40,21 +40,9 @@ class LidarVolume{
     double max_z;
     double min_z;
 
-	double no_data;
-    double min_elev;
-
     //extent of x, y, and z as calculated from the pulse data (max - min)
     int x_idx_extent;
     int y_idx_extent;
-
-    //number of peaks to be saved into
-    int numOfPeaks;
-
-    //current position in peaks array
-    int currentPeak;
-
-    //The raw raster data
-    int* raster;
 
     std::vector<Peak>** volume;
 
@@ -71,24 +59,10 @@ class LidarVolume{
     int gps_to_voxel_x(double x);
     int gps_to_voxel_y(double y);
 
-    void rasterize();
-    void rasterizeMaxElevation();
-    void rasterizeMinElevation();
-    int elev_high, elev_low;
-    
-    void display();
-
-
-    int toTif(std::string outputFilename, std::string geog_cs, int utm);
-
-
     // This takes the float value 'val', converts it to red, green &
     // blue values, then sets those values into the image memory buffer
     // location pointed to by 'ptr'
     void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val);
-
-    void writeImage(std::string outputFilename, std::string geog_cs, int utm);
-
 };
 
 

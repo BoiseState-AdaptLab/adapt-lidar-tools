@@ -11,7 +11,7 @@ using namespace std;
 //off by one to
 // match
 // index to product ID
-static std::string product_desc[55] = {"", "max_all_elev", "min_all_elev", "mean_all_elev", "sd_all_elev",
+const static std::string product_desc[55] = {"", "max_all_elev", "min_all_elev", "mean_all_elev", "sd_all_elev",
                                        "skew_all_elev","kurt_all_elev", "max_first_elev", "min_first_elev",
                                        "mean_first_elev", "sd_first_elev", "skew_first_elev", "kurt_first_elev",
                                        "max_last_elev", "min_last_elev", "mean_last_elev",

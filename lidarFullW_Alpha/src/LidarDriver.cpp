@@ -4,8 +4,6 @@
 
 #include "LidarDriver.hpp"
 
-const double NO_DATA = -99999.99;
-const double MAX_ELEV = 99999.99;
 
 /**
  * setup the gdal dataset (file) with metadata
@@ -162,9 +160,8 @@ int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, Gaussia
  * write the fitted lidar volume data to the given GDAL dataset
  * @param fitted_data the populated lidar volume
  * @param gdal_ds pointer to a prepared dataset to populate
- * @param prod_id the id (type) of the product to generate
+ * @param prod_id the id (product type) of the product to generate
  */
-
 void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id) {
 	CPLErr retval;
 	//indexes
@@ -486,6 +483,7 @@ float LidarDriver::get_extreme_diff(std::vector<Peak> *peaks, char peak_property
 
 	return max_val - min_val;
 }
+
 
 /**
  * get the extreme (max/min) value from a set of peaks, specify the property and peak position (first, last, all)

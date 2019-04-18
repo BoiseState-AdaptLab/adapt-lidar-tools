@@ -619,6 +619,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
   size_t peakCount = peak_guesses_loc.size();
 
   int j;
+  int peaks_found=0;
   for(int i=0; i< peakCount; i++){
     // Create a better guess by using a better width
     int guess = -1;
@@ -661,16 +662,17 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
       " width:" << guess <<std::endl;
     #endif
      if(guess > 20){guess = 10;}
-      
+	  peaks_found++;
     //Create a peak
     Peak* peak = new Peak();
     peak->amp = ampData[peak_guesses_loc[i]];
     peak->location = idxData[peak_guesses_loc[i]];
     peak->fwhm = guess;
+    peak->position_in_wave = peaks_found;
     results->push_back(*peak);
-   // delete(peak);
-  }
 
+  }
+	results->back().is_final_peak=true;
   // FOR TESTING PURPOSES
   // std::cerr << std::endl << "Guesses: \n";
   // for(int i=0;i<peak_guesses_loc.size();i++){

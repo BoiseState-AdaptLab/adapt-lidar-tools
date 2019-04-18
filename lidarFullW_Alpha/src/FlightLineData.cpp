@@ -55,30 +55,41 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_x_max = pReader->header.max_x;
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
-  
-  geoascii_params = pReader->header.geoascii_params; //invalid read error?
-  
+
+
+  geoascii_params = pReader->header.geoascii_params;
+
   // Vector of string to save tokens 
   std::vector <std::string> tokens; 
      
   // use stringstream to parse
-  std::stringstream geo_stream(geoascii_params); 
-      
-  std::string intermediate; 
-      
-  // Tokenizing w.r.t. '/'
-  int token_size =0;
-  while(getline(geo_stream, intermediate, '/')){ 
-      tokens.push_back(intermediate);
-      token_size++;
-  }
+  std::stringstream geo_stream(geoascii_params);
 
+  int token_size =0;
+
+  std::string intermediate;
+  std::string final;
+  //TODO: This needs to be extracted to a method so that it can be tested
+
+
+  // Tokenizing w.k.t. '/'
+  while(getline(geo_stream, intermediate, '/')){
+	  std::stringstream ss_int(intermediate);
+      while(getline(ss_int,final,'|')){
+	      tokens.push_back(final);
+      }
+
+  }
+  token_size= tokens.size();
+
+	//TODO: This needs to be extracted to a method as well
   for (int i =0; i<token_size;i++){
 	if(tokens[i].find("UTM")!=std::string::npos){
 		utm_str = tokens[i];
 		break;
 	}
   }
+  //TODO: extract to method
   for (int i = 0; i<token_size;i++){
 	  if(tokens[i].find("WGS")!=std::string::npos||tokens[i].find("NAD")!=std::string::npos){
 		 tokens[i].erase(std::remove(tokens[i].begin(),tokens[i].end(),' '),tokens[i].end());
@@ -86,22 +97,7 @@ void FlightLineData::setFlightLineData(std::string fileName){
 		 break;
 	  }
   }
-
-//  utm_str = tokens[0];
-  
-  // Parsing UTM string to get an int 
-//  std::stringstream temp_s1(tokens[0]);
-//  std:: string temp;
-//  //Tokenizing w.r.t. ' '
-//  while(getline(temp_s1, intermediate, ' ')){
-//      temp = intermediate;
-//  }
-//  std::stringstream temp_s2(temp);
-//  temp_s2 >> utm;
-
-//  geog_cs = tokens[1];
-
-  utm = parse_for_UTM_value(utm_str);
+	utm = parse_for_UTM_value(utm_str);
 
   //std::cout << "utm_str: " << utm_str << std::endl;
   //std::cout << "utm: " << utm << std::endl;
@@ -365,6 +361,12 @@ void FlightLineData::closeFlightLineData(){
 	delete pReader;
 }
 
+
+/**
+ * search for UTM in a string, extract the integer value following it
+ * @param input a string containing the UTM
+ * @return the integer value following the UTM characters
+ */
 int FlightLineData::parse_for_UTM_value(std::string input){
 	std::stringstream stream;
 	std::string temp;
@@ -383,7 +385,4 @@ int FlightLineData::parse_for_UTM_value(std::string input){
 			UTM_found=true;
 		}
 	}
-	std::cerr << "valid UTM value not found\n"<< std::endl;
-	exit (EXIT_FAILURE);
-
 }

@@ -7,20 +7,67 @@
 #include "Peak.hpp"
 #include <math.h>
 
+#define INPUT_TYPICAL \
+"2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 "\
+"79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 "\
+"2 1 1 1"
+
+#define INPUT_RISING \
+"1 1 2 3 3 4 5 6 6 7 8 9 9 10 20 20 30 40 50 50 53 58 60 62 64 68 70 80 90 "\
+"100 120 145 156 178 194 200 213 219 219 220 220 230 230 259 459 500 560 600 "\
+"612 630 640"
+
+#define INPUT_FALLING \
+"800 800 700 700 600 600 590 590 580 580 580 540 420 420 420 419 419 419"\
+"419 412 394 320 219 218 217 217 216 216 202 199 189 187 179 178 175 174 "\
+"140 120 80 50 40 30 20 10 5 2 2 2 2 2 1 1 1 0"\
+
+#define INPUT_CONST "70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 "\
+"70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 "\
+"70 70 70 70 70 70 70 70"
+
 class LidarDriverTest: public testing::Test{
 public:
-	std::vector<PulseData*> pulses;
-	PulseData* pd;
+    std::vector<PulseData*> pulses;
+    PulseData* pd;
 
 protected:
 
+    //Strings can be shorter than 100 but not more
+    char *typicalInput;
+    char *risingInput;
+    char *fallingInput;
+    char *constantInput;
 
-	char** commonArgSpace;
-	int numberOfArgs;
-	int maxLengthOfArg;
-	LidarDriver driver1;
-	LidarDriver driver2;
-	LidarDriver driver3;
+    char** commonArgSpace;
+    int numberOfArgs;
+    int maxLengthOfArg;
+    LidarDriver driver1;
+    LidarDriver driver2;
+    LidarDriver driver3;
+
+    void SetUp() override {
+        typicalInput = (char*) malloc(sizeof(char) * 101);
+        risingInput = (char*) malloc(sizeof(char) * 101);
+        fallingInput = (char*) malloc(sizeof(char) * 101);
+        constantInput = (char*) malloc(sizeof(char) * 101); //extra 1 for \0 character
+
+        strncpy(typicalInput, INPUT_TYPICAL, 101);
+        typicalInput[100] = '\0';
+        strncpy(risingInput, INPUT_RISING, 101);
+        risingInput[100] = '\0';
+        strncpy(fallingInput, INPUT_FALLING, 101);
+        fallingInput[100] = '\0';
+        strncpy(constantInput, INPUT_CONST, 101);
+        constantInput[100] = '\0';
+    }
+
+    void TearDown() override {
+        free(typicalInput);
+        free(risingInput);
+        free(fallingInput);
+        free(constantInput);
+    }
 };
 
 
@@ -31,26 +78,26 @@ protected:
 ******************************************************************************/
 TEST_F(LidarDriverTest, get_z_activation_max_test){
 
-	std::vector<Peak> peaks;
+    std::vector<Peak> peaks;
 
-	char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
-				"139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+            "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-	char* ptr;
-	ptr = strtok (input," ");
-	int i=0;
-	while (ptr != NULL){
-		int z0 = atoi(ptr);
-		Peak p;
-		p.z_activation = z0;
-		peaks.push_back(p);
-		i++;
-		ptr = strtok (NULL," ");
-	}
+    char* ptr;
+    ptr = strtok (input," ");
+    int i=0;
+    while (ptr != NULL){
+        int z0 = atoi(ptr);
+        Peak p;
+        p.z_activation = z0;
+        peaks.push_back(p);
+        i++;
+        ptr = strtok (NULL," ");
+    }
 
-	float val = driver1.get_extreme(&peaks,true,2,'z');
+    float val = driver1.get_extreme(&peaks,true,2,'z');
 
-	EXPECT_EQ(200.00,val);
+    EXPECT_EQ(200.00,val);
 
 }
 

@@ -203,7 +203,7 @@ $(OBJ)/PlsToGeotiff.o: $(SRC)/PlsToGeotiff.cpp
 
 # Runs all tests
 test: $(TESTS)
-	#clear
+	clear
 	-$(BIN)/CmdLine_unittests
 	-$(BIN)/WaveGPSInformation_unittests
 	-$(BIN)/LidarVolume_unittests

@@ -128,3 +128,95 @@ TEST_F(FlightLineDataTest, testGetNextPulse){
 
 }
 
+/****************************************************************************
+*
+* Given the known values of the actual geoascii_params, make sure we
+* can parse it
+*
+****************************************************************************/
+TEST_F(FlightLineDataTest, testGeoAsciiParsing){
+
+	FlightLineData fld;
+	std::stringstream geoascii_params(" UTM 11 / NAD 83|UTM 11| NAD 83 ");
+	std::vector<std::string> tokens;
+	fld.tokenize_geoascii_params_to_vector( &geoascii_params,&tokens);
+	EXPECT_EQ(tokens.size(),4);
+	EXPECT_EQ(tokens.at(0),"UTM 11");
+	EXPECT_EQ(tokens.at(1),"NAD 83");
+	EXPECT_EQ(tokens.at(2),"UTM 11");
+	EXPECT_EQ(tokens.at(3),"NAD 83");
+}
+
+/****************************************************************************
+*
+* Given a vector of strings, see if we find the UTM string index
+*
+****************************************************************************/
+TEST_F(FlightLineDataTest, testUTMParsing){
+
+	FlightLineData fld;
+	std::vector<std::string> tokens;
+	tokens.push_back("UTM 11");
+	tokens.push_back("NAD 83");
+	tokens.push_back("WGS 84");
+	tokens.push_back("UTM 11");
+	int idx = fld.locate_utm_field( &tokens);
+	EXPECT_EQ(idx,0);
+
+}
+
+/****************************************************************************
+*
+* Given a vector of strings, see if we can find the geog_cs index
+*
+****************************************************************************/
+TEST_F(FlightLineDataTest, testGeogCSParsing){
+
+	FlightLineData fld;
+	std::vector<std::string> tokens;
+	tokens.push_back("UTM 11");
+	tokens.push_back("NAD 83");
+	tokens.push_back("WGS 84");
+	tokens.push_back("UTM 11");
+	int idx = fld.locate_geog_cs_field(&tokens);
+	EXPECT_EQ(idx,1);
+
+}
+
+
+/****************************************************************************
+*
+* Given a vector of strings with no UTM data, make sure we find none.
+*
+****************************************************************************/
+TEST_F(FlightLineDataTest, testUTMParsing_not_found){
+
+	FlightLineData fld;
+	std::vector<std::string> tokens;
+	tokens.push_back("UFL 11");
+	tokens.push_back("NAD 83");
+	tokens.push_back("WGS 84");
+	tokens.push_back("UPP 11");
+	int idx = fld.locate_utm_field( &tokens);
+	EXPECT_EQ(idx,-1);
+
+}
+
+/****************************************************************************
+*
+* Given a vectof of strings with no geog_cs data, make sure we find none.
+*
+****************************************************************************/
+TEST_F(FlightLineDataTest, testGeogCSParsing_not_found){
+
+	FlightLineData fld;
+	std::vector<std::string> tokens;
+	tokens.push_back("UTM 11");
+	tokens.push_back("UTM 12");
+	tokens.push_back("WND 12");
+	tokens.push_back("NPP 12");
+	tokens.push_back("OPP 10");
+	int idx = fld.locate_geog_cs_field(&tokens);
+	EXPECT_EQ(idx,-1);
+
+}

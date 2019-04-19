@@ -56,48 +56,35 @@ void FlightLineData::setFlightLineData(std::string fileName){
   bb_y_max = pReader->header.max_y;
   bb_z_max = pReader->header.max_z;
 
-
+  //TODO: Figure out how to use get_geoascii_params properly
   geoascii_params = pReader->header.geoascii_params;
 
-  // Vector of string to save tokens 
+  // Vector of string to save tokens
   std::vector <std::string> tokens; 
      
   // use stringstream to parse
   std::stringstream geo_stream(geoascii_params);
 
-  int token_size =0;
+  tokenize_geoascii_params_to_vector(&geo_stream,&tokens);
 
-  std::string intermediate;
-  std::string final;
-  //TODO: This needs to be extracted to a method so that it can be tested
-
-
-  // Tokenizing w.k.t. '/'
-  while(getline(geo_stream, intermediate, '/')){
-	  std::stringstream ss_int(intermediate);
-      while(getline(ss_int,final,'|')){
-	      tokens.push_back(final);
-      }
-
+  int utm_loc = locate_utm_field(&tokens);
+  if(utm_loc < 0){
+  	//no utm found, trouble!
+  	std::cerr << "CRITICAL ERROR! No UTM value found in PLS header!\n"<<std::endl;
+  	exit(EXIT_FAILURE);
   }
-  token_size= tokens.size();
+  utm_str = tokens[utm_loc];
 
-	//TODO: This needs to be extracted to a method as well
-  for (int i =0; i<token_size;i++){
-	if(tokens[i].find("UTM")!=std::string::npos){
-		utm_str = tokens[i];
-		break;
-	}
-  }
-  //TODO: extract to method
-  for (int i = 0; i<token_size;i++){
-	  if(tokens[i].find("WGS")!=std::string::npos||tokens[i].find("NAD")!=std::string::npos){
-		 tokens[i].erase(std::remove(tokens[i].begin(),tokens[i].end(),' '),tokens[i].end());
-		 geog_cs = tokens[i];
-		 break;
-	  }
-  }
+
 	utm = parse_for_UTM_value(utm_str);
+	int geog_cs_loc = locate_geog_cs_field(&tokens);
+	if(geog_cs_loc < 0){
+		//no geog_cs found, trouble!
+		std::cerr << "CRITICAL ERROR! No geog_cs (NAD/WGS) value found in PLS header!\n"<<std::endl;
+		exit(EXIT_FAILURE);
+	}
+	geog_cs = tokens.at(geog_cs_loc);
+
 
   //std::cout << "utm_str: " << utm_str << std::endl;
   //std::cout << "utm: " << utm << std::endl;
@@ -308,7 +295,12 @@ void FlightLineData::getNextPulse(PulseData *pd){
   return;
 }
 
-// Calculate x, y and z activation
+
+/**
+ * Calculate x, y and z activation
+ * @param peaks pointer to the peaks to calculate activations for
+ * @return the number of peaks left after calculation
+ */
 int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
 
   std::vector<Peak>::iterator it;
@@ -370,7 +362,7 @@ void FlightLineData::closeFlightLineData(){
 int FlightLineData::parse_for_UTM_value(std::string input){
 	std::stringstream stream;
 	std::string temp;
-	int utm;
+	int utm = 0;
 	bool UTM_found=false;
 	stream << input;
 
@@ -385,4 +377,63 @@ int FlightLineData::parse_for_UTM_value(std::string input){
 			UTM_found=true;
 		}
 	}
+	return utm;
+}
+
+/**
+ * tokenize the geoascii_parameters string from the PLS header
+ * @param geo_stream pointer to the geoascii_params stream from the PLS header
+ * @param tokens pointer to the vector to store results
+ */
+
+void FlightLineData::tokenize_geoascii_params_to_vector(std::stringstream *geo_stream, std::vector<std::string>
+        *tokens){
+	//TODO: This needs to be tested
+	std::string intermediate;
+	std::string final;
+
+
+	// Tokenizing w.k.t. on '/'
+	while(getline(*geo_stream, intermediate, '/')){
+		std::stringstream ss_int(intermediate);
+		while(getline(ss_int,final,'|')){
+			//remove whitespace at begin and end (trim) before pushing
+			size_t first = final.find_first_not_of(" \t");
+			size_t last = final.find_last_not_of(" \t");
+			final = final.substr(first,(last-first+1));
+			tokens->push_back(final);
+		}
+
+	}
+}
+
+/**
+ * find the UTM field in the tokenized geoascii parameters string
+ * @param tokens pointer to the tokenized representation of the geoascii parameters field
+ * @return the index of the UTM field, or -1 if no UTM field located
+ */
+int FlightLineData::locate_utm_field(std::vector<std::string> *tokens){
+	//TODO: This needs to be tested
+	for (int i =0; i< (int)tokens->size();i++){
+		if(tokens->at(i).find("UTM")!=std::string::npos){
+			return i;
+		}
+	}
+	//no utm value found
+	return -1;
+}
+
+/**
+ * find the geog_cs field in the tokenized geoascii parameters string
+ * @param tokens pointer to the tokenized representation of the geoascii parameters field
+ * @return the index of the geog_cs field, or -1 if no geog_cs field located
+ */
+int FlightLineData::locate_geog_cs_field(std::vector<std::string> *tokens){
+	for (int i = 0; i<(int)tokens->size();i++){
+		if(tokens->at(i).find("WGS")!=std::string::npos||tokens->at(i).find("NAD")!=std::string::npos){
+			return i;
+		}
+	}
+	//no geog_cs value found
+	return -1;
 }

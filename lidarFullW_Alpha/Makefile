@@ -203,13 +203,14 @@ $(OBJ)/PlsToGeotiff.o: $(SRC)/PlsToGeotiff.cpp
 
 # Runs all tests
 test: $(TESTS)
-	clear
+	#clear
 	-$(BIN)/CmdLine_unittests
 	-$(BIN)/WaveGPSInformation_unittests
 	-$(BIN)/LidarVolume_unittests
 	-$(BIN)/PulseData_unittests
 	-$(BIN)/GaussianFitter_unittests
 	-$(BIN)/LidarDriver_unittests
+	-$(BIN)/FlightLineData_unittests
 
 # Clean up when done. 
 # Removes all object, library and executable files

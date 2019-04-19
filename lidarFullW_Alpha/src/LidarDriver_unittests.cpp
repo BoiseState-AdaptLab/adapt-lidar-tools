@@ -46,7 +46,7 @@ protected:
     LidarDriver driver2;
     LidarDriver driver3;
 
-    void SetUp() override {
+    void SetUp() {
         typicalInput = (char*) malloc(sizeof(char) * 101);
         risingInput = (char*) malloc(sizeof(char) * 101);
         fallingInput = (char*) malloc(sizeof(char) * 101);
@@ -62,7 +62,7 @@ protected:
         constantInput[100] = '\0';
     }
 
-    void TearDown() override {
+    void TearDown() {
         free(typicalInput);
         free(risingInput);
         free(fallingInput);

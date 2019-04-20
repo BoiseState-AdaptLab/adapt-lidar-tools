@@ -15,13 +15,18 @@
  * @return a pointer to a GDALDataset object with the provided metadata
  */
 
-GDALDataset * LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver, std::string filename, std::string band_desc, int
-x_idx_extent, int y_idx_extent){
-	GDALDataset * gdal_ds;
-	gdal_ds = tiff_driver->Create(filename.c_str(), x_idx_extent, y_idx_extent, 1, GDT_Float32, NULL);
-	gdal_ds->GetRasterBand(1)->SetNoDataValue(NO_DATA);
-	gdal_ds->GetRasterBand(1)->SetDescription(band_desc.c_str());
-	return gdal_ds;
+GDALDataset* LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver,
+                                        std::string filename,
+                                        std::string band_desc,
+                                        int x_idx_extent, int y_idx_extent)
+{
+  GDALDataset * gdal_ds;
+  gdal_ds = tiff_driver->Create(filename.c_str(), x_idx_extent, y_idx_extent,
+                                1, GDT_Float32, NULL);
+  gdal_ds->GetRasterBand(1)->SetNoDataValue(NO_DATA);
+  gdal_ds->GetRasterBand(1)->SetDescription(band_desc.c_str());
+
+  return gdal_ds;
 }
 
 /**
@@ -29,8 +34,10 @@ x_idx_extent, int y_idx_extent){
  * @param data the FlightLineData object to store the raw data in
  * @param inputFileName the file name and path of the input file
  */
-void LidarDriver::setup_flight_data(FlightLineData &data, std::string inputFileName){
-	data.setFlightLineData(inputFileName);
+void LidarDriver::setup_flight_data(FlightLineData &data,
+                                    std::string inputFileName)
+{
+  data.setFlightLineData(inputFileName);
 }
 
 /**
@@ -39,28 +46,31 @@ void LidarDriver::setup_flight_data(FlightLineData &data, std::string inputFileN
  * @param fitted_data reference to LidarVolume object to store fit data in
  * @param useGaussianFitting flag to indicate fitting type
  */
-void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data, bool useGaussianFitting) {
-	PulseData pd;
-	std::ostringstream stream;
-	GaussianFitter fitter;
-	std::vector<Peak> peaks;
-	int peak_count = 0;
+void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
+                           bool useGaussianFitting) 
+{
+  PulseData pd;
+  std::ostringstream stream;
+  GaussianFitter fitter;
+  std::vector<Peak> peaks;
+  int peak_count = 0;
 
 #ifdef DEBUG
-	std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ << std::endl;
+std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ 
+          << std::endl;
 #endif
 
-	//setup the lidar volume bounding and allocate memory
-	setup_lidar_volume(raw_data, fitted_data);
+  //setup the lidar volume bounding and allocate memory
+  setup_lidar_volume(raw_data, fitted_data);
 
-	//message the user
-	std::string fit_type = useGaussianFitting ? "gaussian fitting" : "first difference";
-	std::cerr << "Finding peaks with " << fit_type << std::endl;
+  //message the user
+  std::string fit_type=useGaussianFitting?"gaussian fitting":"first difference";
+  std::cerr << "Finding peaks with " << fit_type << std::endl;
 
-	//parse each pulse
-	while (raw_data.hasNextPulse()) {
-		// make sure that we have an empty vector
-		peaks.clear();
+  //parse each pulse
+  while (raw_data.hasNextPulse()) {
+    // make sure that we have an empty vector
+    peaks.clear();
 
 		// gets the raw data from the file
 		raw_data.getNextPulse(&pd);

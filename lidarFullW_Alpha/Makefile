@@ -180,7 +180,7 @@ $(OBJ)/GetPLSDetails.o: $(SRC)/GetPLSDetails.cpp
 # Builds the main driver file 
 geotiff-driver: $(BIN)/geotiff-driver
 
-$(BIN)/geotiff-driver: $(OBJ)/PlsToGeotiff.o $(OBJ)/CmdLine.o \
+$(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
 					$(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
 					$(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
                     $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
@@ -189,7 +189,7 @@ $(BIN)/geotiff-driver: $(OBJ)/PlsToGeotiff.o $(OBJ)/CmdLine.o \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas -lpng
 
-$(OBJ)/PlsToGeotiff.o: $(SRC)/PlsToGeotiff.cpp
+$(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -std=c++11 -c -o $@ $^
 
 

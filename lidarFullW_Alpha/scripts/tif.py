@@ -28,7 +28,9 @@ class Tif:
     
     #Initialize
     self.file_name = file_name
+    self.file_name_trimmed = file_name[:-4]
     self.getData()
+    print ("\n")
 
   #Gets average values at a y-value, y = -1 gets overall average
   def getAvg(self, y):
@@ -42,7 +44,7 @@ class Tif:
 
   #Get tif data
   def getData(self):
-    print ("\n\33[32mProcessing:\33[0m {}".format(self.file_name))
+    print ("\33[32mProcessing:\33[0m {}".format(self.file_name))
 
     #Obtain raster
     raster = gdal.Open(self.file_name_full)
@@ -85,97 +87,11 @@ class Tif:
           data[y, x] = val
       print ("\rGetting data {}%".format(
              round(y*100/(band.YSize-1))), end="")
-    print("")
 
     #Get max y and max x
     self.maxX, self.maxY = band.XSize - 1, band.YSize - 1
     #Save data
     self.data = data
- 
-  #Create image color data
-  def createImage(self, path):
-    #Dimension conventions
-    #Width (w) is always measured in columnns
-    #Height (h) is always measured in rows
-    #Each column and row has a width/height of 1 pixel (px)
-
-    print ("Creating heatmap", end="")
-
-    #Get dimensions of data
-    data_w, data_h = self.data.shape[1], self.data.shape[0]
-    #Min/max values of the data array
-    data_values = [i for i in self.data.flatten() if i != self.no_value]
-    max_val, min_val = max(data_values), min(data_values)
-    #Get the string of these values rounded to 2 decimal places
-    max_str, min_str = str(round(max_val, 2)), str(round(min_val, 2))
-
-    #Create an array that store RGB values for each data point
-    color_data = np.full((data_h, data_w, 3), 255, dtype=np.uint8)
-    #These are the colors for each coloring 'tier'
-    #(low) dark green, yellow, red (high)
-    colors = [[0,71,0],[255,255,0],[255,0,0]]
-
-    #Loop through each y value for each x value
-    for y, vals in enumerate(self.data):
-      for x, val in enumerate(vals):
-        #Check if value is no data
-        if val != self.no_value:
-          #Normalize value between 0 and 1
-          val_frac = (val - min_val) / (max_val - min_val)
-          #write color value to array, inputted as [row, col]
-          color_data[y, x] = getHeatMapColor(colors, val_frac)
-      print ("\rCreating heatmap {}%".format(
-             round(y*100/(data_h-1))), end="")
-
-    #Add space for the legend
-    #Height of each line of the legend is the image height / 30
-    line_h = math.floor(data_h / 30)
-    #Create font
-    font_type = os.path.dirname(__file__) + "/../etc/times-new-roman.ttf"
-    font = ImageFont.truetype(font_type, line_h)
-    #Width of the legend is the width of the text * 2 for the gradient
-    test_text = "  " + min_str + max_str
-    legend_w = font.getsize(test_text)[0] * 2
-    #Height of the legend is one line + 1.2 for 1 space
-    legend_h = math.floor(line_h * 2.2)
-    #Append rows for the legend
-    extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
-    color_data = np.vstack((color_data, extra_rows))
-    #Append columns for the legend
-    if data_w < legend_w:
-      extra_columns = np.full((data_h + legend_h,
-                              math.floor((legend_w - data_w) / 2), 3),
-                              255, dtype=np.uint8)
-      #Add to start and end
-      color_data = np.hstack((extra_columns, color_data, extra_columns))
-
-    #Write data to image
-    img = Image.fromarray(color_data, 'RGB')
-    draw = ImageDraw.Draw(img)
-    #Calculate vertical spacing and sample gradient length
-    vert_space = math.floor(line_h / 5)
-    grad_len = math.floor(legend_w / 2)
-    #Get half the verticle offset of text to center text wth gradient
-    vert_offset = math.floor(font.getoffset(test_text)[1] / 2)
-    #Write min value into image
-    x_offset = 0 if data_w <= legend_w else math.floor((data_w - legend_w) / 2)
-    draw.text((x_offset, data_h + line_h - vert_offset),
-              min_str + ' ', (0,0,0), font=font)
-    #Draw color gradient into image
-    x_offset += font.getsize(min_str + ' ')[0]
-    for i in range(grad_len):
-      #Get current color
-      color = getHeatMapColor(colors, i / grad_len)
-      #Draw a vertical line, width = 1px (1 col), height = legend height
-      draw.line((x_offset + i, data_h + line_h, x_offset + i,
-                data_h + (2 * line_h)), fill=color)
-    #Write max value into image
-    x_offset += i
-    draw.text((x_offset, data_h + line_h - vert_offset),
-              ' ' + max_str, (0,0,0), font=font)
-    #Save image
-    img.save(path + self.file_name[:-4] + '.png')
-    print ("\nHeatmap has been saved to {}.png".format(self.file_name[:-4]))
 
   def createCompareImage(self, tif2, path, compare_no):
     #Dimension conventions
@@ -327,25 +243,25 @@ class Tif:
     img.save("{}compare_{}.png".format(path, compare_no))
     print ("\nHeatmap has been saved to compare_{}.png".format(compare_no))
 
-def getHeatMapColor(colors, val_frac):
-  num_colors = len(colors) - 1
-  #Set color tiers
-  tier1, tier2 = 0, 0
-  #This is the distance between value and lower tier
-  between_frac = 0
-  if val_frac >= 0:
-    #If the value is 0 or lower, keep at lowest tier
-    if val_frac >= 1:
-      #If the value is 1 or higher, set to highest tier
-      tier1, tier2 = num_colors, num_colors
-    else:
-      #Find low tier and high tier
-      tier1 = math.floor(val_frac * num_colors)
-      tier2 = tier1 + 1
-      #Find distance between the value and the low tier (0-1)
-    between_frac = (val_frac * num_colors) - tier1
-  #Create color
-  red = (colors[tier2][0] - colors[tier1][0]) * between_frac + colors[tier1][0]
-  green = (colors[tier2][1] - colors[tier1][1]) * between_frac + colors[tier1][1]
-  blue = (colors[tier2][2] - colors[tier1][2]) * between_frac + colors[tier1][2]
-  return (int(red), int(green), int(blue))
+  def getHeatMapColor(self, colors, val_frac):
+    num_colors = len(colors) - 1
+    #Set color tiers
+    tier1, tier2 = 0, 0
+    #This is the distance between value and lower tier
+    between_frac = 0
+    if val_frac >= 0:
+      #If the value is 0 or lower, keep at lowest tier
+      if val_frac >= 1:
+        #If the value is 1 or higher, set to highest tier
+        tier1, tier2 = num_colors, num_colors
+      else:
+        #Find low tier and high tier
+        tier1 = math.floor(val_frac * num_colors)
+        tier2 = tier1 + 1
+        #Find distance between the value and the low tier (0-1)
+      between_frac = (val_frac * num_colors) - tier1
+    #Create color
+    red = (colors[tier2][0] - colors[tier1][0]) * between_frac + colors[tier1][0]
+    green = (colors[tier2][1] - colors[tier1][1]) * between_frac + colors[tier1][1]
+    blue = (colors[tier2][2] - colors[tier1][2]) * between_frac + colors[tier1][2]
+    return (int(red), int(green), int(blue))

@@ -198,6 +198,9 @@ def compareText(tifA, tifB, path, compare_no):
         result[1] += 1
       elif a == nvA and b != nvB:
         #Just B
+        raw.write("[NA|{}]".format(b))
+        result[2] += 1
+      else:
         #Neither
         raw.write("NA")
         result[0] += 1
@@ -222,10 +225,10 @@ def compareText(tifA, tifB, path, compare_no):
   simple.write("Average Difference (A - B): {}\n".format(avg_dif))
   simple.write("Average Percent Difference: {}%\n".format(avg_pct_dif*100))
   #Write percent difference counts into file
-  simple.write("Percent differences greater than:\n")
-  simple.write("5%: {}\n10%: {}\n25%: {}".format(five, ten, twentyFive))
+  simple.write("\nPercent differences greater than:\n")
+  simple.write("5%: {}\n10%: {}\n25%: {}\n".format(five, ten, twentyFive))
   #do the rest of the percertages
-  simple.write("50%: {}\n75%: {}\n100%: {}".format(fifty, seventyFive, oneHundred))
+  simple.write("50%: {}\n75%: {}\n100%: {}\n\n".format(fifty, seventyFive, oneHundred))
   #Write all the stored text to the 'simple' file
   for txt in text:
     simple.write(txt)

@@ -2,6 +2,7 @@
 #Created on: 17-December-2018
 #Author: Aaron Orenstein
 
+from __future__ import print_function
 from osgeo import gdal
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
@@ -130,8 +131,7 @@ class Tif:
     #Height of each line of the legend is the image height / 30
     line_h = math.floor(data_h / 30)
     #Create font
-    font_type = __file__[:-len("tif.py")] + "times-new-roman.ttf"
-    print (font_type)
+    font_type = os.path.dirname(__file__) + "/../etc/times-new-roman.ttf"
     font = ImageFont.truetype(font_type, line_h)
     #Width of the legend is the width of the text * 2 for the gradient
     test_text = "  " + min_str + max_str
@@ -198,6 +198,10 @@ class Tif:
     first_compare = True
     max_dif = 0
     
+    #Counters for percent differences above these threshholds
+    threshholds = [.05,.1,.25,.5,.75,1]
+    counters = [0,0,0,0,0,0]
+
     #Go through each y value
     for y, (vals1, vals2) in enumerate(zip(self.data, data2)):
       #Go through each x value
@@ -221,6 +225,10 @@ class Tif:
           if first_compare or frac > max_dif:
             max_dif = frac
           #Get difference statistics
+          for idx, perc in enumerate(threshholds):
+            if frac < perc:
+              break
+            counters[idx] += 1
           color_data[y, x] = getHeatMapColor(colors, frac)
       print ("\rCreating comparison heatmap {}%".format(
              round(y*100/(data_h-1))), end="")
@@ -229,26 +237,38 @@ class Tif:
     #Height of each line of the legend is the image height / 30
     line_h = math.floor(data_h / 30)
     #Create font
-    font_type = os.path.abspath(__file__) + "times-new-roman.ttf"
+    font_type = os.path.dirname(__file__) + "/../etc/times-new-roman.ttf"
     font = ImageFont.truetype(font_type, line_h)
-    #Get each line of text
-    text = ["0%  >100%"]#,
-            #"Max Percent Difference: {}%".format(round(max_dif * 100, 2)),
-            #" " + self.file_name, " " + tif2.file_name,
-            #"Percent differences greater than:", 
-            #"25%: {}  50%: {}  100%: {}".format(1,2,3)]
+    #Get relevant threshholds
+    start, end = len(counters) - 2, len(counters) - 1
+    for idx, count in enumerate(counters):
+      if count == 0:
+        start = max(0, idx - 2)
+        end = idx
+        break
+    count_text = ""
+    for idx, count in enumerate(counters[start:end + 1]):
+      count_text += " " if idx != 0 else ""
+      count_text += "{}%: {}".format(round(100*threshholds[start+idx]),count)
+    print (count_text)
+    #set each line of text
+    text = ["0%  >100%",
+            "Max Percent Difference: {}%".format(round(max_dif * 100, 2)),
+            " " + self.file_name, " " + tif2.file_name,
+            "Percent differences greater than:", 
+            count_text]
     #Find widths of each line of the legend
     line_w = [font.getsize(t)[0] for t in text]
     #Add space for difference gradient
     line_w[0] *= 2
     #Add space for color key if included
-    #line_w[2] += line_h
-    #line_w[3] += line_h
+    line_w[2] += line_h
+    line_w[3] += line_h
     #Get greatest text width
     legend_w = max(line_w)
     #Height of the legend is 6 lines or 1 line
     #+2.1 for 5 1/2 spaces or +1.2 for 1 space
-    legend_h = math.floor(line_h * 2.2)
+    legend_h = math.floor(line_h * 8.1)
     #Append rows for the legend
     extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
     color_data = np.vstack((color_data, extra_rows))

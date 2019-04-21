@@ -9,7 +9,7 @@ Outputs:
 &nbsp;&nbsp;text file containing the raw data  
 &nbsp;&nbsp;heatmap png file of the data
 
-### Compare two tif files
+## comparetif.py
 
 Compares the data from two tif files  
 Outputs:  

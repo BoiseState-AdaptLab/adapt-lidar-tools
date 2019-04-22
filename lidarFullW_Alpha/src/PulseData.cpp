@@ -16,6 +16,11 @@ PulseData::PulseData(){
   returningWave.clear();
 }
 
+/**
+ *
+ * @param idxArray
+ * @param waveArray
+ */
 void PulseData::setOutgoing(std::vector<int> *idxArray,
                             std::vector<int> *waveArray){
 
@@ -23,6 +28,11 @@ void PulseData::setOutgoing(std::vector<int> *idxArray,
   outgoingWave = *waveArray;
 }
 
+/**
+ *
+ * @param idxArray
+ * @param waveArray
+ */
 void PulseData::setReturning(std::vector<int> *idxArray,
                              std::vector<int> *waveArray){
   returningIdx = *idxArray;
@@ -30,7 +40,10 @@ void PulseData::setReturning(std::vector<int> *idxArray,
 }
 
 
-//Displays all wave data 
+/**
+ * Displays all wave data
+ * @param outStream
+ */
 void PulseData::displayPulseData(std::ostream *outStream){
 
   *outStream << "\nOutgoing:\n" << std::endl;

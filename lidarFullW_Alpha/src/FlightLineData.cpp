@@ -37,7 +37,11 @@ FlightLineData::FlightLineData(){
 }
 
 
-// Stores the instrument information and initializes pReader
+
+/**
+ * Stores the instrument information and initializes pReader
+ * @param fileName path to pls file to open
+ */
 void FlightLineData::setFlightLineData(std::string fileName){
 
   pOpener.set_file_name(fileName.c_str());
@@ -131,7 +135,10 @@ void FlightLineData::setFlightLineData(std::string fileName){
   }
 }
 
-// Write instrument information to a CSV
+
+/**
+ * Write instrument information to a CSV
+ */
 void FlightLineData::FlightLineDataToCSV(){
 
   /* Provide the file name to the PULSEreadOpener
@@ -177,13 +184,19 @@ void FlightLineData::FlightLineDataToCSV(){
   delete pReader;
 }
 
-//True if there exists a next pulse, else false
+/**
+ * True if there exists a next pulse, else false
+ */
 bool FlightLineData::hasNextPulse(){
   return next_pulse_exists;
 }
 
 
-//Read and populate a single pulse at a time
+
+/**
+ * Read and populate a single pulse at a time
+ * @param pd the pulse to read
+ */
 void FlightLineData::getNextPulse(PulseData *pd){
 
   if(!next_pulse_exists){
@@ -348,6 +361,9 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
   return peaks->size();
 }
 
+/**
+ * close and deallocate resources
+ */
 void FlightLineData::closeFlightLineData(){
 	pReader->close(true);
 	delete pReader;
@@ -388,12 +404,10 @@ int FlightLineData::parse_for_UTM_value(std::string input){
 
 void FlightLineData::tokenize_geoascii_params_to_vector(std::stringstream *geo_stream, std::vector<std::string>
         *tokens){
-	//TODO: This needs to be tested
+
 	std::string intermediate;
 	std::string final;
-
-
-	// Tokenizing w.k.t. on '/'
+	// Tokenizing well.known.text (w.k.t) on '/'
 	while(getline(*geo_stream, intermediate, '/')){
 		std::stringstream ss_int(intermediate);
 		while(getline(ss_int,final,'|')){
@@ -413,7 +427,6 @@ void FlightLineData::tokenize_geoascii_params_to_vector(std::stringstream *geo_s
  * @return the index of the UTM field, or -1 if no UTM field located
  */
 int FlightLineData::locate_utm_field(std::vector<std::string> *tokens){
-	//TODO: This needs to be tested
 	for (int i =0; i< (int)tokens->size();i++){
 		if(tokens->at(i).find("UTM")!=std::string::npos){
 			return i;

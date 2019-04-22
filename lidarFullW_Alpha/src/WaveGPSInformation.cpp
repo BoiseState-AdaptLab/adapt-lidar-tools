@@ -61,7 +61,10 @@ WaveGPSInformation::WaveGPSInformation(){
 }
 
 
-// Populate all the GPS data
+/**
+ * Populate all the GPS data
+ * @param pReader pointer to the prepared reader
+ */
 void WaveGPSInformation::populateGPS(PULSEreader *pReader){
   
     gpsTime = pReader->pulse.get_t();
@@ -91,7 +94,9 @@ void WaveGPSInformation::populateGPS(PULSEreader *pReader){
 }
 
 
-// Displays all GPS data
+/**
+ * Displays all GPS data
+ */
 void WaveGPSInformation::displayGPSData(){
   std::cout << x_anchor << std::endl;
   std::cout << z_anchor << std::endl;

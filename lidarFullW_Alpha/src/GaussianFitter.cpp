@@ -37,6 +37,9 @@ int GaussianFitter::get_fail(){
   return fail;
 }
 
+/**
+ *
+ */
 struct data
 {
   double *t;
@@ -45,7 +48,12 @@ struct data
 };
 
 
-//model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
+/**
+ * model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
+ * @param x
+ * @param t
+ * @return
+ */
 double gaussianSum(const gsl_vector * x,const double t)
 {
 T: 
@@ -62,7 +70,13 @@ T:
 }
 
 
-//
+/**
+ *
+ * @param x
+ * @param params
+ * @param f
+ * @return
+ */
 int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 {
   struct data *d = (struct data *) params;
@@ -82,7 +96,13 @@ int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 }
 
 
-//
+/**
+ *
+ * @param x
+ * @param params
+ * @param J
+ * @return
+ */
 int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
   struct data *d = (struct data *) params;
 
@@ -129,7 +149,14 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
 }
 
 
-//
+/**
+ *
+ * @param x
+ * @param v
+ * @param params
+ * @param fvv
+ * @return
+ */
 int func_fvv (const gsl_vector * x, const gsl_vector * v,
           void *params, gsl_vector * fvv)
 {
@@ -170,6 +197,12 @@ int func_fvv (const gsl_vector * x, const gsl_vector * v,
   return GSL_SUCCESS;
 }
 
+/**
+ *
+ * @param iter
+ * @param params
+ * @param w
+ */
 void callback(const size_t iter, void *params,
          const gsl_multifit_nlinear_workspace *w){
   gsl_vector *f = gsl_multifit_nlinear_residual(w);
@@ -197,9 +230,13 @@ void callback(const size_t iter, void *params,
           gsl_blas_dnrm2(f));*/
 }
 
-
-//
-
+/**
+ *
+ * @param reason
+ * @param file
+ * @param line
+ * @param gsl_errno
+ */
 void handler (const char * reason,
               const char * file,
               int line,
@@ -209,7 +246,13 @@ void handler (const char * reason,
   gsl_strerror (gsl_errno);
 }
 
-//
+/**
+ *
+ * @param x
+ * @param fdf
+ * @param params
+ * @return
+ */
 int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
              gsl_multifit_nlinear_parameters *params){
   const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
@@ -278,7 +321,13 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 }
 
 
-//Find the peaks and return the peak count
+/**
+ * Find the peaks and return the peak count
+ * @param results pointer to vector to store peaks
+ * @param ampData
+ * @param idxData
+ * @return count of found peaks
+ */
 int GaussianFitter::find_peaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
@@ -351,9 +400,6 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   }
 
   //Clear results so we can use the gaussian fitter method
-//	for (int i = 0; i < results->size(); i++) {
-//		delete(&results[i]);
-//	}
   results->clear();
 
   // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -491,7 +537,11 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
 }
 
 
-//Calculate the first difference
+/**
+ * Calculate the first difference
+ * @param ampData
+ * @return
+ */
 std::vector<int> GaussianFitter::calculateFirstDifferences(
                                                 std::vector<int> ampData){
   int first, second, fDiff, count = 0;
@@ -516,9 +566,15 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
 }
 
 
-// Estimate of peaks to be supplied to the gaussian fitter based on
-// first difference gradient
-// Returns guesses of full width half maximum
+/**
+ * Estimate of peaks to be supplied to the gaussian fitter based on
+ * first difference gradient
+ * Returns guesses of full width half maximum
+ * @param results pointer to vector to store found peaks
+ * @param ampData
+ * @param idxData
+ * @return number of peaks found
+ */
 int GaussianFitter::guess_peaks(std::vector<Peak>* results, 
                                              std::vector<int> ampData, std::vector<int> idxData){
 
@@ -683,7 +739,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
 }
 
 
-/* Experiment with smoothing */
+/**
+ * Experiment with smoothing
+ * @param waveArray
+ */
 void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
 
   for(int i=2; i<waveArray->size()-1;i++){

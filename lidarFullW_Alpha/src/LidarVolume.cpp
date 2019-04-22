@@ -54,7 +54,9 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 }
 
 
-//allocate memory with a 2d array of the data
+/**
+ * allocate memory with a 2d array of the data
+ */
 void LidarVolume::allocateMemory(){
   // we are going to allocate a 2D array of space that will hold peak
   // information (we don't know how many per volume)
@@ -73,6 +75,9 @@ void LidarVolume::allocateMemory(){
   }
 }
 
+/**
+ * clean up and deallocate resources
+ */
 void LidarVolume::deallocateMemory(){
 	int x_idx,y_idx;
 	for(y_idx=0;y_idx<y_idx_extent;y_idx++){
@@ -88,14 +93,19 @@ void LidarVolume::deallocateMemory(){
 }
 
 
-//j is most contiguous
-//i is the least contiguous
+/**
+ *
+ * @param i most contiguous
+ * @param j least contiguous
+ * @return
+ */
 int LidarVolume::position(int i, int j){
   return j + (i* x_idx_extent);
 }
 
-/* insert_peak
- * Note that this is an unordered list
+/**
+ * insert_peak Note that this is an unordered list
+ * @param peak
  */
 void LidarVolume::insert_peak(Peak *peak){
   unsigned int x_idx = gps_to_voxel_x(peak->x_activation);
@@ -115,13 +125,24 @@ void LidarVolume::insert_peak(Peak *peak){
 }
 
 
-//Convert peak x, y and z values to
-//i, j and k which identifies the voxel space they belong to
+/**
+ * Convert peak x, y and z values to
+ * i, j and k which identifies the voxel space they belong to
+ * @param x
+ * @return
+ */
 int LidarVolume::gps_to_voxel_x(double x){
   int voxel_x = (int)(x - bb_x_min);
   return voxel_x;
 }
 
+
+/**
+ * Convert peak x, y and z values to
+ * i, j and k which identifies the voxel space they belong to
+ * @param y
+ * @return
+ */
 int LidarVolume::gps_to_voxel_y(double y){
   int voxel_y = (int)(y - bb_y_min);
   return voxel_y;
@@ -134,7 +155,6 @@ int LidarVolume::gps_to_voxel_y(double y){
  * @param b
  * @param val
  */
-
 void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
 
   *r = 255;

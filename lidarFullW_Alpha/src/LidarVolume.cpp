@@ -131,6 +131,7 @@ void LidarVolume::insert_peak(Peak *peak){
  * @param x
  * @return
  */
+ //TODO: Why ints? do we risk overflow/underflow?
 int LidarVolume::gps_to_voxel_x(double x){
   int voxel_x = (int)(x - bb_x_min);
   return voxel_x;
@@ -143,6 +144,7 @@ int LidarVolume::gps_to_voxel_x(double x){
  * @param y
  * @return
  */
+//TODO: Why ints? do we risk overflow/underflow?
 int LidarVolume::gps_to_voxel_y(double y){
   int voxel_y = (int)(y - bb_y_min);
   return voxel_y;

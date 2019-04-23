@@ -23,17 +23,18 @@ class LidarDriver {
 public:
 
   void setup_flight_data(FlightLineData &data, std::string inputFileName);
-  void fit_data(FlightLineData &, LidarVolume &, bool useGaussianFitting);
-  void produce_product(LidarVolume &, GDALDataset *, int );
-  void setup_lidar_volume(FlightLineData &, LidarVolume &);
-  int parse_pulse(PulseData &, std::vector<Peak> &, GaussianFitter &,
-                  bool , int &);
-  void add_peaks_to_volume(LidarVolume &,std::vector<Peak> &, int );
+  void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
+                bool useGaussianFitting);
+  void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id);
+  void setup_lidar_volume(FlightLineData &raw_data, LidarVolume &lidar_volume);
+  int parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
+  &peak_count);
+  void add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak> &peaks, int peak_count);
   GDALDriver * setup_gdal_driver();
   GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver,
                               std::string filename, std::string band_desc,
                               int x_idx_extent, int y_idx_extent);
-  void geo_orient_gdal(LidarVolume &, GDALDataset *, std::string , int );
+  void geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds, std::string geog_cs, int utm);
   float get_extreme_diff(std::vector<Peak> *peaks, char peak_property);
   float get_extreme(std::vector<Peak> *peaks, bool max_flag, int peak_pos,
                     char peak_property);

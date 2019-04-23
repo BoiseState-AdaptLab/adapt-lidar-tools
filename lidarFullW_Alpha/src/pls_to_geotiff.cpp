@@ -63,6 +63,7 @@ int main (int argc, char *argv[]) {
   }
   GDALDestroyDriverManager();
   intermediateData.deallocateMemory();
+  rawData.closeFlightLineData();
 
   //Get end time
   Clock::time_point t2 = Clock::now();

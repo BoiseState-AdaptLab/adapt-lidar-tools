@@ -34,12 +34,18 @@ const static std::string product_desc[55] = {"", "max_all_elev", "min_all_elev",
 *
 ****************************************************************************/
 
-// Function that sets the command line arguments
+/**
+ * Function that sets the command line arguments
+ * @param args
+ */
 void CmdLine::setInputFileName(char *args){
   inputFileName = args;
 }
 
-// Function that prints(sets up) correct usage of this program
+
+/**
+ * Function that prints(sets up) correct usage of this program
+ */
 void CmdLine::setUsageMessage()
 {
   std::stringstream buffer;
@@ -66,12 +72,19 @@ void CmdLine::setUsageMessage()
   usageMessage.append(buffer.str());
 }
 
-// Function that prints correct usage of this program
+
+/**
+ * Function that prints correct usage of this program
+ * @return usage message
+ */
 std::string CmdLine::getUsageMessage(){
     return usageMessage;
 }
 
-// Default constructor
+
+/**
+ * Default constructor
+ */
 CmdLine::CmdLine(){
   printUsageMessage = false;
   useGaussianFitting = true;
@@ -79,13 +92,22 @@ CmdLine::CmdLine(){
   setUsageMessage();
 }
 
-// Function that returns the file name
+
+/**
+ * Function that returns the file name
+ * @return the name of the input file
+ */
 std::string CmdLine::getInputFileName(){
   return inputFileName;
 }
 
 
-// Function that parses the command line arguments
+
+/**
+ * Function that parses the command line arguments
+ * @param argc count of arguments
+ * @param argv array of arguments
+ */
 void CmdLine::parse(int argc,char *argv[]){
   char optionChar;  //Option character
   char *fArg;       //Argument of the option character f

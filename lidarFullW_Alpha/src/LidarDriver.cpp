@@ -102,7 +102,6 @@ std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__
         std::cerr << "Pass: " << fitter.get_pass() << std::endl;
         std::cerr << "Fail: " << fitter.get_fail() << std::endl;
 #endif
-raw_data.closeFlightLineData();
 }
 
 /**
@@ -434,8 +433,8 @@ GDALDriver * LidarDriver::setup_gdal_driver(){
  * set the orientation on the gdal file to align with the lidar volume data
  * @param fitted_data lidar volume with fitted data
  * @param gdal_ds the gdal dataset
- * @param geog_cs
- * @param utm
+ * @param geog_cs the geog_cs string (Datum value WGS 84, etc)
+ * @param utm the utm string (NAD 11, etc)
  */
 void LidarDriver::geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds, std::string geog_cs, int utm){
 	//In a north up image, transform[1] is the pixel width, and transform[5] is

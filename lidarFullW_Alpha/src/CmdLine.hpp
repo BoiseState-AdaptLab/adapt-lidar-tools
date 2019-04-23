@@ -51,8 +51,8 @@ public:
   int parse_args(int argc, char *argv[]);
   std::string getInputFileName();
   std::string getTrimmedFileName();
-  std::string get_output_filename(int);
-  std::string get_product_desc(int);
+  std::string get_output_filename(int product_id);
+  std::string get_product_desc(int product_id);
   std::vector<int> selected_products;
 };
 

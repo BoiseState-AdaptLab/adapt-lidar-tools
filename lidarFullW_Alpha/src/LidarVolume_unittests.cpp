@@ -85,3 +85,54 @@ TEST_F(LidarVolumeTest, testPosition){
   EXPECT_EQ(known_position_2, lv.position(1770,1772));
   
 }
+
+
+/******************************************************************************
+*
+* Test adding a peak outside the bounding area
+*
+******************************************************************************/
+TEST_F(LidarVolumeTest, add_invalid_peak_to_volume_test){
+
+	std::vector<Peak> peaks;
+	LidarVolume lidarVolume;
+	FlightLineData fld;
+	std::string filename;
+	filename = "etc/140823_183115_1_clipped_test.pls";
+
+	EXPECT_NO_THROW(fld.setFlightLineData(filename));
+
+
+	double known_amp = 142;
+	double known_loc = 19;
+	double known_fwhm = 5;
+	double known_fwhm_t_pos = 21;
+	double known_fwhm_t_neg = 16;
+	int known_pos = 0;
+	int known_triggering_amp = 13;
+	int known_triggering_loc = 14;
+	double known_x_act = 253036;
+	double known_y_act = 4330482;
+	double known_z_act = 4159;
+
+	Peak p;
+	p.amp= known_amp;
+	p.location = known_loc;
+	p.fwhm = known_fwhm;
+	p.fwhm_t_positive = known_fwhm_t_pos;
+	p.fwhm_t_negative = known_fwhm_t_neg;
+	p.position_in_wave = known_pos;
+	p.triggering_amp = known_triggering_amp;
+	p.triggering_location = known_triggering_loc;
+	p.x_activation = known_x_act;
+	p.y_activation = known_y_act;
+	p.z_activation = known_z_act;
+
+	peaks.push_back(p);
+	lidarVolume.setBoundingBox(fld.bb_x_min,fld.bb_x_max,
+	                  fld.bb_y_min,fld.bb_y_max,
+	                  fld.bb_z_min,fld.bb_z_max);
+
+	EXPECT_NO_THROW(lidarVolume.insert_peak(&peaks.at(0)));
+
+}

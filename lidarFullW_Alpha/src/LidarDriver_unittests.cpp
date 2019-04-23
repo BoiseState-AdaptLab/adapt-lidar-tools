@@ -247,8 +247,8 @@ TEST_F(LidarDriverTest, add_peaks_to_volume_test){
 	int known_pos = 0;
 	int known_triggering_amp = 13;
 	int known_triggering_loc = 14;
-	double known_x_act = 253036;
-	double known_y_act = 4330482;
+	double known_x_act = 516211;
+	double known_y_act = 4767923;
 	double known_z_act = 4159;
 
 	Peak p;
@@ -265,11 +265,20 @@ TEST_F(LidarDriverTest, add_peaks_to_volume_test){
 	p.z_activation = known_z_act;
 
 	peaks.push_back(p);
-	//EXPECT_NO_THROW(driver1.setup_lidar_volume(fld,lidarVolume));
-	//EXPECT_NO_THROW(driver1.add_peaks_to_volume(lidarVolume,peaks,1));
+	EXPECT_NO_THROW(driver1.setup_lidar_volume(fld,lidarVolume));
+	EXPECT_NO_THROW(driver1.add_peaks_to_volume(lidarVolume,peaks,1));
 
-
-	//EXPECT_EQ(peaks,lidarVolume.volume);
+	EXPECT_EQ(peaks.at(0).amp, lidarVolume.volume[5]->at(0).amp);
+	EXPECT_EQ(peaks.at(0).location, lidarVolume.volume[5]->at(0).location);
+	EXPECT_EQ(peaks.at(0).fwhm, lidarVolume.volume[5]->at(0).fwhm);
+	EXPECT_EQ(peaks.at(0).fwhm_t_positive, lidarVolume.volume[5]->at(0).fwhm_t_positive);
+	EXPECT_EQ(peaks.at(0).fwhm_t_negative, lidarVolume.volume[5]->at(0).fwhm_t_negative);
+	EXPECT_EQ(peaks.at(0).position_in_wave, lidarVolume.volume[5]->at(0).position_in_wave);
+	EXPECT_EQ(peaks.at(0).triggering_amp, lidarVolume.volume[5]->at(0).triggering_amp);
+	EXPECT_EQ(peaks.at(0).triggering_location, lidarVolume.volume[5]->at(0).triggering_location);
+	EXPECT_EQ(peaks.at(0).x_activation, lidarVolume.volume[5]->at(0).x_activation);
+	EXPECT_EQ(peaks.at(0).y_activation, lidarVolume.volume[5]->at(0).y_activation);
+	EXPECT_EQ(peaks.at(0).z_activation, lidarVolume.volume[5]->at(0).z_activation);
 
 }
 

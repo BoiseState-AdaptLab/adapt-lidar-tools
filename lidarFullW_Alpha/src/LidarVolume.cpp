@@ -112,7 +112,7 @@ void LidarVolume::insert_peak(Peak *peak){
   unsigned int y_idx = gps_to_voxel_y(peak->y_activation);
 
   // make sure we are in our bounding box
-  if((int)x_idx > x_idx_extent || (int) y_idx > y_idx_extent){
+  if((long int)x_idx > x_idx_extent || (long int)y_idx > y_idx_extent){
     std::cerr << "ERROR: Invalid peak ignored" << std::endl;
     return;
   }

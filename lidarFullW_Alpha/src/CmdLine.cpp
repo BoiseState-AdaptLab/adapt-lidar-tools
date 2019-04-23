@@ -48,27 +48,55 @@ void CmdLine::setInputFileName(char *args){
  */
 void CmdLine::setUsageMessage()
 {
-  std::stringstream buffer;
-  buffer << "\nUsage: " << std::endl;
-  buffer << "       path_to_executable [-option argument]+" << std::endl;
-  buffer << "Option:  " << std::endl;
-  buffer << "       -f  <path to pls file>"
-         << "  :Generate a Geotif file" << std::endl;
-  buffer << "Option:  " << std::endl;
-  buffer << "       -e  <list>"
-         << "  :Products to generate; valid ways to format the list include:" << std::endl;
-  buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
-  buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
-  buffer << "                   -e \" 1 , 2 , 3 \" (white-space allowed inside quotes)" << std::endl;
+	std::stringstream buffer;
+	buffer << "\nUsage: " << std::endl;
+	buffer << "       path_to_executable -f <path to pls file> [-option argument] <list of products>" << std::endl;
 	buffer << "Option:  " << std::endl;
-	buffer << "       -a  <list>"
-	       << "  :Products to generate; same as -e option" <<std::endl;
-  buffer << "Option:  " << std::endl;
-  buffer << "       -d"
-         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
-  buffer << "       -h" << std::endl;
-  buffer << "\nExample: " << std::endl;
-  buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5" << std::endl;
+	buffer << "       -f  <path to pls file>"
+	       << "  :Generate a Geotif file" << std::endl;
+	buffer << "Option:  " << std::endl;
+	buffer << "       -e  <list of products>"
+	       << "  :Generate elevation products. Choose products to generate from the following table;" << std::endl;
+	buffer << std::endl;
+	buffer << "| Function | Peak Type | Product Number |" << std::endl;
+	buffer << "|----------|-----------|----------------|" << std::endl;
+	buffer << "| Max      | All       | 1              |" << std::endl;
+	buffer << "| Min      | All       | 2              |" << std::endl;
+	buffer << "| Mean     | All       | 3              |" << std::endl;
+	buffer << "| Std.Dev  | All       | 4              |" << std::endl;
+	buffer << "| Skew     | All       | 5              |" << std::endl;
+	buffer << "| Kurtosis | All       | 6              |" << std::endl;
+	buffer << "| Max      | First     | 7              |" << std::endl;
+	buffer << "| Min      | First     | 8              |" << std::endl;
+	buffer << "| Mean     | First     | 9              |" << std::endl;
+	buffer << "| Std.Dev  | First     | 10             |" << std::endl;
+	buffer << "| Skew     | First     | 11             |" << std::endl;
+	buffer << "| Kurtosis | First     | 12             |" << std::endl;
+	buffer << "| Max      | Last      | 13             |" << std::endl;
+	buffer << "| Min      | Last      | 14             |" << std::endl;
+	buffer << "| Mean     | Last      | 15             |" << std::endl;
+	buffer << "| Std.Dev  | Last      | 16             |" << std::endl;
+	buffer << "| Skew     | Last      | 17             |" << std::endl;
+	buffer << "| Kurtosis | Last      | 18             |" << std::endl;
+	buffer << std::endl;
+	buffer << "Valid ways to format the list include:" << std::endl;
+	buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
+	buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
+	buffer << "                   -e \" 1 , 2 , 3 \" (white-space allowed inside quotes)" << std::endl;
+	buffer << "Option:  " << std::endl;
+	buffer << "       -a  <list of products>"
+	       << "  :Generate Amplitude products" << std::endl;
+	buffer << "Option:  " << std::endl;
+	buffer << "       -w  <list of products>"
+	       << "  :Generate Width products" << std::endl;
+	buffer << "Option:  " << std::endl;
+	buffer << "       -d"
+	       << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
+	buffer << "       -h"
+	       << "  :Print this help message" << std::endl;
+	buffer << "\nExample: " << std::endl;
+	buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5 -w 14,9"
+	       << std::endl;
   usageMessage.append(buffer.str());
 }
 
@@ -144,7 +172,7 @@ void CmdLine::parse(int argc,char *argv[]){
          long_options, &option_index))!= -1){
     switch(optionChar){
       // Option 'h' shows the help information
-      case 'f': //Generate a geotif file
+      case 'f': //Set the filename to parse
         fArg = optarg;
         setInputFileName(fArg);
         break;
@@ -153,7 +181,7 @@ void CmdLine::parse(int argc,char *argv[]){
         break;
       case 'd':
         useGaussianFitting = false;
-	      break;
+	    break;
       case 'e':  {// Without curly braces wrapping this case, there are compilation errors
         e_arg = optarg;
         std::stringstream ss(e_arg);
@@ -228,19 +256,18 @@ void CmdLine::parse(int argc,char *argv[]){
 	    }
       case ':':
         // Missing option argument
-		    std::cout << "\nMissing arguments" <<std::endl;
-    	  std::cout << "------------------" <<std::endl;
+		std::cout << "\nMissing arguments" <<std::endl;
+    	std::cout << "------------------" <<std::endl;
         printUsageMessage = true;
         break;
       default:
         // Invalid option
-		    std::cout << "\nInvalid option" <<std::endl;
-    	  std::cout << "---------------" <<std::endl;
+        std::cout << "\nInvalid option" <<std::endl;
+    	std::cout << "---------------" <<std::endl;
         printUsageMessage = true;
 
     }
   }
-
 
   // For non option input
   if(optind < argc){
@@ -269,13 +296,26 @@ void CmdLine::check_input_file_exists() {
 int CmdLine::parse_args(int argc, char *argv[]) {
     int rtn = 1;
     parse(argc, argv);
-    check_input_file_exists();
     //if arguments were invalid or did not parse correctly
     if (printUsageMessage) {
         std::cout << getUsageMessage() << std::endl;
         rtn = 0;
+    }else{
+	    check_input_file_exists();
+	    if (printUsageMessage) {
+		    std::cout << getUsageMessage() << std::endl;
+		    rtn = 0;
+	    }
     }
-
+    if(!printUsageMessage){
+    	//make sure some product was selected
+    	if(selected_products.size()<1){
+    		printUsageMessage = true;
+		    std::cout << "No output products selected." << std::endl;
+		    std::cout << getUsageMessage() << std::endl;
+		    rtn = 0;
+    	}
+    }
     return rtn;
 }
 

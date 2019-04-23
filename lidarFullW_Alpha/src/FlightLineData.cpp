@@ -315,7 +315,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
  * @return the number of peaks left after calculation
  */
 int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
-
+  int i = 1;
   std::vector<Peak>::iterator it;
   // for each of the incoming peaks
   for(it = peaks->begin(); it != peaks->end();){
@@ -356,7 +356,14 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
                 std::endl;
       exit (EXIT_FAILURE);
     }
+    //mark the position in case any peaks were filtered
+    (*it).position_in_wave = i;
+    i++;
     it++;
+  }
+  //make sure that if our final peak got filtered out, we mark the new one
+  if(peaks->size() > 0) {
+	  peaks->back().is_final_peak=true;
   }
   return peaks->size();
 }

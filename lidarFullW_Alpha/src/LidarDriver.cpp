@@ -136,7 +136,7 @@ void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Pea
  * @param fitter the gaussian fitter object to use for smoothing and fitting
  * @param use_gaussian_fitting flag to indicate fitter type
  * @param peak_count count of found peaks returned
- * @return -1 if the pulse was empty, otherwise 1
+ * @return -1 if the pulse was empty, otherwise the peak count
  */
 int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
 &peak_count){

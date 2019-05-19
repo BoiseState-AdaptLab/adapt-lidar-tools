@@ -5,6 +5,8 @@
 #include "LidarDriver.hpp"
 #include <chrono>
 
+#define DEBUG //Comment out to disable
+
 typedef std::chrono::high_resolution_clock Clock;
 
 
@@ -28,14 +30,30 @@ int main (int argc, char *argv[]) {
   std::cout << "\nProcessing  " << cmdLineArgs.getInputFileName().c_str() 
             << std::endl;
 
+#ifdef DEBUG
+    std::cerr << "Debug is defined for this run" << std::endl;
+#endif
+
   //ingest the raw flight data into an object
   driver.setup_flight_data(rawData, cmdLineArgs.getInputFileName());
+
+#ifdef DEBUG
+    std::cerr << "driver.setup_flight_data returned" << std::endl;
+#endif
 
   //fit data
   driver.fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting);
 
+#ifdef DEBUG
+    std::cerr << "driver.fit_data returned" << std::endl;
+#endif
+
   //Represents the output file format. This is used only to write data sets
   GDALDriver *driverTiff = driver.setup_gdal_driver();
+
+#ifdef DEBUG
+    std::cerr << "driver.fit_data returned, will loop through products next." << std::endl;
+#endif
 
   // TODO: None of this should be in main - it should be abstracted away
   //produce the product(s)

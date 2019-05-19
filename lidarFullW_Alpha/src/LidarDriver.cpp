@@ -4,6 +4,7 @@
 
 #include "LidarDriver.hpp"
 
+#define DEBUG //Comment out to disable
 
 /**
  * setup the gdal dataset (file) with metadata
@@ -37,7 +38,15 @@ GDALDataset* LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver,
 void LidarDriver::setup_flight_data(FlightLineData &data,
                                     std::string inputFileName)
 {
+#ifdef DEBUG
+    std::cerr << "data.setFlightLineData about to be called..." << std::endl;
+#endif
+
   data.setFlightLineData(inputFileName);
+
+#ifdef DEBUG
+    std::cerr << "data.setFlightLineData returned" << std::endl;
+#endif
 }
 
 /**

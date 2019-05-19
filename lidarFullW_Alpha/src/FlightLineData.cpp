@@ -4,6 +4,8 @@
 
 #include "FlightLineData.hpp"
 
+#define DEBUG
+
 //Default constructor
 FlightLineData::FlightLineData(){
   // enter default values
@@ -27,7 +29,7 @@ FlightLineData::FlightLineData(){
   beam_divergence  = 0;
   minimal_range  = 0;
   maximal_range  = 0;
-  
+
   geoascii_params = "";
   utm_str = "";
   geog_cs = "";
@@ -44,6 +46,10 @@ FlightLineData::FlightLineData(){
  */
 void FlightLineData::setFlightLineData(std::string fileName){
 
+#ifdef DEBUG
+    std::cerr << "Debug messages enabled for this run of setFlightLineData" << std::endl;
+#endif
+
   pOpener.set_file_name(fileName.c_str());
   pReader = pOpener.open();
   if(pReader == NULL){
@@ -51,6 +57,9 @@ void FlightLineData::setFlightLineData(std::string fileName){
     exit (EXIT_FAILURE);
   }
 
+#ifdef DEBUG
+  std::cerr << "Target file opened for reading, wasn't empty" << std::endl;
+#endif
 
   //bounding box x,y & z mins and maxes
   bb_x_min = pReader->header.min_x;
@@ -64,41 +73,59 @@ void FlightLineData::setFlightLineData(std::string fileName){
   geoascii_params = pReader->header.geoascii_params;
 
   // Vector of string to save tokens
-  std::vector <std::string> tokens; 
-     
+  std::vector <std::string> tokens;
+
+#ifdef DEBUG
+  std::cerr << "Vector of strings to save tokens made" << std::endl;
+#endif
+
   // use stringstream to parse
   std::stringstream geo_stream(geoascii_params);
 
   tokenize_geoascii_params_to_vector(&geo_stream,&tokens);
 
+#ifdef DEBUG
+  std::cerr << "tokenize_geoascii_params_to_vector returned" << std::endl;
+#endif
+
   int utm_loc = locate_utm_field(&tokens);
   if(utm_loc < 0){
-  	//no utm found, trouble!
-  	std::cerr << "CRITICAL ERROR! No UTM value found in PLS header!\n"<<std::endl;
-  	exit(EXIT_FAILURE);
+    //no utm found, trouble!
+    std::cerr << "CRITICAL ERROR! No UTM value found in PLS header!\n"<<std::endl;
+    exit(EXIT_FAILURE);
   }
   utm_str = tokens[utm_loc];
 
+#ifdef DEBUG
+    std::cerr << "UTM values found in PLS header" << std::endl;
+#endif
 
-	utm = parse_for_UTM_value(utm_str);
-	int geog_cs_loc = locate_geog_cs_field(&tokens);
-	if(geog_cs_loc < 0){
-		//no geog_cs found, trouble!
-		std::cerr << "CRITICAL ERROR! No geog_cs (NAD/WGS) value found in PLS header!\n"<<std::endl;
-		exit(EXIT_FAILURE);
-	}
-	geog_cs = tokens.at(geog_cs_loc);
+    utm = parse_for_UTM_value(utm_str);
+    int geog_cs_loc = locate_geog_cs_field(&tokens);
+    if(geog_cs_loc < 0){
+        //no geog_cs found, trouble!
+        std::cerr << "CRITICAL ERROR! No geog_cs (NAD/WGS) value found in PLS header!\n"<<std::endl;
+        exit(EXIT_FAILURE);
+    }
+    geog_cs = tokens.at(geog_cs_loc);
 
+#ifdef DEBUG
+    std::cerr << "geog_cs found in PLS header" << std::endl;
 
-  //std::cout << "utm_str: " << utm_str << std::endl;
-  //std::cout << "utm: " << utm << std::endl;
-  //std::cout << "geog_cs: "<< geog_cs << std::endl;
+    std::cerr << "utm_str: " << utm_str << std::endl;
+    std::cerr << "utm: " << utm << std::endl;
+    std::cerr << "geog_cs: "<< geog_cs << std::endl;
 
-
-  //fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
+    fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
+#endif
 
   int i = 1;
   while(pReader->header.get_scanner(&scanner, i)) {
+
+  #ifdef DEBUG
+        std::cerr << "scanner " << i << " being read ..." << std::endl;
+  #endif
+
     scanner_id = i;
     wave_length = scanner.wave_length;
     outgoing_pulse_width = scanner.outgoing_pulse_width;
@@ -112,14 +139,29 @@ void FlightLineData::setFlightLineData(std::string fileName){
     beam_divergence = scanner.beam_divergence;
     minimal_range = scanner.minimal_range;
     maximal_range = scanner.maximal_range;
+
+  #ifdef DEBUG
+        std::cerr << "scanner " << i << " read complete" << std::endl;
+  #endif
+
     i++;
   }
+
+#ifdef DEBUG
+    std::cerr << "scanner reads complete" << std::endl;
+#endif
 
   //Initialize the pReader to read the pulse and the wave
   //If no data, throw an exception and exit
   try{
     if(pReader->read_pulse()){
+    #ifdef DEBUG
+        std::cerr << "pReader->read_pulse() returned" << std::endl;
+    #endif
       if(pReader->read_waves()){
+      #ifdef DEBUG
+          std::cerr << "pReader->read_waves() returned" << std::endl;
+      #endif
         next_pulse_exists = true;
       }
     }
@@ -133,6 +175,10 @@ void FlightLineData::setFlightLineData(std::string fileName){
   // TODO: FIXME!!
         exit(EXIT_FAILURE);
   }
+
+#ifdef DEBUG
+  std::cerr << "setFlightLineData complete, returning" << std::endl;
+#endif
 }
 
 

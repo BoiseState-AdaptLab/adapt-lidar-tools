@@ -5,7 +5,7 @@
 #include "LidarDriver.hpp"
 #include <chrono>
 
-#define DEBUG //Comment out to disable
+//#define DEBUG
 
 typedef std::chrono::high_resolution_clock Clock;
 

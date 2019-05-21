@@ -4,7 +4,7 @@
 
 #include "LidarDriver.hpp"
 
-#define DEBUG //Comment out to disable
+//#define DEBUG
 
 /**
  * setup the gdal dataset (file) with metadata

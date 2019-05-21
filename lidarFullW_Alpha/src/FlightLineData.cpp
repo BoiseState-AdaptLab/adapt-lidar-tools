@@ -4,7 +4,7 @@
 
 #include "FlightLineData.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 //Default constructor
 FlightLineData::FlightLineData(){

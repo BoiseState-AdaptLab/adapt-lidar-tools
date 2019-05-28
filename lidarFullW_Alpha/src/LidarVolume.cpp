@@ -121,7 +121,7 @@ void LidarVolume::insert_peak(Peak *peak){
   if(volume[p] == NULL){
     volume[p] = new std::vector<Peak>();
   }
-  volume[p]->push_back(*peak);
+  volume[p]->push_back(*peak); //TODO: Make this stop leaking!
 }
 
 

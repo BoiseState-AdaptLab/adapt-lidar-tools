@@ -426,7 +426,7 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     incr_pass();
     //this loop is going through every peak
     for(i=0; i< peakCount; i++){
-      Peak* peak = new Peak();
+      Peak* peak = new Peak(); //TODO: Make this stop leaking!
       peak->amp = gsl_vector_get(x,3*i+ 0);
       peak->location = gsl_vector_get(x,3*i+ 1);
       double c = gsl_vector_get(x,3*i+ 2);
@@ -720,7 +720,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
      if(guess > 20){guess = 10;}
 	  peaks_found++;
     //Create a peak
-    Peak* peak = new Peak();
+    Peak* peak = new Peak(); //TODO: Figure out how to stop this from leaking.
     peak->amp = ampData[peak_guesses_loc[i]];
     peak->location = idxData[peak_guesses_loc[i]];
     peak->fwhm = guess;

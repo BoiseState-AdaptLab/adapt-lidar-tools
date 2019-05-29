@@ -7,35 +7,35 @@
 
 class Peak{
 
-  public:
-    double amp;         //Amplitude
-    double location;    //The time location of peak occurence
-    double fwhm;        //Full width at half maximum - the width of the peak
+    public:
+        double amp;                 //Amplitude
+        double location;        //The time location of peak occurence
+        double fwhm;                //Full width at half maximum - the width of the peak
 
-    //the time locations of the half maximum(amp/2)
-    double fwhm_t_positive;
-    double fwhm_t_negative;
+        //the time locations of the half maximum(amp/2)
+        double fwhm_t_positive;
+        double fwhm_t_negative;
 
-    bool is_final_peak;    //Keeps track of whether this is final peak in wave
-    int position_in_wave;  //Given 'n' peaks, the position of this peak
+        bool is_final_peak;      //Keeps track of whether this is final peak in wave
+        int position_in_wave;  //Given 'n' peaks, the position of this peak
 
-    int triggering_amp;      //Peak triggering amplitude - noise level + 1
-    int triggering_location; //Peak activation time - calc using triggering_amp
+        int triggering_amp;          //Peak triggering amplitude - noise level + 1
+        int triggering_location; //Peak activation time - calc using triggering_amp
 
-    //(triggering_location) * dx + x_first
-    double x_activation;
+        //(triggering_location) * dx + x_first
+        double x_activation;
 
-    //(triggering_location) * dy + y_first
-    double y_activation;
+        //(triggering_location) * dy + y_first
+        double y_activation;
 
-    //(peak_triggering_location) * dz + z_first
-    double z_activation;
+        //(peak_triggering_location) * dz + z_first
+        double z_activation;
 
-    //holds peak location in the xyz space
-    double x, y, z;
+        //holds peak location in the xyz space
+        double x, y, z;
 
-    //Default constructor
-    Peak();
+        //Default constructor
+        Peak();
 
 };
 

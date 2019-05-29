@@ -12,20 +12,20 @@
 
 class PulseData{
 
-private:
+    private:
 
-public:
-  std::vector<int> outgoingIdx;
-  std::vector<int> outgoingWave;
-  std::vector<int> returningIdx;
-  std::vector<int> returningWave;
+    public:
+        std::vector<int> outgoingIdx;
+        std::vector<int> outgoingWave;
+        std::vector<int> returningIdx;
+        std::vector<int> returningWave;
 
-  PulseData();
-  void displayPulseData(std::ostream *outStream);
-  void setOutgoing(std::vector<int> *idxArray,
-                   std::vector<int> *waveArray);
-  void setReturning(std::vector<int> *idxArray,
-                    std::vector<int> *waveArray);
+        PulseData();
+        void displayPulseData(std::ostream *outStream);
+        void setOutgoing(std::vector<int> *idxArray,
+                std::vector<int> *waveArray);
+        void setReturning(std::vector<int> *idxArray,
+                std::vector<int> *waveArray);
 };
 
 #endif /* PULSEDATA_HPP_ */

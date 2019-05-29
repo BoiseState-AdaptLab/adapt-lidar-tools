@@ -10,9 +10,9 @@
 /* All peak input data to be tested against is defined in the following macros */
 
 #define INPUT_TYPICAL \
-"2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 "\
-"79 63 50 46 43 43 50 60 70 65 50 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 "\
-"2 1 1 1"
+    "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 "\
+    "79 63 50 46 43 43 50 60 70 65 50 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 "\
+    "2 1 1 1"
 
 #define TYPICAL_FIRST_PEAK 19 //Index of first peak in vector
 #define TYPICAL_LAST_PEAK 34 //Index of last peak in vector
@@ -33,9 +33,9 @@
 #define TYPICAL_KURT 3.6218
 
 #define INPUT_RISING \
-"1 1 2 3 3 4 5 6 6 7 8 9 9 10 20 20 30 40 50 50 53 58 60 62 64 68 70 80 90 "\
-"100 120 145 156 178 194 200 213 219 219 220 220 230 230 259 459 500 560 600 "\
-"612 630 640"
+    "1 1 2 3 3 4 5 6 6 7 8 9 9 10 20 20 30 40 50 50 53 58 60 62 64 68 70 80 90 "\
+    "100 120 145 156 178 194 200 213 219 219 220 220 230 230 259 459 500 560 600 "\
+    "612 630 640"
 
 //No first or last peak for this
 
@@ -47,9 +47,9 @@
 #define RISING_KURT 3.9676
 
 #define INPUT_FALLING \
-"800 800 700 700 600 600 590 590 580 580 580 540 420 420 420 419 419 419 "\
-"419 412 394 320 219 218 217 217 216 216 202 199 189 187 179 178 175 174 "\
-"140 120 80 50 40 30 20 10 5 2 2 2 2 2 1 1 1 0"
+    "800 800 700 700 600 600 590 590 580 580 580 540 420 420 420 419 419 419 "\
+    "419 412 394 320 219 218 217 217 216 216 202 199 189 187 179 178 175 174 "\
+    "140 120 80 50 40 30 20 10 5 2 2 2 2 2 1 1 1 0"
 
 //No first or last peak for this
 
@@ -61,8 +61,8 @@
 #define FALLING_KURT 2.0266
 
 #define INPUT_CONST "70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 "\
-"70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 "\
-"70 70 70 70 70 70 70 70"
+    "70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 "\
+    "70 70 70 70 70 70 70 70"
 
 //No first or last peak for this
 
@@ -81,94 +81,94 @@
 #define KURT_ERR 0.5
 
 class LidarDriverTest: public testing::Test{
-public:
-    std::vector<PulseData*> pulses;
-    PulseData* pd;
+    public:
+        std::vector<PulseData*> pulses;
+        PulseData* pd;
 
-protected:
+    protected:
 
-    //Strings can be shorter than 100 but not more
-    char *typicalInput;
-    char *risingInput;
-    char *fallingInput;
-    char *constantInput;
+        //Strings can be shorter than 100 but not more
+        char *typicalInput;
+        char *risingInput;
+        char *fallingInput;
+        char *constantInput;
 
-    //Peaks
-    std::vector<Peak> typicalPeaks;
-    std::vector<Peak> risingPeaks;
-    std::vector<Peak> fallingPeaks;
-    std::vector<Peak> constantPeaks;
+        //Peaks
+        std::vector<Peak> typicalPeaks;
+        std::vector<Peak> risingPeaks;
+        std::vector<Peak> fallingPeaks;
+        std::vector<Peak> constantPeaks;
 
-    //Args
-    char** commonArgSpace;
-    int numberOfArgs;
-    int maxLengthOfArg;
+        //Args
+        char** commonArgSpace;
+        int numberOfArgs;
+        int maxLengthOfArg;
 
-    //Some drivers to test with
-    LidarDriver driver1;
-    LidarDriver driver2;
-    LidarDriver driver3;
+        //Some drivers to test with
+        LidarDriver driver1;
+        LidarDriver driver2;
+        LidarDriver driver3;
 
-    /**
-     * Creates a vector of Peaks for testing purposes. Artificially marks
-     * a first and last peak if addFirstAndLast is set to 1.
-     *
-     * @param input  List of numbers to turn into peaks
-     * @returns vector of peaks.
-     */
-    std::vector<Peak> makeTestPeaks(char *input) {
-        std::vector<Peak> peaks;
-        char* ptr;
-        ptr = strtok (input," ");
-        int i=0;
-        while (ptr != NULL){
-            int z0 = atoi(ptr);
-            Peak p;
-            //Sets peak up to be testable for all three of these variables
-            p.z_activation = z0;
-            p.amp = z0;
-            p.fwhm = z0;
-            p.position_in_wave = 3;
-            p.is_final_peak = false;
-            peaks.push_back(p);
-            i++;
-            ptr = strtok (NULL," ");
+        /**
+         * Creates a vector of Peaks for testing purposes. Artificially marks
+         * a first and last peak if addFirstAndLast is set to 1.
+         *
+         * @param input  List of numbers to turn into peaks
+         * @returns vector of peaks.
+         */
+        std::vector<Peak> makeTestPeaks(char *input) {
+            std::vector<Peak> peaks;
+            char* ptr;
+            ptr = strtok (input," ");
+            int i=0;
+            while (ptr != NULL){
+                int z0 = atoi(ptr);
+                Peak p;
+                //Sets peak up to be testable for all three of these variables
+                p.z_activation = z0;
+                p.amp = z0;
+                p.fwhm = z0;
+                p.position_in_wave = 3;
+                p.is_final_peak = false;
+                peaks.push_back(p);
+                i++;
+                ptr = strtok (NULL," ");
+            }
+            return peaks;
         }
-        return peaks;
-    }
 
-    void SetUp() {
-        typicalInput = (char*) malloc(sizeof(char) * 1028);
-        risingInput = (char*) malloc(sizeof(char) * 1028);
-        fallingInput = (char*) malloc(sizeof(char) * 1028);
-        constantInput = (char*) malloc(sizeof(char) * 1028);
+        void SetUp() {
+            typicalInput = (char*) malloc(sizeof(char) * 1028);
+            risingInput = (char*) malloc(sizeof(char) * 1028);
+            fallingInput = (char*) malloc(sizeof(char) * 1028);
+            constantInput = (char*) malloc(sizeof(char) * 1028);
 
-        strncpy(typicalInput, INPUT_TYPICAL, 1028);
-        typicalInput[1028] = '\0';
-        strncpy(risingInput, INPUT_RISING, 1028);
-        risingInput[1028] = '\0';
-        strncpy(fallingInput, INPUT_FALLING, 1028);
-        fallingInput[1028] = '\0';
-        strncpy(constantInput, INPUT_CONST, 1028);
-        constantInput[1028] = '\0';
+            strncpy(typicalInput, INPUT_TYPICAL, 1028);
+            typicalInput[1028] = '\0';
+            strncpy(risingInput, INPUT_RISING, 1028);
+            risingInput[1028] = '\0';
+            strncpy(fallingInput, INPUT_FALLING, 1028);
+            fallingInput[1028] = '\0';
+            strncpy(constantInput, INPUT_CONST, 1028);
+            constantInput[1028] = '\0';
 
 
-        typicalPeaks = makeTestPeaks(typicalInput);
-        risingPeaks = makeTestPeaks(risingInput);
-        fallingPeaks = makeTestPeaks(fallingInput);
-        constantPeaks = makeTestPeaks(constantInput);
+            typicalPeaks = makeTestPeaks(typicalInput);
+            risingPeaks = makeTestPeaks(risingInput);
+            fallingPeaks = makeTestPeaks(fallingInput);
+            constantPeaks = makeTestPeaks(constantInput);
 
-        // Adding first and last peak data to the typical peaks-- The rest don't have any.
-        typicalPeaks.at(TYPICAL_FIRST_PEAK).position_in_wave = 1;
-        typicalPeaks.at(TYPICAL_LAST_PEAK).is_final_peak = true;
-    }
+            // Adding first and last peak data to the typical peaks-- The rest don't have any.
+            typicalPeaks.at(TYPICAL_FIRST_PEAK).position_in_wave = 1;
+            typicalPeaks.at(TYPICAL_LAST_PEAK).is_final_peak = true;
+        }
 
-    void TearDown() {
-        free(typicalInput);
-        free(risingInput);
-        free(fallingInput);
-        free(constantInput);
-    }
+        void TearDown() {
+            free(typicalInput);
+            free(risingInput);
+            free(fallingInput);
+            free(constantInput);
+        }
 };
 
 /*
@@ -179,10 +179,10 @@ protected:
 
 
 /******************************************************************************
-*
-* Max
-*
-******************************************************************************/
+ *
+ * Max
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_max_first_test){
 
     float val_z = driver1.get_extreme(&typicalPeaks,true,0,'z');
@@ -289,10 +289,10 @@ TEST_F(LidarDriverTest, get_max_all_test){
 
 
 /******************************************************************************
-*
-* Min
-*
-******************************************************************************/
+ *
+ * Min
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_min_first_test){
 
     float val_z = driver1.get_extreme(&typicalPeaks,false,0,'z');
@@ -399,10 +399,10 @@ TEST_F(LidarDriverTest, get_min_all_test){
 
 
 /******************************************************************************
-*
-* Mean
-*
-******************************************************************************/
+ *
+ * Mean
+ *
+ ******************************************************************************/
 
 TEST_F(LidarDriverTest, get_mean_first_test){
     float val_z = driver1.get_mean(&typicalPeaks,0,'z');
@@ -508,155 +508,155 @@ TEST_F(LidarDriverTest, get_mean_all_test){
 
 
 /******************************************************************************
-*
-* Standard Deviation
-*
-******************************************************************************/
+ *
+ * Standard Deviation
+ *
+ ******************************************************************************/
 
 //TODO: Finish this. Desired results of using standard deviation in certain
 //situations is unknown.
 
 
 /******************************************************************************
-*
-* Skewness
-*
-******************************************************************************/
+ *
+ * Skewness
+ *
+ ******************************************************************************/
 
 
 /******************************************************************************
-*
-* Kurtosis
-*
-******************************************************************************/
+ *
+ * Kurtosis
+ *
+ ******************************************************************************/
 
 
 /******************************************************************************
-*
-* Test 4 *lot of redundancies with FlightLineData_unittests in this test
-*
-******************************************************************************/
+ *
+ * Test 4 *lot of redundancies with FlightLineData_unittests in this test
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, setup_flight_data_test){
-	// Known FlightLineData
-	int known_scanner_id = 1;
-	double known_wave_length = 1064;
-	double known_outgoing_pulse_width = 4.822761;
-	int known_scan_pattern = 2;
-	int known_numer_of_mirror_facets = 4;
-	double known_scan_frequency = 146.666672;
-	double known_scan_angle_min = 0.00001;
-	double known_scan_angle_max = 359.999969;
-	double known_pulse_frequency = 400;
-	double known_beam_diameter_at_exit_aperture = 10;
-	double known_beam_divergence = 0.5;
-	double known_minimal_range = 660.48053;
-	double known_maximal_range = 1860.605225;
+    // Known FlightLineData
+    int known_scanner_id = 1;
+    double known_wave_length = 1064;
+    double known_outgoing_pulse_width = 4.822761;
+    int known_scan_pattern = 2;
+    int known_numer_of_mirror_facets = 4;
+    double known_scan_frequency = 146.666672;
+    double known_scan_angle_min = 0.00001;
+    double known_scan_angle_max = 359.999969;
+    double known_pulse_frequency = 400;
+    double known_beam_diameter_at_exit_aperture = 10;
+    double known_beam_divergence = 0.5;
+    double known_minimal_range = 660.48053;
+    double known_maximal_range = 1860.605225;
 
-	double known_bb_x_min = 516209.586;
-	double known_bb_y_min = 4767921.375;
-	double known_bb_z_min = 2084.585;
-	double known_bb_x_max = 516211.942;
-	double known_bb_y_max = 4767923.621;
-	double known_bb_z_max = 2093.581;
+    double known_bb_x_min = 516209.586;
+    double known_bb_y_min = 4767921.375;
+    double known_bb_z_min = 2084.585;
+    double known_bb_x_max = 516211.942;
+    double known_bb_y_max = 4767923.621;
+    double known_bb_z_max = 2093.581;
 
-	FlightLineData fld;
-	std::string filename;
-	filename = "etc/140823_183115_1_clipped_test.pls";
+    FlightLineData fld;
+    std::string filename;
+    filename = "etc/140823_183115_1_clipped_test.pls";
 
-	EXPECT_NO_THROW(driver1.setup_flight_data(fld,filename));
+    EXPECT_NO_THROW(driver1.setup_flight_data(fld,filename));
 
-	EXPECT_EQ(fld.hasNextPulse(),true);
+    EXPECT_EQ(fld.hasNextPulse(),true);
 
-	EXPECT_EQ (known_scanner_id, fld.scanner_id);
-	EXPECT_DOUBLE_EQ (known_wave_length, fld.wave_length);
-	EXPECT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width, 0.0000005);
-	EXPECT_EQ (known_scan_pattern, fld.scan_pattern);
-	EXPECT_EQ (known_numer_of_mirror_facets, fld.number_of_mirror_facets);
-	EXPECT_NEAR (known_scan_frequency, fld.scan_frequency, 0.000001);
-	EXPECT_NEAR (known_scan_angle_min, fld.scan_angle_min, 0.0000001);
-	EXPECT_NEAR (known_scan_angle_max, fld.scan_angle_max, 0.0000005);
-	EXPECT_DOUBLE_EQ (known_pulse_frequency, fld.pulse_frequency);
-	EXPECT_DOUBLE_EQ (known_beam_diameter_at_exit_aperture,
-	                  fld.beam_diameter_at_exit_aperture);
-	EXPECT_NEAR (known_beam_divergence, fld.beam_divergence, 0.01);
-	EXPECT_NEAR (known_minimal_range, fld.minimal_range, 0.00001);
-	EXPECT_NEAR (known_maximal_range, fld.maximal_range, 0.000001);
+    EXPECT_EQ (known_scanner_id, fld.scanner_id);
+    EXPECT_DOUBLE_EQ (known_wave_length, fld.wave_length);
+    EXPECT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width, 0.0000005);
+    EXPECT_EQ (known_scan_pattern, fld.scan_pattern);
+    EXPECT_EQ (known_numer_of_mirror_facets, fld.number_of_mirror_facets);
+    EXPECT_NEAR (known_scan_frequency, fld.scan_frequency, 0.000001);
+    EXPECT_NEAR (known_scan_angle_min, fld.scan_angle_min, 0.0000001);
+    EXPECT_NEAR (known_scan_angle_max, fld.scan_angle_max, 0.0000005);
+    EXPECT_DOUBLE_EQ (known_pulse_frequency, fld.pulse_frequency);
+    EXPECT_DOUBLE_EQ (known_beam_diameter_at_exit_aperture,
+            fld.beam_diameter_at_exit_aperture);
+    EXPECT_NEAR (known_beam_divergence, fld.beam_divergence, 0.01);
+    EXPECT_NEAR (known_minimal_range, fld.minimal_range, 0.00001);
+    EXPECT_NEAR (known_maximal_range, fld.maximal_range, 0.000001);
 
-	EXPECT_DOUBLE_EQ (known_bb_x_min, fld.bb_x_min);
-	EXPECT_DOUBLE_EQ (known_bb_y_min, fld.bb_y_min);
-	EXPECT_DOUBLE_EQ (known_bb_z_min, fld.bb_z_min);
-	EXPECT_DOUBLE_EQ (known_bb_x_max, fld.bb_x_max);
-	EXPECT_DOUBLE_EQ (known_bb_y_max, fld.bb_y_max);
-	EXPECT_DOUBLE_EQ (known_bb_z_max, fld.bb_z_max);
+    EXPECT_DOUBLE_EQ (known_bb_x_min, fld.bb_x_min);
+    EXPECT_DOUBLE_EQ (known_bb_y_min, fld.bb_y_min);
+    EXPECT_DOUBLE_EQ (known_bb_z_min, fld.bb_z_min);
+    EXPECT_DOUBLE_EQ (known_bb_x_max, fld.bb_x_max);
+    EXPECT_DOUBLE_EQ (known_bb_y_max, fld.bb_y_max);
+    EXPECT_DOUBLE_EQ (known_bb_z_max, fld.bb_z_max);
 
 }
 
 
 /******************************************************************************
-*
-* Test 5
-*
-******************************************************************************/
+ *
+ * Test 5
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, add_peaks_to_volume_test){
 
-	std::vector<Peak> peaks;
-	LidarVolume lidarVolume;
-	FlightLineData fld;
-	std::string filename;
-	filename = "etc/140823_183115_1_clipped_test.pls";
+    std::vector<Peak> peaks;
+    LidarVolume lidarVolume;
+    FlightLineData fld;
+    std::string filename;
+    filename = "etc/140823_183115_1_clipped_test.pls";
 
-	EXPECT_NO_THROW(driver1.setup_flight_data(fld,filename));
+    EXPECT_NO_THROW(driver1.setup_flight_data(fld,filename));
 
 
-	double known_amp = 142;
-	double known_loc = 19;
-	double known_fwhm = 5;
-	double known_fwhm_t_pos = 21;
-	double known_fwhm_t_neg = 16;
-	int known_pos = 0;
-	int known_triggering_amp = 13;
-	int known_triggering_loc = 14;
-	double known_x_act = 516211;
-	double known_y_act = 4767923;
-	double known_z_act = 4159;
+    double known_amp = 142;
+    double known_loc = 19;
+    double known_fwhm = 5;
+    double known_fwhm_t_pos = 21;
+    double known_fwhm_t_neg = 16;
+    int known_pos = 0;
+    int known_triggering_amp = 13;
+    int known_triggering_loc = 14;
+    double known_x_act = 516211;
+    double known_y_act = 4767923;
+    double known_z_act = 4159;
 
-	Peak p;
-	p.amp= known_amp;
-	p.location = known_loc;
-	p.fwhm = known_fwhm;
-	p.fwhm_t_positive = known_fwhm_t_pos;
-	p.fwhm_t_negative = known_fwhm_t_neg;
-	p.position_in_wave = known_pos;
-	p.triggering_amp = known_triggering_amp;
-	p.triggering_location = known_triggering_loc;
-	p.x_activation = known_x_act;
-	p.y_activation = known_y_act;
-	p.z_activation = known_z_act;
+    Peak p;
+    p.amp= known_amp;
+    p.location = known_loc;
+    p.fwhm = known_fwhm;
+    p.fwhm_t_positive = known_fwhm_t_pos;
+    p.fwhm_t_negative = known_fwhm_t_neg;
+    p.position_in_wave = known_pos;
+    p.triggering_amp = known_triggering_amp;
+    p.triggering_location = known_triggering_loc;
+    p.x_activation = known_x_act;
+    p.y_activation = known_y_act;
+    p.z_activation = known_z_act;
 
-	peaks.push_back(p);
-	EXPECT_NO_THROW(driver1.setup_lidar_volume(fld,lidarVolume));
-	EXPECT_NO_THROW(driver1.add_peaks_to_volume(lidarVolume,peaks,1));
+    peaks.push_back(p);
+    EXPECT_NO_THROW(driver1.setup_lidar_volume(fld,lidarVolume));
+    EXPECT_NO_THROW(driver1.add_peaks_to_volume(lidarVolume,peaks,1));
 
-	EXPECT_EQ(peaks.at(0).amp, lidarVolume.volume[5]->at(0).amp);
-	EXPECT_EQ(peaks.at(0).location, lidarVolume.volume[5]->at(0).location);
-	EXPECT_EQ(peaks.at(0).fwhm, lidarVolume.volume[5]->at(0).fwhm);
-	EXPECT_EQ(peaks.at(0).fwhm_t_positive, lidarVolume.volume[5]->at(0).fwhm_t_positive);
-	EXPECT_EQ(peaks.at(0).fwhm_t_negative, lidarVolume.volume[5]->at(0).fwhm_t_negative);
-	EXPECT_EQ(peaks.at(0).position_in_wave, lidarVolume.volume[5]->at(0).position_in_wave);
-	EXPECT_EQ(peaks.at(0).triggering_amp, lidarVolume.volume[5]->at(0).triggering_amp);
-	EXPECT_EQ(peaks.at(0).triggering_location, lidarVolume.volume[5]->at(0).triggering_location);
-	EXPECT_EQ(peaks.at(0).x_activation, lidarVolume.volume[5]->at(0).x_activation);
-	EXPECT_EQ(peaks.at(0).y_activation, lidarVolume.volume[5]->at(0).y_activation);
-	EXPECT_EQ(peaks.at(0).z_activation, lidarVolume.volume[5]->at(0).z_activation);
+    EXPECT_EQ(peaks.at(0).amp, lidarVolume.volume[5]->at(0).amp);
+    EXPECT_EQ(peaks.at(0).location, lidarVolume.volume[5]->at(0).location);
+    EXPECT_EQ(peaks.at(0).fwhm, lidarVolume.volume[5]->at(0).fwhm);
+    EXPECT_EQ(peaks.at(0).fwhm_t_positive, lidarVolume.volume[5]->at(0).fwhm_t_positive);
+    EXPECT_EQ(peaks.at(0).fwhm_t_negative, lidarVolume.volume[5]->at(0).fwhm_t_negative);
+    EXPECT_EQ(peaks.at(0).position_in_wave, lidarVolume.volume[5]->at(0).position_in_wave);
+    EXPECT_EQ(peaks.at(0).triggering_amp, lidarVolume.volume[5]->at(0).triggering_amp);
+    EXPECT_EQ(peaks.at(0).triggering_location, lidarVolume.volume[5]->at(0).triggering_location);
+    EXPECT_EQ(peaks.at(0).x_activation, lidarVolume.volume[5]->at(0).x_activation);
+    EXPECT_EQ(peaks.at(0).y_activation, lidarVolume.volume[5]->at(0).y_activation);
+    EXPECT_EQ(peaks.at(0).z_activation, lidarVolume.volume[5]->at(0).z_activation);
 
 }
 
 
 /******************************************************************************
-*
-* Test 17
-*
-******************************************************************************/
+ *
+ * Test 17
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_all_amp_deviation_test){
 
     std::vector<Peak> peaks;
@@ -689,10 +689,10 @@ TEST_F(LidarDriverTest, get_all_amp_deviation_test){
 }
 
 /******************************************************************************
-*
-* Test 18
-*
-******************************************************************************/
+ *
+ * Test 18
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_all_amp_skewtosis_skewness_test){
 
     std::vector<Peak> peaks;
@@ -726,10 +726,10 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_skewness_test){
 }
 
 /******************************************************************************
-*
-* Test 19
-*
-******************************************************************************/
+ *
+ * Test 19
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_all_amp_skewtosis_kurtosis_test){
 
     std::vector<Peak> peaks;
@@ -738,7 +738,7 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_kurtosis_test){
     double stdev = 59.9883576667636;
 
     double expected = 3.97964179113; //https://www.easycalculation.com/statistics/kurtosis.php
-	double abs_error = 0.05;
+    double abs_error = 0.05;
 
     char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
         "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 "
@@ -763,15 +763,15 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_kurtosis_test){
 }
 
 /******************************************************************************
-*
-* Test 20
-*
-******************************************************************************/
+ *
+ * Test 20
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_first_amp_deviation_test){
 
     std::vector<Peak> peaks;
 
-	double avg = 38.3275862068966;
+    double avg = 38.3275862068966;
 
     double expected = 53.3987562592582;
     double abs_error = 0.05;
@@ -798,15 +798,15 @@ TEST_F(LidarDriverTest, get_first_amp_deviation_test){
 }
 
 /******************************************************************************
-*
-* Test 21
-*
-******************************************************************************/
+ *
+ * Test 21
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_first_amp_skewtosis_skewness_test){
 
     std::vector<Peak> peaks;
 
-	double avg = 38.3275862068966;
+    double avg = 38.3275862068966;
     double stdev = 53.3987562592582;
 
     double expected = 1.67397950413312;
@@ -834,21 +834,21 @@ TEST_F(LidarDriverTest, get_first_amp_skewtosis_skewness_test){
 }
 
 /******************************************************************************
-*
-* Test 22
-*
-******************************************************************************/
+ *
+ * Test 22
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_first_amp_skewtosis_kurtosis_test){
 
     std::vector<Peak> peaks;
 
-	double avg = 38.3275862068966;
-	double stdev = 53.3987562592582;
+    double avg = 38.3275862068966;
+    double stdev = 53.3987562592582;
 
     double expected =  4.64158429732; //https://www.easycalculation.com/statistics/kurtosis.php
     double abs_error = 0.05;
 
-   char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
+    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
         "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
     char* ptr;
@@ -870,10 +870,10 @@ TEST_F(LidarDriverTest, get_first_amp_skewtosis_kurtosis_test){
 }
 
 /******************************************************************************
-*
-* Test 23
-*
-******************************************************************************/
+ *
+ * Test 23
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_last_amp_deviation_test){
 
     std::vector<Peak> peaks;
@@ -906,19 +906,19 @@ TEST_F(LidarDriverTest, get_last_amp_deviation_test){
 }
 
 /******************************************************************************
-*
-* Test 24
-*
-******************************************************************************/
+ *
+ * Test 24
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_last_amp_skewtosis_skewness_test){
 
     std::vector<Peak> peaks;
 
     double avg = 38.3275862068966;
-	double stdev = 53.3987562592582;
+    double stdev = 53.3987562592582;
 
-	double expected = 1.67397950413312;
-	double abs_error = 0.05;
+    double expected = 1.67397950413312;
+    double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
         "139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
@@ -942,16 +942,16 @@ TEST_F(LidarDriverTest, get_last_amp_skewtosis_skewness_test){
 }
 
 /******************************************************************************
-*
-* Test 25
-*
-******************************************************************************/
+ *
+ * Test 25
+ *
+ ******************************************************************************/
 TEST_F(LidarDriverTest, get_last_amp_skewtosis_kurtosis_test){
 
     std::vector<Peak> peaks;
 
-	double avg = 38.3275862068966;
-	double stdev = 53.3987562592582;
+    double avg = 38.3275862068966;
+    double stdev = 53.3987562592582;
 
     double expected = 4.64158429732; //https://www.easycalculation.com/statistics/kurtosis.php
     double abs_error = 0.05;

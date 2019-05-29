@@ -18,10 +18,10 @@
 class GaussianFitter{
   
 public:
-    int find_peaks(std::vector<Peak>* results,std::vector<int> ampData,
+    int find_peaks(std::vector<Peak*>* results,std::vector<int> ampData,
                   std::vector<int> idxData);
     int noise_level;
-    int guess_peaks(std::vector<Peak>* results, 
+    int guess_peaks(std::vector<Peak*>* results, 
                                 std::vector<int> ampData, 
                                 std::vector<int> idxData);
     void smoothing_expt(std::vector<int> *waveArray);

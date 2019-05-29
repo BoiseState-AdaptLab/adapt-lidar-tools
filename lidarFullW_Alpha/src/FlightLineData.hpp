@@ -69,7 +69,7 @@ class FlightLineData{
     void FlightLineDataToCSV();
     bool hasNextPulse();
     void getNextPulse(PulseData* pd);;
-    int calc_xyz_activation(std::vector<Peak> *peaks);
+    int calc_xyz_activation(std::vector<Peak*> *peaks);
 	void closeFlightLineData(void);
 	int parse_for_UTM_value(std::string input);
 	void tokenize_geoascii_params_to_vector(std::stringstream *geo_stream, std::vector<std::string>

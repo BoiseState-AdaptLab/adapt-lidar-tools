@@ -360,56 +360,57 @@ void FlightLineData::getNextPulse(PulseData *pd){
  * @param peaks pointer to the peaks to calculate activations for
  * @return the number of peaks left after calculation
  */
-int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
+int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
   int i = 1;
-  std::vector<Peak>::iterator it;
+  std::vector<Peak*>::iterator it;
   // for each of the incoming peaks
   for(it = peaks->begin(); it != peaks->end();){
     // if the amplitude of the peak is too small just ignore the whole
     // thing
-    if((*it).amp <= (*it).triggering_amp){
+    if((*it)->amp <= (*it)->triggering_amp){
+      free(*it);
       it = peaks->erase(it);
       continue;
     }
     // check to see that each of the gps locations is within our
     // bounding box -- this is for x y and z
-    (*it).x_activation =
-                  (*it).triggering_location * current_wave_gps_info.dx +
+    (*it)->x_activation =
+                  (*it)->triggering_location * current_wave_gps_info.dx +
                                   current_wave_gps_info.x_first;
-    if((*it).x_activation < bb_x_min || (*it).x_activation > bb_x_max){
-      std::cerr << "\nx activation: "<< (*it).x_activation
+    if((*it)->x_activation < bb_x_min || (*it)->x_activation > bb_x_max){
+      std::cerr << "\nx activation: "<< (*it)->x_activation
                 << " not in range: " << bb_x_min << " - " << bb_x_max <<
                 std::endl;
       exit (EXIT_FAILURE);
     }
 
-    (*it).y_activation =
-                  (*it).triggering_location * current_wave_gps_info.dy +
+    (*it)->y_activation =
+                  (*it)->triggering_location * current_wave_gps_info.dy +
                                   current_wave_gps_info.y_first;
-    if((*it).y_activation < bb_y_min || (*it).y_activation > bb_y_max){
-      std::cerr << "\ny activation: "<< (*it).y_activation
+    if((*it)->y_activation < bb_y_min || (*it)->y_activation > bb_y_max){
+      std::cerr << "\ny activation: "<< (*it)->y_activation
                 << " not in range: " << bb_y_min << " - " << bb_y_max <<
                 std::endl;
       exit (EXIT_FAILURE);
     }
 
-    (*it).z_activation =
-                  (*it).triggering_location * current_wave_gps_info.dz +
+    (*it)->z_activation =
+                  (*it)->triggering_location * current_wave_gps_info.dz +
                                   current_wave_gps_info.z_first;
-    if((*it).z_activation < bb_z_min || (*it).z_activation > bb_z_max){
-      std::cerr << "\nz activation: "<< (*it).z_activation
+    if((*it)->z_activation < bb_z_min || (*it)->z_activation > bb_z_max){
+      std::cerr << "\nz activation: "<< (*it)->z_activation
                 << " not in range: " << bb_z_min << " - " << bb_z_max <<
                 std::endl;
       exit (EXIT_FAILURE);
     }
     //mark the position in case any peaks were filtered
-    (*it).position_in_wave = i;
+    (*it)->position_in_wave = i;
     i++;
     it++;
   }
   //make sure that if our final peak got filtered out, we mark the new one
   if(peaks->size() > 0) {
-	  peaks->back().is_final_peak=true;
+	  peaks->back()->is_final_peak=true;
   }
   return peaks->size();
 }

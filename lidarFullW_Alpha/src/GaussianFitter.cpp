@@ -328,7 +328,7 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  * @param idxData
  * @return count of found peaks
  */
-int GaussianFitter::find_peaks(std::vector<Peak>* results,
+int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                               std::vector<int> ampData,
                               std::vector<int> idxData){
   incr_total();
@@ -394,9 +394,9 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
   //this is a guess starting point
   int j;
   for(i=0; i< peakCount; i++){
-    gsl_vector_set(x, i*3+0, (*results)[i].amp);
-    gsl_vector_set(x, i*3+1, (*results)[i].location);
-    gsl_vector_set(x, i*3+2, (*results)[i].fwhm);
+    gsl_vector_set(x, i*3+0, (*results)[i]->amp);
+    gsl_vector_set(x, i*3+1, (*results)[i]->location);
+    gsl_vector_set(x, i*3+2, (*results)[i]->fwhm);
   }
 
   //Clear results so we can use the gaussian fitter method
@@ -477,10 +477,10 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
       	//set the peak position in the wave
         peak->position_in_wave = i+1;
         //add the peak to our result
-        results->push_back(*peak);
+        results->push_back(peak);
        // delete(peak);
       }
-      results->back().is_final_peak=true; //mark the last peak as final
+      results->back()->is_final_peak=true; //mark the last peak as final
     }
     #ifdef DEBUG
       // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -575,7 +575,7 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
  * @param idxData
  * @return number of peaks found
  */
-int GaussianFitter::guess_peaks(std::vector<Peak>* results, 
+int GaussianFitter::guess_peaks(std::vector<Peak*>* results, 
                                              std::vector<int> ampData, std::vector<int> idxData){
 
   //std::vector<int> data = calculateFirstDifferences(ampData);
@@ -725,10 +725,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak>* results,
     peak->location = idxData[peak_guesses_loc[i]];
     peak->fwhm = guess;
     peak->position_in_wave = peaks_found;
-    results->push_back(*peak);
+    results->push_back(peak);
 
   }
-	results->back().is_final_peak=true;
+	results->back()->is_final_peak=true;
   // FOR TESTING PURPOSES
   // std::cerr << std::endl << "Guesses: \n";
   // for(int i=0;i<peak_guesses_loc.size();i++){

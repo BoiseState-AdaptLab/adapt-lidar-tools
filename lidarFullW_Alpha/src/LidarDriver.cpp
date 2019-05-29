@@ -61,7 +61,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
   PulseData pd;
   std::ostringstream stream;
   GaussianFitter fitter;
-  std::vector<Peak> peaks;
+  std::vector<Peak*> peaks;
   int peak_count = 0;
 
 #ifdef DEBUG
@@ -131,10 +131,10 @@ void LidarDriver::setup_lidar_volume(FlightLineData &raw_data, LidarVolume &lida
  * @param peaks the vector of peaks to add to the lidar volume
  * @param peak_count the count of peaks in the vector ?peaks.size()?
  */
-void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak> &peaks, int peak_count){
+void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak*> &peaks, int peak_count){
 	// give each peak to lidarVolume
 	for (int i = 0; i < peak_count; i++) {
-		lidar_volume.insert_peak(&peaks[i]);
+		lidar_volume.insert_peak(*peaks[i]);
 	}
 }
 
@@ -147,7 +147,7 @@ void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Pea
  * @param peak_count count of found peaks returned
  * @return -1 if the pulse was empty, otherwise the peak count
  */
-int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
+int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
 &peak_count){
 
 	if (pulse.returningIdx.empty()) {
@@ -196,7 +196,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds
 	for (y = fitted_data.y_idx_extent - 1; y >= 0; y--) {
 		for (x = 0; x < fitted_data.x_idx_extent; x++) {
 			//get the vector of found peaks at this pixel
-			std::vector<Peak> *peaks = fitted_data.volume[fitted_data.position(y, x)];
+			std::vector<Peak*> *peaks = fitted_data.volume[fitted_data.position(y, x)];
 			//decide what to do with the peak data at this pixel
 			switch (prod_id) {				
 				case 1 : //max all elevation
@@ -479,16 +479,16 @@ void LidarDriver::geo_orient_gdal(LidarVolume &fitted_data, GDALDataset *gdal_ds
  * @param peak_property the property of the peaks to compare
  * @return the difference between the maximal and minimal element values, or NO_DATA if no peaks
  */
-float LidarDriver::get_extreme_diff(std::vector<Peak> *peaks, char peak_property){
+float LidarDriver::get_extreme_diff(std::vector<Peak*> *peaks, char peak_property){
 	float max_val = NO_DATA;
 	float min_val = MAX_ELEV;
 	float cur_val = 0;
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
 	}
-	for (std::vector<Peak>::iterator it = peaks->begin();
+	for (std::vector<Peak*>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
-		cur_val = get_peak_property(&*it,peak_property);
+		cur_val = get_peak_property(*it,peak_property);
 
 		if (cur_val > max_val) {
 			max_val = cur_val;
@@ -511,7 +511,7 @@ float LidarDriver::get_extreme_diff(std::vector<Peak> *peaks, char peak_property
  * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
  * @return the extreme property value of the set of peaks with the specified filter
  */
-float LidarDriver::get_extreme(std::vector<Peak> *peaks, bool max_flag, int peak_pos, char peak_property){
+float LidarDriver::get_extreme(std::vector<Peak*> *peaks, bool max_flag, int peak_pos, char peak_property){
 	float max_val = NO_DATA;
 	float min_val = MAX_ELEV;
 	float cur_val = 0;
@@ -519,18 +519,18 @@ float LidarDriver::get_extreme(std::vector<Peak> *peaks, bool max_flag, int peak
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
 	}
-	for (std::vector<Peak>::iterator it = peaks->begin();
+	for (std::vector<Peak*>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
 		//check what type of returns to evaluate
 		switch (peak_pos){
 			case 0: //first
-				if(it->position_in_wave!=1){
+				if((*it)->position_in_wave!=1){
 					continue;
 				}
 				no_countable_peaks = false;
 				break;
 			case 1: //last
-				if(!it->is_final_peak){
+				if(!(*it)->is_final_peak){
 					continue;
 				}
 				no_countable_peaks = false;
@@ -542,7 +542,7 @@ float LidarDriver::get_extreme(std::vector<Peak> *peaks, bool max_flag, int peak
 				break;
 		}
 		//get current value to evaluate
-		cur_val = get_peak_property(&*it,peak_property);
+		cur_val = get_peak_property(*it,peak_property);
 		//check if max or min we want
 		if (max_flag) {
 			if (cur_val > max_val) {
@@ -569,25 +569,25 @@ float LidarDriver::get_extreme(std::vector<Peak> *peaks, bool max_flag, int peak
  * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
  * @return the mean property value of the set of peaks with the specified filter
  */
-float LidarDriver::get_mean(std::vector<Peak> *peaks, int peak_pos, char peak_property){
+float LidarDriver::get_mean(std::vector<Peak*> *peaks, int peak_pos, char peak_property){
 	double val_sum  = 0;
 	int val_count = 0;
 	bool no_countable_peaks = true;
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
 	}
-	for (std::vector<Peak>::iterator it = peaks->begin();
+	for (std::vector<Peak*>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
 		//check what type of returns to evaluate
 		switch (peak_pos){
 			case 0: //first
-				if(it->position_in_wave!=1){
+				if((*it)->position_in_wave!=1){
 					continue;
 				}
 				no_countable_peaks = false;
 				break;
 			case 1: //last
-				if(!it->is_final_peak){
+				if(!(*it)->is_final_peak){
 					continue;
 				}
 				no_countable_peaks = false;
@@ -598,7 +598,7 @@ float LidarDriver::get_mean(std::vector<Peak> *peaks, int peak_pos, char peak_pr
 			default:
 				break;
 		}
-		val_sum += get_peak_property(&*it,peak_property);
+		val_sum += get_peak_property(*it,peak_property);
 		val_count ++;
 	}
 	if(no_countable_peaks){
@@ -639,7 +639,7 @@ float LidarDriver::get_peak_property(Peak *peak, char peak_property){
  * @param peak_property the property of the peak to analyze (amplitude, width, z-activation, etc..)
  * @return the standard deviation of the property value of the set of peaks with the specified filter
  */
-double LidarDriver::get_deviation(std::vector<Peak> *peaks, double avg, int peak_pos, char peak_property)
+double LidarDriver::get_deviation(std::vector<Peak*> *peaks, double avg, int peak_pos, char peak_property)
 {
 	double E=0;
 	float cur_val=0;
@@ -647,18 +647,18 @@ double LidarDriver::get_deviation(std::vector<Peak> *peaks, double avg, int peak
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
 	}
-	for (std::vector<Peak>::iterator it = peaks->begin();
+	for (std::vector<Peak*>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
-		cur_val = get_peak_property(&*it,peak_property);
+		cur_val = get_peak_property(*it,peak_property);
 		switch(peak_pos) {
 			case 0: //first
-				if (it->position_in_wave == 1) {
+				if ((*it)->position_in_wave == 1) {
 					peak_count++;
 					E += pow(static_cast<double>(cur_val) - avg, 2);
 				}
 				break;
 			case 1: //last
-				if (it->is_final_peak) {
+				if ((*it)->is_final_peak) {
 					peak_count++;
 					E += pow(static_cast<double>(cur_val) - avg, 2);
 				}
@@ -683,7 +683,7 @@ double LidarDriver::get_deviation(std::vector<Peak> *peaks, double avg, int peak
  * @param power the power of the quadratic in the calculation (3=skewness, 4=kurtosis)
  * @return the skewness or kurtosis of the property value of the set of peaks with the specified filter
  */
-double LidarDriver::get_skewtosis(std::vector<Peak> *peaks, double avg, double dev, int peak_pos, char
+double LidarDriver::get_skewtosis(std::vector<Peak*> *peaks, double avg, double dev, int peak_pos, char
 peak_property, int power){
 	double G=0;
 	double cur_val = 0;
@@ -691,18 +691,18 @@ peak_property, int power){
 	if(peaks==NULL || peaks->empty()){
 		return NO_DATA;
 	}
-	for (std::vector<Peak>::iterator it = peaks->begin();
+	for (std::vector<Peak*>::iterator it = peaks->begin();
 	     it != peaks->end(); ++it) {
-		cur_val = get_peak_property(&*it,peak_property);
+		cur_val = get_peak_property(*it,peak_property);
 		switch (peak_pos){
 			case 0: //first peaks
-				if (it->position_in_wave == 1) {
+				if ((*it)->position_in_wave == 1) {
 					peak_count++;
 					G += pow(static_cast<double>(cur_val) - avg, power);
 				}
 				break;
 			case 1: //last peaks
-				if (it->is_final_peak) {
+				if ((*it)->is_final_peak) {
 					peak_count++;
 					G += pow(static_cast<double>(cur_val) - avg, power);
 				}

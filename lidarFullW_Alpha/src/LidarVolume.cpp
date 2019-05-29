@@ -62,7 +62,7 @@ void LidarVolume::allocateMemory(){
   // information (we don't know how many per volume)
   unsigned int size = x_idx_extent*y_idx_extent;  //To prevent overflow during calloc
   int x_idx,y_idx;
-  volume = (std::vector<Peak>**) malloc (sizeof(std::vector<Peak>*)*size);
+  volume = (std::vector<Peak*>**) malloc (sizeof(std::vector<Peak*>*)*size);
   if(volume==NULL){
     perror("ERROR ATTEMPTING TO ALLOCATE LidarVolume Data: ");
   }
@@ -107,9 +107,9 @@ int LidarVolume::position(int i, int j){
  * insert_peak Note that this is an unordered list
  * @param peak
  */
-void LidarVolume::insert_peak(Peak *peak){
-  unsigned int x_idx = gps_to_voxel_x(peak->x_activation);
-  unsigned int y_idx = gps_to_voxel_y(peak->y_activation);
+void LidarVolume::insert_peak(Peak peak){
+  unsigned int x_idx = gps_to_voxel_x(peak.x_activation);
+  unsigned int y_idx = gps_to_voxel_y(peak.y_activation);
 
   // make sure we are in our bounding box
   if((long int)x_idx > x_idx_extent || (long int)y_idx > y_idx_extent){
@@ -119,9 +119,9 @@ void LidarVolume::insert_peak(Peak *peak){
   unsigned long int p = position(y_idx,x_idx);
 
   if(volume[p] == NULL){
-    volume[p] = new std::vector<Peak>();
+    volume[p] = new std::vector<Peak*>();
   }
-  volume[p]->push_back(*peak); //TODO: Make this stop leaking!
+  volume[p]->push_back(&peak); //TODO: Make this stop leaking!
 }
 
 

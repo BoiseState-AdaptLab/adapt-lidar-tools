@@ -47,7 +47,8 @@ FlightLineData::FlightLineData(){
 void FlightLineData::setFlightLineData(std::string fileName){
 
 #ifdef DEBUG
-    std::cerr << "Debug messages enabled for this run of setFlightLineData" << std::endl;
+    std::cerr << "Debug messages enabled for this run of setFlightLineData" <<
+        std::endl;
 #endif
 
     pOpener.set_file_name(fileName.c_str());
@@ -91,7 +92,8 @@ void FlightLineData::setFlightLineData(std::string fileName){
     int utm_loc = locate_utm_field(&tokens);
     if(utm_loc < 0){
         //no utm found, trouble!
-        std::cerr << "CRITICAL ERROR! No UTM value found in PLS header!\n"<<std::endl;
+        std::cerr << "CRITICAL ERROR! No UTM value found in PLS header!"
+            << std::endl;
         exit(EXIT_FAILURE);
     }
     utm_str = tokens[utm_loc];
@@ -104,7 +106,8 @@ void FlightLineData::setFlightLineData(std::string fileName){
     int geog_cs_loc = locate_geog_cs_field(&tokens);
     if(geog_cs_loc < 0){
         //no geog_cs found, trouble!
-        std::cerr << "CRITICAL ERROR! No geog_cs (NAD/WGS) value found in PLS header!\n"<<std::endl;
+        std::cerr << "CRITICAL ERROR! No geog_cs (NAD/WGS) value found in PLS "
+            << "header!" << std::endl;
         exit(EXIT_FAILURE);
     }
     geog_cs = tokens.at(geog_cs_loc);
@@ -189,8 +192,9 @@ void FlightLineData::FlightLineDataToCSV(){
 
     /* Provide the file name to the PULSEreadOpener
        c_str returns a const char* that points to a null-terminated string
-       (i.e. a C-style string). It is useful when you want to pass the "contents"
-       of an std::string to a function that expects to work with a C-style string */
+       (i.e. a C-style string). It is useful when you want to pass the
+       "contents" of an std::string to a function that expects to work with a
+       C-style string */
 
     FILE *scanout;
     scanout = fopen("scanner.csv", "w");
@@ -246,7 +250,8 @@ bool FlightLineData::hasNextPulse(){
 void FlightLineData::getNextPulse(PulseData *pd){
 
     if(!next_pulse_exists){
-        std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next pulse\n";
+        std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next "
+            << "pulse" << std::endl;
         exit(EXIT_FAILURE);
     }
     current_wave_gps_info.populateGPS(pReader);
@@ -268,8 +273,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
     //If the first sampling is not of type outgoing, there is some error
     if(sampling->get_type() != PULSEWAVES_OUTGOING){
-        std::cout << "CRITICAL ERROR! \
-            The first sampling must be an outgoing wave!\n";
+        std::cout << "CRITICAL ERROR! The first sampling must be an "
+            << "outgoing wave!" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -305,14 +310,15 @@ void FlightLineData::getNextPulse(PulseData *pd){
         // std::cout << "Starting returning" << std::endl;  
         sampling = pReader->waves->get_sampling(sampling_number);
         if(sampling->get_type() != PULSEWAVES_RETURNING) {
-            std::cout << "CRITICAL ERROR! \
-                The second sampling must be a returning wave!\n";
+            std::cout << "CRITICAL ERROR! The second sampling must be a "
+                << "returning wave!" << std::endl;
             exit(EXIT_FAILURE);
         }
         //Populate returing wave data
         for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
             sampling->set_active_segment(j);
-            //set the start time of the returning wave and keep track of the times
+            //set the start time of the returning wave and keep track of the
+            //times
             if(j == 0){
                 pulse_returning_start_time =
                     sampling->get_duration_from_anchor_for_segment();
@@ -456,9 +462,9 @@ int FlightLineData::parse_for_UTM_value(std::string input){
  * @param tokens pointer to the vector to store results
  */
 
-void FlightLineData::tokenize_geoascii_params_to_vector(std::stringstream *geo_stream, std::vector<std::string>
-        *tokens){
-
+void FlightLineData::tokenize_geoascii_params_to_vector(
+        std::stringstream *geo_stream, std::vector<std::string> *tokens)
+{
     std::string intermediate;
     std::string final;
     // Tokenizing well.known.text (w.k.t) on '/'
@@ -475,9 +481,11 @@ void FlightLineData::tokenize_geoascii_params_to_vector(std::stringstream *geo_s
     }
 }
 
+
 /**
  * find the UTM field in the tokenized geoascii parameters string
- * @param tokens pointer to the tokenized representation of the geoascii parameters field
+ * @param tokens pointer to the tokenized representation of the geoascii
+ * parameters field
  * @return the index of the UTM field, or -1 if no UTM field located
  */
 int FlightLineData::locate_utm_field(std::vector<std::string> *tokens){
@@ -492,12 +500,15 @@ int FlightLineData::locate_utm_field(std::vector<std::string> *tokens){
 
 /**
  * find the geog_cs field in the tokenized geoascii parameters string
- * @param tokens pointer to the tokenized representation of the geoascii parameters field
+ * @param tokens pointer to the tokenized representation of the geoascii
+ * parameters field
  * @return the index of the geog_cs field, or -1 if no geog_cs field located
  */
-int FlightLineData::locate_geog_cs_field(std::vector<std::string> *tokens){
-    for (int i = 0; i<(int)tokens->size();i++){
-        if(tokens->at(i).find("WGS")!=std::string::npos||tokens->at(i).find("NAD")!=std::string::npos){
+int FlightLineData::locate_geog_cs_field(std::vector<std::string> *tokens)
+{
+    for (int i = 0; i<(int)tokens->size();i++) {
+        if(tokens->at(i).find("WGS")!=std::string::npos
+                || tokens->at(i).find("NAD")!=std::string::npos) {
             return i;
         }
     }

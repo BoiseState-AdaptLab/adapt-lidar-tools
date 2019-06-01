@@ -36,6 +36,7 @@ class GaussianFitter{
         int total;
 
     private:
+        void delete_peaks(std::vector<Peak*>* results);
         std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
         void incr_fail();
         void incr_pass();

@@ -47,7 +47,8 @@ TEST_F(WaveGPSInformationTest, checkValues){
     std::string fileNameCorrect =  "etc/140823_183115_1_clipped_test.pls";
 
     /*
-     * Test that the file exists and can be opened before trying to use it in the test case
+     * Test that the file exists and can be opened before trying to use it in
+     * the test case
      */
     ASSERT_TRUE(std::ifstream(fileNameCorrect.c_str()));
 
@@ -64,11 +65,11 @@ TEST_F(WaveGPSInformationTest, checkValues){
     pReader = pOpener.open();
     long long pulseIndex = 0; // Keep track of the index
 
-    /****************************************************************************
+    /***************************************************************************
      *
      * Begin index = 0 tests
      *
-     ****************************************************************************/
+     **************************************************************************/
     if(pReader->read_pulse()) {
         gpsInfo.populateGPS(pReader);
         pulseIndex++;
@@ -103,11 +104,11 @@ TEST_F(WaveGPSInformationTest, checkValues){
         EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
         EXPECT_EQ (known_intensity, gpsInfo.intensity);
     }
-    /****************************************************************************
+    /***************************************************************************
      *
      * Begin index = 1 tests
      *
-     ****************************************************************************/
+     **************************************************************************/
     if(pReader->read_pulse()) {
         gpsInfo.populateGPS(pReader);
         pulseIndex++;
@@ -142,11 +143,11 @@ TEST_F(WaveGPSInformationTest, checkValues){
         EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
         EXPECT_EQ (known_intensity, gpsInfo.intensity);
     }
-    /****************************************************************************
+    /***************************************************************************
      *
      * Begin index = 2 tests
      *
-     ****************************************************************************/
+     **************************************************************************/
     if(pReader->read_pulse()) {
         gpsInfo.populateGPS(pReader);
         pulseIndex++;
@@ -181,11 +182,11 @@ TEST_F(WaveGPSInformationTest, checkValues){
         EXPECT_EQ (known_scan_direction, gpsInfo.scanDirection);
         EXPECT_EQ (known_intensity, gpsInfo.intensity);
     }
-    /****************************************************************************
+    /***************************************************************************
      *
      * Begin index = 3 tests
      *
-     ****************************************************************************/
+     **************************************************************************/
     if(pReader->read_pulse()) {
         gpsInfo.populateGPS(pReader);
         pulseIndex++;

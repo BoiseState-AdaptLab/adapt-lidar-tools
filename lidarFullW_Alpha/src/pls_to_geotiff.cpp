@@ -52,7 +52,8 @@ int main (int argc, char *argv[]) {
     GDALDriver *driverTiff = driver.setup_gdal_driver();
 
 #ifdef DEBUG
-    std::cerr << "driver.fit_data returned, will loop through products next." << std::endl;
+    std::cerr << "driver.fit_data returned, will loop through products next."
+        << std::endl;
 #endif
 
     // TODO: None of this should be in main - it should be abstracted away
@@ -86,8 +87,10 @@ int main (int argc, char *argv[]) {
     Clock::time_point t2 = Clock::now();
 
     //Compute total run time and convert to appropriate units
-    double diff = std::chrono::duration_cast<std::chrono::seconds>(t2-t1).count();
-    std::cout << "All done!\nTime elapsed: " << diff << " seconds\n" << std::endl;
+    double diff = std::chrono::duration_cast<std::chrono::seconds>(t2-t1).
+        count();
+    std::cout << "All done!\nTime elapsed: " << diff << " seconds\n" <<
+        std::endl;
 
     return 0;
 }

@@ -41,8 +41,10 @@ TEST_F(LidarVolumeTest, testBoundingBox){
     int known_x_idx_min = 0;
     int known_y_idx_min = 0;
     int known_z_idx_min = 0;
-    int known_x_idx_max= (int) (ceil(516211.942 + 10)) - (floor(516209.586 - 10));
-    int known_y_idx_max= (int) (ceil(4767923.621 + 10)) - (floor(4767921.375 - 10));        
+    int known_x_idx_max= (int) (ceil(516211.942 + 10)) -
+        (floor(516209.586 - 10));
+    int known_y_idx_max= (int) (ceil(4767923.621 + 10)) -
+        (floor(4767921.375 - 10));
     int known_z_idx_max= (int) (ceil(2093.581 + 10)) - (floor(2084.585 - 10));
 
     EXPECT_EQ(known_x_idx_min, lv.bb_x_idx_min);

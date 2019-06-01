@@ -7,7 +7,8 @@
 #include "Peak.hpp"
 #include <math.h>
 
-/* All peak input data to be tested against is defined in the following macros */
+/* All peak input data to be tested against is defined in the following
+ * macros */
 
 #define INPUT_TYPICAL \
     "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 "\
@@ -158,7 +159,8 @@ class LidarDriverTest: public testing::Test{
             fallingPeaks = makeTestPeaks(fallingInput);
             constantPeaks = makeTestPeaks(constantInput);
 
-            // Adding first and last peak data to the typical peaks-- The rest don't have any.
+            // Adding first and last peak data to the typical peaks-- The rest
+            // don't have any.
             typicalPeaks.at(TYPICAL_FIRST_PEAK).position_in_wave = 1;
             typicalPeaks.at(TYPICAL_LAST_PEAK).is_final_peak = true;
         }
@@ -569,7 +571,8 @@ TEST_F(LidarDriverTest, setup_flight_data_test){
 
     EXPECT_EQ (known_scanner_id, fld.scanner_id);
     EXPECT_DOUBLE_EQ (known_wave_length, fld.wave_length);
-    EXPECT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width, 0.0000005);
+    EXPECT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width,
+            0.0000005);
     EXPECT_EQ (known_scan_pattern, fld.scan_pattern);
     EXPECT_EQ (known_numer_of_mirror_facets, fld.number_of_mirror_facets);
     EXPECT_NEAR (known_scan_frequency, fld.scan_frequency, 0.000001);
@@ -640,14 +643,22 @@ TEST_F(LidarDriverTest, add_peaks_to_volume_test){
     EXPECT_EQ(peaks.at(0).amp, lidarVolume.volume[5]->at(0).amp);
     EXPECT_EQ(peaks.at(0).location, lidarVolume.volume[5]->at(0).location);
     EXPECT_EQ(peaks.at(0).fwhm, lidarVolume.volume[5]->at(0).fwhm);
-    EXPECT_EQ(peaks.at(0).fwhm_t_positive, lidarVolume.volume[5]->at(0).fwhm_t_positive);
-    EXPECT_EQ(peaks.at(0).fwhm_t_negative, lidarVolume.volume[5]->at(0).fwhm_t_negative);
-    EXPECT_EQ(peaks.at(0).position_in_wave, lidarVolume.volume[5]->at(0).position_in_wave);
-    EXPECT_EQ(peaks.at(0).triggering_amp, lidarVolume.volume[5]->at(0).triggering_amp);
-    EXPECT_EQ(peaks.at(0).triggering_location, lidarVolume.volume[5]->at(0).triggering_location);
-    EXPECT_EQ(peaks.at(0).x_activation, lidarVolume.volume[5]->at(0).x_activation);
-    EXPECT_EQ(peaks.at(0).y_activation, lidarVolume.volume[5]->at(0).y_activation);
-    EXPECT_EQ(peaks.at(0).z_activation, lidarVolume.volume[5]->at(0).z_activation);
+    EXPECT_EQ(peaks.at(0).fwhm_t_positive, lidarVolume.volume[5]->
+            at(0).fwhm_t_positive);
+    EXPECT_EQ(peaks.at(0).fwhm_t_negative, lidarVolume.volume[5]->
+            at(0).fwhm_t_negative);
+    EXPECT_EQ(peaks.at(0).position_in_wave, lidarVolume.volume[5]->
+            at(0).position_in_wave);
+    EXPECT_EQ(peaks.at(0).triggering_amp, lidarVolume.volume[5]->
+            at(0).triggering_amp);
+    EXPECT_EQ(peaks.at(0).triggering_location, lidarVolume.volume[5]->
+            at(0).triggering_location);
+    EXPECT_EQ(peaks.at(0).x_activation, lidarVolume.volume[5]->
+            at(0).x_activation);
+    EXPECT_EQ(peaks.at(0).y_activation, lidarVolume.volume[5]->
+            at(0).y_activation);
+    EXPECT_EQ(peaks.at(0).z_activation, lidarVolume.volume[5]->
+            at(0).z_activation);
 
 }
 
@@ -737,7 +748,9 @@ TEST_F(LidarDriverTest, get_all_amp_skewtosis_kurtosis_test){
     double avg = 43.716667;
     double stdev = 59.9883576667636;
 
-    double expected = 3.97964179113; //https://www.easycalculation.com/statistics/kurtosis.php
+    double expected = 3.97964179113;
+    //Expected value calculate with:
+    //https://www.easycalculation.com/statistics/kurtosis.php
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 2 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
@@ -845,7 +858,9 @@ TEST_F(LidarDriverTest, get_first_amp_skewtosis_kurtosis_test){
     double avg = 38.3275862068966;
     double stdev = 53.3987562592582;
 
-    double expected =  4.64158429732; //https://www.easycalculation.com/statistics/kurtosis.php
+    double expected =  4.64158429732;
+    //Calculated with
+    //https://www.easycalculation.com/statistics/kurtosis.php
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "
@@ -953,7 +968,9 @@ TEST_F(LidarDriverTest, get_last_amp_skewtosis_kurtosis_test){
     double avg = 38.3275862068966;
     double stdev = 53.3987562592582;
 
-    double expected = 4.64158429732; //https://www.easycalculation.com/statistics/kurtosis.php
+    double expected = 4.64158429732;
+    //Expected calculated with
+    //https://www.easycalculation.com/statistics/kurtosis.php
     double abs_error = 0.05;
 
     char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 "

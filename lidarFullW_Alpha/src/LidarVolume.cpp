@@ -60,7 +60,8 @@ void LidarVolume::setBoundingBox(double ld_xMin, double ld_xMax,
 void LidarVolume::allocateMemory(){
     // we are going to allocate a 2D array of space that will hold peak
     // information (we don't know how many per volume)
-    unsigned int size = x_idx_extent*y_idx_extent;  //To prevent overflow during calloc
+    unsigned int size = x_idx_extent*y_idx_extent;  //To prevent overflow during
+                                                    //calloc
     int x_idx,y_idx;
     volume = (std::vector<Peak*>**) malloc (sizeof(std::vector<Peak*>*)*size);
     if(volume==NULL){
@@ -157,8 +158,9 @@ int LidarVolume::gps_to_voxel_y(double y){
  * @param b
  * @param val
  */
-void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val){
-
+void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b,
+                        float val)
+{
     *r = 255;
     *g = 255;
     *b = 255;
@@ -223,10 +225,5 @@ void LidarVolume::setRGB(unsigned char* r,unsigned char* g, unsigned char* b, fl
             break;
     }
 }
-
-
-
-
-
 
 

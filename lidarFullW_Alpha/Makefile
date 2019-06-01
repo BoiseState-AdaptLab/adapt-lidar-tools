@@ -166,7 +166,7 @@ $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
 
 # Builds all object files
 $(OBJ)/%.o: $(SRC)/%.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS)
+	$(CXX) -std=c++11 -c -o $@ $^ $(CFLAGS)
 
 # Builds the info tool
 pls-info: $(BIN)/pls-info

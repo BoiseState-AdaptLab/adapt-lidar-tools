@@ -256,8 +256,7 @@ def compareImage(tif1, tif2, path, compare_no):
   #Colors- white (lowest), red, black (highest)
   colors = [[255,255,255], [255,0,0], [0,0,0]]
 
-  first_compare = True
-  max_dif = 0
+  max_dif = abs(data1[0][0] - data2[0][0]) / min(data1[0][0],data2[0][0])
 
   #Counters for percent differences above these threshholds
   threshholds = [.05,.1,.25,.5,.75,1]
@@ -271,7 +270,7 @@ def compareImage(tif1, tif2, path, compare_no):
       no_value2 = val2 == tif2.no_value
       #If neither has data, color is white
       if no_value1 and no_value2:
-        color_data[y, x] = [255,255,255]
+        color_data[y, x] = [128,128,128]
       #If only A has data, color is blue
       elif not no_value1 and no_value2:
         color_data[y, x] = [0,0,255]
@@ -282,8 +281,8 @@ def compareImage(tif1, tif2, path, compare_no):
       else:
         #Get difference as a % of min
         frac = abs(val1 - val2) / min(val1, val2)
-        #Check if that % is our ne biggest
-        if first_compare or frac > max_dif:
+        #Check if that % is our new biggest
+        if frac > max_dif:
           max_dif = frac
         #Get difference statistics
         for idx, perc in enumerate(threshholds):
@@ -315,22 +314,22 @@ def compareImage(tif1, tif2, path, compare_no):
     count_text += "{}%: {}".format(round(100*threshholds[start+idx]),count)
   #set each line of text
   text = ["0%  >100%",
-          "Max Percent Difference: {}%".format(round(max_dif * 100, 2)),
-          " " + tif1.file_name, " " + tif2.file_name,
-          "Percent differences greater than:",
+          "Max Relative Difference: {}%".format(round(max_dif * 100, 2)),
+          #" " + tif1.file_name, " " + tif2.file_name,
+          "Relative differences greater than:",
           count_text]
   #Find widths of each line of the legend
   line_w = [font.getsize(t)[0] for t in text]
   #Add space for difference gradient
   line_w[0] *= 2
   #Add space for color key if included
-  line_w[2] += line_h
-  line_w[3] += line_h
+  #line_w[2] += line_h
+  #line_w[3] += line_h
   #Get greatest text width
   legend_w = max(line_w)
   #Height of the legend is 6 lines or 1 line
   #+2.1 for 5 1/2 spaces or +1.2 for 1 space
-  legend_h = math.floor(line_h * 8.1)
+  legend_h = math.floor(line_h * 5.8)
   #Append rows for the legend
   extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
   color_data = np.vstack((color_data, extra_rows))
@@ -367,7 +366,7 @@ def compareImage(tif1, tif2, path, compare_no):
       #Max text
       draw.text((hor_pos, vert_pos - vert_offset), " >100%", (0,0,0), font=font)
     #File names with color key
-    elif i == 2 or i == 3:
+    elif i == 20 or i == 30:
       #Make both names start where the longest starts
       long_name = max(line_w[2], line_w[3])
       hor_pos = math.floor((max(data_w, legend_w) - long_name) / 2)

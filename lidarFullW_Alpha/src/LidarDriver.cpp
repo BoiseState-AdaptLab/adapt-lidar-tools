@@ -56,7 +56,7 @@ void LidarDriver::setup_flight_data(FlightLineData &data,
  * @param useGaussianFitting flag to indicate fitting type
  */
 void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
-        bool useGaussianFitting) 
+        bool useGaussianFitting, double calibration_constant) 
 {
     PulseData pd;
     std::ostringstream stream;
@@ -90,6 +90,19 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
                 // foreach peak - find activation point
                 //                          - calculate x,y,z
                 peak_count = raw_data.calc_xyz_activation(&peaks);
+
+                // store anchor position and calibration constant
+                // in the emitted wave
+                if (peaks.size() != 0 && peaks.at(0)->emitted_wave != NULL){
+                    peaks.at(0)->emitted_wave->x_anchor =
+                        raw_data.current_wave_gps_info.x_anchor;
+                    peaks.at(0)->emitted_wave->y_anchor =
+                        raw_data.current_wave_gps_info.y_anchor;
+                    peaks.at(0)->emitted_wave->z_anchor =
+                        raw_data.current_wave_gps_info.z_anchor;
+                    peaks.at(0)->emitted_wave->calibration_constant =
+                         calibration_constant;
+                }
 
                 add_peaks_to_volume(fitted_data, peaks, peak_count);
 
@@ -126,15 +139,13 @@ void LidarDriver::setup_lidar_volume(FlightLineData &raw_data, LidarVolume &lida
 }
 
 /**
- * add the values from the peaks vector into the lidar volume object
- * @param lidar_volume the lidar volume to add peaks to
  * @param peaks the vector of peaks to add to the lidar volume
  * @param peak_count the count of peaks in the vector ?peaks.size()?
  */
 void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak*> &peaks, int peak_count){
     // give each peak to lidarVolume
     for (int i = 0; i < peak_count; i++) {
-        lidar_volume.insert_peak(*peaks[i]);
+        lidar_volume.insert_peak(peaks[i]);
     }
 }
 
@@ -147,10 +158,11 @@ void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Pea
  * @param peak_count count of found peaks returned
  * @return -1 if the pulse was empty, otherwise the peak count
  */
-int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks, GaussianFitter &fitter, bool use_gaussian_fitting, int
-        &peak_count){
+int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks, 
+                            GaussianFitter &fitter, bool use_gaussian_fitting,
+                            int &peak_count){
 
-    if (pulse.returningIdx.empty()) {
+    if (pulse.returningIdx.empty() || pulse.outgoingIdx.empty()) {
         return -1;
     }
 
@@ -161,14 +173,29 @@ int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks, Gaussi
 
     // Smooth the data and test result
     fitter.smoothing_expt(&pulse.returningWave);
+    fitter.smoothing_expt(&pulse.outgoingWave);
 
-    // Check parameter for using gaussian fitting or estimating
+    std::vector<Peak*> out_peaks;
+
+    // Check parameter for using gaussian fitting or first differencing
     if (use_gaussian_fitting == false) {
+        fitter.guess_peaks(&out_peaks, pulse.outgoingWave,
+                pulse.outgoingIdx);
         peak_count = fitter.guess_peaks(&peaks, pulse.returningWave,
                 pulse.returningIdx);
     } else {
+        fitter.find_peaks(&out_peaks, pulse.outgoingWave,
+                pulse.outgoingIdx);
         peak_count = fitter.find_peaks(&peaks, pulse.returningWave,
                 pulse.returningIdx);
+    }
+
+    if (out_peaks.size() != 0){
+        // For each peak of the returning wave, 
+        // Store a pointer to the peak of the emitted wave
+        for (int i = 0; i < peak_count; i ++) {
+            peaks.at(i)->emitted_wave = out_peaks.at(0);
+        }
     }
 
     return peak_count;
@@ -182,6 +209,18 @@ int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks, Gaussi
  */
 void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id) {
     CPLErr retval;
+    //determinr product variable, 'z' = elevation, 'a' = amplitude,
+    //'w' = width, 'b' = backscatter coefficient
+    char prod_var = prod_id <= 18 ? 'z' : prod_id <= 36 ? 'a' : prod_id <= 54 ? 'w' :
+        prod_id <= 72 ? 'b' : '-';
+    //determine what data to use, 0 = first, 1 = last, 2 = all
+    int prod_data = ((prod_id - 1) % 18) / 6;
+    //Make sure it is a valid product
+    if (prod_var == '-') {
+        //std::cout << "Product # " << prod_id << " Not yet implemented" << 
+        //    std::endl;
+        return;
+    }
     //indexes
     int x, y;
     //place to hold the elevations
@@ -198,213 +237,34 @@ void LidarDriver::produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds
             //get the vector of found peaks at this pixel
             std::vector<Peak*> *peaks = fitted_data.volume[fitted_data.position(y, x)];
             //decide what to do with the peak data at this pixel
-            switch (prod_id) {
-                case 1 : //max all elevation
-                    pixel_values[x] = get_extreme(peaks, true,2,'z');
+            switch (prod_id % 6) {
+                case 1 : //max
+                    pixel_values[x] = get_extreme(peaks, true, prod_data,
+                        prod_var);
                     break;
-                case 2 : //min all elevation
-                    pixel_values[x] = get_extreme(peaks, false,2,'z');
+                case 2 : //min
+                    pixel_values[x] = get_extreme(peaks, false, prod_data,
+                        prod_var);
                     break;
-                case 3 : //mean all elevation
-                    pixel_values[x] = get_mean(peaks,2,'z');
+                case 3 : //mean
+                    pixel_values[x] = get_mean( peaks, prod_data, prod_var);
                     break;
-                case 4: //std-dev all elevation
-                    avg = get_mean(peaks, 2,'z');
-                    pixel_values[x] = get_deviation(peaks, avg, 2, 'z');
+                case 4: //std-dev
+                    avg = get_mean(peaks,prod_data,prod_var);
+                    pixel_values[x] = get_deviation(peaks, avg, prod_data, 
+                        prod_var);
                     break;
-                case 5: //skewness all elevation
-                    avg = get_mean(peaks, 2,'z');
-                    dev = get_deviation(peaks, avg, 2, 'z');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'z',3);
+                case 5: //skewness
+                    avg = get_mean(peaks, prod_data, prod_var);
+                    dev = get_deviation(peaks, avg, prod_data, prod_var);
+                    pixel_values[x] = get_skewtosis(peaks, avg, dev, prod_data,
+                        prod_var, 3);
                     break;
-                case 6: //kurtosis all elevation
-                    avg = get_mean(peaks, 2,'z');
-                    dev = get_deviation(peaks, avg, 2, 'z');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'z',4);
-                    break;
-                case 7: //max first elevation
-                    pixel_values[x] = get_extreme(peaks, true,0,'z');
-                    break;
-                case 8: //min first elevation
-                    pixel_values[x] = get_extreme(peaks, false,0,'z');
-                    break;
-                case 9 : //mean first elevation
-                    pixel_values[x] = get_mean(peaks,0,'z');
-                    break;
-                case 10: //std-dev first elevation
-                    avg = get_mean(peaks, 0,'z');
-                    pixel_values[x] = get_deviation(peaks, avg, 0, 'z');
-                    break;
-                case 11: //skewness first elevation
-                    avg = get_mean(peaks, 0,'z');
-                    dev = get_deviation(peaks, avg, 0, 'z');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'z',3);
-                    break;
-                case 12: //kurtosis first elevation
-                    avg = get_mean(peaks, 0,'z');
-                    dev = get_deviation(peaks, avg, 0, 'z');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'z',4);
-                    break;
-                case 13: //max last elevation
-                    pixel_values[x] = get_extreme(peaks, true,1,'z');
-                    break;
-                case 14: //min last elevation
-                    pixel_values[x] = get_extreme(peaks, false,1,'z');
-                    break;
-                case 15: //mean last elevation
-                    pixel_values[x] = get_mean(peaks,1,'z');
-                    break;
-                case 16: //std-dev last elevation
-                    avg = get_mean(peaks, 1,'z');
-                    pixel_values[x] = get_deviation(peaks, avg, 1, 'z');
-                    break;
-                case 17: //skewness last elevation
-                    avg = get_mean(peaks, 1,'z');
-                    dev = get_deviation(peaks, avg, 1, 'z');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'z',3);
-                    break;
-                case 18: //kurtosis last elevation
-                    avg = get_mean(peaks, 1,'z');
-                    dev = get_deviation(peaks, avg, 1, 'z');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'z',4);
-                    break;
-                case 19 : //max all amplitude
-                    pixel_values[x] = get_extreme(peaks, true, 2, 'a');
-                    break;
-                case 20 : //min all amplitude
-                    pixel_values[x] = get_extreme(peaks, false, 2,'a');
-                    break;
-                case 21 : //mean all amplitude
-                    pixel_values[x] = get_mean(peaks,2,'a');
-                    break;
-                case 22: //std-dev all amplitude
-                    avg = get_mean(peaks, 2,'a');
-                    pixel_values[x] = get_deviation(peaks, avg, 2, 'a');
-                    break;
-                case 23: //skewness all amplitude
-                    avg = get_mean(peaks, 2,'a');
-                    dev = get_deviation(peaks, avg, 2, 'a');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'a',3);
-                    break;
-                case 24: //kurtosis all amplitude
-                    avg = get_mean(peaks, 2,'a');
-                    dev = get_deviation(peaks, avg, 2, 'a');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'a',4);
-                    break;
-                case 25: //max first amplitude
-                    pixel_values[x] = get_extreme(peaks,true,0,'a');
-                    break;
-                case 26: //min first amplitude
-                    pixel_values[x] = get_extreme(peaks,false,0,'a');
-                    break;
-                case 27: //mean first amplitude
-                    pixel_values[x] = get_mean(peaks,0,'a');
-                    break;
-                case 28: //std-dev first amplitude
-                    avg = get_mean(peaks, 0,'a');
-                    pixel_values[x] = get_deviation(peaks, avg, 0, 'a');
-                    break;
-                case 29: //skewness first amplitude
-                    avg = get_mean(peaks, 0,'a');
-                    dev = get_deviation(peaks, avg, 0, 'a');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'a',3);
-                    break;
-                case 30: //kurtosis first amplitude
-                    avg = get_mean(peaks, 0,'a');
-                    dev = get_deviation(peaks, avg, 0, 'a');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'a',4);
-                    break;
-                case 31: //max last amplitude
-                    pixel_values[x] = get_extreme(peaks,true,1,'a');
-                    break;
-                case 32: //min last amplitude
-                    pixel_values[x] = get_extreme(peaks,false,1,'a');
-                    break;
-                case 33: //mean last amplitude
-                    pixel_values[x] = get_mean(peaks,1,'a');
-                    break;
-                case 34: //std-dev last amplitude
-                    avg = get_mean(peaks, 1,'a');
-                    pixel_values[x] = get_deviation(peaks, avg, 1, 'a');
-                    break;
-                case 35: //skewness last amplitude
-                    avg = get_mean(peaks, 1,'a');
-                    dev = get_deviation(peaks, avg, 1, 'a');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'a',3);
-                    break;
-                case 36: //kurtosis last amplitude
-                    avg = get_mean(peaks, 1,'a');
-                    dev = get_deviation(peaks, avg, 1, 'a');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'a',4);
-                    break;
-                case 37 : //max all width
-                    pixel_values[x] = get_extreme(peaks, true,2,'w');
-                    break;
-                case 38 : //min all width
-                    pixel_values[x] = get_extreme(peaks, false,2,'w');
-                    break;
-                case 39: //mean all width
-                    pixel_values[x] = get_mean(peaks,2,'w');
-                    break;
-                case 40: //std-dev all width
-                    avg = get_mean(peaks, 2,'w');
-                    pixel_values[x] = get_deviation(peaks, avg, 2, 'w');
-                    break;
-                case 41: //skewness all width
-                    avg = get_mean(peaks, 2,'w');
-                    dev = get_deviation(peaks, avg, 2, 'w');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'w',3);
-                    break;
-                case 42: //kurtosis all width
-                    avg = get_mean(peaks, 2,'w');
-                    dev = get_deviation(peaks, avg, 2, 'w');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 2, 'w',4);
-                    break;
-                case 43: //max first width
-                    pixel_values[x] = get_extreme(peaks, true,0,'w');
-                    break;
-                case 44: //min first width
-                    pixel_values[x] = get_extreme(peaks, false,0,'w');
-                    break;
-                case 45 : //mean first width
-                    pixel_values[x] = get_mean(peaks,0,'w');
-                    break;
-                case 46: //std-dev first width
-                    avg = get_mean(peaks, 0,'w');
-                    pixel_values[x] = get_deviation(peaks, avg, 0, 'w');
-                    break;
-                case 47: //skewness first width
-                    avg = get_mean(peaks, 0,'w');
-                    dev = get_deviation(peaks, avg, 0, 'w');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'w',3);
-                    break;
-                case 48: //kurtosis first width
-                    avg = get_mean(peaks, 0,'w');
-                    dev = get_deviation(peaks, avg, 0, 'w');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 0, 'w',4);
-                    break;
-                case 49: //max last width
-                    pixel_values[x] = get_extreme(peaks, true,1,'w');
-                    break;
-                case 50: //min last width
-                    pixel_values[x] = get_extreme(peaks, false,1,'w');
-                    break;
-                case 51: //mean last width
-                    pixel_values[x] = get_mean(peaks,1,'w');
-                    break;
-                case 52: //std-dev last width
-                    avg = get_mean(peaks, 1,'w');
-                    pixel_values[x] = get_deviation(peaks, avg, 1, 'w');
-                    break;
-                case 53: //skewness last width
-                    avg = get_mean(peaks, 1,'w');
-                    dev = get_deviation(peaks, avg, 1, 'w');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'w',3);
-                    break;
-                case 54: //kurtosis last width
-                    avg = get_mean(peaks, 1,'w');
-                    dev = get_deviation(peaks, avg, 1, 'w');
-                    pixel_values[x] = get_skewtosis(peaks, avg,dev, 1, 'w',4);
+                case 0: //kurtosis
+                    avg = get_mean(peaks, prod_data, prod_var);
+                    dev = get_deviation(peaks, avg, prod_data, prod_var);
+                    pixel_values[x] = get_skewtosis(peaks, avg, dev, prod_data,
+                        prod_var, 4);
                     break;
                 default:
                     //std::cout << "Product #" << prod_id << " not implemented" << std::endl;
@@ -547,7 +407,7 @@ float LidarDriver::get_extreme(std::vector<Peak*> *peaks, bool max_flag, int pea
         if (max_flag) {
             if (cur_val > max_val) {
                 max_val = cur_val;
-            }
+           }
         } else {
             if (cur_val < min_val) {
                 min_val = cur_val;
@@ -623,9 +483,13 @@ float LidarDriver::get_peak_property(Peak *peak, char peak_property){
             return peak->amp;
         case 'w':
             return peak->fwhm;
+        case 'b':
+            {double val = peak->calcBackscatter();
+            return val != -1 ? val : NO_DATA;}
         default:
             break;
     }
+    //TODO: get rid of the exit statement
     std::cout << "CRITICAL ERROR! \
         No implemented peak property for identifier "<<peak_property<<"\n";
     exit(EXIT_FAILURE);

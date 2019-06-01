@@ -18,7 +18,6 @@ int main (int argc, char *argv[]) {
     FlightLineData rawData; //the raw data read from PLS + WVS files
     LidarVolume intermediateData; //the parsed data from the LIDAR waveforms
 
-
     // Parse and validate the command line args
     if(!cmdLineArgs.parse_args(argc,argv)){
         return 1;
@@ -42,7 +41,8 @@ int main (int argc, char *argv[]) {
 #endif
 
     //fit data
-    driver.fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting);
+    driver.fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting,
+        cmdLineArgs.calibration_constant);
 
 #ifdef DEBUG
     std::cerr << "driver.fit_data returned" << std::endl;
@@ -72,7 +72,6 @@ int main (int argc, char *argv[]) {
         //orient the tiff correctly
         driver.geo_orient_gdal(intermediateData,gdal_ds,
                 rawData.geog_cs, rawData.utm);
-
         //write the tiff data
         driver.produce_product(intermediateData, gdal_ds, prod);
 

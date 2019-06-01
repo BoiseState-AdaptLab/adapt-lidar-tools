@@ -431,7 +431,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         incr_pass();
         //this loop is going through every peak
         for(i=0; i< peakCount; i++){
-            Peak* peak = new Peak(); //TODO: Make this stop leaking!
+            Peak* peak = new Peak(); //TODO: Make this stop leaking! But results is cleared a couple lines before so these peaks are taking up old space, not new space
             peak->amp = gsl_vector_get(x,3*i+ 0);
             peak->location = gsl_vector_get(x,3*i+ 1);
             double c = gsl_vector_get(x,3*i+ 2);
@@ -463,7 +463,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - " << peak->location << ")/" << c << "]^2)" << std::endl;
 
             if(peak->triggering_location > n || peak->triggering_location <0){
-
                 delete(peak);
                 //Print amplitude information that is causing the error
                 // std::cerr << "\nTriggering location: "<< peak->triggering_location \

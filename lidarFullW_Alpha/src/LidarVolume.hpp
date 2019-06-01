@@ -52,7 +52,7 @@ class LidarVolume{
         //i, j,k values and the extents
         void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
                 double ld_yMax, double ld_zMin, double ld_zMax);
-        void insert_peak(Peak peak);
+        void insert_peak(Peak* peak);
         void allocateMemory();
         void deallocateMemory();
         int position(int i, int j);

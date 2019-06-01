@@ -19,7 +19,7 @@
 class CmdLine{
 
 private:
-        //possible parameters
+    //possible parameters
     std::string inputFileName;
 
     // helpful stuff
@@ -33,10 +33,13 @@ private:
 
 
 public:
+    //calibration constant (for backscatter option)
+    double calibration_constant;
+
     // help parameters
     bool printUsageMessage;
     // use find_peaks parameter
-    // True = use gaussian fitting, False = only guess
+    // True = gaussian fitting, False = first differencing
     bool useGaussianFitting;
     // bool max_elevation_flag;
     CmdLine();

@@ -8,25 +8,12 @@
 using namespace std;
 
 
-//off by one to
-// match
-// index to product ID
-const static std::string product_desc[55] = {"", "max_all_elev", "min_all_elev", "mean_all_elev", "sd_all_elev",
-    "skew_all_elev","kurt_all_elev", "max_first_elev", "min_first_elev",
-    "mean_first_elev", "sd_first_elev", "skew_first_elev", "kurt_first_elev",
-    "max_last_elev", "min_last_elev", "mean_last_elev",
-    "sd_last_elev", "skew_last_elev", "kurt_last_elev",
-    "max_all_amp", "min_all_amp", "mean_all_amp",
-    "sd_all_amp", "skew_all_amp", "kurt_all_amp", "max_first_amp",
-    "min_first_amp", "mean_first_amp", "sd_first_amp",
-    "skew_first_amp", "kurt_first_amp", "max_last_amp", "min_last_amp",
-    "mean_last_amp", "sd_last_amp", "skew_last_amp", "kurt_last_amp",
-    "max_all_width", "min_all_width", "mean_all_width", "sd_all_width",
-    "skew_all_width","kurt_all_width", "max_first_width", "min_first_width",
-    "mean_first_width", "sd_first_width", "skew_first_width", "kurt_first_width",
-    "max_last_width", "min_last_width", "mean_last_width",
-    "sd_last_width", "skew_last_width", "kurt_last_width"};
-
+//type is ((id - 1) % 6)
+const static std::string product_type[6] = {"max", "min", "mean", "sd", "skew", "kurt"};
+//data used is floor(((id -1) % 18) / 6)
+const static std::string product_data[3] = {"first", "last", "all"};
+//variable is ((id - 1) / 18)
+const static std::string product_variable[4] = {"elev", "amp", "width", "backscatter"};
 
 /****************************************************************************
  *
@@ -60,35 +47,39 @@ void CmdLine::setUsageMessage()
     buffer << std::endl;
     buffer << "| Function | Peak Type | Product Number |" << std::endl;
     buffer << "|----------|-----------|----------------|" << std::endl;
-    buffer << "| Max      | All       | 1              |" << std::endl;
-    buffer << "| Min      | All       | 2              |" << std::endl;
-    buffer << "| Mean     | All       | 3              |" << std::endl;
-    buffer << "| Std.Dev  | All       | 4              |" << std::endl;
-    buffer << "| Skew     | All       | 5              |" << std::endl;
-    buffer << "| Kurtosis | All       | 6              |" << std::endl;
-    buffer << "| Max      | First     | 7              |" << std::endl;
-    buffer << "| Min      | First     | 8              |" << std::endl;
-    buffer << "| Mean     | First     | 9              |" << std::endl;
-    buffer << "| Std.Dev  | First     | 10             |" << std::endl;
-    buffer << "| Skew     | First     | 11             |" << std::endl;
-    buffer << "| Kurtosis | First     | 12             |" << std::endl;
-    buffer << "| Max      | Last      | 13             |" << std::endl;
-    buffer << "| Min      | Last      | 14             |" << std::endl;
-    buffer << "| Mean     | Last      | 15             |" << std::endl;
-    buffer << "| Std.Dev  | Last      | 16             |" << std::endl;
-    buffer << "| Skew     | Last      | 17             |" << std::endl;
-    buffer << "| Kurtosis | Last      | 18             |" << std::endl;
+    buffer << "| Max      | First     | 1              |" << std::endl;
+    buffer << "| Min      | First     | 2              |" << std::endl;
+    buffer << "| Mean     | First     | 3              |" << std::endl;
+    buffer << "| Std.Dev  | First     | 4              |" << std::endl;
+    buffer << "| Skew     | First     | 5              |" << std::endl;
+    buffer << "| Kurtosis | First     | 6              |" << std::endl;
+    buffer << "| Max      | Last      | 7              |" << std::endl;
+    buffer << "| Min      | Last      | 8              |" << std::endl;
+    buffer << "| Mean     | Last      | 9              |" << std::endl;
+    buffer << "| Std.Dev  | Last      | 10             |" << std::endl;
+    buffer << "| Skew     | Last      | 11             |" << std::endl;
+    buffer << "| Kurtosis | Last      | 12             |" << std::endl;
+    buffer << "| Max      | All       | 13             |" << std::endl;
+    buffer << "| Min      | All       | 14             |" << std::endl;
+    buffer << "| Mean     | All       | 15             |" << std::endl;
+    buffer << "| Std.Dev  | All       | 16             |" << std::endl;
+    buffer << "| Skew     | All       | 17             |" << std::endl;
+    buffer << "| Kurtosis | All       | 18             |" << std::endl;
     buffer << std::endl;
     buffer << "Valid ways to format the list include:" << std::endl;
     buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
     buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
-    buffer << "                   -e \" 1 , 2 , 3 \" (white-space allowed inside quotes)" << std::endl;
+    buffer << "                   -e \" 1 , 2 , 3 \"   (white-space allowed inside quotes)" << std::endl;
     buffer << "Option:  " << std::endl;
     buffer << "       -a  <list of products>"
         << "  :Generate Amplitude products" << std::endl;
     buffer << "Option:  " << std::endl;
     buffer << "       -w  <list of products>"
         << "  :Generate Width products" << std::endl;
+    buffer << "Option:  " <<std::endl;
+    buffer << "       -b  <list of products> -c <calibration constant>"
+        << "  :Generate Backscatter Coefficient products with the given"
+        << " calibration constant" << std::endl;
     buffer << "Option:  " << std::endl;
     buffer << "       -d"
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
@@ -114,6 +105,7 @@ std::string CmdLine::getUsageMessage(){
  * Default constructor
  */
 CmdLine::CmdLine(){
+    calibration_constant = 0;
     printUsageMessage = false;
     useGaussianFitting = true;
     exeName = "";
@@ -159,117 +151,77 @@ void CmdLine::parse(int argc,char *argv[]){
         {"elevation", required_argument,NULL,'e'},
         {"amplitude", required_argument,NULL,'a'},
         {"width", required_argument,NULL,'w'},
+        {"backscatter", required_argument,NULL,'b'},
         {0, 0, 0, 0}
     };
 
     // getopt_long stores the option index here.
     int option_index = 0;
+    //Keeps track of if backscatter coefficient is requested
+    bool need_backscatter = false;
     /* Using getopt_long to get the arguments with an option.
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, ":hdf:e:a:w:",
+    while((optionChar = getopt_long (argc, argv, ":hdf:e:a:w:b:c:",
                     long_options, &option_index))!= -1){
-        switch(optionChar){
-            // Option 'h' shows the help information
-            case 'f': //Set the filename to parse
-                fArg = optarg;
-                setInputFileName(fArg);
-                break;
-            case 'h':
-                printUsageMessage = true;
-                break;
-            case 'd':
-                useGaussianFitting = false;
-                break;
-            case 'e':
-                {// Without curly braces wrapping this case, there are compilation errors
-                    e_arg = optarg;
-                    std::stringstream ss(e_arg);
-                    while(ss.good()) {
-                        string substr;
-                        getline(ss, substr, ',');
-                        int arg;
-                        try {
-                            arg = atoi(substr.c_str());
-                        } catch (std::invalid_argument e) {
-                            std::cout << "\nProduct list could not be converted into integers" <<std::endl;
-                            std::cout << "-------------------------" <<std::endl;
-                            printUsageMessage = true;
-                            break;
-                        }
-
-                        //Just making sure it doesn't try pushing broken data to selected_products
-                        if (printUsageMessage) {
-                            break;
-                        }
-                        selected_products.push_back(arg);
+        if (optionChar == 'f') { //Set the filename to parse
+            fArg = optarg;
+            setInputFileName(fArg);
+        } else if (optionChar == 'h') { //Show help information
+            printUsageMessage = true;
+        } else if (optionChar == 'd') { //Sets analysis method
+            useGaussianFitting = false;
+        } else if (optionChar == 'e' || optionChar == 'a' || optionChar == 'w'
+            || optionChar == 'b'){
+            //Sets which pruducts to create and for which variable
+            { // Without curly braces wrapping this case, there are compilation errors
+                e_arg = optarg;
+                std::stringstream ss(e_arg);
+                while(ss.good()) {
+                    string substr;
+                    getline(ss, substr, ',');
+                    int arg;
+                    try {
+                        arg = (optionChar == 'a' ? 18 : optionChar == 'w' ? 36 :
+                            optionChar == 'b' ? 54 : 0) + atoi(substr.c_str());
+                    } catch (std::invalid_argument e) {
+                        std::cout << "\nProduct list could not be converted into integers" <<std::endl;
+                        std::cout << "-------------------------" <<std::endl;
+                        printUsageMessage = true;
                     }
-                    break;
-                }
-            case 'a': 
-                {// Without curly braces wrapping this case, there are compilation errors
-                    e_arg = optarg;
-                    std::stringstream ss(e_arg);
-                    while(ss.good()) {
-                        string substr;
-                        getline(ss, substr, ',');
-                        int arg;
-                        try {
-                            arg = 18 + atoi(substr.c_str());
-                        } catch (std::invalid_argument e) {
-                            std::cout << "\nProduct list could not be converted into integers" <<std::endl;
-                            std::cout << "-------------------------" <<std::endl;
-                            printUsageMessage = true;
-                            break;
-                        }
 
-                        //Just making sure it doesn't try pushing broken data to selected_products
-                        if (printUsageMessage) {
-                            break;
-                        }
-                        selected_products.push_back(arg);
+                    //Just making sure it doesn't try pushing broken data to selected_products
+                    if (printUsageMessage) {
+                        break;
                     }
-                    break;
+                    selected_products.push_back(arg);
                 }
-            case 'w':
-                {// Without curly braces wrapping this case, there are compilation errors
-                    e_arg = optarg;
-                    std::stringstream ss(e_arg);
-                    while(ss.good()) {
-                        string substr;
-                        getline(ss, substr, ',');
-                        int arg;
-                        try {
-                            arg = 36 + atoi(substr.c_str());
-                        } catch (std::invalid_argument e) {
-                            std::cout << "\nProduct list could not be converted into integers" <<std::endl;
-                            std::cout << "-------------------------" <<std::endl;
-                            printUsageMessage = true;
-                            break;
-                        }
-
-                        //Just making sure it doesn't try pushing broken data to selected_products
-                        if (printUsageMessage) {
-                            break;
-                        }
-                        selected_products.push_back(arg);
-                    }
-                    break;
+                if (optionChar == 'b'){
+                    need_backscatter = true;
                 }
-            case ':':
-                // Missing option argument
-                std::cout << "\nMissing arguments" <<std::endl;
-                std::cout << "------------------" <<std::endl;
-                printUsageMessage = true;
-                break;
-            default:
-                // Invalid option
-                std::cout << "\nInvalid option" <<std::endl;
-                std::cout << "---------------" <<std::endl;
-                printUsageMessage = true;
-
+            }
+        } else if (optionChar == 'c'){ //Set calibration coefficient
+            calibration_constant = std::atof(optarg);
+        } else if (optionChar == ':'){
+            // Missing option argument
+            std::cout << "\nMissing arguments" <<std::endl;
+            std::cout << "------------------" <<std::endl;
+            printUsageMessage = true;
+        } else {
+            // Invalid option
+            std::cout << "\nInvalid option" <<std::endl;
+            std::cout << "---------------" <<std::endl;
+            printUsageMessage = true;
         }
+    }
+    
+    //Make sure that if the backscatter coefficient was requested,
+    //the calibration coefficient was inputted
+    if (need_backscatter && calibration_constant == 0){
+        std::cout << "\nMissing Calibration Coefficient" << std::endl;
+        std::cout << "---------------------------------" << std::endl;
+        printUsageMessage = true;
     }
 
     // For non option input
@@ -348,7 +300,7 @@ std::string CmdLine::get_output_filename(int product_id) {
     //Name file base on method used
     std::string file_type = ".tif";
     std::string fit_type = useGaussianFitting ? "_gaussian" : "_firstDiff";
-    std::string prod_desc = "_" +product_desc[product_id];
+    std::string prod_desc = "_" + get_product_desc(product_id);
     return output_filename +  prod_desc + fit_type + file_type;
 }
 
@@ -357,6 +309,7 @@ std::string CmdLine::get_output_filename(int product_id) {
  * @param product_id the product id
  * @return the short description of the product
  */
-std::string CmdLine::get_product_desc(int product_id){
-    return product_desc[product_id];
+std::string CmdLine::get_product_desc(int id){
+    return product_type[(id - 1) % 6] + "_" + product_data[((id - 1) % 18) / 6]
+        + "_" + product_variable[(id - 1) / 18];
 }

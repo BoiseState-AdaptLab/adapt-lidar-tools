@@ -31,12 +31,30 @@ class Peak{
         //(peak_triggering_location) * dz + z_first
         double z_activation;
 
+        //holds location of the lidar module
+        //only used in emitted wave peaks
+        double x_anchor, y_anchor, z_anchor;
+
         //holds peak location in the xyz space
         double x, y, z;
 
+        //Stores the calibration coonstant for the backscatter coefficient
+        //only used in emitted wave peaks
+        double calibration_constant;
+
+        //Stores the backscatter coefficient at that peak
+        double backscatter_coefficient;
+
+        //Points to the emmitted pulse's peak information
+        //Only used in returning wave peaks
+        //Used to calculate the backscatter coefficient
+        Peak* emitted_wave;
+
         //Default constructor
         Peak();
-
+      
+        //Calculates backscatter coefficient
+        double calcBackscatter();
 };
 
 #endif /* PEAK_HPP_ */

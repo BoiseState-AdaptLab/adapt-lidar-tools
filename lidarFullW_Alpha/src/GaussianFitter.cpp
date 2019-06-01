@@ -7,6 +7,8 @@
 #include <math.h>
 #include <algorithm>
 
+#define FINAL_PEAK_TEST
+
 GaussianFitter::GaussianFitter(){
     fail = 0;
     pass = 0;
@@ -364,7 +366,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     gsl_vector *x = gsl_vector_alloc(p);
     gsl_multifit_nlinear_fdf fdf;
     gsl_multifit_nlinear_parameters fdf_params =
-                                                                    gsl_multifit_nlinear_default_parameters();
+        gsl_multifit_nlinear_default_parameters();
     struct data fit_data;
     gsl_rng * r;
     int i;
@@ -422,6 +424,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fdf_params.solver = gsl_multifit_nlinear_solver_svd;
     fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
+#ifdef DEBUG
+    std::cerr << "peakCount = " << peakCount << std::endl;
+#endif
+
     if(!solve_system(x, &fdf, &fdf_params)){
         incr_pass();
         //this loop is going through every peak
@@ -459,7 +465,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
             if(peak->triggering_location > n || peak->triggering_location <0){
 
-                    delete(peak);
+                delete(peak);
                 //Print amplitude information that is causing the error
                 // std::cerr << "\nTriggering location: "<< peak->triggering_location \
                 //                   << " not in range: " << n <<std::endl;
@@ -471,16 +477,26 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 // std::cerr << std::endl ;
             }
             else if(peak->amp > 2.0*max || peak->amp < 0){
-                        delete(peak);
+                    delete(peak);
                 }
             else{
                 //set the peak position in the wave
                 peak->position_in_wave = i+1;
+
                 //add the peak to our result
                 results->push_back(peak);
-             // delete(peak);
             }
-            results->back()->is_final_peak=true; //mark the last peak as final
+
+#ifdef FINAL_PEAK_TEST
+            std::cerr << "--------------------" << std::endl;
+            std::cerr << "results.size = " << results->size() << std::endl;
+            std::cerr << "is empty = " << results->empty() << std::endl;
+#endif
+
+            if (!results->empty()) {
+                Peak* final_peak_ptr = results->back();
+                final_peak_ptr->is_final_peak = true; //mark the last peak as final
+            }
         }
         #ifdef DEBUG
             // PRINT DATA AND MODEL FOR TESTING PURPOSES

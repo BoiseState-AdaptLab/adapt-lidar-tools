@@ -14,29 +14,37 @@ GaussianFitter::GaussianFitter(){
     total = 0;
 }
 
+
 void GaussianFitter::incr_total(){
     total++;
 }
+
 
 int GaussianFitter::get_total(){
     return total;
 
 }
+
+
 void GaussianFitter::incr_pass(){
     pass++;
 }
+
 
 int GaussianFitter::get_pass(){
     return pass;
 }
 
+
 void GaussianFitter::incr_fail(){
     fail++;
 }
 
+
 int GaussianFitter::get_fail(){
     return fail;
 }
+
 
 /**
  *
@@ -198,6 +206,7 @@ int func_fvv (const gsl_vector * x, const gsl_vector * v,
     return GSL_SUCCESS;
 }
 
+
 /**
  *
  * @param iter
@@ -205,7 +214,8 @@ int func_fvv (const gsl_vector * x, const gsl_vector * v,
  * @param w
  */
 void callback(const size_t iter, void *params,
-                 const gsl_multifit_nlinear_workspace *w){
+              const gsl_multifit_nlinear_workspace *w)
+{
     gsl_vector *f = gsl_multifit_nlinear_residual(w);
     gsl_vector *x = gsl_multifit_nlinear_position(w);
     double avratio = gsl_multifit_nlinear_avratio(w);
@@ -231,6 +241,7 @@ void callback(const size_t iter, void *params,
                     gsl_blas_dnrm2(f));*/
 }
 
+
 /**
  *
  * @param reason
@@ -239,13 +250,15 @@ void callback(const size_t iter, void *params,
  * @param gsl_errno
  */
 void handler (const char * reason,
-                            const char * file,
-                            int line,
-                            int gsl_errno){
+              const char * file,
+              int line,
+              int gsl_errno)
+{
 
     //std::cerr << "FATAL Error:" << file << ": " << reason << std::endl;
     gsl_strerror (gsl_errno);
 }
+
 
 /**
  *
@@ -255,7 +268,7 @@ void handler (const char * reason,
  * @return
  */
 int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
-                         gsl_multifit_nlinear_parameters *params){
+                 gsl_multifit_nlinear_parameters *params) {
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
     const size_t max_iter = 200;
     const double xtol = 1.0e-8;
@@ -321,6 +334,17 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
     }
 }
 
+/**
+ * Delete all Peaks whose pointers are stored in results
+ * @param results Pointer to vector of Peaks to be destroyed
+ */
+void GaussianFitter::delete_peaks(std::vector<Peak*>* results)
+{
+    std::vector<Peak*>::iterator i;
+    for (i = results->begin(); i != results->end(); ++i) {
+        delete *i;
+    }
+}
 
 /**
  * Find the peaks and return the peak count
@@ -330,8 +354,8 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  * @return count of found peaks
  */
 int GaussianFitter::find_peaks(std::vector<Peak*>* results,
-                                                            std::vector<int> ampData,
-                                                            std::vector<int> idxData){
+                               std::vector<int> ampData,
+                               std::vector<int> idxData) {
     incr_total();
 
     //Error handling
@@ -401,6 +425,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
     //Clear results so we can use the gaussian fitter method
+    delete_peaks(results);
     results->clear();
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -431,7 +456,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         incr_pass();
         //this loop is going through every peak
         for(i=0; i< peakCount; i++){
-            Peak* peak = new Peak(); //TODO: Make this stop leaking! But results is cleared a couple lines before so these peaks are taking up old space, not new space
+            Peak* peak = new Peak(); //TODO: Make this stop leaking! But results
+                                     //is cleared a couple lines before so these
+                                     //peaks are taking up old space, not new
+                                     //space
             peak->amp = gsl_vector_get(x,3*i+ 0);
             peak->location = gsl_vector_get(x,3*i+ 1);
             double c = gsl_vector_get(x,3*i+ 2);
@@ -589,9 +617,9 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
  * @param idxData
  * @return number of peaks found
  */
-int GaussianFitter::guess_peaks(std::vector<Peak*>* results, 
-                                                                                         std::vector<int> ampData, std::vector<int> idxData){
-
+int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
+                                std::vector<int> ampData,
+                                std::vector<int> idxData) {
     //std::vector<int> data = calculateFirstDifferences(ampData);
 
     //Empty our results vector just to be sure
@@ -770,4 +798,5 @@ void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
         }
     }
 }
+
 

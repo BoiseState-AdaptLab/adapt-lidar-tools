@@ -464,12 +464,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - " << peak->location << ")/" << c << "]^2)" << std::endl;
 
             if(peak->triggering_location > n || peak->triggering_location <0){
-<<<<<<< HEAD
-                    delete(peak);
-=======
-
                 delete(peak);
->>>>>>> 83830c88ecbb256302f6c4d5ccc300ef6aabc5f0
                 //Print amplitude information that is causing the error
                 // std::cerr << "\nTriggering location: "<< peak->triggering_location \
                 //                   << " not in range: " << n <<std::endl;
@@ -490,9 +485,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 //add the peak to our result
                 results->push_back(peak);
             }
-<<<<<<< HEAD
-            results->back()->is_final_peak=true; //mark the last peak as final
-=======
 
 #ifdef FINAL_PEAK_TEST
             std::cerr << "--------------------" << std::endl;
@@ -503,7 +495,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             if (!results->empty()) {
                 Peak* final_peak_ptr = results->back();
                 final_peak_ptr->is_final_peak = true; //mark the last peak as final
->>>>>>> 83830c88ecbb256302f6c4d5ccc300ef6aabc5f0
             }
         }
         #ifdef DEBUG

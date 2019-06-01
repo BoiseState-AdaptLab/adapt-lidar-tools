@@ -7,7 +7,6 @@
 #include <math.h>
 #include <algorithm>
 
-#define FINAL_PEAK_TEST
 
 GaussianFitter::GaussianFitter(){
     fail = 0;

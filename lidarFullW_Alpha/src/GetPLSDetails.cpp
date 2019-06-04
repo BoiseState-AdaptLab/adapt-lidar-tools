@@ -53,7 +53,8 @@ int main (int argc, char *argv[]) {
     double y_idx_extent = bb_y_idx_max - bb_y_idx_min + 1;
 
     std::vector <std::string> tokens; /* vector of strings to store tokens */
-    std::stringstream geo_stream(geoascii_params); /* Use stringStream to parse */
+    std::stringstream geo_stream(geoascii_params); /* Use stringStream to
+                                                      parse */
 
     std::string intermediate; /* Store temporary strings */ 
 

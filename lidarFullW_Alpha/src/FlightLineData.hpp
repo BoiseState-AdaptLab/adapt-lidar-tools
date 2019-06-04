@@ -72,8 +72,8 @@ class FlightLineData{
         int calc_xyz_activation(std::vector<Peak*> *peaks);
         void closeFlightLineData(void);
         int parse_for_UTM_value(std::string input);
-        void tokenize_geoascii_params_to_vector(std::stringstream *geo_stream, std::vector<std::string>
-                *tokens);
+        void tokenize_geoascii_params_to_vector(std::stringstream *geo_stream,
+                std::vector<std::string> *tokens);
         int locate_utm_field(std::vector<std::string> *tokens);
         int locate_geog_cs_field(std::vector<std::string> *tokens);
 

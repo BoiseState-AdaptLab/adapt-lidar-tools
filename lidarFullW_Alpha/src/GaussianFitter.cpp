@@ -296,9 +296,10 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
     /* iterate until convergence */
     status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
-                                                            callback, NULL, &info, work);
+                                         callback, NULL, &info, work);
     if (status) {
-        // std::cerr << "There was an error: " << gsl_strerror (status) << "\n" << std::endl;
+        // std::cerr << "There was an error: " << gsl_strerror (status) 
+        // << "\n" << std::endl;
     }
 
     /* store final cost */
@@ -311,7 +312,8 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
 
     // PRINT SUMMARY FOR TESTING PUPOSES
-    // fprintf(stderr, "NITER                   = %zu\n", gsl_multifit_nlinear_niter(work));
+    // fprintf(stderr, "NITER                   = %zu\n", 
+    //     gsl_multifit_nlinear_niter(work));
     // fprintf(stderr, "NFEV                    = %zu\n", fdf->nevalf);
     // fprintf(stderr, "NJEV                    = %zu\n", fdf->nevaldf);
     // fprintf(stderr, "NAEV                    = %zu\n", fdf->nevalfvv);
@@ -320,7 +322,8 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
     // int i;
     // for(i=0;i<p/3;i++){
     //   fprintf(stderr, "final x               = (%.12e, %.12e, %12e)\n",
-    //               gsl_vector_get(x,i*3+0), gsl_vector_get(x,i*3+1), gsl_vector_get(x,i*3+2));
+    //               gsl_vector_get(x,i*3+0), gsl_vector_get(x,i*3+1),
+    //                   gsl_vector_get(x,i*3+2));
     //   fprintf(stderr, "final cond(J) = %.12e\n", 1.0 / rcond);
     // }
 
@@ -430,7 +433,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
     #ifdef DEBUG
-        std::cout << "Gaussian sum based on guesses - before solve system:" <<std::endl;
+        std::cout << "Gaussian sum based on guesses - before solve system:"
+            << std::endl;
         for (int i = 0; i < n; ++i){
             double ti = fit_data.t[i];
             // double yi = fit_data.y[i];
@@ -470,10 +474,11 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //              a: amplitude at the peak
             //              t: time
             // time = +/-sqrt((-2)*(c^2)*ln(y/a) +b
-            peak->fwhm_t_positive = sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
-                                                            + peak->location;
-            peak->fwhm_t_negative = (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
-                                                            + peak->location;
+            peak->fwhm_t_positive = 
+                sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp)) + peak->location;
+            peak->fwhm_t_negative =
+                (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp)) 
+                + peak->location;
             peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
 
             // FOR TESTING PURPOSES
@@ -484,16 +489,19 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //calculate triggering location
             peak->triggering_amp = noise_level + 1;
             peak->triggering_location = std::min(
-                        sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
-             (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
-                                                                                    );
+                 sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
+                + peak->location,
+                (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
+                + peak->location);
             //Print out Gaussian Fitter equation
-            //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - " << peak->location << ")/" << c << "]^2)" << std::endl;
+            //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - "
+            //<< peak->location << ")/" << c << "]^2)" << std::endl;
 
             if(peak->triggering_location > n || peak->triggering_location <0){
                 delete(peak);
                 //Print amplitude information that is causing the error
-                // std::cerr << "\nTriggering location: "<< peak->triggering_location \
+                // std::cerr << "\nTriggering location: "
+                // << peak->triggering_location \
                 //                   << " not in range: " << n <<std::endl;
                 // // FOR TESTING PURPOSES
                 // std::cerr << "Amplitudes: " << std::endl;
@@ -521,12 +529,14 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
             if (!results->empty()) {
                 Peak* final_peak_ptr = results->back();
-                final_peak_ptr->is_final_peak = true; //mark the last peak as final
+                final_peak_ptr->is_final_peak = true; //mark the last peak as 
+                                                      //final
             }
         }
         #ifdef DEBUG
             // PRINT DATA AND MODEL FOR TESTING PURPOSES
-            std::cout << "Gaussian sum in solve system and not failed:" <<std::endl;
+            std::cout << "Gaussian sum in solve system and not failed:"
+                << std::endl;
             for (int i = 0; i < n; ++i){
                 double ti = fit_data.t[i];
                 // double yi = fit_data.y[i];
@@ -585,7 +595,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
  * @return
  */
 std::vector<int> GaussianFitter::calculateFirstDifferences(
-                                                                                                std::vector<int> ampData){
+    std::vector<int> ampData){
     int first, second, fDiff, count = 0;
     std::vector<int> firstDifference;
 
@@ -641,7 +651,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     noise_level = ((float)max)*.09;
 
     #ifdef DEBUG
-        std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09  
+        std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09
                             << std::endl;
     #endif
 
@@ -677,10 +687,12 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                     if(prev_grad == -1){
                         if(width >2){
                             // record the center of the flat
-                            peak_guesses_loc.push_back(i-(width/2));    //Peak location
+                            peak_guesses_loc.push_back(i-(width/2));
+                            //Peak location
                         }
                     }else{
-                        peak_guesses_loc.push_back(i-(width/2));    //Peak location
+                        peak_guesses_loc.push_back(i-(width/2));
+                        //Peak location
                     }
                 }
                 grad = -1;
@@ -693,7 +705,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                     // need to look back to before going flat. If we were
                     // going down then do not record.
                     if(prev_grad == 1){
-                        peak_guesses_loc.push_back(i-((i-wideStart)/2));    //Peak location
+                        peak_guesses_loc.push_back(i-((i-wideStart)/2));
+                        //Peak location
                     }
                 }
                 // previously sloping up or down
@@ -762,7 +775,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
          if(guess > 20){guess = 10;}
             peaks_found++;
         //Create a peak
-        Peak* peak = new Peak(); //TODO: Figure out how to stop this from leaking.
+        Peak* peak = new Peak(); //TODO: Figure out how to stop this from
+                                 // leaking.
         peak->amp = ampData[peak_guesses_loc[i]];
         peak->location = idxData[peak_guesses_loc[i]];
         peak->fwhm = guess;

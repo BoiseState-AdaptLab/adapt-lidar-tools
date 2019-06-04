@@ -9,11 +9,13 @@ using namespace std;
 
 
 //type is ((id - 1) % 6)
-const static std::string product_type[6] = {"max", "min", "mean", "sd", "skew", "kurt"};
+const static std::string product_type[6] = {"max", "min", "mean", "sd", "skew",
+    "kurt"};
 //data used is floor(((id -1) % 18) / 6)
 const static std::string product_data[3] = {"first", "last", "all"};
 //variable is ((id - 1) / 18)
-const static std::string product_variable[4] = {"elev", "amp", "width", "backscatter"};
+const static std::string product_variable[4] = {"elev", "amp", "width",
+    "backscatter"};
 
 /****************************************************************************
  *
@@ -180,7 +182,8 @@ void CmdLine::parse(int argc,char *argv[]){
         } else if (optionChar == 'e' || optionChar == 'a' || optionChar == 'w'
             || optionChar == 'b'){
             //Sets which pruducts to create and for which variable
-            { // Without curly braces wrapping this case, there are compilation errors
+            { // Without curly braces wrapping this case, there are compilation
+              //errors
                 e_arg = optarg;
                 std::stringstream ss(e_arg);
                 while(ss.good()) {
@@ -196,7 +199,8 @@ void CmdLine::parse(int argc,char *argv[]){
                         printUsageMessage = true;
                     }
 
-                    //Just making sure it doesn't try pushing broken data to selected_products
+                    //Just making sure it doesn't try pushing broken data to 
+                    //selected_products
                     if (printUsageMessage) {
                         break;
                     }
@@ -244,7 +248,8 @@ void CmdLine::parse(int argc,char *argv[]){
  */
 void CmdLine::check_input_file_exists() {
     if (!std::ifstream(getInputFileName().c_str())) {
-        std::cout << "File " << getInputFileName() << " not found." << std::endl;
+        std::cout << "File " << getInputFileName() << " not found."
+            << std::endl;
         printUsageMessage = true;
     }
 }
@@ -284,7 +289,8 @@ int CmdLine::parse_args(int argc, char *argv[]) {
 }
 
 /**
- * get the input file name, stripped of leading path info and trailing extension info
+ * get the input file name, stripped of leading path info and trailing
+ * extension info
  * @return input file name stripped of path or extension information
  */
 std::string CmdLine::getTrimmedFileName(){
@@ -300,7 +306,8 @@ std::string CmdLine::getTrimmedFileName(){
 }
 
 /**
- * get the output filename based on the command line arguments and input filename
+ * get the output filename based on the command line arguments and input
+ * filename
  * @param product_id the id of the product to produce
  * @return the output filename
  */

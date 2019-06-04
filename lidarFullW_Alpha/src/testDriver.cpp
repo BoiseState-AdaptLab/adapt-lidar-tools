@@ -18,12 +18,12 @@ int main (){
     int failCount = 0;
 
     // Call all tests associated with cmdLine parsing
-    failCount += testCmdLine(); 
+    failCount += testCmdLine();
 
     // Call all tests associated with fileReading
     failCount += testFileReader();
 
-    std::cerr << "All Testing Complete: " << failCount << " tests failed\n" 
+    std::cerr << "All Testing Complete: " << failCount << " tests failed\n"
         << std::endl;
 }
 
@@ -90,30 +90,30 @@ int testCmdLine(){
         std::cerr << e.what();
     }
 
-    try{    
+    try{
         optind = 0;
         /* Test for 2 command line arguments
          * option: f
          * argument: none
-         * Expected result: Indicate that an argument is required and print usage
+         * Expected result:Indicate that an argument is required and print usage
          */
         noOfArgs = 2;
         strncpy( someArgs[1],"-f",2);
         parseCmdLineArgs(noOfArgs,someArgs);
         failCount++;
         std::cerr << "FAIL: Test 2 - Valid option '-f' without argument" 
-            << std::endl;        
+            << std::endl;
     }catch(const std::exception& e){
         passCount++;
         std::cerr << e.what();
     }
 
-    try{    
+    try{
         optind = 0;
         /* Test for 2 command line arguments
          * option: f
          * argument: none
-         * Expected result: Indicate that an argument is required and print usage
+         * Expected result:Indicate that an argument is required and print usage
          */
         noOfArgs = 2;
         strncpy( someArgs[1],"-g",2);
@@ -122,7 +122,7 @@ int testCmdLine(){
         std::cerr << "FAIL: Test 3 - Invalid option '-f' without argument" 
             << std::endl;
     }catch(const std::exception& e){
-        passCount++;        
+        passCount++;
         std::cerr << e.what();
     }
 

@@ -8,19 +8,25 @@
 class Peak{
 
     public:
-        double amp;                 //Amplitude
-        double location;        //The time location of peak occurence
-        double fwhm;                //Full width at half maximum - the width of the peak
+        double amp;         //Amplitude
+        double location;    //The time location of peak occurence
+        double fwhm;        //Full width at half maximum - the width of the peak
 
         //the time locations of the half maximum(amp/2)
         double fwhm_t_positive;
         double fwhm_t_negative;
 
-        bool is_final_peak;      //Keeps track of whether this is final peak in wave
-        int position_in_wave;  //Given 'n' peaks, the position of this peak
+        //Keeps track of whether this is final peak in wave
+        bool is_final_peak;
 
-        int triggering_amp;          //Peak triggering amplitude - noise level + 1
-        int triggering_location; //Peak activation time - calc using triggering_amp
+        //Given 'n' peaks, the position of this peak
+        int position_in_wave;
+
+        //Peak triggering amplitude - noise level + 1
+        int triggering_amp;
+
+        //Peak activation time - calc using triggering_amp
+        int triggering_location;
 
         //(triggering_location) * dx + x_first
         double x_activation;

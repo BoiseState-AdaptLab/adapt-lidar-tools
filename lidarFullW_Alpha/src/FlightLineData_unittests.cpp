@@ -97,7 +97,8 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
 
     EXPECT_EQ (known_scanner_id, fld.scanner_id);
     EXPECT_DOUBLE_EQ (known_wave_length, fld.wave_length);
-    EXPECT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width, 0.0000005);
+    EXPECT_NEAR (known_outgoing_pulse_width, fld.outgoing_pulse_width,
+            0.0000005);
     EXPECT_EQ (known_scan_pattern, fld.scan_pattern);
     EXPECT_EQ (known_numer_of_mirror_facets, fld.number_of_mirror_facets);
     EXPECT_NEAR (known_scan_frequency, fld.scan_frequency, 0.000001);
@@ -111,10 +112,10 @@ TEST_F(FlightLineDataTest, testInstrumentInformation){
     EXPECT_NEAR (known_maximal_range, fld.maximal_range, 0.000001);
 }
 
-/*******************************************************************************
+/****************************************************************************
  *
  *
- *******************************************************************************/
+ ****************************************************************************/
 TEST_F(FlightLineDataTest, testGetNextPulse){
 
     FlightLineData fld;

@@ -77,16 +77,19 @@ void CmdLine::setUsageMessage()
     buffer << "       -w  <list of products>"
         << "  :Generate Width products" << std::endl;
     buffer << "Option:  " <<std::endl;
-    buffer << "       -b  <list of products> -c <calibration constant>"
+    buffer << "       -b  <list of products> <calibration constant>"
         << "  :Generate Backscatter Coefficient products with the given"
         << " calibration constant" << std::endl;
+    buffer << "           Scientific notation allowed for calibration constant"
+        << " (e.g. 0.78 = 7.8e-1 = 7.8E-1)"
+        << std::endl;
     buffer << "Option:  " << std::endl;
     buffer << "       -d"
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
     buffer << "       -h"
         << "  :Print this help message" << std::endl;
     buffer << "\nExample: " << std::endl;
-    buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5 -w 14,9"
+    buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5 -w 14,9 -b 13,4 .768"
         << std::endl;
     usageMessage.append(buffer.str());
 }
@@ -157,13 +160,15 @@ void CmdLine::parse(int argc,char *argv[]){
 
     // getopt_long stores the option index here.
     int option_index = 0;
+    //Tacks the last option used
+    char lastOpt = ' ';
     //Keeps track of if backscatter coefficient is requested
     bool need_backscatter = false;
     /* Using getopt_long to get the arguments with an option.
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, ":hdf:e:a:w:b:c:",
+    while((optionChar = getopt_long (argc, argv, "-hdf:e:a:w:b:c:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -201,8 +206,11 @@ void CmdLine::parse(int argc,char *argv[]){
                     need_backscatter = true;
                 }
             }
-        } else if (optionChar == 'c'){ //Set calibration coefficient
+        } else if (optionChar == 1 && lastOpt == 'b'
+                  && calibration_constant == 0){ //Set calibration coefficient
             calibration_constant = std::atof(optarg);
+            std::cout << "Calibration constant for backscatter coefficient = "
+                << calibration_constant << std::endl;
         } else if (optionChar == ':'){
             // Missing option argument
             std::cout << "\nMissing arguments" <<std::endl;
@@ -214,12 +222,13 @@ void CmdLine::parse(int argc,char *argv[]){
             std::cout << "---------------" <<std::endl;
             printUsageMessage = true;
         }
+        lastOpt = optionChar;
     }
     
     //Make sure that if the backscatter coefficient was requested,
     //the calibration coefficient was inputted
     if (need_backscatter && calibration_constant == 0){
-        std::cout << "\nMissing Calibration Coefficient" << std::endl;
+        std::cout << "\nMissing Calibration Constant" << std::endl;
         std::cout << "---------------------------------" << std::endl;
         printUsageMessage = true;
     }

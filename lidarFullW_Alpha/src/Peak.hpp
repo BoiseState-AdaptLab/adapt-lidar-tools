@@ -35,6 +35,7 @@ class Peak{
         double y_activation;
 
         //(peak_triggering_location) * dz + z_first
+        // Elevation
         double z_activation;
 
         //holds location of the lidar module

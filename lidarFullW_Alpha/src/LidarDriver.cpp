@@ -193,6 +193,11 @@ int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks,
                 pulse.returningIdx);
     }
 
+    // This is where we should calculate everything that we need to 
+    // know about the peak -- include backscatter coefficient.
+    // Rise time
+    // Heights at percent energy
+    // Energy at percent heights
     if (out_peaks.size() != 0){
         // For each peak of the returning wave, 
         // Store a pointer to the peak of the emitted wave

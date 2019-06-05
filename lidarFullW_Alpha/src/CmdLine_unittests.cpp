@@ -1,4 +1,4 @@
-*
+/*
 * File name: CmdLine_unittests.cpp
 * Created on: 24-May-2017
 * Author: ravi

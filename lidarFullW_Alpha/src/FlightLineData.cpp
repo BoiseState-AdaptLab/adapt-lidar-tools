@@ -274,7 +274,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
     //If the first sampling is not of type outgoing, there is some error
     if(sampling->get_type() != PULSEWAVES_OUTGOING){
         std::cout << "CRITICAL ERROR! The first sampling must be an "
-            << "outgoing wave!" << endl;
+            << "outgoing wave!" << std::endl;
         exit(EXIT_FAILURE);
     }
 

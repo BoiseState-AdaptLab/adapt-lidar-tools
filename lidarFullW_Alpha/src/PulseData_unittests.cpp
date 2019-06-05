@@ -54,8 +54,8 @@ TEST_F(PulseDataTest, testSetterGetter){
 
 	streamData = stream.str();
 
-	realStream = "\nOutgoing:\n\n\tindices:\n\t0 1 2 \n\tamplitudes:" <<
-        " \n\t34 45 67 \n\nReturning Wave:\n\n\tindices:\n\t0 1 2 \n\t" <<
+	realStream = "\nOutgoing:\n\n\tindices:\n\t0 1 2 \n\tamplitudes:" 
+        " \n\t34 45 67 \n\nReturning Wave:\n\n\tindices:\n\t0 1 2 \n\t" 
         "amplitudes:\n\t76 65 43 ";
 
 

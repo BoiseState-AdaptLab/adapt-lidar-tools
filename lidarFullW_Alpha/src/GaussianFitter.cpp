@@ -427,10 +427,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         gsl_vector_set(x, i*3+2, (*results)[i]->fwhm);
     }
 
-    //Clear results so we can use the gaussian fitter method
-    delete_peaks(results);
-    results->clear();
-
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
     #ifdef DEBUG
         std::cout << "Gaussian sum based on guesses - before solve system:"
@@ -447,7 +443,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
 
     fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
-    //fdf_params.trs = gsl_multifit_nlinear_trs_lm;
     fdf_params.scale = gsl_multifit_nlinear_scale_more;
     fdf_params.solver = gsl_multifit_nlinear_solver_svd;
     fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
@@ -459,11 +454,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     if(!solve_system(x, &fdf, &fdf_params)){
         incr_pass();
         //this loop is going through every peak
-        for(i=0; i< peakCount; i++){
-            Peak* peak = new Peak(); //TODO: Make this stop leaking! But results
-                                     //is cleared a couple lines before so these
-                                     //peaks are taking up old space, not new
-                                     //space
+        int i=0;
+        for(auto iter = results->cbegin();iter != results->cend(); ++iter){
+            Peak *peak = *iter;
             peak->amp = gsl_vector_get(x,3*i+ 0);
             peak->location = gsl_vector_get(x,3*i+ 1);
             double c = gsl_vector_get(x,3*i+ 2);
@@ -481,11 +474,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 + peak->location;
             peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
 
-            // FOR TESTING PURPOSES
-            // printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n",
-            //               peak->fwhm_t_positive, peak->fwhm_t_negative);
-            // printf("fwhm: %f", peak->fwhm);
-
             //calculate triggering location
             peak->triggering_amp = noise_level + 1;
             peak->triggering_location = std::min(
@@ -493,32 +481,16 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 + peak->location,
                 (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
                 + peak->location);
-            //Print out Gaussian Fitter equation
-            //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - "
-            //<< peak->location << ")/" << c << "]^2)" << std::endl;
 
             if(peak->triggering_location > n || peak->triggering_location <0){
                 delete(peak);
-                //Print amplitude information that is causing the error
-                // std::cerr << "\nTriggering location: "
-                // << peak->triggering_location \
-                //                   << " not in range: " << n <<std::endl;
-                // // FOR TESTING PURPOSES
-                // std::cerr << "Amplitudes: " << std::endl;
-                // for(int i=0; i< (int)ampData.size(); i++){
-                //   std::cerr<< ampData[i] << " ";
-                // }
-                // std::cerr << std::endl ;
-            }
-            else if(peak->amp > 2.0*max || peak->amp < 0){
+                results->erase(iter);
+            } else if(peak->amp > 2.0*max || peak->amp < 0){
                     delete(peak);
-                }
-            else{
+            } else{
                 //set the peak position in the wave
+                //this will be wrong if a previous peak was removed for any reason
                 peak->position_in_wave = i+1;
-
-                //add the peak to our result
-                results->push_back(peak);
             }
 
 #ifdef FINAL_PEAK_TEST
@@ -532,6 +504,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 final_peak_ptr->is_final_peak = true; //mark the last peak as 
                                                       //final
             }
+            i++;
         }
         #ifdef DEBUG
             // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -633,6 +606,9 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //std::vector<int> data = calculateFirstDifferences(ampData);
 
     //Empty our results vector just to be sure
+    //We need to start this function with a clear vector.
+    //We can't call destructors because we don't know if the pointers
+    //are pointing to space used in LidarVolume
     results->clear();
 
     //Level up to and including which peaks will be excluded

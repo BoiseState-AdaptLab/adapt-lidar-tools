@@ -18,6 +18,7 @@ Peak::Peak(){
 
   triggering_amp = 0;
   triggering_location = 0;
+  triggering_idx = 0;
 
   x_activation = 0;
   y_activation = 0;

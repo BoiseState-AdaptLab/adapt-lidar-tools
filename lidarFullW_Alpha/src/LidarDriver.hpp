@@ -26,6 +26,11 @@ class LidarDriver {
 
         void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
                 bool useGaussianFitting, double calibration_constant);
+        void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id);
+        void setup_lidar_volume(FlightLineData &raw_data, LidarVolume &lidar_volume);
+        int parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks, Peak* emitted_pulse,
+                GaussianFitter &fitter, bool use_gaussian_fitting, int &peak_count);
+        void add_peaks_to_volume(LidarVolume &lidar_volume, std::vector<Peak*> &peaks, int peak_count);
 
         void produce_product(
                 LidarVolume &fitted_data, GDALDataset *gdal_ds, int prod_id);
@@ -42,6 +47,7 @@ class LidarDriver {
                 LidarVolume &lidar_volume, std::vector<Peak*> &peaks,
                 int peak_count);
 
+>>>>>>> 6e7cd9d5dd754b0019c88653bf88ede45cb57e78
         GDALDriver * setup_gdal_driver();
 
         GDALDataset * setup_gdal_ds(GDALDriver *tiff_driver,

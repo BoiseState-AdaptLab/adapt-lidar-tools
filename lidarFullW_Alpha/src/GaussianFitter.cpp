@@ -443,9 +443,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         incr_pass();
         //this loop is going through every peak
         int i=0;
-        for(auto iter = results->cbegin();iter != results->cend(); ++iter){
-            Peak *peak = *iter;
-            peak->amp = gsl_vector_get(x,3*i+ 0);
+        for(std::vector<Peak*>::iterator iter = results->begin();
+		iter != results->end(); ++iter) { // TODO: If we swich to using C++11 on R2, 
+            Peak *peak = *iter;			  // we will want to use auto and change
+            peak->amp = gsl_vector_get(x,3*i+ 0); // begin and end to cbegin and cend.
             peak->location = gsl_vector_get(x,3*i+ 1);
             double c = gsl_vector_get(x,3*i+ 2);
 

@@ -443,10 +443,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         incr_pass();
         //this loop is going through every peak
         int i=0;
-        for(std::vector<Peak*>::iterator iter = results->begin();
-		iter != results->end(); ++iter) { // TODO: If we swich to using C++11 on R2, 
-            Peak *peak = *iter;			  // we will want to use auto and change
-            peak->amp = gsl_vector_get(x,3*i+ 0); // begin and end to cbegin and cend.
+        for(auto iter = results->cbegin(); iter != results->cend(); ++iter) {
+            Peak *peak = *iter;
+            peak->amp = gsl_vector_get(x,3*i+ 0);
             peak->location = gsl_vector_get(x,3*i+ 1);
             double c = gsl_vector_get(x,3*i+ 2);
 
@@ -478,7 +477,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                     delete(peak);
             } else{
                 //set the peak position in the wave
-                //this will be wrong if a previous peak was removed for any reason
+                //this will be wrong if a previous peak was removed for any
+                //reason
                 peak->position_in_wave = i+1;
             }
 
@@ -490,7 +490,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
             if (!results->empty()) {
                 Peak* final_peak_ptr = results->back();
-                final_peak_ptr->is_final_peak = true; //mark the last peak as 
+                final_peak_ptr->is_final_peak = true; //mark the last peak as
                                                       //final
             }
             i++;
@@ -740,8 +740,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
          if(guess > 20){guess = 10;}
             peaks_found++;
         //Create a peak
-        Peak* peak = new Peak(); //TODO: Figure out how to stop this from
-                                 // leaking.
+        Peak* peak = new Peak();
         peak->amp = ampData[peak_guesses_loc[i]];
         peak->location = idxData[peak_guesses_loc[i]];
         peak->fwhm = guess;

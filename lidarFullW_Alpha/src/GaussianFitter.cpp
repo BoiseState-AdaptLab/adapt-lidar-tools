@@ -330,7 +330,7 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  */
 int GaussianFitter::find_peaks(std::vector<Peak>* results,
                               std::vector<int> ampData,
-                              std::vector<int> idxData){
+                              std::vector<int> idxData) {
   incr_total();
 
   //Error handling
@@ -450,14 +450,14 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
 
       //calculate triggering location
       peak->triggering_amp = noise_level + 1;
-      peak->triggering_location = std::min(
+      peak->triggering_idx = std::min(
             sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
        (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
                                           );
       //Print out Gaussian Fitter equation
       //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - " << peak->location << ")/" << c << "]^2)" << std::endl;
 
-      if(peak->triggering_location > n || peak->triggering_location <0){
+      if(peak->triggering_idx > n || peak->triggering_idx <0){
 
 	      delete(peak);
         //Print amplitude information that is causing the error
@@ -474,6 +474,13 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
 			delete(peak);
         }
       else{
+        // we need to fix the triggering location to be with respect to the plane
+        // #133
+      //  peak->triggering_location = idxData[peak->triggering_idx]+ pulse_returning_start_time;
+      //  ;
+        
+        peak->triggering_location = peak->triggering_idx + 1;
+        std::cout << " triggering location: " << peak->triggering_location << " triggeringIDX: " << peak->triggering_idx;
       	//set the peak position in the wave
         peak->position_in_wave = i+1;
         //add the peak to our result

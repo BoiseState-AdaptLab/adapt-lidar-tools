@@ -56,7 +56,7 @@ void LidarDriver::setup_flight_data(FlightLineData &data,
  * @param useGaussianFitting flag to indicate fitting type
  */
 void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
-        bool useGaussianFitting, double calibration_constant) 
+        CmdLine &cmdLine) 
 {
     PulseData pd;
     std::ostringstream stream;
@@ -73,11 +73,9 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     setup_lidar_volume(raw_data, fitted_data);
 
     //message the user
-    std::string fit_type=useGaussianFitting?"gaussian fitting":
+    std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
     std::cerr << "Finding peaks with " << fit_type << std::endl;
-
-    Peak* emitted_peak;
 
     //parse each pulse
     while (raw_data.hasNextPulse()) {
@@ -87,31 +85,15 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         // gets the raw data from the file
         raw_data.getNextPulse(&pd);
         try {
-            emitted_peak = NULL;
             // as long as the pulse has a returning wave it finds
             // the peaks in that wave
-            if(parse_pulse(pd, peaks, emitted_peak, fitter, useGaussianFitting, peak_count)) {
+            if(parse_pulse(pd, peaks, fitter, cmdLine,
+                       raw_data.current_wave_gps_info, peak_count)) {
                 // foreach peak - find activation point
                 //                          - calculate x,y,z
                 peak_count = raw_data.calc_xyz_activation(&peaks);
 
-                // store anchor position and calibration constant
-                // in the emitted wave
-                for (int i = 0; i < peak_count; i++){
-                    //If the emitted pulse exists, calculate backscatter
-                    if (emitted_peak != NULL){
-                        peaks.at(i)->calcBackscatter(emitted_peak->amp,
-                            emitted_peak->fwhm, calibration_constant,
-                            raw_data.current_wave_gps_info.x_anchor,
-                            raw_data.current_wave_gps_info.y_anchor,
-                            raw_data.current_wave_gps_info.z_anchor);
-                    } else { //Otherwise set backscatter to no data value
-                        peaks.at(i)->backscatter_coefficient = NO_DATA;
-                    }
-                }
-
                 add_peaks_to_volume(fitted_data, peaks, peak_count);
-
             }
         } catch (const char *msg) {
             std::cerr << msg << std::endl;
@@ -167,35 +149,54 @@ void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume,
  * @return -1 if the pulse was empty, otherwise the peak count
  */
 int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks,
-                            Peak* emitted_peak, GaussianFitter &fitter,
-                            bool use_gaussian_fitting, int &peak_count){
+                            GaussianFitter &fitter, CmdLine &cmdLine,
+                            WaveGPSInformation &gps_info, int &peak_count){
 
-    if (pulse.returningIdx.empty() || pulse.outgoingIdx.empty()) {
+    if (pulse.returningIdx.empty()) {
         return -1;
     }
-
+    
     // FOR TESTING PURPOSES
     // for(i=0; i<(int)pd.returningWave.size(); i++){
     //   std::cout << pd.returningWave[i] << " " ;
     // }
-
+    
     // Smooth the data and test result
     fitter.smoothing_expt(&pulse.returningWave);
-    fitter.smoothing_expt(&pulse.outgoingWave);
-
-    std::vector<Peak*> out_peaks;
 
     // Check parameter for using gaussian fitting or first differencing
-    if (use_gaussian_fitting == false) {
-        fitter.guess_peaks(&out_peaks, pulse.outgoingWave,
-                pulse.outgoingIdx);
-        peak_count = fitter.guess_peaks(&peaks, pulse.returningWave,
-                pulse.returningIdx);
-    } else {
-        fitter.find_peaks(&out_peaks, pulse.outgoingWave,
-                pulse.outgoingIdx);
+    if (cmdLine.useGaussianFitting) {
         peak_count = fitter.find_peaks(&peaks, pulse.returningWave,
                 pulse.returningIdx);
+    } else {
+        peak_count = fitter.guess_peaks(&peaks, pulse.returningWave,
+                pulse.returningIdx);
+    }
+    
+    // Repeat for the emitted pulse if backscater coefficient is requested
+    if (cmdLine.calcBackscatter){
+        fitter.smoothing_expt(&pulse.outgoingWave);
+
+        std::vector<Peak*> emitted_peaks;
+
+        if (cmdLine.useGaussianFitting){
+            fitter.find_peaks(&emitted_peaks, pulse.outgoingWave,
+                    pulse.outgoingIdx);
+        } else {
+            fitter.guess_peaks(&emitted_peaks, pulse.outgoingWave,
+                    pulse.outgoingIdx);
+        }
+
+        //For every returning wave peak, calculate the backscatter coefficient
+        for (int i = 0; i < peak_count; i ++){
+            if (emitted_peaks.size() == 0){
+                peaks.at(i)->backscatter_coefficient = NO_DATA;
+            } else {
+                peaks.at(i)->calcBackscatter(emitted_peaks.at(0)->amp,
+                        emitted_peaks.at(0)->fwhm, cmdLine.calibration_constant,
+                        gps_info.x_anchor, gps_info.y_anchor, gps_info.z_anchor);
+            }
+        }
     }
 
     // This is where we should calculate everything that we need to 
@@ -203,9 +204,6 @@ int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks,
     // Rise time
     // Heights at percent energy
     // Energy at percent heights
-    if (out_peaks.size() != 0){
-        emitted_peak = out_peaks.at(0);
-    }
 
     return peak_count;
 }

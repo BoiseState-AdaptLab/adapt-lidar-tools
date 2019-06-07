@@ -41,6 +41,10 @@ public:
     // use find_peaks parameter
     // True = gaussian fitting, False = first differencing
     bool useGaussianFitting;
+
+    // Whether or not backscatter coefficient has been requested
+    bool calcBackscatter;    
+
     // bool max_elevation_flag;
     CmdLine();
 

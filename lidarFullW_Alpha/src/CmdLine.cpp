@@ -113,6 +113,7 @@ CmdLine::CmdLine(){
     calibration_constant = 0;
     printUsageMessage = false;
     useGaussianFitting = true;
+    calcBackscatter = false;
     exeName = "";
     setUsageMessage();
 }
@@ -164,8 +165,6 @@ void CmdLine::parse(int argc,char *argv[]){
     int option_index = 0;
     //Tacks the last option used
     char lastOpt = ' ';
-    //Keeps track of if backscatter coefficient is requested
-    bool need_backscatter = false;
     /* Using getopt_long to get the arguments with an option.
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
@@ -189,13 +188,20 @@ void CmdLine::parse(int argc,char *argv[]){
                 while(ss.good()) {
                     string substr;
                     getline(ss, substr, ',');
+                    //If the inputted product number is above 18, stop now
+                    int prod_num = stoi(substr.c_str());
+                    if (atoi(substr.c_str()) > 18){
+                        std::cout << "\nInvalid product code: " << prod_num << std::endl;
+                        std::cout << "-------------------------" << std::endl;
+                        printUsageMessage = true;
+                    }
                     int arg;
                     try {
                         arg = (optionChar == 'a' ? 18 : optionChar == 'w' ? 36 :
-                            optionChar == 'b' ? 54 : 0) + atoi(substr.c_str());
+                            optionChar == 'b' ? 54 : 0) + prod_num;
                     } catch (std::invalid_argument e) {
                         std::cout << "\nProduct list could not be converted into integers" <<std::endl;
-                        std::cout << "-------------------------" <<std::endl;
+                        std::cout << "-------------------------" << std::endl;
                         printUsageMessage = true;
                     }
 
@@ -206,14 +212,12 @@ void CmdLine::parse(int argc,char *argv[]){
                     }
                     selected_products.push_back(arg);
                 }
-                if (optionChar == 'b'){
-                    need_backscatter = true;
-                }
+                calcBackscatter = optionChar == 'b' ? true : calcBackscatter;
             }
         } else if (optionChar == 1 && lastOpt == 'b'
                   && calibration_constant == 0){ //Set calibration coefficient
             calibration_constant = std::atof(optarg);
-            std::cout << "Calibration constant for backscatter coefficient = "
+            std::cout << "\nCalibration constant for backscatter coefficient = "
                 << calibration_constant << std::endl;
         } else if (optionChar == ':'){
             // Missing option argument
@@ -231,9 +235,9 @@ void CmdLine::parse(int argc,char *argv[]){
     
     //Make sure that if the backscatter coefficient was requested,
     //the calibration coefficient was inputted
-    if (need_backscatter && calibration_constant == 0){
+    if (calcBackscatter && calibration_constant == 0){
         std::cout << "\nMissing Calibration Constant" << std::endl;
-        std::cout << "---------------------------------" << std::endl;
+        std::cout << "----------------------------" << std::endl;
         printUsageMessage = true;
     }
 

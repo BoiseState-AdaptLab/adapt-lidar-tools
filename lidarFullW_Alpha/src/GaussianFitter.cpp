@@ -356,11 +356,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //figure out how many items there are in the ampData
     size_t n = ampData.size();
 
-    //get guessed peaks
-    guess_peaks(results, ampData, idxData);
-
-    //Figure out how many peaks there are
-    size_t peakCount = results->size();
+    //get guessed peaks and figure out how many peaks there are
+    size_t peakCount = guess_peaks(results, ampData, idxData);
 
     if (peakCount==0){
         return 0;
@@ -438,12 +435,12 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 #ifdef DEBUG
     std::cerr << "peakCount = " << peakCount << std::endl;
 #endif
-
+    
     if(!solve_system(x, &fdf, &fdf_params)){
         incr_pass();
         //this loop is going through every peak
         int i=0;
-        for(auto iter = results->cbegin(); iter != results->cend(); ++iter) {
+        for(auto iter = results->begin(); iter != results->end(); ++iter) {
             Peak *peak = *iter;
             peak->amp = gsl_vector_get(x,3*i+ 0);
             peak->location = gsl_vector_get(x,3*i+ 1);
@@ -469,12 +466,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 + peak->location,
                 (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
                 + peak->location);
-
-            if(peak->triggering_location > n || peak->triggering_location <0){
+            if(peak->amp > 2.0*max || peak->amp < 0 ||
+               peak->triggering_location > n || peak->triggering_location <0){
                 delete(peak);
-                results->erase(iter);
-            } else if(peak->amp i 2.0*max || peak->amp < 0){
-                    delete(peak);
+                results->erase(iter--);
             } else{
                 //set the peak position in the wave
                 //this will be wrong if a previous peak was removed for any
@@ -593,7 +588,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                                 std::vector<int> ampData,
                                 std::vector<int> idxData) {
     //std::vector<int> data = calculateFirstDifferences(ampData);
-
     //Empty our results vector just to be sure
     //We need to start this function with a clear vector.
     //We can't call destructors because we don't know if the pointers
@@ -748,7 +742,9 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         results->push_back(peak);
 
     }
+    if (results->size() != 0){
         results->back()->is_final_peak=true;
+    }
     // FOR TESTING PURPOSES
     // std::cerr << std::endl << "Guesses: \n";
     // for(int i=0;i<peak_guesses_loc.size();i++){

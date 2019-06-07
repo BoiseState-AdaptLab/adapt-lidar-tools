@@ -41,8 +41,7 @@ int main (int argc, char *argv[]) {
 #endif
 
     //fit data
-    driver.fit_data(rawData,intermediateData, cmdLineArgs.useGaussianFitting,
-        cmdLineArgs.calibration_constant);
+    driver.fit_data(rawData, intermediateData, cmdLineArgs);
 
 #ifdef DEBUG
     std::cerr << "driver.fit_data returned" << std::endl;

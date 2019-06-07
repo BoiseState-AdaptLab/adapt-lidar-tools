@@ -99,6 +99,7 @@ void WaveGPSInformation::populateGPS(PULSEreader *pReader){
  */
 void WaveGPSInformation::displayGPSData(){
     std::cout << x_anchor << std::endl;
+    std::cout << y_anchor << std::endl;
     std::cout << z_anchor << std::endl;
     std::cout << x_target << std::endl;
     std::cout << y_target << std::endl;

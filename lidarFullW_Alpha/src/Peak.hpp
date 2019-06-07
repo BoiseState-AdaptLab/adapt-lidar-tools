@@ -19,8 +19,9 @@ class Peak{
     bool is_final_peak;    //Keeps track of whether this is final peak in wave
     int position_in_wave;  //Given 'n' peaks, the position of this peak
 
-    int triggering_amp;      //Peak triggering amplitude - noise level + 1
-    int triggering_location; //Peak activation time - calc using triggering_amp
+    double triggering_amp;      //Peak triggering amplitude - noise level + 1
+    double triggering_location; //Peak activation time - calc using triggering_amp
+    int triggering_idx;      
 
     //(triggering_location) * dx + x_first
     double x_activation;

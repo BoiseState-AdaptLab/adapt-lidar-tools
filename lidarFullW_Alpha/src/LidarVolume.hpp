@@ -19,50 +19,51 @@
 
 class LidarVolume{
 
-  public:
-    //The min and max fields describing the bounding box(bb) that
-    //includes the first & last points of the sampled parts of the returning
-    //waveforms of all pulses.
-    double bb_x_min;
-    double bb_y_min;
-    double bb_z_min;
-    double bb_x_max;
-    double bb_y_max;
-    double bb_z_max;
+    public:
+        //The min and max fields describing the bounding box(bb) that
+        //includes the first & last points of the sampled parts of the returning
+        //waveforms of all pulses.
+        double bb_x_min;
+        double bb_y_min;
+        double bb_z_min;
+        double bb_x_max;
+        double bb_y_max;
+        double bb_z_max;
 
-    int bb_x_idx_min;
-    int bb_y_idx_min;
-    int bb_z_idx_min;
-    int bb_x_idx_max;
-    int bb_y_idx_max;
-    int bb_z_idx_max;
+        int bb_x_idx_min;
+        int bb_y_idx_min;
+        int bb_z_idx_min;
+        int bb_x_idx_max;
+        int bb_y_idx_max;
+        int bb_z_idx_max;
 
-    double max_z;
-    double min_z;
+        double max_z;
+        double min_z;
 
-    //extent of x, y, and z as calculated from the pulse data (max - min)
-    int x_idx_extent;
-    int y_idx_extent;
+        //extent of x, y, and z as calculated from the pulse data (max - min)
+        int x_idx_extent;
+        int y_idx_extent;
 
-    std::vector<Peak>** volume;
+        std::vector<Peak*>** volume;
 
-    LidarVolume();
+        LidarVolume();
 
-    //Read and store the mins and maxes from the header, calculate and store the
-    //i, j,k values and the extents
-    void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
-                        double ld_yMax, double ld_zMin, double ld_zMax);
-    void insert_peak(Peak *peak);
-    void allocateMemory();
-    void deallocateMemory();
-    int position(int i, int j);
-    int gps_to_voxel_x(double x);
-    int gps_to_voxel_y(double y);
+        //Read and store the mins and maxes from the header, calculate and store
+        //the i, j,k values and the extents
+        void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
+                double ld_yMax, double ld_zMin, double ld_zMax);
+        void insert_peak(Peak* peak);
+        void allocateMemory();
+        void deallocateMemory();
+        int position(int i, int j);
+        int gps_to_voxel_x(double x);
+        int gps_to_voxel_y(double y);
 
-    // This takes the float value 'val', converts it to red, green &
-    // blue values, then sets those values into the image memory buffer
-    // location pointed to by 'ptr'
-    void setRGB(unsigned char* r,unsigned char* g, unsigned char* b, float val);
+        // This takes the float value 'val', converts it to red, green &
+        // blue values, then sets those values into the image memory buffer
+        // location pointed to by 'ptr'
+        void setRGB(unsigned char* r,unsigned char* g, unsigned char* b,
+                    float val);
 };
 
 

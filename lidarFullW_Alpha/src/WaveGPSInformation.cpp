@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "WaveGPSInformation.hpp"
-
+#include <iomanip>
 //Default constructor
 WaveGPSInformation::WaveGPSInformation(){
   // enter default values
@@ -76,7 +76,7 @@ void WaveGPSInformation::populateGPS(PULSEreader *pReader){
     x_target = pReader->pulse.get_target_x();
     y_target = pReader->pulse.get_target_y();
     z_target = pReader->pulse.get_target_z();
-
+    std::cout << "x_anchor: " << x_anchor <<" x_target: " << x_target << std::endl;
     dx = (x_target - x_anchor) / 1000;
     dy = (y_target - y_anchor) / 1000;
     dz = (z_target - z_anchor) / 1000;
@@ -85,6 +85,7 @@ void WaveGPSInformation::populateGPS(PULSEreader *pReader){
     x_first = pReader->pulse.get_first_x();
     y_first = pReader->pulse.get_first_y();
     z_first = pReader->pulse.get_first_z();
+    std::cout << "x_first: " << std::setprecision(10) << x_first << std::endl;
 
     // these are saved so that we can print them if need be
     edge = pReader->pulse.edge_of_scan_line;

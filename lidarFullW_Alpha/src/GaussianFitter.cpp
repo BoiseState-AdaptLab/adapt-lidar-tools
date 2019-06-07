@@ -344,88 +344,23 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  * @param idxData
  * @return count of found peaks
  */
-int GaussianFitter::find_peaks(std::vector<Peak>* results,
-                              std::vector<int> ampData,
-                              std::vector<int> idxData) {
-  incr_total();
+int GaussianFitter::find_peaks(std::vector<Peak*>* results,
+                               std::vector<int> ampData,
+                               std::vector<int> idxData) {
+    incr_total();
 
-  //Error handling
-  int status;
-  gsl_set_error_handler(handler);
+    //Error handling
+    int status;
+    gsl_set_error_handler(handler);
 
-  //figure out how many items there are in the ampData
-  size_t n = ampData.size();
+    //figure out how many items there are in the ampData
+    size_t n = ampData.size();
 
-  //get guessed peaks
-  guess_peaks(results, ampData, idxData);
+    //get guessed peaks and figure out how many peaks there are
+    size_t peakCount = guess_peaks(results, ampData, idxData);
 
-  //Figure out how many peaks there are
-  size_t peakCount = results->size();
-
-  if (peakCount==0){
-  	return 0;
-  }
-
-  // FOR TESTING PURPOSES
-  // fprintf(stderr, "Peak count is %d\n", peakCount);
-
-  size_t p = peakCount*3;
-
-  // try to filter out some of the guesses if they are
-  // near the noise
-
-  //allocate space for fitting
-  const gsl_rng_type * T = gsl_rng_default;
-  gsl_vector *f = gsl_vector_alloc(n);
-  gsl_vector *x = gsl_vector_alloc(p);
-  gsl_multifit_nlinear_fdf fdf;
-  gsl_multifit_nlinear_parameters fdf_params =
-                                  gsl_multifit_nlinear_default_parameters();
-  struct data fit_data;
-  gsl_rng * r;
-  int i;
-
-  gsl_rng_env_setup ();
-  r = gsl_rng_alloc (T);
-
-  fit_data.t = (double*)malloc(n * sizeof(double));
-  fit_data.y = (double*)malloc(n * sizeof(double));
-  fit_data.n = n;
-
-  //copy the data to a format
-  for(i=0;i<ampData.size();i++){
-    fit_data.t[i] = (double)idxData[i];
-    fit_data.y[i] = (double)ampData[i];
-  }
-
-  //define function to be minimized
-  fdf.f = func_f;
-  fdf.df = func_df;
-  fdf.fvv = func_fvv;
-  fdf.fvv = NULL;
-  fdf.n = n;
-  fdf.p = p;
-  fdf.params = &fit_data;
-
-  //this is a guess starting point
-  int j;
-  for(i=0; i< peakCount; i++){
-    gsl_vector_set(x, i*3+0, (*results)[i].amp);
-    gsl_vector_set(x, i*3+1, (*results)[i].location);
-    gsl_vector_set(x, i*3+2, (*results)[i].fwhm);
-  }
-
-  //Clear results so we can use the gaussian fitter method
-  results->clear();
-
-  // PRINT DATA AND MODEL FOR TESTING PURPOSES
-  #ifdef DEBUG
-    std::cout << "Gaussian sum based on guesses - before solve system:" <<std::endl;
-    for (int i = 0; i < n; ++i){
-      double ti = fit_data.t[i];
-      // double yi = fit_data.y[i];
-      double fi = gaussianSum(x, ti);
-      printf("%f ", fi);
+    if (peakCount==0){
+        return 0;
     }
 
     // FOR TESTING PURPOSES
@@ -472,68 +407,9 @@ int GaussianFitter::find_peaks(std::vector<Peak>* results,
     //this is a guess starting point
     int j;
     for(i=0; i< peakCount; i++){
-      Peak* peak = new Peak();
-      peak->amp = gsl_vector_get(x,3*i+ 0);
-      peak->location = gsl_vector_get(x,3*i+ 1);
-      double c = gsl_vector_get(x,3*i+ 2);
-
-      //calculate fwhm: full width at half maximum
-      // y = a * exp( -1/2 * [ (t - b) / c ]^2 )
-      // where, y: amplitude at the t we are solving for
-      //        a: amplitude at the peak
-      //        t: time
-      // time = +/-sqrt((-2)*(c^2)*ln(y/a) +b
-      peak->fwhm_t_positive = sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
-                              + peak->location;
-      peak->fwhm_t_negative = (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp))
-                              + peak->location;
-      peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
-
-      // FOR TESTING PURPOSES
-      // printf("fwhm_t_positive: %f\nfwhm_t_negative: %f\n",
-      //         peak->fwhm_t_positive, peak->fwhm_t_negative);
-      // printf("fwhm: %f", peak->fwhm);
-
-      //calculate triggering location
-      peak->triggering_amp = noise_level + 1;
-      peak->triggering_idx = std::min(
-            sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location,
-       (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp)) + peak->location
-                                          );
-      //Print out Gaussian Fitter equation
-      //std::cout << "y = " << peak->amp << "* e^(-1/2 * [(t - " << peak->location << ")/" << c << "]^2)" << std::endl;
-
-      if(peak->triggering_idx > n || peak->triggering_idx <0){
-
-	      delete(peak);
-        //Print amplitude information that is causing the error
-        // std::cerr << "\nTriggering location: "<< peak->triggering_location \
-        //           << " not in range: " << n <<std::endl;
-        // // FOR TESTING PURPOSES
-        // std::cerr << "Amplitudes: " << std::endl;
-        // for(int i=0; i< (int)ampData.size(); i++){
-        //   std::cerr<< ampData[i] << " ";
-        // }
-        // std::cerr << std::endl ;
-      }
-      else if(peak->amp > 2.0*max || peak->amp < 0){
-			delete(peak);
-        }
-      else{
-        // we need to fix the triggering location to be with respect to the plane
-        // #133
-      //  peak->triggering_location = idxData[peak->triggering_idx]+ pulse_returning_start_time;
-      //  ;
-        
-        peak->triggering_location = peak->triggering_idx + 1;
-        std::cout << " triggering location: " << peak->triggering_location << " triggeringIDX: " << peak->triggering_idx;
-      	//set the peak position in the wave
-        peak->position_in_wave = i+1;
-        //add the peak to our result
-        results->push_back(*peak);
-       // delete(peak);
-      }
-      results->back().is_final_peak=true; //mark the last peak as final
+        gsl_vector_set(x, i*3+0, (*results)[i]->amp);
+        gsl_vector_set(x, i*3+1, (*results)[i]->location);
+        gsl_vector_set(x, i*3+2, (*results)[i]->fwhm);
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -896,5 +772,3 @@ void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
         }
     }
 }
-
-

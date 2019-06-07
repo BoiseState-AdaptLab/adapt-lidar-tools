@@ -3,13 +3,10 @@
 // Author: ravi
 
 #include "FlightLineData.hpp"
-<<<<<<< HEAD
 #include <iomanip>
-=======
 
 //#define DEBUG
 
->>>>>>> bdc3a353949390bc6cfaceeea90b3e1c2beb3427
 //Default constructor
 FlightLineData::FlightLineData(){
     // enter default values
@@ -356,18 +353,15 @@ void FlightLineData::getNextPulse(PulseData *pd){
       // }
       // std::cerr << std::endl ;
     }
+ 
   }
-  else{
-    // FOR TESTING PURPOSES
-    std::cout << "No returning Wave" << std::endl;
-  }
-
   //Check if there exists a next pulse
   if(pReader->read_pulse()){
     if(pReader->read_waves()){
       next_pulse_exists = true;
       return;
     }
+  }
     next_pulse_exists = false;
     return;
 }
@@ -378,68 +372,69 @@ void FlightLineData::getNextPulse(PulseData *pd){
  * @param peaks pointer to the peaks to calculate activations for
  * @return the number of peaks left after calculation
  */
-int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
+int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
   int i = 1;
-  std::vector<Peak>::iterator it;
+  std::vector<Peak*>::iterator it;
   // for each of the incoming peaks
-  for(it = peaks->begin(); it != peaks->end();){
+  for(it = peaks->begin(); it != peaks->end();it++){
     // if the amplitude of the peak is too small just ignore the whole
     // thing
-    if((*it).amp <= (*it).triggering_amp){
+    if((*it)->amp <= (*it)->triggering_amp){
       it = peaks->erase(it);
       continue;
     }
     // check to see that each of the gps locations is within our
     // bounding box -- this is for x y and z
-    (*it).x_activation =
-         (*it).triggering_location * current_wave_gps_info.dx +
+    (*it)->x_activation =
+         (*it)->triggering_location * current_wave_gps_info.dx +
                                   current_wave_gps_info.x_first;
 
-    std::cout << "x activation: " << std::setprecision(10) << (*it).x_activation;
-    std::cout << "  triggering loc: " << (*it).triggering_location;
+    std::cout << "x activation: " << std::setprecision(10) << (*it)->x_activation;
+    std::cout << "  triggering loc: " << (*it)->triggering_location;
     std::cout << "  gps info.dx: " << current_wave_gps_info.dx ;
     std::cout << "  x first: " << current_wave_gps_info.x_first << std::endl;
     
-    if((*it).x_activation < bb_x_min || (*it).x_activation > bb_x_max){
-      std::cerr << "\nx activation: "<< (*it).x_activation
+    if((*it)->x_activation < bb_x_min || (*it)->x_activation > bb_x_max){
+      std::cerr << "\nx activation: "<< (*it)->x_activation
                 << " not in range: " << bb_x_min << " - " << bb_x_max <<
                 std::endl;
     //  exit (EXIT_FAILURE);
     }
 
-    (*it).y_activation =
-                  (*it).triggering_location * current_wave_gps_info.dy +
+    (*it)->y_activation =
+                  (*it)->triggering_location * current_wave_gps_info.dy +
                                   current_wave_gps_info.y_first;
 
-    std::cout << "y activation: " << (*it).y_activation << std::endl;
-    std::cout << "triggering loc: " << (*it).triggering_location << std::endl;
+    std::cout << "y activation: " << (*it)->y_activation << std::endl;
+    std::cout << "triggering loc: " << (*it)->triggering_location << std::endl;
     std::cout << "gps info.dy: " << current_wave_gps_info.dy << std::endl;
     std::cout << "y first: " << current_wave_gps_info.y_first << std::endl;
 
 
-    if((*it).y_activation < bb_y_min || (*it).y_activation > bb_y_max){
-      std::cerr << "\ny activation: "<< (*it).y_activation
+    if((*it)->y_activation < bb_y_min || (*it)->y_activation > bb_y_max){
+      std::cerr << "\ny activation: "<< (*it)->y_activation
                 << " not in range: " << bb_y_min << " - " << bb_y_max <<
                 std::endl;
      // exit (EXIT_FAILURE);
     }
 
-    (*it).z_activation =
-                  (*it).triggering_location * current_wave_gps_info.dz +
+    (*it)->z_activation =
+                  (*it)->triggering_location * current_wave_gps_info.dz +
                                   current_wave_gps_info.z_first;
 
-    std::cout << "z activation: " << (*it).z_activation << std::endl;
-    std::cout << "triggering loc: " << (*it).triggering_location << std::endl;
+    std::cout << "z activation: " << (*it)->z_activation << std::endl;
+    std::cout << "triggering loc: " << (*it)->triggering_location << std::endl;
     std::cout << "gps info.dz: " << current_wave_gps_info.dz << std::endl;
     std::cout << "z first: " << current_wave_gps_info.z_first << std::endl;
     std::cout << " " << std::endl;
 
-    if((*it).z_activation < bb_z_min || (*it).z_activation > bb_z_max){
-      std::cerr << "\nz activation: "<< (*it).z_activation
+    if((*it)->z_activation < bb_z_min || (*it)->z_activation > bb_z_max){
+      std::cerr << "\nz activation: "<< (*it)->z_activation
                 << " not in range: " << bb_z_min << " - " << bb_z_max <<
                 std::endl;
     //  exit (EXIT_FAILURE);
     }
+  }
     return peaks->size();
 }
 
@@ -534,4 +529,6 @@ int FlightLineData::locate_geog_cs_field(std::vector<std::string> *tokens){
 	}
 	//no geog_cs value found
 	return -1;
+
+
 }

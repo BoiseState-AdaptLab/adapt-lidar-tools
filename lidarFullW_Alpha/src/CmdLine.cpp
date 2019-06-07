@@ -133,8 +133,9 @@ std::string CmdLine::getInputFileName(){
  * Function that parses the command line arguments
  * @param argc count of arguments
  * @param argv array of arguments
+ * @return true if all arguments were valid, false otherwise
  */
-void CmdLine::parse(int argc,char *argv[]){
+bool CmdLine::parse_args(int argc,char *argv[]){
     char optionChar;  //Option character
     char *fArg;       //Argument of the option character f
     char *e_arg;      //Argument of the option character e
@@ -174,6 +175,7 @@ void CmdLine::parse(int argc,char *argv[]){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
             setInputFileName(fArg);
+            check_input_file_exists();
         } else if (optionChar == 'h') { //Show help information
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
@@ -205,11 +207,6 @@ void CmdLine::parse(int argc,char *argv[]){
                         printUsageMessage = true;
                     }
 
-                    //Just making sure it doesn't try pushing broken data to 
-                    //selected_products
-                    if (printUsageMessage) {
-                        break;
-                    }
                     selected_products.push_back(arg);
                 }
                 calcBackscatter = optionChar == 'b' ? true : calcBackscatter;
@@ -245,51 +242,42 @@ void CmdLine::parse(int argc,char *argv[]){
     if(optind < argc){
         printUsageMessage = true;
     }
+
+    // Make sure at least one product was selected
+    if (selected_products.size() < 1){
+        std::cout << "\nSelect at least one product" << std::endl;
+        std::cout << "---------------------------" << std::endl;
+        printUsageMessage = true;
+    }
+
+    // Check if an error occured
+    if (printUsageMessage){
+        //Make sure broken data is not used by clearing requested products
+        selected_products.clear();
+        std::cout << getUsageMessage() << std::endl;
+        return false;
+    }
+    
+    return true;
 }
 
 /**
  * check if the input file exists, print error message if not
  */
 void CmdLine::check_input_file_exists() {
-    if (!std::ifstream(getInputFileName().c_str())) {
-        std::cout << "File " << getInputFileName() << " not found."
+    std::string plsFileName = getInputFileName();
+    if (!std::ifstream(plsFileName.c_str())) {
+        std::cout << "\nFile " << plsFileName << " not found."
             << std::endl;
         printUsageMessage = true;
     }
-}
-
-
-/**
- * parse the command line arguments and validate them, return
- * 1 if all arguments parsed, else 0
- * @param argc the count of arguments in argv
- * @param argv the command line arguments
- * @return 1 (true) if all input passed validation, 0 (false) otherwise
- */
-int CmdLine::parse_args(int argc, char *argv[]) {
-    int rtn = 1;
-    parse(argc, argv);
-    //if arguments were invalid or did not parse correctly
-    if (printUsageMessage) {
-        std::cout << getUsageMessage() << std::endl;
-        rtn = 0;
-    }else{
-        check_input_file_exists();
-        if (printUsageMessage) {
-            std::cout << getUsageMessage() << std::endl;
-            rtn = 0;
-        }
+    std::string wvsFileName = plsFileName.substr(0, plsFileName.length()-3)
+        + "wvs";
+    if (!std::ifstream(wvsFileName.c_str())) {
+        std::cout << "\nFile " << wvsFileName << " not found."
+            << std::endl;
+        printUsageMessage = true;
     }
-    if(!printUsageMessage){
-        //make sure some product was selected
-        if(selected_products.size()<1){
-            printUsageMessage = true;
-            std::cout << "No output products selected." << std::endl;
-            std::cout << getUsageMessage() << std::endl;
-            rtn = 0;
-        }
-    }
-    return rtn;
 }
 
 /**

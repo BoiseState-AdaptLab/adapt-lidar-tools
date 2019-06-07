@@ -41,9 +41,8 @@ void LidarDriver::setup_flight_data(FlightLineData &data,
 #ifdef DEBUG
     std::cerr << "data.setFlightLineData about to be called..." << std::endl;
 #endif
-
     data.setFlightLineData(inputFileName);
-
+ 
 #ifdef DEBUG
     std::cerr << "data.setFlightLineData returned" << std::endl;
 #endif

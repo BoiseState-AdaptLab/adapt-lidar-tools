@@ -57,7 +57,6 @@ void FlightLineData::setFlightLineData(std::string fileName){
         throw "Unable to Open File" + fileName;
         exit (EXIT_FAILURE);
     }
-
 #ifdef DEBUG
     std::cerr << "Target file opened for reading, wasn't empty" << std::endl;
 #endif
@@ -121,7 +120,6 @@ void FlightLineData::setFlightLineData(std::string fileName){
 
     fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
 #endif
-
     int i = 1;
     while(pReader->header.get_scanner(&scanner, i)) {
 
@@ -178,7 +176,6 @@ void FlightLineData::setFlightLineData(std::string fileName){
         // TODO: FIXME!!
         exit(EXIT_FAILURE);
     }
-
 #ifdef DEBUG
     std::cerr << "setFlightLineData complete, returning" << std::endl;
 #endif

@@ -3,7 +3,7 @@
 // Author: ravi
 
 #include "FlightLineData.hpp"
-
+#include <iomanip>
 //Default constructor
 FlightLineData::FlightLineData(){
   // enter default values
@@ -205,6 +205,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
   }
   current_wave_gps_info.populateGPS(pReader);
 
+  std::cout << "  gps info.dx: " << current_wave_gps_info.dx ;
   //Clear the vectors since we're storing a single pulse at a time
   pd->outgoingIdx.clear();
   pd->outgoingWave.clear();
@@ -264,11 +265,12 @@ void FlightLineData::getNextPulse(PulseData *pd){
       exit(EXIT_FAILURE);
     }
     //Populate returing wave data
+    //The outgoing wave is sampling_number = 0
     for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
       sampling->set_active_segment(j);
       //set the start time of the returning wave and keep track of the times
       if(j == 0){
-        pulse_returning_start_time =
+       pulse_returning_start_time =
                               sampling->get_duration_from_anchor_for_segment();
         pulse_returning_segment_time =
                               sampling->get_duration_from_anchor_for_segment();
@@ -277,6 +279,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
         pulse_returning_segment_time =
                               sampling->get_duration_from_anchor_for_segment();
       }
+      pd->pulse_returning_start_time = pulse_returning_start_time; 
       for(int k = 0; k < sampling->get_number_of_samples(); k++){
         pd->returningIdx.push_back(pulse_returning_segment_time -
                                    pulse_returning_start_time);
@@ -294,7 +297,7 @@ void FlightLineData::getNextPulse(PulseData *pd){
   }
   else{
     // FOR TESTING PURPOSES
-    // std::cout << "No returning Wave" << std::endl;
+    std::cout << "No returning Wave" << std::endl;
   }
 
   //Check if there exists a next pulse
@@ -328,33 +331,53 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak> *peaks){
     // check to see that each of the gps locations is within our
     // bounding box -- this is for x y and z
     (*it).x_activation =
-                  (*it).triggering_location * current_wave_gps_info.dx +
+         (*it).triggering_location * current_wave_gps_info.dx +
                                   current_wave_gps_info.x_first;
+
+    std::cout << "x activation: " << std::setprecision(10) << (*it).x_activation;
+    std::cout << "  triggering loc: " << (*it).triggering_location;
+    std::cout << "  gps info.dx: " << current_wave_gps_info.dx ;
+    std::cout << "  x first: " << current_wave_gps_info.x_first << std::endl;
+    
     if((*it).x_activation < bb_x_min || (*it).x_activation > bb_x_max){
       std::cerr << "\nx activation: "<< (*it).x_activation
                 << " not in range: " << bb_x_min << " - " << bb_x_max <<
                 std::endl;
-      exit (EXIT_FAILURE);
+    //  exit (EXIT_FAILURE);
     }
 
     (*it).y_activation =
                   (*it).triggering_location * current_wave_gps_info.dy +
                                   current_wave_gps_info.y_first;
+
+    std::cout << "y activation: " << (*it).y_activation << std::endl;
+    std::cout << "triggering loc: " << (*it).triggering_location << std::endl;
+    std::cout << "gps info.dy: " << current_wave_gps_info.dy << std::endl;
+    std::cout << "y first: " << current_wave_gps_info.y_first << std::endl;
+
+
     if((*it).y_activation < bb_y_min || (*it).y_activation > bb_y_max){
       std::cerr << "\ny activation: "<< (*it).y_activation
                 << " not in range: " << bb_y_min << " - " << bb_y_max <<
                 std::endl;
-      exit (EXIT_FAILURE);
+     // exit (EXIT_FAILURE);
     }
 
     (*it).z_activation =
                   (*it).triggering_location * current_wave_gps_info.dz +
                                   current_wave_gps_info.z_first;
+
+    std::cout << "z activation: " << (*it).z_activation << std::endl;
+    std::cout << "triggering loc: " << (*it).triggering_location << std::endl;
+    std::cout << "gps info.dz: " << current_wave_gps_info.dz << std::endl;
+    std::cout << "z first: " << current_wave_gps_info.z_first << std::endl;
+    std::cout << " " << std::endl;
+
     if((*it).z_activation < bb_z_min || (*it).z_activation > bb_z_max){
       std::cerr << "\nz activation: "<< (*it).z_activation
                 << " not in range: " << bb_z_min << " - " << bb_z_max <<
                 std::endl;
-      exit (EXIT_FAILURE);
+    //  exit (EXIT_FAILURE);
     }
     //mark the position in case any peaks were filtered
     (*it).position_in_wave = i;

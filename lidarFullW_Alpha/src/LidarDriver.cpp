@@ -84,17 +84,34 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
 
         // gets the raw data from the file
         raw_data.getNextPulse(&pd);
+       
+        //Skip all the empty returning waveforms
+        if (pd.returningIdx.empty()){
+            continue;
+        }
         try {
-            // as long as the pulse has a returning wave it finds
-            // the peaks in that wave
-            if(parse_pulse(pd, peaks, fitter, cmdLine,
-                       raw_data.current_wave_gps_info, peak_count)) {
-                // foreach peak - find activation point
-                //                          - calculate x,y,z
-                peak_count = raw_data.calc_xyz_activation(&peaks);
-
-                add_peaks_to_volume(fitted_data, peaks, peak_count);
+            // Smooth the data and test result
+            fitter.smoothing_expt(&pd.returningWave);
+           
+            // Check parameter for using gaussian fitting or first differencing
+            if (cmdLine.useGaussianFitting) {
+                peak_count = fitter.find_peaks(&peaks, pd.returningWave,
+                                     pd.returningIdx);
+            } else {
+                peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
+                                     pd.returningIdx);
             }
+
+            // for each peak - find the activation point
+            //               - calculate x,y,z
+            peak_count = raw_data.calc_xyz_activation(&peaks);
+           
+            // Calculate all requested information - Backscatter Coefficient
+            // - Rise Time  - Energy at % Height  - Height at % Energy
+            peak_calculations(pd, peaks, fitter, cmdLine,
+                       raw_data.current_wave_gps_info, peak_count);
+
+            add_peaks_to_volume(fitted_data, peaks, peak_count);
         } catch (const char *msg) {
             std::cerr << msg << std::endl;
         }
@@ -140,41 +157,20 @@ void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume,
 }
 
 /**
- * parse the individual pulse and find its peaks
+ * Calculates the requested information at each peak
  * @param pulse the pulse wave to parse
- * @param peaks the empty vector to add peaks to
+ * @param peaks the vector containing the returning waveform peaks
  * @param fitter the gaussian fitter object to use for smoothing and fitting
- * @param use_gaussian_fitting flag to indicate fitter type
+ * @param cmdLine command line object used to supply information to calculations
+ * @param gps_info contains gps information of the lidar module
  * @param peak_count count of found peaks returned
- * @return -1 if the pulse was empty, otherwise the peak count
  */
-int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks,
+void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                             GaussianFitter &fitter, CmdLine &cmdLine,
                             WaveGPSInformation &gps_info, int &peak_count){
-
-    if (pulse.returningIdx.empty()) {
-        return -1;
-    }
-    
-    // FOR TESTING PURPOSES
-    // for(i=0; i<(int)pd.returningWave.size(); i++){
-    //   std::cout << pd.returningWave[i] << " " ;
-    // }
-    
-    // Smooth the data and test result
-    fitter.smoothing_expt(&pulse.returningWave);
-
-    // Check parameter for using gaussian fitting or first differencing
-    if (cmdLine.useGaussianFitting) {
-        peak_count = fitter.find_peaks(&peaks, pulse.returningWave,
-                pulse.returningIdx);
-    } else {
-        peak_count = fitter.guess_peaks(&peaks, pulse.returningWave,
-                pulse.returningIdx);
-    }
-    
-    // Repeat for the emitted pulse if backscater coefficient is requested
+    // Backscatter coefficient
     if (cmdLine.calcBackscatter){
+        //Go through fitting process with emitted waveform
         fitter.smoothing_expt(&pulse.outgoingWave);
 
         std::vector<Peak*> emitted_peaks;
@@ -200,12 +196,10 @@ int LidarDriver::parse_pulse(PulseData &pulse, std::vector<Peak*> &peaks,
     }
 
     // This is where we should calculate everything that we need to 
-    // know about the peak -- include backscatter coefficient.
+    // know about the peak
     // Rise time
     // Heights at percent energy
-    // Energy at percent heights
-
-    return peak_count;
+    // Energy at percent heighths
 }
 
 /**

@@ -29,7 +29,7 @@ Peak::Peak(){
     y = 0.;
     z = 0.;
 
-    backscatter_coefficient = -1;
+    backscatter_coefficient = 0;
 }
 
 /*

@@ -39,10 +39,8 @@ int main (int argc, char *argv[]) {
 #ifdef DEBUG
     std::cerr << "driver.setup_flight_data returned" << std::endl;
 #endif
-
     //fit data
     driver.fit_data(rawData, intermediateData, cmdLineArgs);
-
 #ifdef DEBUG
     std::cerr << "driver.fit_data returned" << std::endl;
 #endif

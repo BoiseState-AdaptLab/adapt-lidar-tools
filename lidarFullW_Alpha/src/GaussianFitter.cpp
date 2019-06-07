@@ -338,18 +338,6 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 }
 
 /**
- * Delete all Peaks whose pointers are stored in results
- * @param results Pointer to vector of Peaks to be destroyed
- */
-void GaussianFitter::delete_peaks(std::vector<Peak*>* results)
-{
-    std::vector<Peak*>::iterator i;
-    for (i = results->begin(); i != results->end(); ++i) {
-        delete *i;
-    }
-}
-
-/**
  * Find the peaks and return the peak count
  * @param results pointer to vector to store peaks
  * @param ampData

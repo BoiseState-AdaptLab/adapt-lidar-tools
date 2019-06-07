@@ -68,41 +68,53 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         << std::endl;
 #endif
 
-  //setup the lidar volume bounding and allocate memory
-  setup_lidar_volume(raw_data, fitted_data);
+    //setup the lidar volume bounding and allocate memory
+    setup_lidar_volume(raw_data, fitted_data);
 
-  //message the user
-  std::string fit_type=useGaussianFitting?"gaussian fitting":"first difference";
-  std::cerr << "Finding peaks with " << fit_type << std::endl;
+    //message the user
+    std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
+        "first difference";
+    std::cerr << "Finding peaks with " << fit_type << std::endl;
 
-  
-  int counter = 0;
-  
-  //parse each pulse
-  while (raw_data.hasNextPulse()) {
-    // make sure that we have an empty vector
-    peaks.clear();
+    //parse each pulse
+    while (raw_data.hasNextPulse()) {
+        // make sure that we have an empty vector
+        peaks.clear();
 
-		// gets the raw data from the file
-		raw_data.getNextPulse(&pd);
-		try {
-			// as long as the pulse has a returning wave it finds
-			// the peaks in that wave
-			if(parse_pulse(pd, peaks, fitter, useGaussianFitting, peak_count)) {
-				// foreach peak - find activation point
-      				//              - calculate x,y,z
-      				std::cout << "\n\n\nCalculaitng x, y, z activation:\n";
-				peak_count = raw_data.calc_xyz_activation(&peaks);
+        // gets the raw data from the file
+        raw_data.getNextPulse(&pd);
+       
+        //Skip all the empty returning waveforms
+        if (pd.returningIdx.empty()){
+            continue;
+        }
+        try {
+            // Smooth the data and test result
+            fitter.smoothing_expt(&pd.returningWave);
+           
+            // Check parameter for using gaussian fitting or first differencing
+            if (cmdLine.useGaussianFitting) {
+                peak_count = fitter.find_peaks(&peaks, pd.returningWave,
+                                     pd.returningIdx);
+            } else {
+                peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
+                                     pd.returningIdx);
+            }
 
+            // for each peak - find the activation point
+            //               - calculate x,y,z
+            peak_count = raw_data.calc_xyz_activation(&peaks);
+           
+            // Calculate all requested information - Backscatter Coefficient
+            // - Rise Time  - Energy at % Height  - Height at % Energy
+            peak_calculations(pd, peaks, fitter, cmdLine,
+                       raw_data.current_wave_gps_info, peak_count);
 
-				add_peaks_to_volume(fitted_data, peaks, peak_count);
-                  }
-			
-		} catch (const char *msg) {
-		       	std::cerr << msg << std::endl;
-		}
-          counter ++;
-		// FOR TESTING PURPOSES
+            add_peaks_to_volume(fitted_data, peaks, peak_count);
+        } catch (const char *msg) {
+            std::cerr << msg << std::endl;
+        }
+        // FOR TESTING PURPOSES
 #ifdef DEBUG
         pd.displayPulseData(&stream);
         std::cout << stream.str() << std::endl;

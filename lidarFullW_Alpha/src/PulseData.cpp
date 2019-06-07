@@ -14,6 +14,7 @@ PulseData::PulseData(){
   outgoingWave.clear();
   returningIdx.clear();
   returningWave.clear();
+  pulse_returning_start_time = 0;
 }
 
 /**

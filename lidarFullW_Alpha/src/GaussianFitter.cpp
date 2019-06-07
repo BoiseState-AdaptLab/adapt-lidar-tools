@@ -443,7 +443,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         incr_pass();
         //this loop is going through every peak
         int i=0;
-        for(auto iter = results->cbegin(); iter != results->cend(); ++iter) {
+        auto iter = results->cbegin();
+        while (iter != results->cend()) {
             Peak *peak = *iter;
             peak->amp = gsl_vector_get(x,3*i+ 0);
             peak->location = gsl_vector_get(x,3*i+ 1);
@@ -472,14 +473,15 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
             if(peak->triggering_location > n || peak->triggering_location <0){
                 delete(peak);
-                results->erase(iter);
+                iter = results->erase(iter);
             } else if(peak->amp > 2.0*max || peak->amp < 0){
-                    delete(peak);
+                delete(peak);
             } else{
                 //set the peak position in the wave
                 //this will be wrong if a previous peak was removed for any
                 //reason
                 peak->position_in_wave = i+1;
+                ++iter;
             }
 
 #ifdef FINAL_PEAK_TEST

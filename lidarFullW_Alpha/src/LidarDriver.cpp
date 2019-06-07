@@ -4,7 +4,6 @@
 
 #include "LidarDriver.hpp"
 
-
 /**
  * setup the gdal dataset (file) with metadata
  * @param tiff_driver pointer to the GTiff driver
@@ -67,6 +66,9 @@ std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__
   std::string fit_type=useGaussianFitting?"gaussian fitting":"first difference";
   std::cerr << "Finding peaks with " << fit_type << std::endl;
 
+  
+  int counter = 0;
+  
   //parse each pulse
   while (raw_data.hasNextPulse()) {
     // make sure that we have an empty vector
@@ -79,15 +81,18 @@ std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__
 			// the peaks in that wave
 			if(parse_pulse(pd, peaks, fitter, useGaussianFitting, peak_count)) {
 				// foreach peak - find activation point
-				//              - calculate x,y,z
+      				//              - calculate x,y,z
+      				std::cout << "\n\n\nCalculaitng x, y, z activation:\n";
 				peak_count = raw_data.calc_xyz_activation(&peaks);
 
-				add_peaks_to_volume(fitted_data, peaks, peak_count);
 
-			}
+				add_peaks_to_volume(fitted_data, peaks, peak_count);
+                  }
+			
 		} catch (const char *msg) {
-			std::cerr << msg << std::endl;
+		       	std::cerr << msg << std::endl;
 		}
+          counter ++;
 		// FOR TESTING PURPOSES
 #ifdef DEBUG
 		pd.displayPulseData(&stream);
@@ -96,7 +101,6 @@ std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__
 #endif
 	}
 	peaks.clear();
-
 #ifdef DEBUG
 	std::cerr << "Total: " << fitter.get_total() << std::endl;
         std::cerr << "Pass: " << fitter.get_pass() << std::endl;

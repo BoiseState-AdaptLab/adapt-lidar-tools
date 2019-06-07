@@ -1,7 +1,7 @@
 //
 // Created by arezaii on 3/24/19.
 //
-
+//I am just adding a comment to test merge confilicts. 
 #include "LidarDriver.hpp"
 
 //#define DEBUG

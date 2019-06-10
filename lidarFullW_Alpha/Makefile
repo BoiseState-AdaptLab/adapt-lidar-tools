@@ -143,7 +143,7 @@ $(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
 		-o $@ $^
 
 $(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) -std=c++11 $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 $(OBJ)/FlightLineData.o: $(SRC)/FlightLineData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib

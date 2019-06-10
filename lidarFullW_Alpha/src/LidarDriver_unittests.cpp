@@ -104,6 +104,9 @@ class LidarDriverTest: public testing::Test
         LidarDriver driver2;
         LidarDriver driver3;
 
+        //Variables
+        std::vector<char> vars = {'z', 'a', 'w', 'b'};
+
         /**
          * Creates a vector of Peak pointers for testing purposes. Artificially
          * @param input  List of numbers to turn into peaks
@@ -123,13 +126,14 @@ class LidarDriverTest: public testing::Test
                 p->z_activation = z0;
                 p->amp = z0;
                 p->fwhm = z0;
+                p->backscatter_coefficient = z0;
                 p->position_in_wave = 3;
                 p->is_final_peak = false;
                 peaks.push_back(p);
                 i++;
                 ptr = strtok (NULL," ");
             }
-
+ 
             return peaks;
         }
 
@@ -206,13 +210,29 @@ class LidarDriverTest: public testing::Test
  ******************************************************************************/
 TEST_F(LidarDriverTest, get_max_first_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_extreme(&typicalPeaks,true,0,*it);
+        EXPECT_NEAR(TYPICAL_FIRST_MAX,val,MAX_ERR);
+
+        val = driver1.get_extreme(&risingPeaks,true,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&fallingPeaks,true,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&constantPeaks,true,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+    }
+/*
     float val_z = driver1.get_extreme(&typicalPeaks,true,0,'z');
     float val_a = driver1.get_extreme(&typicalPeaks,true,0,'a');
     float val_w = driver1.get_extreme(&typicalPeaks,true,0,'w');
+    float val_b = driver1.get_extreme(&typicalPeaks,true,0,'b');
 
     EXPECT_NEAR(TYPICAL_FIRST_MAX,val_z,MAX_ERR);
     EXPECT_NEAR(TYPICAL_FIRST_MAX,val_a,MAX_ERR);
     EXPECT_NEAR(TYPICAL_FIRST_MAX,val_w,MAX_ERR);
+    EXPECT_NEAR(TYPICAL_FIRST_MAX,val_b,MAX_ERR);
 
     val_z = driver1.get_extreme(&risingPeaks,true,0,'z');
     val_a = driver1.get_extreme(&risingPeaks,true,0,'a');
@@ -236,11 +256,26 @@ TEST_F(LidarDriverTest, get_max_first_test)
 
     EXPECT_NEAR(NO_DATA,val_z,MAX_ERR);
     EXPECT_NEAR(NO_DATA,val_a,MAX_ERR);
-    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR);
+    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR);*/
 }
 
 TEST_F(LidarDriverTest, get_max_last_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_extreme(&typicalPeaks,true,1,*it);
+        EXPECT_NEAR(TYPICAL_LAST_MAX,val,MAX_ERR);
+
+        val = driver1.get_extreme(&risingPeaks,true,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&fallingPeaks,true,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&constantPeaks,true,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+    }
+
+/*
     float val_z = driver1.get_extreme(&typicalPeaks,true,1,'z');
     float val_a = driver1.get_extreme(&typicalPeaks,true,1,'a');
     float val_w = driver1.get_extreme(&typicalPeaks,true,1,'w');
@@ -271,11 +306,26 @@ TEST_F(LidarDriverTest, get_max_last_test)
 
     EXPECT_NEAR(NO_DATA,val_z,MAX_ERR);
     EXPECT_NEAR(NO_DATA,val_a,MAX_ERR);
-    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR);
+    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR); */
 }
 
 TEST_F(LidarDriverTest, get_max_all_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_extreme(&typicalPeaks,true,2,*it);
+        EXPECT_NEAR(TYPICAL_MAX,val,MAX_ERR);
+
+        val = driver1.get_extreme(&risingPeaks,true,2,*it);
+        EXPECT_NEAR(RISING_MAX,val,MAX_ERR);
+
+        val = driver1.get_extreme(&fallingPeaks,true,2,*it);
+        EXPECT_NEAR(FALLING_MAX,val,MAX_ERR);
+
+        val = driver1.get_extreme(&constantPeaks,true,2,*it);
+        EXPECT_NEAR(CONST_MAX,val,MAX_ERR);
+    }
+
+/*
     float val_z = driver1.get_extreme(&typicalPeaks,true,2,'z');
     float val_a = driver1.get_extreme(&typicalPeaks,true,2,'a');
     float val_w = driver1.get_extreme(&typicalPeaks,true,2,'w');
@@ -306,7 +356,7 @@ TEST_F(LidarDriverTest, get_max_all_test)
 
     EXPECT_NEAR(CONST_MAX,val_z,MAX_ERR);
     EXPECT_NEAR(CONST_MAX,val_a,MAX_ERR);
-    EXPECT_NEAR(CONST_MAX,val_w,MAX_ERR);
+    EXPECT_NEAR(CONST_MAX,val_w,MAX_ERR); */
 }
 
 
@@ -317,6 +367,20 @@ TEST_F(LidarDriverTest, get_max_all_test)
  ******************************************************************************/
 TEST_F(LidarDriverTest, get_min_first_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_extreme(&typicalPeaks,false,0,*it);
+        EXPECT_NEAR(TYPICAL_FIRST_MIN,val,MAX_ERR);
+
+        val = driver1.get_extreme(&risingPeaks,false,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&fallingPeaks,false,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&constantPeaks,false,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+    }
+/*
     float val_z = driver1.get_extreme(&typicalPeaks,false,0,'z');
     float val_a = driver1.get_extreme(&typicalPeaks,false,0,'a');
     float val_w = driver1.get_extreme(&typicalPeaks,false,0,'w');
@@ -347,11 +411,25 @@ TEST_F(LidarDriverTest, get_min_first_test)
 
     EXPECT_NEAR(NO_DATA,val_z,MAX_ERR);
     EXPECT_NEAR(NO_DATA,val_a,MAX_ERR);
-    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR);
+    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR);*/
 }
 
 TEST_F(LidarDriverTest, get_min_last_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_extreme(&typicalPeaks,false,1,*it);
+        EXPECT_NEAR(TYPICAL_LAST_MIN,val,MAX_ERR);
+
+        val = driver1.get_extreme(&risingPeaks,false,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&fallingPeaks,false,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_extreme(&constantPeaks,false,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+    }
+/*
     float val_z = driver1.get_extreme(&typicalPeaks,false,1,'z');
     float val_a = driver1.get_extreme(&typicalPeaks,false,1,'a');
     float val_w = driver1.get_extreme(&typicalPeaks,false,1,'w');
@@ -382,11 +460,25 @@ TEST_F(LidarDriverTest, get_min_last_test)
 
     EXPECT_NEAR(NO_DATA,val_z,MAX_ERR);
     EXPECT_NEAR(NO_DATA,val_a,MAX_ERR);
-    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR);
+    EXPECT_NEAR(NO_DATA,val_w,MAX_ERR);*/
 }
 
 TEST_F(LidarDriverTest, get_min_all_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_extreme(&typicalPeaks,false,2,*it);
+        EXPECT_NEAR(TYPICAL_MIN,val,MAX_ERR);
+
+        val = driver1.get_extreme(&risingPeaks,false,2,*it);
+        EXPECT_NEAR(RISING_MIN,val,MAX_ERR);
+
+        val = driver1.get_extreme(&fallingPeaks,false,2,*it);
+        EXPECT_NEAR(FALLING_MIN,val,MAX_ERR);
+
+        val = driver1.get_extreme(&constantPeaks,false,2,*it);
+        EXPECT_NEAR(CONST_MIN,val,MAX_ERR);
+    }
+/*
     float val_z = driver1.get_extreme(&typicalPeaks,false,2,'z');
     float val_a = driver1.get_extreme(&typicalPeaks,false,2,'a');
     float val_w = driver1.get_extreme(&typicalPeaks,false,2,'w');
@@ -417,7 +509,7 @@ TEST_F(LidarDriverTest, get_min_all_test)
 
     EXPECT_NEAR(CONST_MIN,val_z,MAX_ERR);
     EXPECT_NEAR(CONST_MIN,val_a,MAX_ERR);
-    EXPECT_NEAR(CONST_MIN,val_w,MAX_ERR);
+    EXPECT_NEAR(CONST_MIN,val_w,MAX_ERR);*/
 }
 
 
@@ -429,6 +521,20 @@ TEST_F(LidarDriverTest, get_min_all_test)
 
 TEST_F(LidarDriverTest, get_mean_first_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_mean(&typicalPeaks,0,*it);
+        EXPECT_NEAR(TYPICAL_FIRST_MEAN,val,MEAN_ERR);
+
+        val = driver1.get_mean(&risingPeaks,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MEAN_ERR);
+
+        val = driver1.get_mean(&fallingPeaks,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MEAN_ERR);
+
+        val = driver1.get_mean(&constantPeaks,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MEAN_ERR);
+    }
+/*
     float val_z = driver1.get_mean(&typicalPeaks,0,'z');
     float val_a = driver1.get_mean(&typicalPeaks,0,'a');
     float val_w = driver1.get_mean(&typicalPeaks,0,'w');
@@ -459,11 +565,25 @@ TEST_F(LidarDriverTest, get_mean_first_test)
 
     EXPECT_NEAR(NO_DATA,val_z,MEAN_ERR);
     EXPECT_NEAR(NO_DATA,val_a,MEAN_ERR);
-    EXPECT_NEAR(NO_DATA,val_w,MEAN_ERR);
+    EXPECT_NEAR(NO_DATA,val_w,MEAN_ERR); */
 }
 
 TEST_F(LidarDriverTest, get_mean_last_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_mean(&typicalPeaks,1,*it);
+        EXPECT_NEAR(TYPICAL_LAST_MEAN,val,MEAN_ERR);
+
+        val = driver1.get_mean(&risingPeaks,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MEAN_ERR);
+
+        val = driver1.get_mean(&fallingPeaks,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MEAN_ERR);
+
+        val = driver1.get_mean(&constantPeaks,1,*it);
+        EXPECT_NEAR(NO_DATA,val,MEAN_ERR);
+    }
+/*
     float val_z = driver1.get_mean(&typicalPeaks,1,'z');
     float val_a = driver1.get_mean(&typicalPeaks,1,'a');
     float val_w = driver1.get_mean(&typicalPeaks,1,'w');
@@ -494,11 +614,25 @@ TEST_F(LidarDriverTest, get_mean_last_test)
 
     EXPECT_NEAR(NO_DATA,val_z,MEAN_ERR);
     EXPECT_NEAR(NO_DATA,val_a,MEAN_ERR);
-    EXPECT_NEAR(NO_DATA,val_w,MEAN_ERR);
+    EXPECT_NEAR(NO_DATA,val_w,MEAN_ERR);*/
 }
 
 TEST_F(LidarDriverTest, get_mean_all_test)
 {
+    for(auto it = vars.begin(); it != vars.end(); ++it){
+        double val = driver1.get_mean(&typicalPeaks,2,*it);
+        EXPECT_NEAR(TYPICAL_MEAN,val,MEAN_ERR);
+
+        val = driver1.get_mean(&risingPeaks,2,*it);
+        EXPECT_NEAR(RISING_MEAN,val,MEAN_ERR);
+
+        val = driver1.get_mean(&fallingPeaks,2,*it);
+        EXPECT_NEAR(FALLING_MEAN,val,MEAN_ERR);
+
+        val = driver1.get_mean(&constantPeaks,2,*it);
+        EXPECT_NEAR(CONST_MEAN,val,MEAN_ERR);
+    }
+/*
     float val_z = driver1.get_mean(&typicalPeaks,2,'z');
     float val_a = driver1.get_mean(&typicalPeaks,2,'a');
     float val_w = driver1.get_mean(&typicalPeaks,2,'w');
@@ -529,7 +663,7 @@ TEST_F(LidarDriverTest, get_mean_all_test)
 
     EXPECT_NEAR(CONST_MEAN,val_z,MEAN_ERR);
     EXPECT_NEAR(CONST_MEAN,val_a,MEAN_ERR);
-    EXPECT_NEAR(CONST_MEAN,val_w,MEAN_ERR);
+    EXPECT_NEAR(CONST_MEAN,val_w,MEAN_ERR);*/
 }
 
 /******************************************************************************
@@ -538,7 +672,23 @@ TEST_F(LidarDriverTest, get_mean_all_test)
  *
  ******************************************************************************/
 
-//TODO: Stdev tests
+Test_F(LidarDriverTest, get_deviation_first_test)
+{
+   for(auto it = vars.begin(); it != vars.end(); ++it){
+        double mean = driver1.get_mean(&typicalPeaks,0,*it);
+        double val = driver1.get_deviation(&typicalPeaks,mean,0,*it);
+        EXPECT_NEAR(TYPICAL_FIRST_DEVIATION,val,MAX_ERR);
+
+        val = driver1.get_mean(&risingPeaks,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_mean(&fallingPeaks,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+
+        val = driver1.get_mean(&constantPeaks,0,*it);
+        EXPECT_NEAR(NO_DATA,val,MAX_ERR);
+    }
+}
 
 /******************************************************************************
  *

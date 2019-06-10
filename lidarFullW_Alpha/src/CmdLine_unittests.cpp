@@ -57,7 +57,7 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
     strncpy(commonArgSpace[1],"-h",3);
 
     ASSERT_NO_THROW({
-            cmd.parse(numberOfArgs, commonArgSpace);
+            cmd.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_TRUE(cmd.printUsageMessage);
 
@@ -66,7 +66,7 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
     strncpy(commonArgSpace[1],"-f",3);
     strncpy(commonArgSpace[2],"someFileName",13);
     ASSERT_NO_THROW({
-            cmd2.parse(numberOfArgs, commonArgSpace);
+            cmd2.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("someFileName",cmd2.getInputFileName());
@@ -76,7 +76,7 @@ TEST_F(CmdLineTest, validShortCmdLineOpts) {
     strncpy(commonArgSpace[1],"-e",3);
     strncpy(commonArgSpace[2],"2",4);
     ASSERT_NO_THROW({
-            cmd3.parse(numberOfArgs, commonArgSpace);
+            cmd3.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_FALSE(cmd3.printUsageMessage);
 }
@@ -101,7 +101,7 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"--help",7);
     ASSERT_NO_THROW({
-            cmd.parse(numberOfArgs, commonArgSpace);
+            cmd.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_TRUE(cmd.printUsageMessage);
 
@@ -110,7 +110,7 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
     strncpy(commonArgSpace[1],"--file",7);
     strncpy(commonArgSpace[2],"file",5);
     ASSERT_NO_THROW({
-            cmd2.parse(numberOfArgs, commonArgSpace);
+            cmd2.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("file",cmd2.getInputFileName());
@@ -120,7 +120,7 @@ TEST_F(CmdLineTest, validLongCmdLineOpts) {
     strncpy(commonArgSpace[1],"--elevation",13);
     strncpy(commonArgSpace[2],"2",4);
     ASSERT_NO_THROW({
-            cmd3.parse(numberOfArgs, commonArgSpace);
+            cmd3.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_FALSE(cmd3.printUsageMessage);
 
@@ -139,7 +139,7 @@ TEST_F(CmdLineTest, missingCmdLineArg) {
     optind = 0; // Need to reset optind to 0 for each test
     numberOfArgs = 1;
     strncpy(commonArgSpace[0],"test",5);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
 }
 
 // Tests missing short option arguments
@@ -148,7 +148,7 @@ TEST_F(CmdLineTest, missingShortOptArg) {
     numberOfArgs = 2;
     strncpy(commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",3);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
 }
 
 TEST_F(CmdLineTest, unsupportedShortArg) {
@@ -156,7 +156,7 @@ TEST_F(CmdLineTest, unsupportedShortArg) {
     numberOfArgs = 2;
     strncpy(commonArgSpace[1], "-g", 3);
     ASSERT_NO_THROW({
-            cmd3.parse(numberOfArgs, commonArgSpace);
+            cmd3.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_TRUE(cmd3.printUsageMessage);
 }
@@ -166,7 +166,7 @@ TEST_F(CmdLineTest, unsupportedLongArg) {
     numberOfArgs = 2;
     strncpy(commonArgSpace[1], "--guess", 8);
     ASSERT_NO_THROW({
-            cmd3.parse(numberOfArgs, commonArgSpace);
+            cmd3.parse_args(numberOfArgs, commonArgSpace);
             });
     ASSERT_TRUE(cmd3.printUsageMessage);
 }
@@ -177,7 +177,7 @@ TEST_F(CmdLineTest, missingLongOptArg) {
     numberOfArgs = 2;
     strncpy(commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"--file",7);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
 }
 
 // Tests invalid short command line options
@@ -186,7 +186,7 @@ TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
     numberOfArgs = 2;
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-s",3);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
 }
 
@@ -196,7 +196,7 @@ TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
     numberOfArgs = 2;
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"--who",6);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
 }
 
 /****************************************************************************
@@ -212,7 +212,7 @@ TEST_F(CmdLineTest, rootBasedFilePathTrim) {
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",6);
     strncpy(commonArgSpace[2],"/etc/test/inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
     ASSERT_EQ("/etc/test/inputfile1.pls",cmd2.getInputFileName());
@@ -225,7 +225,7 @@ TEST_F(CmdLineTest, siblingBasedFilePathTrim) {
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",6);
     strncpy(commonArgSpace[2],"../etc/test/inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
     ASSERT_EQ("../etc/test/inputfile1.pls",cmd2.getInputFileName());
@@ -238,7 +238,7 @@ TEST_F(CmdLineTest, childBasedFilePathTrim) {
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",6);
     strncpy(commonArgSpace[2],"etc/test/inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
     ASSERT_EQ("etc/test/inputfile1.pls",cmd2.getInputFileName());
@@ -251,7 +251,7 @@ TEST_F(CmdLineTest, selfBasedFilePathTrim) {
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",6);
     strncpy(commonArgSpace[2],"inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
     ASSERT_EQ("inputfile1.pls",cmd2.getInputFileName());
@@ -265,7 +265,7 @@ TEST_F(CmdLineTest, siblingBasedFilePathTrimDotFileName) {
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",6);
     strncpy(commonArgSpace[2],"../etc/test/input.file.1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_FALSE(cmd2.printUsageMessage);
     ASSERT_EQ("input.file.1",cmd2.getTrimmedFileName());
     ASSERT_EQ("../etc/test/input.file.1.pls",cmd2.getInputFileName());
@@ -284,7 +284,7 @@ TEST_F(CmdLineTest, output_filename_gaussian){
     strncpy( commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",6);
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_max_all_elev_gaussian.tif",
             cmd.get_output_filename(1));
 }
@@ -296,7 +296,7 @@ TEST_F(CmdLineTest, output_filename_first_diff){
     strncpy(commonArgSpace[1],"-f",5);
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
     strncpy(commonArgSpace[3],"-d",5);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_max_all_elev_firstDiff.tif",
             cmd.get_output_filename(1));
 }
@@ -309,7 +309,7 @@ TEST_F(CmdLineTest, output_filename_max_gaussian){
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
     strncpy(commonArgSpace[3],"-e",4);
     strncpy(commonArgSpace[4],"1",4);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_max_all_elev_gaussian.tif",cmd.get_output_filename(1));
 }
 
@@ -322,7 +322,7 @@ TEST_F(CmdLineTest, output_filename_max_first_diff){
     strncpy(commonArgSpace[3],"-d",5);
     strncpy(commonArgSpace[4],"-e",4);
     strncpy(commonArgSpace[5],"1",4);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_max_all_elev_firstDiff.tif",
             cmd.get_output_filename(1));
 }
@@ -335,7 +335,7 @@ TEST_F(CmdLineTest, output_filename_min_gaussian){
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
     strncpy(commonArgSpace[3],"-e",4);
     strncpy(commonArgSpace[4],"2",4);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_min_all_elev_gaussian.tif",
             cmd.get_output_filename(2));
 }
@@ -349,7 +349,7 @@ TEST_F(CmdLineTest, output_filename_min_first_diff){
     strncpy(commonArgSpace[3],"-d",5);
     strncpy(commonArgSpace[4],"-e",4);
     strncpy(commonArgSpace[5],"2",4);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_min_all_elev_firstDiff.tif",
             cmd.get_output_filename(2));
 }
@@ -362,7 +362,7 @@ TEST_F(CmdLineTest, output_filename_max_min_gaussian){
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
     strncpy(commonArgSpace[3],"-e",4);
     strncpy(commonArgSpace[4],"3",4);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_mean_all_elev_gaussian.tif",
             cmd.get_output_filename(3));
 }
@@ -370,13 +370,13 @@ TEST_F(CmdLineTest, output_filename_max_min_gaussian){
 TEST_F(CmdLineTest, output_filename_max_min_first_diff){
     optind = 0; // Need to reset optind to 0 for each test
     numberOfArgs = 6;
-    strncpy( commonArgSpace[0],"test",5);
+    strncpy(commonArgSpace[0],"test",5);
     strncpy(commonArgSpace[1],"-f",5);
     strncpy(commonArgSpace[2],"inputfile1.pls",15);
     strncpy(commonArgSpace[3],"-d",5);
     strncpy(commonArgSpace[4],"-e",4);
     strncpy(commonArgSpace[5],"3",4);
-    EXPECT_NO_THROW(cmd.parse(numberOfArgs, commonArgSpace));
+    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_EQ("inputfile1_mean_all_elev_firstDiff.tif",
             cmd.get_output_filename(3));
 }

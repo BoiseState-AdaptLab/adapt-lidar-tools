@@ -28,7 +28,8 @@ const static std::string product_variable[4] = {"elev", "amp", "width",
  * @param args
  */
 void CmdLine::setInputFileName(char *args){
-    inputFileName = args;
+    plsFileName = args;
+    check_input_file_exists();
 }
 
 
@@ -110,6 +111,7 @@ std::string CmdLine::getUsageMessage(){
  * Default constructor
  */
 CmdLine::CmdLine(){
+    quiet = false;
     calibration_constant = 0;
     printUsageMessage = false;
     useGaussianFitting = true;
@@ -121,10 +123,11 @@ CmdLine::CmdLine(){
 
 /**
  * Function that returns the file name
+ * @param pls true returns pls file name, false returns wvs file name
  * @return the name of the input file
  */
-std::string CmdLine::getInputFileName(){
-    return inputFileName;
+std::string CmdLine::getInputFileName(bool pls){
+    return pls ? plsFileName : wvsFileName;
 }
 
 
@@ -133,9 +136,13 @@ std::string CmdLine::getInputFileName(){
  * Function that parses the command line arguments
  * @param argc count of arguments
  * @param argv array of arguments
+ * @param quiet true prints all messages, false prints no messages
+ *        used in cmd line unittests
  * @return true if all arguments were valid, false otherwise
  */
 bool CmdLine::parse_args(int argc,char *argv[]){
+    std::vector<std::string> msgs;
+
     char optionChar;  //Option character
     char *fArg;       //Argument of the option character f
     char *e_arg;      //Argument of the option character e
@@ -143,8 +150,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
     /* If the program is run without any command line arguments, display
      * the correct program usage and quit.*/
     if(argc < 2){
-        std::cout << "\nNo command line arguments" <<std::endl;
-        std::cout << "-------------------------" <<std::endl;
+        msgs.push_back("No command line arguments");
         printUsageMessage = true;
     }
 
@@ -170,12 +176,11 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-hdf:e:a:w:b:c:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:b:c:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
             setInputFileName(fArg);
-            check_input_file_exists();
         } else if (optionChar == 'h') { //Show help information
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
@@ -193,8 +198,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                     //If the inputted product number is above 18, stop now
                     int prod_num = stoi(substr.c_str());
                     if (atoi(substr.c_str()) > 18){
-                        std::cout << "\nInvalid product code: " << prod_num << std::endl;
-                        std::cout << "-------------------------" << std::endl;
+                        msgs.push_back("Invalid product code: " + prod_num);
                         printUsageMessage = true;
                     }
                     int arg;
@@ -202,8 +206,8 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                         arg = (optionChar == 'a' ? 18 : optionChar == 'w' ? 36 :
                             optionChar == 'b' ? 54 : 0) + prod_num;
                     } catch (std::invalid_argument e) {
-                        std::cout << "\nProduct list could not be converted into integers" <<std::endl;
-                        std::cout << "-------------------------" << std::endl;
+                        msgs.push_back(string("Product list could not be") + 
+                            string(" converted into integers"));
                         printUsageMessage = true;
                     }
 
@@ -214,17 +218,19 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         } else if (optionChar == 1 && lastOpt == 'b'
                   && calibration_constant == 0){ //Set calibration coefficient
             calibration_constant = std::atof(optarg);
-            std::cout << "\nCalibration constant for backscatter coefficient = "
-                << calibration_constant << std::endl;
+            msgs.push_back("Calibration constant for backscatter coefficient = "
+                + std::to_string(calibration_constant));
         } else if (optionChar == ':'){
             // Missing option argument
-            std::cout << "\nMissing arguments" <<std::endl;
-            std::cout << "------------------" <<std::endl;
+            msgs.push_back("Missing arguments");
+            printUsageMessage = true;
+        } else if (optionChar == '?'){
+            //Invalid option
+            msgs.push_back("Invalid option");
             printUsageMessage = true;
         } else {
             // Invalid option
-            std::cout << "\nInvalid option" <<std::endl;
-            std::cout << "---------------" <<std::endl;
+            msgs.push_back(string("Invalid argument: ") + optarg);
             printUsageMessage = true;
         }
         lastOpt = optionChar;
@@ -233,28 +239,41 @@ bool CmdLine::parse_args(int argc,char *argv[]){
     //Make sure that if the backscatter coefficient was requested,
     //the calibration coefficient was inputted
     if (calcBackscatter && calibration_constant == 0){
-        std::cout << "\nMissing Calibration Constant" << std::endl;
-        std::cout << "----------------------------" << std::endl;
+        msgs.push_back("Missing Calibration Constant");
         printUsageMessage = true;
     }
 
     // For non option input
     if(optind < argc){
+        msgs.push_back("Invalid option");
+        printUsageMessage = true;
+    }
+
+    //No file inputted
+    if (getInputFileName(true) == ""){
+        msgs.push_back("No file inputted");
         printUsageMessage = true;
     }
 
     // Make sure at least one product was selected
     if (selected_products.size() < 1){
-        std::cout << "\nSelect at least one product" << std::endl;
-        std::cout << "---------------------------" << std::endl;
+        msgs.push_back("Select at least one product");
         printUsageMessage = true;
+    }
+
+    //Print messages
+    if (!quiet){
+        for (auto it = msgs.begin(); it != msgs.end(); ++it){
+            std::string line(it->length(), '-');
+            std::cout << "\n" << *it << "\n" << line << std::endl;
+        }
     }
 
     // Check if an error occured
     if (printUsageMessage){
         //Make sure broken data is not used by clearing requested products
         selected_products.clear();
-        std::cout << getUsageMessage() << std::endl;
+        if (!quiet) std::cout << getUsageMessage() << std::endl;
         return false;
     }
     
@@ -265,17 +284,21 @@ bool CmdLine::parse_args(int argc,char *argv[]){
  * check if the input file exists, print error message if not
  */
 void CmdLine::check_input_file_exists() {
-    std::string plsFileName = getInputFileName();
+    plsFileName = getInputFileName(true);
     if (!std::ifstream(plsFileName.c_str())) {
-        std::cout << "\nFile " << plsFileName << " not found."
-            << std::endl;
+        if (!quiet) {
+            std::cout << "\nFile " << plsFileName << " not found."
+                << std::endl;
+        }
         printUsageMessage = true;
     }
-    std::string wvsFileName = plsFileName.substr(0, plsFileName.length()-3)
-        + "wvs";
+    std::size_t idx = plsFileName.rfind(".pls");
+    wvsFileName = plsFileName.substr(0,idx) + ".wvs";
     if (!std::ifstream(wvsFileName.c_str())) {
-        std::cout << "\nFile " << wvsFileName << " not found."
-            << std::endl;
+        if (!quiet) {
+            std::cout << "\nFile " << wvsFileName << " not found."
+                << std::endl;
+        }
         printUsageMessage = true;
     }
 }
@@ -283,18 +306,19 @@ void CmdLine::check_input_file_exists() {
 /**
  * get the input file name, stripped of leading path info and trailing
  * extension info
+ * @param pls True returns pls file name, false returns wvs file name
  * @return input file name stripped of path or extension information
  */
-std::string CmdLine::getTrimmedFileName(){
-    size_t start = inputFileName.find_last_of("/");
+std::string CmdLine::getTrimmedFileName(bool pls){
+    size_t start = getInputFileName(pls).find_last_of("/");
     if(start==string::npos){
         start = 0;
     }else{
         start++;
     }
-    size_t end = inputFileName.find_last_of(".");
+    size_t end = getInputFileName(pls).find_last_of(".");
     int len = end - start;
-    return inputFileName.substr(start,len);
+    return getInputFileName(pls).substr(start,len);
 }
 
 /**
@@ -304,7 +328,7 @@ std::string CmdLine::getTrimmedFileName(){
  * @return the output filename
  */
 std::string CmdLine::get_output_filename(int product_id) {
-    std::string output_filename = getTrimmedFileName();
+    std::string output_filename = getTrimmedFileName(true);
     //Name file base on method used
     std::string file_type = ".tif";
     std::string fit_type = useGaussianFitting ? "_gaussian" : "_firstDiff";

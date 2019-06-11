@@ -26,7 +26,7 @@ int main (int argc, char *argv[]) {
     //Collect start time
     Clock::time_point t1 = Clock::now();
 
-    std::cout << "\nProcessing  " << cmdLineArgs.getInputFileName().c_str() 
+    std::cout << "\nProcessing  " << cmdLineArgs.getInputFileName(true).c_str()
         << std::endl;
 
 #ifdef DEBUG
@@ -34,7 +34,7 @@ int main (int argc, char *argv[]) {
 #endif
 
     //ingest the raw flight data into an object
-    driver.setup_flight_data(rawData, cmdLineArgs.getInputFileName());
+    driver.setup_flight_data(rawData, cmdLineArgs.getInputFileName(true));
 
 #ifdef DEBUG
     std::cerr << "driver.setup_flight_data returned" << std::endl;

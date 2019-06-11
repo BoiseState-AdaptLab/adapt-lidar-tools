@@ -20,7 +20,8 @@ class CmdLine{
 
 private:
     //possible parameters
-    std::string inputFileName;
+    std::string plsFileName;
+    std::string wvsFileName;
 
     // helpful stuff
     std::string usageMessage;
@@ -45,6 +46,9 @@ public:
     // Whether or not backscatter coefficient has been requested
     bool calcBackscatter;    
 
+    //True stifles all output statements
+    bool quiet;
+
     // bool max_elevation_flag;
     CmdLine();
 
@@ -55,8 +59,8 @@ public:
     void check_input_file_exists();
     void setInputFileName(char *args);
     void setInputFileName(std::string filename);
-    std::string getInputFileName();
-    std::string getTrimmedFileName();
+    std::string getInputFileName(bool pls);
+    std::string getTrimmedFileName(bool pls);
     std::string get_output_filename(int product_id);
     std::string get_product_desc(int product_id);
     std::vector<int> selected_products;

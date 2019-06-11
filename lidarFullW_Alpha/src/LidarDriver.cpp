@@ -564,6 +564,10 @@ double LidarDriver::get_deviation(std::vector<Peak*> *peaks, double avg,
                 E += pow(static_cast<double>(cur_val) - avg, 2);
         }
     }
+    //No applicable data
+    if (peak_count == 0){
+        return NO_DATA;
+    }
     double inverse = 1.0 / static_cast<double>(peak_count);
     return sqrt(inverse * E);
 }
@@ -594,6 +598,10 @@ double LidarDriver::get_skewtosis(std::vector<Peak*> *peaks, double avg,
     if(peaks==NULL || peaks->empty()){
         return NO_DATA;
     }
+    //All data points were exactly the same so return normal distribution
+    if(dev == 0){
+        return 0;
+    }
     for (std::vector<Peak*>::iterator it = peaks->begin();
             it != peaks->end(); ++it) {
         cur_val = get_peak_property(*it,peak_property);
@@ -618,6 +626,10 @@ double LidarDriver::get_skewtosis(std::vector<Peak*> *peaks, double avg,
                 break;
         }
 
+    }
+    //No applicable data
+    if (peak_count == 0){
+        return NO_DATA;
     }
     double inverse = 1.0 / static_cast<double>(peak_count);
     return (inverse * G) / pow(dev,power) ;

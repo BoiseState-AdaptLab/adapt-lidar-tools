@@ -24,13 +24,13 @@ class CmdLineTest : public testing::Test {
             strncpy(commonArgSpace[2],"do_not_use.pls",15);
             strncpy(commonArgSpace[3],"-e",3);
             strncpy(commonArgSpace[4],"1",2);
-            //Create test files to use
+            //Stifle command line error messages
+            cmd.quiet = true;
+            //Create test files
             std::ofstream pls ("do_not_use.pls");
             pls.close();
             std::ofstream wvs ("do_not_use.wvs");
             wvs.close();
-            //Stifle command line error messages
-            cmd.quiet = true;
         }
 
         static char** allocateTestArgs(int N,int M){
@@ -68,6 +68,7 @@ class CmdLineTest : public testing::Test {
  ****************************************************************************/
 // Tests file was correctly set
 TEST_F(CmdLineTest, validFileName){
+    //This also tests file trimming for files in the same path
     optind = 0;
     numberOfArgs = 5;
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
@@ -78,19 +79,72 @@ TEST_F(CmdLineTest, validFileName){
 
 //Tests file was incorrectly set
 TEST_F(CmdLineTest, invalidFileName){
+    //Delete pls file
+    std::remove("do_not_use.pls");
+
     //Invalid pls
     optind = 0;
     numberOfArgs = 5;
-    strncpy(commonArgSpace[2],"fail.pls",9);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
+
+    //Delete wvs file and create pls file
+    std::remove("do_not_use.wvs");
+    std::ofstream pls ("do_not_use.pls");
+    pls.close();
     
     //Invalid wvs
     optind = 0;
-    strncpy(commonArgSpace[2],"do_not_use.pls",15);
-    std::remove("do_not_use.wvs");
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
+}
+
+//Tests file was correctly trimmed with various paths
+TEST_F(CmdLineTest, fileTrimmingTestPath){
+    numberOfArgs = 5;
+
+    //Same path, child path, sister path
+    std::vector<std::string> paths = {"./", "etc/", "../lidarFullW_Alpha/"};
+    for (auto it = paths.begin(); it != paths.end(); ++it){
+        //Create test files
+        std::ofstream pls2 (*it + std::string("do_not_use.pls"));
+        pls2.close();
+        std::ofstream wvs2 (*it + std::string("do_not_use.wvs"));
+        wvs2.close();
+
+        optind = 0;
+        strncpy (commonArgSpace[2],
+            (*it + std::string("do_not_use.pls")).c_str(),15 + it->length());
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+        ASSERT_FALSE(cmd.printUsageMessage);
+        ASSERT_EQ("do_not_use", cmd.getTrimmedFileName(true));
+        ASSERT_EQ("do_not_use", cmd.getTrimmedFileName(false));
+  
+        //Delete test files
+        std::remove((*it + std::string("do_not_use.pls")).c_str());
+        std::remove((*it + std::string("do_not_use.wvs")).c_str());
+    }
+}
+
+//Tests file was correctly trimmed with odd file names
+TEST_F(CmdLineTest, fileTrimmingTestName){
+    //Create test files
+    std::ofstream pls2 ("do.not.use.pls");
+    pls2.close();
+    std::ofstream wvs2 ("do.not.use.wvs");
+    wvs2.close();
+
+    optind = 0;
+    numberOfArgs = 5;
+    strncpy (commonArgSpace[2],"do.not.use.pls",15);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_EQ("do.not.use", cmd.getTrimmedFileName(true));
+    ASSERT_EQ("do.not.use", cmd.getTrimmedFileName(false));
+
+    //Delete test files
+    std::remove("do.not.use.pls");
+    std::remove("do.not.use.wvs");
 }
 
 /****************************************************************************
@@ -102,11 +156,10 @@ TEST_F(CmdLineTest, invalidFileName){
 TEST_F(CmdLineTest, validProductOption){
     //Single argument options
     numberOfArgs = 5;
-    std::vector<char> vars = {'e', 'a', 'w'};
+    std::vector<std::string> vars = {"-e", "-a", "-w"};
     for (auto it = vars.begin(); it != vars.end(); ++it){
         optind = 0;
-        char arg[] = {'-', *it};
-        strncpy(commonArgSpace[3],arg,3);
+        strncpy(commonArgSpace[3],(*it).c_str(),3);
         ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
         ASSERT_FALSE(cmd.printUsageMessage);
     }
@@ -187,6 +240,12 @@ TEST_F(CmdLineTest, invalidNonProductOption){
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
 }
+
+//TODO: long option tests
+
+
+
+
 
 //Tests invalid 
 

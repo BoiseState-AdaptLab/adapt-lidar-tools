@@ -7,7 +7,6 @@
 
 using namespace std;
 
-
 //type is ((id - 1) % 6)
 const static std::string product_type[6] = {"max", "min", "mean", "sd", "skew",
     "kurt"};

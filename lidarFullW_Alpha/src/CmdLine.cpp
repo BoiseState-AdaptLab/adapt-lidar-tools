@@ -8,7 +8,7 @@
 using namespace std;
 
 //type is ((id - 1) % 6)
-const static std::string product_type[6] = {"max", "min", "mean", "sd", "skew",
+const static std::string product_type[6] = {"max", "min", "mean", "stdev", "skew",
     "kurt"};
 //data used is floor(((id -1) % 18) / 6)
 const static std::string product_data[3] = {"first", "last", "all"};

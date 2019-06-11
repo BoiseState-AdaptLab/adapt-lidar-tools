@@ -60,6 +60,13 @@ class CmdLineTest : public testing::Test {
 
 };
 
+//Tests no inputted arguments
+TEST_F(CmdLineTest, noArguments){
+    optind = 0;
+    numberOfArgs = 1;
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+}
 
 /****************************************************************************
  *
@@ -95,6 +102,14 @@ TEST_F(CmdLineTest, invalidFileName){
     
     //Invalid wvs
     optind = 0;
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+
+    //No file
+    optind = 0;
+    numberOfArgs = 4;
+    strncpy(commonArgSpace[2],"-e",3);
+    strncpy(commonArgSpace[3],"1",2);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
 }
@@ -220,16 +235,24 @@ TEST_F(CmdLineTest, invalidProductNumber){
 
 /****************************************************************************
  *
- * Addition Option Tests
+ * Non-Product Option Tests
  *
  ****************************************************************************/
 //Tests for a valid non-product option
 TEST_F(CmdLineTest, validNonProductOption){
+    //Shouldn't trigger usage message
     optind = 0;
     numberOfArgs = 6;
     strncpy(commonArgSpace[5],"-d",3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_FALSE(cmd.useGaussianFitting);
+
+    //Should trigger usage message
+    optind = 0;
+    strncpy(commonArgSpace[5],"-h",3);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
 }
 
 //Tests for an invalid non-product option
@@ -241,347 +264,180 @@ TEST_F(CmdLineTest, invalidNonProductOption){
     ASSERT_TRUE(cmd.printUsageMessage);
 }
 
-//TODO: long option tests
-
-
-
-
-
-//Tests invalid 
-
-/*
-// Tests valid short command line options
-TEST_F(CmdLineTest, validShortCmdLineOpts) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy(commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-h",3);
-
-    ASSERT_NO_THROW({
-            cmd.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_TRUE(cmd.printUsageMessage);
-
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy(commonArgSpace[1],"-f",3);
-    strncpy(commonArgSpace[2],"someFileName",13);
-    ASSERT_NO_THROW({
-            cmd2.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_FALSE(cmd2.printUsageMessage);
-    ASSERT_EQ("someFileName",cmd2.getInputFileName());
-
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy(commonArgSpace[1],"-e",3);
-    strncpy(commonArgSpace[2],"2",4);
-    ASSERT_NO_THROW({
-            cmd3.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_FALSE(cmd3.printUsageMessage);
-}
-
-
-TEST_F(CmdLineTest, fileNameNotFound){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy(commonArgSpace[1],"-f",3);
-    strncpy(commonArgSpace[2],"someFileName",13);
-    ASSERT_NO_THROW({
-            cmd2.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_TRUE(cmd2.printUsageMessage);
-    ASSERT_EQ("someFileName",cmd2.getInputFileName());
-}
-
-// Tests valid long command line options
-TEST_F(CmdLineTest, validLongCmdLineOpts) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"--help",7);
-    ASSERT_NO_THROW({
-            cmd.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_TRUE(cmd.printUsageMessage);
-
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
+/****************************************************************************
+ *
+ * Long Option Tests
+ *
+ ****************************************************************************/
+//Tests valid long file option
+TEST_F(CmdLineTest, validLongFileOption){
+    //--file test
+    optind = 0;
+    numberOfArgs = 5;
     strncpy(commonArgSpace[1],"--file",7);
-    strncpy(commonArgSpace[2],"file",5);
-    ASSERT_NO_THROW({
-            cmd2.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_FALSE(cmd2.printUsageMessage);
-    ASSERT_EQ("file",cmd2.getInputFileName());
-
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy(commonArgSpace[1],"--elevation",13);
-    strncpy(commonArgSpace[2],"2",4);
-    ASSERT_NO_THROW({
-            cmd3.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_FALSE(cmd3.printUsageMessage);
-
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
 }
 
+//Tests valid long product options
+TEST_F(CmdLineTest, validLongProductOption){
+    //long product options
+    //single argument
+    numberOfArgs = 5;
+    std::vector<std::string> opts = {"--elevation", "--width", "--amplitude"};
+    for (auto it = opts.begin(); it != opts.end(); ++it){
+        optind = 0;
+        strncpy(commonArgSpace[3],(*it).c_str(),it->length() + 1);
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+        ASSERT_FALSE(cmd.printUsageMessage);
+    }
 
-*/
-/****************************************************************************
- *
- * Begin invalid command line option tests
- *
- ****************************************************************************/
-/*
-// Tests missing command line arguments
-TEST_F(CmdLineTest, missingCmdLineArg) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 1;
-    strncpy(commonArgSpace[0],"test",5);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
+    //multiple arguments
+    optind = 0;
+    numberOfArgs = 6;
+    strncpy(commonArgSpace[3],"--backscatter",14);
+    strncpy(commonArgSpace[5],"1.5E2",6);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_EQ(150,cmd.calibration_constant);
 }
 
-// Tests missing short option arguments
-TEST_F(CmdLineTest, missingShortOptArg) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy(commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",3);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-}
+//Tests valid lon non-product options
+TEST_F(CmdLineTest, validLongNonProductOption){
+    //Shoudln't trigger usage message
+    optind = 0;
+    numberOfArgs = 6;
+    strncpy(commonArgSpace[5],"--firstdiff",12);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_FALSE(cmd.useGaussianFitting);
 
-TEST_F(CmdLineTest, unsupportedShortArg) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy(commonArgSpace[1], "-g", 3);
-    ASSERT_NO_THROW({
-            cmd3.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_TRUE(cmd3.printUsageMessage);
-}
-
-TEST_F(CmdLineTest, unsupportedLongArg) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy(commonArgSpace[1], "--guess", 8);
-    ASSERT_NO_THROW({
-            cmd3.parse_args(numberOfArgs, commonArgSpace));
-            });
-    ASSERT_TRUE(cmd3.printUsageMessage);
-}
-
-// Tests missing long option arguments
-TEST_F(CmdLineTest, missingLongOptArg) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy(commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"--file",7);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-}
-
-// Tests invalid short command line options
-TEST_F(CmdLineTest, invalidShortCmdLineOpts) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-s",3);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
+    //Should trigger usage message
+    optind = 0;
+    strncpy(commonArgSpace[5],"--help",7);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
 }
 
-// Tests invalid long command line options
-TEST_F(CmdLineTest, invalidLongCmdLineOpts) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 2;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"--who",6);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-}
-*/
-/****************************************************************************
- *
- * Begin filename trimming tests
- *
- ****************************************************************************/
-/*
-// Tests for input file names beginning in the root path
-TEST_F(CmdLineTest, rootBasedFilePathTrim) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"/etc/test/inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_FALSE(cmd2.printUsageMessage);
-    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
-    ASSERT_EQ("/etc/test/inputfile1.pls",cmd2.getInputFileName());
-}
+//Tests missing arguments for long options
+TEST_F(CmdLineTest, validLongOptionMissingArgument){
+    //multipl arguments product option
+    optind = 0;
+    numberOfArgs = 5;
+    strncpy(commonArgSpace[3],"--backscatter",14);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
 
-// Tests for input file names beginning in sibling path
-TEST_F(CmdLineTest, siblingBasedFilePathTrim) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"../etc/test/inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_FALSE(cmd2.printUsageMessage);
-    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
-    ASSERT_EQ("../etc/test/inputfile1.pls",cmd2.getInputFileName());
-}
+    //single argument product option
+    //invalid product number
+    optind = 0;
+    strncpy(commonArgSpace[4],"100",4);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
 
-// Tests for input file names beginning in child path
-TEST_F(CmdLineTest, childBasedFilePathTrim) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"etc/test/inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_FALSE(cmd2.printUsageMessage);
-    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
-    ASSERT_EQ("etc/test/inputfile1.pls",cmd2.getInputFileName());
-}
-
-// Tests for input file names beginning in same path
-TEST_F(CmdLineTest, selfBasedFilePathTrim) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"inputfile1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_FALSE(cmd2.printUsageMessage);
-    ASSERT_EQ("inputfile1",cmd2.getTrimmedFileName());
-    ASSERT_EQ("inputfile1.pls",cmd2.getInputFileName());
-}
-
-// Tests for input file names beginning in sibling path and filename contains
-// dots
-TEST_F(CmdLineTest, siblingBasedFilePathTrimDotFileName) {
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"../etc/test/input.file.1.pls",30);
-    EXPECT_NO_THROW(cmd2.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_FALSE(cmd2.printUsageMessage);
-    ASSERT_EQ("input.file.1",cmd2.getTrimmedFileName());
-    ASSERT_EQ("../etc/test/input.file.1.pls",cmd2.getInputFileName());
-}
-
-*/
-/****************************************************************************
- *
- * Begin output filename tests
- *
- ****************************************************************************/
-/*
-TEST_F(CmdLineTest, output_filename_gaussian){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 3;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_max_all_elev_gaussian.tif",
-            cmd.get_output_filename(1));
-}
-
-TEST_F(CmdLineTest, output_filename_first_diff){
-    optind = 0; // Need to reset optind to 0 for each test
+    //missing product number
+    optind = 0;
     numberOfArgs = 4;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",5);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    strncpy(commonArgSpace[3],"-d",5);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_max_all_elev_firstDiff.tif",
+    strncpy(commonArgSpace[3],"--elevation",12);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+
+    //missing file
+    optind = 0;
+    strncpy(commonArgSpace[1],"--file",8);
+    strncpy(commonArgSpace[2],"-e",3);
+    strncpy(commonArgSpace[3],"1",2);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+}
+
+//Tests invalid long option
+TEST_F(CmdLineTest, invalidLongOption){
+    optind = 0;
+    numberOfArgs = 6;
+    strncpy(commonArgSpace[5],"--oops",7);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+}
+
+/****************************************************************************
+ *
+ * Output filename tests
+ *
+ ****************************************************************************/
+//Tests correct naming of method
+TEST_F(CmdLineTest, outputFileNameMethod){
+    optind = 0;
+    numberOfArgs = 5;
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_EQ("do_not_use_max_first_elev_gaussian.tif",
+            cmd.get_output_filename(1));
+
+    optind = 0;
+    numberOfArgs = 6;
+    strncpy(commonArgSpace[5],"-d",3);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_EQ("do_not_use_max_first_elev_firstDiff.tif",
             cmd.get_output_filename(1));
 }
 
-TEST_F(CmdLineTest, output_filename_max_gaussian){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 5;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    strncpy(commonArgSpace[3],"-e",4);
-    strncpy(commonArgSpace[4],"1",4);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_max_all_elev_gaussian.tif",cmd.get_output_filename(1));
+//Tests correct naming of variable
+TEST_F(CmdLineTest, outputFileNameVariable){
+    //Set calibration coefficient for backscatter test
+    strncpy(commonArgSpace[5],"645",4);
+
+    std::vector<std::string> opts = {"-e", "-a", "-w", "-b"};
+    std::vector<std::string> names = {"elev", "amp", "width", "backscatter"};
+    for (int i = 0; i < 4; i ++){
+        optind = 0;
+        numberOfArgs = opts.at(i) == "-b" ? 6 : 5;
+        strncpy(commonArgSpace[3],opts.at(i).c_str(),3);
+        std::string expectedName = std::string("do_not_use_max_first_")
+            + names.at(i) + std::string("_gaussian.tif");
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+        ASSERT_FALSE(cmd.printUsageMessage);
+        ASSERT_EQ(expectedName.c_str(),cmd.get_output_filename(
+            cmd.selected_products.at(i)));
+    }
 }
 
-TEST_F(CmdLineTest, output_filename_max_first_diff){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 6;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",5);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    strncpy(commonArgSpace[3],"-d",5);
-    strncpy(commonArgSpace[4],"-e",4);
-    strncpy(commonArgSpace[5],"1",4);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_max_all_elev_firstDiff.tif",
-            cmd.get_output_filename(1));
+//Tests correct naming of used peaks
+TEST_F(CmdLineTest, outputFileNamePeaks){
+    std::vector<std::string> nums = {"1", "7", "13"};
+    std::vector<std::string> names = {"first", "last", "all"};
+    for (int i = 0; i < 3; i ++){
+        optind = 0;
+        numberOfArgs = 5;
+        strncpy(commonArgSpace[4],nums.at(i).c_str(),nums.at(i).length());
+        std::string expectedName = std::string("do_not_use_max_")
+            + names.at(i) + std::string("_elev_gaussian.tif");
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+        ASSERT_FALSE(cmd.printUsageMessage);
+        ASSERT_EQ(expectedName.c_str(),cmd.get_output_filename(
+            cmd.selected_products.at(i)));
+    }
 }
 
-TEST_F(CmdLineTest, output_filename_min_gaussian){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 5;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    strncpy(commonArgSpace[3],"-e",4);
-    strncpy(commonArgSpace[4],"2",4);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_min_all_elev_gaussian.tif",
-            cmd.get_output_filename(2));
+//Tests correct naming of calculation
+TEST_F(CmdLineTest, outputFileNameCalculation){
+    cmd.quiet = false;
+    std::vector<std::string> names = {"max", "min", "mean", "stdev", "skew",
+        "kurt"};
+    for (int i = 0; i < 6; i ++){
+        optind = 0;
+        numberOfArgs = 5;
+        strncpy(commonArgSpace[4],std::to_string(i+1).c_str(),2);
+        std::string expectedName = std::string("do_not_use_")
+            + names.at(i) + std::string("_first_elev_gaussian.tif");
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+        ASSERT_FALSE(cmd.printUsageMessage);
+        ASSERT_EQ(expectedName.c_str(),cmd.get_output_filename(
+            cmd.selected_products.at(i)));
+    }
 }
 
-TEST_F(CmdLineTest, output_filename_min_first_diff){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 6;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",5);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    strncpy(commonArgSpace[3],"-d",5);
-    strncpy(commonArgSpace[4],"-e",4);
-    strncpy(commonArgSpace[5],"2",4);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_min_all_elev_firstDiff.tif",
-            cmd.get_output_filename(2));
-}
-
-TEST_F(CmdLineTest, output_filename_max_min_gaussian){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 5;
-    strncpy( commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",6);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    strncpy(commonArgSpace[3],"-e",4);
-    strncpy(commonArgSpace[4],"3",4);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_mean_all_elev_gaussian.tif",
-            cmd.get_output_filename(3));
-}
-
-TEST_F(CmdLineTest, output_filename_max_min_first_diff){
-    optind = 0; // Need to reset optind to 0 for each test
-    numberOfArgs = 6;
-    strncpy(commonArgSpace[0],"test",5);
-    strncpy(commonArgSpace[1],"-f",5);
-    strncpy(commonArgSpace[2],"inputfile1.pls",15);
-    strncpy(commonArgSpace[3],"-d",5);
-    strncpy(commonArgSpace[4],"-e",4);
-    strncpy(commonArgSpace[5],"3",4);
-    EXPECT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
-    ASSERT_EQ("inputfile1_mean_all_elev_firstDiff.tif",
-            cmd.get_output_filename(3));
-}
-*/
 /* Call RUN_ALL_TESTS() in main().
 
    We do this by linking in src/gtest_main.cc file, which consists of

@@ -18,9 +18,9 @@ Peak::Peak(){
     is_final_peak = false;
     position_in_wave = 0;
 
-  triggering_amp = 0;
-  triggering_location = 0;
-  triggering_idx = 0;
+    triggering_amp = 0;
+    triggering_location = 0;
+    triggering_idx = 0;
 
     x_activation = 0;
     y_activation = 0;
@@ -30,6 +30,7 @@ Peak::Peak(){
     y = 0.;
     z = 0.;
 
+    rise_time = 0;
     backscatter_coefficient = 0;
 }
 

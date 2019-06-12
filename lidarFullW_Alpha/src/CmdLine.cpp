@@ -13,8 +13,8 @@ const static std::string product_type[6] = {"max", "min", "mean", "stdev", "skew
 //data used is floor(((id -1) % 18) / 6)
 const static std::string product_data[3] = {"first", "last", "all"};
 //variable is ((id - 1) / 18)
-const static std::string product_variable[4] = {"elev", "amp", "width",
-    "backscatter"};
+const static std::string product_variable[5] = {"elev", "amp", "width",
+    "risetime", "backscatter"};
 
 /****************************************************************************
  *
@@ -78,6 +78,9 @@ void CmdLine::setUsageMessage()
     buffer << "Option:  " << std::endl;
     buffer << "       -w  <list of products>"
         << "  :Generate Width products" << std::endl;
+    buffer << "Option:  " << std::endl;
+    buffer << "       -r  <list of products>"
+        << "  :Generate Rise Time products" << std::endl;
     buffer << "Option:  " <<std::endl;
     buffer << "       -b  <list of products> <calibration constant>"
         << "  :Generate Backscatter Coefficient products with the given"
@@ -163,6 +166,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         {"elevation", required_argument,NULL,'e'},
         {"amplitude", required_argument,NULL,'a'},
         {"width", required_argument,NULL,'w'},
+        {"risetime", required_argument,NULL,'r'},
         {"backscatter", required_argument,NULL,'b'},
         {0, 0, 0, 0}
     };
@@ -175,7 +179,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:b:c:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:r:b:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -185,7 +189,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
         } else if (optionChar == 'e' || optionChar == 'a' || optionChar == 'w'
-            || optionChar == 'b'){
+            || optionChar == 'r' || optionChar == 'b'){
             //Sets which pruducts to create and for which variable
             { // Without curly braces wrapping this case, there are compilation
               //errors
@@ -203,7 +207,8 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                     int arg;
                     try {
                         arg = (optionChar == 'a' ? 18 : optionChar == 'w' ? 36 :
-                            optionChar == 'b' ? 54 : 0) + prod_num;
+                            optionChar == 'r' ? 54 : optionChar == 'b' ? 72 : 
+                            0) + prod_num;
                     } catch (std::invalid_argument e) {
                         msgs.push_back(string("Product list could not be") + 
                             string(" converted into integers"));

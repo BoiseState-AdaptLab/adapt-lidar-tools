@@ -44,6 +44,9 @@ class Peak{
         //holds peak location in the xyz space
         double x, y, z;
 
+        //Stores rise time of the peak
+        double rise_time;
+
         //Stores the backscatter coefficient at that peak
         double backscatter_coefficient;
 

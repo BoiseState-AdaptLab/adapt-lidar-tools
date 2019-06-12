@@ -98,15 +98,15 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
                 peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
                                      pd.returningIdx);
             }
-
+ 
             // for each peak - find the activation point
             //               - calculate x,y,z
             peak_count = raw_data.calc_xyz_activation(&peaks);
            
             // Calculate all requested information - Backscatter Coefficient
-            // - Rise Time  - Energy at % Height  - Height at % Energy
+            // - Energy at % Height  - Height at % Energy
             peak_calculations(pd, peaks, fitter, cmdLine,
-                       raw_data.current_wave_gps_info, peak_count);
+                       raw_data.current_wave_gps_info);
 
             add_peaks_to_volume(fitted_data, peaks, peak_count);
         } catch (const char *msg) {
@@ -164,7 +164,7 @@ void LidarDriver::add_peaks_to_volume(LidarVolume &lidar_volume,
  */
 void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                             GaussianFitter &fitter, CmdLine &cmdLine,
-                            WaveGPSInformation &gps_info, int &peak_count){
+                            WaveGPSInformation &gps_info){
     // Backscatter coefficient
     if (cmdLine.calcBackscatter){
         //Go through fitting process with emitted waveform
@@ -181,23 +181,27 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
         }
 
         //For every returning wave peak, calculate the backscatter coefficient
-        for (int i = 0; i < peak_count; i ++){
+	for (auto it = peaks.begin(); it != peaks.end(); ++it){
             if (emitted_peaks.size() == 0){
-                peaks.at(i)->backscatter_coefficient = NO_DATA;
+                (*it)->backscatter_coefficient = NO_DATA;
             } else {
-                peaks.at(i)->calcBackscatter(emitted_peaks.at(0)->amp,
+                (*it)->calcBackscatter(emitted_peaks.at(0)->amp,
                         emitted_peaks.at(0)->fwhm, cmdLine.calibration_constant,
                         gps_info.x_anchor, gps_info.y_anchor, gps_info.z_anchor);
             }
-            if (peaks.at(i)->backscatter_coefficient == INFINITY){
-                peaks.at(i)->backscatter_coefficient = NO_DATA;
+            if ((*it)->backscatter_coefficient == INFINITY){
+                (*it)->backscatter_coefficient = NO_DATA;
             }
         }
     }
 
+    //Check if each peak has a rise time
+    for (auto it = peaks.begin(); it != peaks.end(); ++it){
+        (*it)->rise_time = (*it)->rise_time == -1 ? NO_DATA : (*it)->rise_time;
+    }
+
     // This is where we should calculate everything that we need to 
     // know about the peak
-    // Rise time
     // Heights at percent energy
     // Energy at percent heighths
 }
@@ -215,7 +219,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
     //determinr product variable, 'z' = elevation, 'a' = amplitude,
     //'w' = width, 'b' = backscatter coefficient
     char prod_var = prod_id <= 18 ? 'z' : prod_id <= 36 ? 'a' : prod_id <= 54 ?
-        'w' : prod_id <= 72 ? 'b' : '-';
+        'w' : prod_id <= 72 ? 'r' : prod_id <= 90 ? 'b' : '-';
     //determine what data to use, 0 = first, 1 = last, 2 = all
     int prod_data = ((prod_id - 1) % 18) / 6;
     //Make sure it is a valid product
@@ -514,6 +518,8 @@ float LidarDriver::get_peak_property(Peak *peak, char peak_property)
             return peak->amp;
         case 'w':
             return peak->fwhm;
+        case 'r':
+            return peak->rise_time;
         case 'b':
             return peak->backscatter_coefficient;
         default:

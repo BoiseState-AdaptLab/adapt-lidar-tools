@@ -162,7 +162,7 @@ $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 		-lgsl -lgslcblas
 
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) -std=c++11 -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds all object files
 $(OBJ)/%.o: $(SRC)/%.cpp

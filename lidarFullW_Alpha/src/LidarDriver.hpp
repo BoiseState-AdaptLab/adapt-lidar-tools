@@ -35,7 +35,7 @@ class LidarDriver {
         
         void peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                 GaussianFitter &fitter, CmdLine &cmdLine,
-                WaveGPSInformation &gps_info, int &peak_count);
+                WaveGPSInformation &gps_info);
         
         void add_peaks_to_volume(LidarVolume &lidar_volume,
                 std::vector<Peak*> &peaks, int peak_count);

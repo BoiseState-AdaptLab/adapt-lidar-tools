@@ -171,7 +171,7 @@ TEST_F(CmdLineTest, fileTrimmingTestName){
 TEST_F(CmdLineTest, validProductOption){
     //Single argument options
     numberOfArgs = 5;
-    std::vector<std::string> vars = {"-e", "-a", "-w"};
+    std::vector<std::string> vars = {"-e", "-a", "-w", "-r"};
     for (auto it = vars.begin(); it != vars.end(); ++it){
         optind = 0;
         strncpy(commonArgSpace[3],(*it).c_str(),3);
@@ -284,7 +284,8 @@ TEST_F(CmdLineTest, validLongProductOption){
     //long product options
     //single argument
     numberOfArgs = 5;
-    std::vector<std::string> opts = {"--elevation", "--width", "--amplitude"};
+    std::vector<std::string> opts = {"--elevation", "--width", "--amplitude",
+        "--risetime"};
     for (auto it = opts.begin(); it != opts.end(); ++it){
         optind = 0;
         strncpy(commonArgSpace[3],(*it).c_str(),it->length() + 1);
@@ -388,8 +389,9 @@ TEST_F(CmdLineTest, outputFileNameVariable){
     //Set calibration coefficient for backscatter test
     strncpy(commonArgSpace[5],"645",4);
 
-    std::vector<std::string> opts = {"-e", "-a", "-w", "-b"};
-    std::vector<std::string> names = {"elev", "amp", "width", "backscatter"};
+    std::vector<std::string> opts = {"-e", "-a", "-w", "-r", "-b"};
+    std::vector<std::string> names = {"elev", "amp", "width", "risetime",
+        "backscatter"};
     for (int i = 0; i < 4; i ++){
         optind = 0;
         numberOfArgs = opts.at(i) == "-b" ? 6 : 5;

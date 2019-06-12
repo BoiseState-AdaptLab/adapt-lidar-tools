@@ -270,7 +270,7 @@ void handler (const char * reason,
 int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
                  gsl_multifit_nlinear_parameters *params) {
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
-    const size_t max_iter = 200;
+    const size_t max_iter = 10;
     const double xtol = 1.0e-8;
     const double gtol = 1.0e-8;
     const double ftol = 1.0e-8;
@@ -435,7 +435,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 #ifdef DEBUG
     std::cerr << "peakCount = " << peakCount << std::endl;
 #endif
-    
+
     if(!solve_system(x, &fdf, &fdf_params)){
         incr_pass();
         //this loop is going through every peak
@@ -469,7 +469,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
-            
+
             if(peak->amp > 2.0*max || peak->amp < 0 ||
                peak->triggering_location > n || peak->triggering_location <0){
                 delete(peak);

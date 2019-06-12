@@ -253,7 +253,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
   }
   current_wave_gps_info.populateGPS(pReader);
 
-  std::cout << "  gps info.dx: " << current_wave_gps_info.dx ;
   //Clear the vectors since we're storing a single pulse at a time
   pd->outgoingIdx.clear();
   pd->outgoingWave.clear();
@@ -389,10 +388,6 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
          (*it)->triggering_location * current_wave_gps_info.dx +
                                   current_wave_gps_info.x_first;
 
-    std::cout << "x activation: " << std::setprecision(10) << (*it)->x_activation;
-    std::cout << "  triggering loc: " << (*it)->triggering_location;
-    std::cout << "  gps info.dx: " << current_wave_gps_info.dx ;
-    std::cout << "  x first: " << current_wave_gps_info.x_first << std::endl;
     
     if((*it)->x_activation < bb_x_min || (*it)->x_activation > bb_x_max){
       std::cerr << "\nx activation: "<< (*it)->x_activation
@@ -405,10 +400,6 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
                   (*it)->triggering_location * current_wave_gps_info.dy +
                                   current_wave_gps_info.y_first;
 
-    std::cout << "y activation: " << (*it)->y_activation << std::endl;
-    std::cout << "triggering loc: " << (*it)->triggering_location << std::endl;
-    std::cout << "gps info.dy: " << current_wave_gps_info.dy << std::endl;
-    std::cout << "y first: " << current_wave_gps_info.y_first << std::endl;
 
 
     if((*it)->y_activation < bb_y_min || (*it)->y_activation > bb_y_max){
@@ -422,11 +413,6 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
                   (*it)->triggering_location * current_wave_gps_info.dz +
                                   current_wave_gps_info.z_first;
 
-    std::cout << "z activation: " << (*it)->z_activation << std::endl;
-    std::cout << "triggering loc: " << (*it)->triggering_location << std::endl;
-    std::cout << "gps info.dz: " << current_wave_gps_info.dz << std::endl;
-    std::cout << "z first: " << current_wave_gps_info.z_first << std::endl;
-    std::cout << " " << std::endl;
 
     if((*it)->z_activation < bb_z_min || (*it)->z_activation > bb_z_max){
       std::cerr << "\nz activation: "<< (*it)->z_activation

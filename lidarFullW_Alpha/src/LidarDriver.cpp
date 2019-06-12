@@ -189,6 +189,9 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                         emitted_peaks.at(0)->fwhm, cmdLine.calibration_constant,
                         gps_info.x_anchor, gps_info.y_anchor, gps_info.z_anchor);
             }
+            if (peaks.at(i)->backscatter_coefficient == INFINITY){
+                peaks.at(i)->backscatter_coefficient = NO_DATA;
+            }
         }
     }
 

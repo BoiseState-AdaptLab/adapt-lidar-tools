@@ -67,7 +67,7 @@ CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FlightLineData_unittests \
 		$(BIN)/WaveGPSInformation_unittests $(BIN)/PulseData_unittests \
 		$(BIN)/LidarVolume_unittests $(BIN)/GaussianFitter_unittests \
-		$(BIN)/LidarDriver_unittests
+		$(BIN)/LidarDriver_unittests $(BIN)/Peak_unittests
 
 # All Google Test headers.  Usually you shouldn't change this definition.
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
@@ -212,6 +212,7 @@ test: $(TESTS)
 	-$(BIN)/GaussianFitter_unittests
 	-$(BIN)/LidarDriver_unittests
 	-$(BIN)/FlightLineData_unittests
+	-$(BIN)/Peak_unittests
 
 # Clean up when done. 
 # Removes all object, library and executable files

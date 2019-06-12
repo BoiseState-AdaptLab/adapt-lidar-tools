@@ -14,7 +14,7 @@ const static std::string product_type[6] = {"max", "min", "mean", "stdev", "skew
 const static std::string product_data[3] = {"first", "last", "all"};
 //variable is ((id - 1) / 18)
 const static std::string product_variable[5] = {"elev", "amp", "width",
-    "risetime", "backscatter"};
+    "riseTime", "backscatter"};
 
 /****************************************************************************
  *

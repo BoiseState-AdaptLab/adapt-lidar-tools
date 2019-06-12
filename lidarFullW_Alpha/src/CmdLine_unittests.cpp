@@ -390,7 +390,7 @@ TEST_F(CmdLineTest, outputFileNameVariable){
     strncpy(commonArgSpace[5],"645",4);
 
     std::vector<std::string> opts = {"-e", "-a", "-w", "-r", "-b"};
-    std::vector<std::string> names = {"elev", "amp", "width", "risetime",
+    std::vector<std::string> names = {"elev", "amp", "width", "riseTime",
         "backscatter"};
     for (int i = 0; i < 4; i ++){
         optind = 0;

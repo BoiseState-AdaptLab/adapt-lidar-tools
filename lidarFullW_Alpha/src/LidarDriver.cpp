@@ -197,7 +197,7 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
 
     //Check if each peak has a rise time
     for (auto it = peaks.begin(); it != peaks.end(); ++it){
-        (*it)->rise_time = (*it)->rise_time == -1 ? NO_DATA : (*it)->rise_time;
+        (*it)->rise_time = (*it)->rise_time < 0 ? NO_DATA : (*it)->rise_time;
     }
 
     // This is where we should calculate everything that we need to 

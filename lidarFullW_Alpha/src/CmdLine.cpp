@@ -39,60 +39,60 @@ void CmdLine::setUsageMessage()
 {
     std::stringstream buffer;
     buffer << "\nUsage: " << std::endl;
-    buffer << "       path_to_executable -f <path to pls file> [-option argument] <list of products>" << std::endl;
-    buffer << "Option:  " << std::endl;
+    buffer << "       path_to_executable -f <path to pls file> -product_type"
+        << " <list of products> [-product_type <list_of_products>]* [-d]"
+        << std::endl;
+    buffer << std::endl;
+    buffer << "Options:  " << std::endl;
     buffer << "       -f  <path to pls file>"
-        << "  :Generate a Geotif file" << std::endl;
-    buffer << "Option:  " << std::endl;
+        << "  :Generates a Geotif file" << std::endl;
+    buffer << "       -d"
+        << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
+    buffer << "       -h"
+        << "  :Prints this help message" << std::endl;
+     buffer << std::endl;
+    buffer << "Product Type Options:" << std::endl;
     buffer << "       -e  <list of products>"
-        << "  :Generate elevation products. Choose products to generate from the following table;" << std::endl;
-    buffer << std::endl;
-    buffer << "| Function | Peak Type | Product Number |" << std::endl;
-    buffer << "|----------|-----------|----------------|" << std::endl;
-    buffer << "| Max      | First     | 1              |" << std::endl;
-    buffer << "| Min      | First     | 2              |" << std::endl;
-    buffer << "| Mean     | First     | 3              |" << std::endl;
-    buffer << "| Std.Dev  | First     | 4              |" << std::endl;
-    buffer << "| Skew     | First     | 5              |" << std::endl;
-    buffer << "| Kurtosis | First     | 6              |" << std::endl;
-    buffer << "| Max      | Last      | 7              |" << std::endl;
-    buffer << "| Min      | Last      | 8              |" << std::endl;
-    buffer << "| Mean     | Last      | 9              |" << std::endl;
-    buffer << "| Std.Dev  | Last      | 10             |" << std::endl;
-    buffer << "| Skew     | Last      | 11             |" << std::endl;
-    buffer << "| Kurtosis | Last      | 12             |" << std::endl;
-    buffer << "| Max      | All       | 13             |" << std::endl;
-    buffer << "| Min      | All       | 14             |" << std::endl;
-    buffer << "| Mean     | All       | 15             |" << std::endl;
-    buffer << "| Std.Dev  | All       | 16             |" << std::endl;
-    buffer << "| Skew     | All       | 17             |" << std::endl;
-    buffer << "| Kurtosis | All       | 18             |" << std::endl;
-    buffer << std::endl;
-    buffer << "Valid ways to format the list include:" << std::endl;
-    buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
-    buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
-    buffer << "                   -e \" 1 , 2 , 3 \"   (white-space allowed inside quotes)" << std::endl;
-    buffer << "Option:  " << std::endl;
+        << "  :Generates Elevation products" << std::endl;
     buffer << "       -a  <list of products>"
-        << "  :Generate Amplitude products" << std::endl;
-    buffer << "Option:  " << std::endl;
+        << "  :Generates Amplitude products" << std::endl;
     buffer << "       -w  <list of products>"
-        << "  :Generate Width products" << std::endl;
-    buffer << "Option:  " << std::endl;
+        << "  :Generates Width products" << std::endl;
     buffer << "       -r  <list of products>"
-        << "  :Generate Rise Time products" << std::endl;
-    buffer << "Option:  " <<std::endl;
+        << "  :Generates Rise Time products" << std::endl;
     buffer << "       -b  <list of products> <calibration constant>"
-        << "  :Generate Backscatter Coefficient products with the given"
+        << "  :Generates Backscatter Coefficient products with the given"
         << " calibration constant" << std::endl;
     buffer << "           Scientific notation allowed for calibration constant"
         << " (e.g. 0.78 = 7.8e-1 = 7.8E-1)"
         << std::endl;
-    buffer << "Option:  " << std::endl;
-    buffer << "       -d"
-        << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
-    buffer << "       -h"
-        << "  :Print this help message" << std::endl;
+    buffer << std::endl;
+    buffer << "Product Options and Numbers:" << std::endl << std::endl;
+    buffer << "| Calculation | Peaks Used | Product Number |" << std::endl;
+    buffer << "|-------------|------------|----------------|" << std::endl;
+    buffer << "| Max         | First      | 1              |" << std::endl;
+    buffer << "| Min         | First      | 2              |" << std::endl;
+    buffer << "| Mean        | First      | 3              |" << std::endl;
+    buffer << "| Std.Dev     | First      | 4              |" << std::endl;
+    buffer << "| Skewness    | First      | 5              |" << std::endl;
+    buffer << "| Kurtosis    | First      | 6              |" << std::endl;
+    buffer << "| Max         | Last       | 7              |" << std::endl;
+    buffer << "| Min         | Last       | 8              |" << std::endl;
+    buffer << "| Mean        | Last       | 9              |" << std::endl;
+    buffer << "| Std.Dev     | Last       | 10             |" << std::endl;
+    buffer << "| Skewness    | Last       | 11             |" << std::endl;
+    buffer << "| Kurtosis    | Last       | 12             |" << std::endl;
+    buffer << "| Max         | All        | 13             |" << std::endl;
+    buffer << "| Min         | All        | 14             |" << std::endl;
+    buffer << "| Mean        | All        | 15             |" << std::endl;
+    buffer << "| Std.Dev     | All        | 16             |" << std::endl;
+    buffer << "| Skewness    | All        | 17             |" << std::endl;
+    buffer << "| Kurtosis    | All        | 18             |" << std::endl;
+    buffer << std::endl;
+    buffer << "Valid ways to format the product list include:" << std::endl;
+    buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
+    buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
+    buffer << "                   -e \" 1 , 2 , 3 \"   (white-space allowed inside quotes)" << std::endl;
     buffer << "\nExample: " << std::endl;
     buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5 -w 14,9 -b 13,4 .768"
         << std::endl;
@@ -171,6 +171,10 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         {0, 0, 0, 0}
     };
 
+    //Stores if we need a calibration constant
+    bool need_const = false;
+    //Stores if wee need gaussian fitting
+    bool need_fitting = false;
     // getopt_long stores the option index here.
     int option_index = 0;
     //Tacks the last option used
@@ -195,6 +199,8 @@ bool CmdLine::parse_args(int argc,char *argv[]){
               //errors
                 e_arg = optarg;
                 std::stringstream ss(e_arg);
+                int prod_offset = optionChar == 'a' ? 18 : optionChar == 'w' ?
+                   36 : optionChar == 'r' ? 54 : optionChar == 'b' ? 72 : 0;
                 while(ss.good()) {
                     string substr;
                     getline(ss, substr, ',');
@@ -206,18 +212,16 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                     }
                     int arg;
                     try {
-                        arg = (optionChar == 'a' ? 18 : optionChar == 'w' ? 36 :
-                            optionChar == 'r' ? 54 : optionChar == 'b' ? 72 : 
-                            0) + prod_num;
+                        arg = prod_offset + prod_num;
                     } catch (std::invalid_argument e) {
                         msgs.push_back(string("Product list could not be") + 
                             string(" converted into integers"));
                         printUsageMessage = true;
                     }
-
                     selected_products.push_back(arg);
                 }
-                calcBackscatter = optionChar == 'b' ? true : calcBackscatter;
+                need_const = optionChar == 'b' ? true : need_const;
+                need_fitting = optionChar == 'r' ? true : need_fitting;
             }
         } else if (optionChar == 1 && lastOpt == 'b'
                   && calibration_constant == 0){ //Set calibration coefficient
@@ -239,10 +243,17 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         }
         lastOpt = optionChar;
     }
+
+    //Rise time requires gaussian fitting
+    if (need_fitting && !useGaussianFitting){
+        msgs.push_back(string("One or more products do not support First") +
+            string(" Differencing\nProducts that do not support First") +
+            string("Differencing: Rise Time"));
+        printUsageMessage = true;
+    }
     
-    //Make sure that if the backscatter coefficient was requested,
-    //the calibration coefficient was inputted
-    if (calcBackscatter && calibration_constant == 0){
+    //Backscatter coefficient requires a calibration constant
+    if (need_const && calibration_constant == 0){
         msgs.push_back("Missing Calibration Constant");
         printUsageMessage = true;
     }

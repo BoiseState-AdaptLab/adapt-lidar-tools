@@ -93,7 +93,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
                 peak_count = fitter.find_peaks(&peaks, pd.returningWave,
-                                     pd.returningIdx);
+                                     pd.returningIdx, 200);
             } else {
                 peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
                                      pd.returningIdx);
@@ -174,7 +174,7 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
 
         if (cmdLine.useGaussianFitting){
             fitter.find_peaks(&emitted_peaks, pulse.outgoingWave,
-                    pulse.outgoingIdx);
+                    pulse.outgoingIdx, 10);
         } else {
             fitter.guess_peaks(&emitted_peaks, pulse.outgoingWave,
                     pulse.outgoingIdx);

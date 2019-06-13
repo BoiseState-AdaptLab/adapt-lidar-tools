@@ -156,11 +156,10 @@ def createImage(tif, path):
       if val != tif.no_value:
         #Normalize value between 0 and 1
         val_frac = (val - min_val) / (max_val - min_val)
-        #if the percent difference isn't a number, make it no data
-        if not math.isfinite(frac):
-            val_frac = tif.no_value
-        #write color value to array, inputted as [row, col]
-        color_data[y, x] = tif.getHeatMapColor(colors, val_frac)
+        #if the percent difference isn't a number, skip it
+        if math.isfinite(frac):
+          #write color value to array, inputted as [row, col]
+          color_data[y, x] = tif.getHeatMapColor(colors, val_frac)
     print ("\rCreating heatmap {}%".format(
            round(y*100/(data_h-1))), end="")
 

@@ -281,6 +281,9 @@ def compareImage(tif1, tif2, path, compare_no):
       else:
         #Get difference as a % of min
         frac = abs(val1 - val2) / min(val1, val2)
+        #if the percent difference isn't a number, make it no data
+        if not math.isfinite(frac):
+            frac = tif1.no_value
         #Check if that % is our new biggest
         if frac > max_dif:
           max_dif = frac

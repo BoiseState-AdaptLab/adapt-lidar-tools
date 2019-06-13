@@ -631,12 +631,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         noise_level = 6;
     }
 
-    //Collect triggering point for each peak
-    std::vector<int> rise_times;
-
-    //Stores index of the first point that is above the noise level
-    int trigger_point = -1;
-
     //Sign of gradient:
     // =    1 for increasing
     // =    0 for level AND PREVIOUSLY INCREASING (so potential wide peak)
@@ -650,10 +644,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     for(int i = 0; i<(int)ampData.size()-1; i++){
 
         if(ampData[i] > noise_level){
-            //If there is a peak that hasn't had a value above the noise level
-            if (trigger_point == -1){
-                trigger_point = i;
-            }
             // sloping down
             if(ampData[i+1] < ampData[i]){
                 // were we sloping up before?
@@ -661,9 +651,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                     //record the peak
                     peak_guesses_loc.push_back(i);
                     //Peak location
-                    rise_times.push_back(idxData[peak_guesses_loc.back()]
-                        - idxData[trigger_point]);
-
                 // previously flat
                 }else if(grad == 0){
                     int width = (i-wideStart);
@@ -674,17 +661,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                             // record the center of the flat
                             peak_guesses_loc.push_back(i-(width/2));
                             //Peak location
-                            rise_times.push_back(
-                                idxData[peak_guesses_loc.back()]
-                                - idxData[trigger_point]);
-                            trigger_point = -1;
                         }
                     }else{
                         peak_guesses_loc.push_back(i-(width/2));
                         //Peak location
-                        rise_times.push_back(idxData[peak_guesses_loc.back()]
-                            - idxData[trigger_point]);
-                        trigger_point = -1;
                     }
                 }
                 grad = -1;
@@ -697,9 +677,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                     if(prev_grad == 1){
                         peak_guesses_loc.push_back(i-((i-wideStart)/2)); 
                         //Peak location
-                        rise_times.push_back(idxData[peak_guesses_loc.back()]
-                            - idxData[trigger_point]);
-                        trigger_point = -1;
                     }
                 }
                 // previously sloping up or down
@@ -772,14 +749,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         peak->amp = ampData[peak_guesses_loc[i]];
         peak->location = idxData[peak_guesses_loc[i]];
         peak->fwhm = guess;
+        //Set rise_time default to -1
+        //This equates to NO_VALUE in lidar driver
+        peak->rise_time = -1;
         peak->position_in_wave = peaks_found;
-        //Try to calculate rise time
-        if (rise_times.size() > i){
-            peak->rise_time = rise_times.at(i);
-        } else {
-            //This tells lidar driver to set it to NO_DATA
-            peak->rise_time = -1;
-        }
         results->push_back(peak);
 
     }

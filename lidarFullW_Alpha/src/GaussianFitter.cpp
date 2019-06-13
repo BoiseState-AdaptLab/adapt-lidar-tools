@@ -268,9 +268,9 @@ void handler (const char * reason,
  * @return
  */
 int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
-                 gsl_multifit_nlinear_parameters *params) {
+                 gsl_multifit_nlinear_parameters *params, 
+                 const size_t max_iter) {
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
-    const size_t max_iter = 10;
     const double xtol = 1.0e-8;
     const double gtol = 1.0e-8;
     const double ftol = 1.0e-8;
@@ -346,12 +346,16 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  */
 int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                                std::vector<int> ampData,
-                               std::vector<int> idxData) {
+                               std::vector<int> idxData,
+                               const size_t max_iter) {
     incr_total();
 
     //Error handling
     int status;
     gsl_set_error_handler(handler);
+
+    //Clear fitted equations
+    equations.clear();
 
     //figure out how many items there are in the ampData
     size_t n = ampData.size();
@@ -436,7 +440,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     std::cerr << "peakCount = " << peakCount << std::endl;
 #endif
 
-    if(!solve_system(x, &fdf, &fdf_params)){
+    if(!solve_system(x, &fdf, &fdf_params, max_iter)){
         incr_pass();
         //this loop is going through every peak
         int i=0;
@@ -466,6 +470,11 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 + peak->location,
                 (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
                 + peak->location);
+
+            std::stringstream ss;
+            ss << "y = " << peak->amp << "*e^(-0.5*((t-" << peak->location <<
+                ")/" << c << ")^2)";
+            equations.push_back(ss.str());
 
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
@@ -803,4 +812,13 @@ void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
             }
         }
     }
+}
+
+/*
+ * Get the equations for a peak
+ * @param idx index of peak to get equation from
+ * @return equation for that peak
+*/
+std::string GaussianFitter::get_equation(int idx){
+    return (idx >= equations.size()) ? "" : equations.at(idx);
 }

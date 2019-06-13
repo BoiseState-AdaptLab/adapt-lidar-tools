@@ -104,9 +104,8 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
                                  $(OBJ)/GaussianFitter_unittests.o \
 				 $(LIB)/gtest_main.a $(OBJ)/Peak.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L$(PULSE_DIR)/lib \
-		-lpulsewaves -lm -lgsl \
-		-lgslcblas -lgdal
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
+		$(PULSE_DIR)/lib -lpulsewaves -lm -lgsl -lgslcblas -lgdal
 
 $(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
                                  $(OBJ)/FlightLineData.o $(OBJ)/PulseData.o \
@@ -139,7 +138,7 @@ $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 
 # Builds specific object files
 $(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c \
+	$(CXX) -std=c++11 $(CPPFLAGS) $(CXXFLAGS) -c \
 		-o $@ $^
 
 $(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp

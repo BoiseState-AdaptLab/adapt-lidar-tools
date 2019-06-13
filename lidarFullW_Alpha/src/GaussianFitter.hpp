@@ -14,21 +14,25 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_errno.h>
 #include <vector>
+#include <sstream>
 
 class GaussianFitter{
 
     public:
         int find_peaks(std::vector<Peak*>* results,std::vector<int> ampData,
-                std::vector<int> idxData);
+                std::vector<int> idxData, const size_t max_iter);
         int noise_level;
         int guess_peaks(std::vector<Peak*>* results, 
                 std::vector<int> ampData, 
                 std::vector<int> idxData);
         void smoothing_expt(std::vector<int> *waveArray);
         GaussianFitter();
+        std::string get_equation(int idx);
         int get_fail();
         int get_pass();
         int get_total();
+
+        std::vector<std::string> equations; //Fitted equations
 
         int max; //The max peak amplitude of each set of returning waves
         int fail;

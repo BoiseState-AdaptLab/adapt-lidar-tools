@@ -150,6 +150,7 @@ def compareText(tifA, tifB, path, compare_no):
   fifty=0
   seventyFive=0
   oneHundred=0
+  fifty_perc=0
   #Begin comparison
   #Cycle through the data for each y value
   for y in range(maxY + 1):

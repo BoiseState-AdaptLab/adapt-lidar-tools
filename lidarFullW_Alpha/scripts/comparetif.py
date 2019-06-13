@@ -282,15 +282,17 @@ def compareImage(tif1, tif2, path, compare_no):
       else:
         #Get difference as a % of min
         frac = abs(val1 - val2) / min(val1, val2)
-        #Check if that % is our new biggest
-        if frac > max_dif:
-          max_dif = frac
-        #Get difference statistics
-        for idx, perc in enumerate(threshholds):
-          if frac < perc:
-            break
-          counters[idx] += 1
-        color_data[y, x] = tif1.getHeatMapColor(colors, frac)
+        #if the percent difference isn't a number, skip it
+        if math.isfinite(frac):
+          #Check if that % is our new biggest
+          if frac > max_dif:
+            max_dif = frac
+          #Get difference statistics
+          for idx, perc in enumerate(threshholds):
+            if frac < perc:
+              break
+            counters[idx] += 1
+          color_data[y, x] = tif1.getHeatMapColor(colors, frac)
     print ("\rCreating comparison heatmap {}%".format(
            round(y*100/(data_h-1))), end="")
 

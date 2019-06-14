@@ -464,6 +464,11 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
 
             //calculate triggering location
+            //t_t = +/- sqrt(-2 * c^2 * log(a_t / a)) + t
+            //wgere t_t = triggering location (time)
+            //      a_t = tiggering amplitude
+            //      a = peak amplitude
+            //      t = peak time location
             peak->triggering_amp = noise_level + 1;
             peak->triggering_location = std::min(
                  sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
@@ -749,9 +754,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         peak->amp = ampData[peak_guesses_loc[i]];
         peak->location = idxData[peak_guesses_loc[i]];
         peak->fwhm = guess;
-        //Set rise_time default to -1
-        //This equates to NO_VALUE in lidar driver
-        peak->rise_time = -1;
         peak->position_in_wave = peaks_found;
         results->push_back(peak);
 

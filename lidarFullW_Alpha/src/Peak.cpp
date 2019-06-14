@@ -30,7 +30,7 @@ Peak::Peak(){
     y = 0.;
     z = 0.;
 
-    rise_time = 0;
+    rise_time = -1;
     backscatter_coefficient = 0;
 }
 

@@ -264,7 +264,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
   double pulse_returning_start_time;
   double pulse_returning_segment_time;
 
-  int num_samplings = pReader->waves->get_number_of_samplings();
   int sampling_number = 0;  // can only be 0 or 1
   sampling = pReader->waves->get_sampling(sampling_number);
 
@@ -280,6 +279,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
   //Populate outgoing wave data
   for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+    pulse_outgoing_start_time = 0;
+
     sampling->set_active_segment(j);
     //set the start time of the outgoing wave and keep track of the times
     if(j == 0){
@@ -307,12 +308,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
     pd->returningIdx.clear();
     pd->returningWave.clear();
 
-    double pulse_outgoing_start_time;
-    double pulse_outgoing_segment_time;
-    double pulse_returning_start_time;
-    double pulse_returning_segment_time;
+    pulse_returning_start_time = 0;
 
-    int num_samplings = pReader->waves->get_number_of_samplings();
     int sampling_number = 0;    // can only be 0 or 1
     sampling = pReader->waves->get_sampling(sampling_number);
 
@@ -372,7 +369,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
  * @return the number of peaks left after calculation
  */
 int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
-  int i = 1;
   std::vector<Peak*>::iterator it;
   // for each of the incoming peaks
   for(it = peaks->begin(); it != peaks->end();it++){

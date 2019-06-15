@@ -440,8 +440,24 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     std::cerr << "peakCount = " << peakCount << std::endl;
 #endif
 
-    if(!solve_system(x, &fdf, &fdf_params, max_iter)){
-        incr_pass();
+    if(true){
+        if(solve_system(x, &fdf, &fdf_params, max_iter)){
+            std::cout << "FAIL" << std::endl;
+            incr_fail();
+            /*for (auto it = ampData.begin(); it != ampData.end(); ++it){
+                std::cout << *it << " ";
+            }
+            std::cout << std::endl;
+            exit(EXIT_FAILURE);*/
+        } else {
+            std::cout << "PASS" << std::endl;
+            incr_pass();
+            /*for (auto it = ampData.begin(); it != ampData.end(); ++it){
+                std::cout << *it << " ";
+            }
+            std::cout << std::endl;
+            exit(EXIT_FAILURE);*/
+        }
         //this loop is going through every peak
         int i=0;
         for(auto iter = results->begin(); iter != results->end(); ++iter) {

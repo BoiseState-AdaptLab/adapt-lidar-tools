@@ -8,6 +8,7 @@
 #include "pulsewriter.hpp"
 #include "gtest/gtest.h"
 #include "Peak.hpp"
+#include <fstream>
 
 class GaussianFitterTest: public testing::Test{
     public:
@@ -702,5 +703,66 @@ TEST_F(GaussianFitterTest, num_iterations_10){
         std::cout << "Equation: " << fitter.get_equation(0) << std::endl;
 
         EXPECT_EQ(2,count);
+    }
+}
+
+TEST_F(GaussianFitterTest, fitting){
+    char normal[] = "1 5 10 25 50 100 150 100 50 25 10 5 1";
+    char skew_l[] = "1 15 45 100 150 125 100 80 76 67 54 42 34 20 19 14 12 10 6 5 4 2 1";
+    char skew_r[] = "1 2 4 5 6 10 12 14 19 20 34 42 54 67 76 80 100 125 150 100 45 15 1";
+    
+    for (int j = 0; j < 3; j ++){
+    std::ofstream myFile;
+    myFile.open(std::string("output") + std::to_string(j) + std::string(".csv"));
+    std::vector<std::vector<double>> data(2);
+
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    //fails at 10 iterations
+    //char input[] = "1 1 1 1 1 4 12 39 90 149 188 187 150 97 51 22 8 4 5 4 4 3 2 1 0 0 0 0";
+    //peasses at 10 iterations
+    //char input[] = "35 36 30 20 11 6 3 7 23 62 119 172 194 176 128 77 38 14 6 4 5 4 4 3 2 1 1 2";
+
+    char* ptr;
+    ptr = strtok (j == 0 ? normal : j == 1 ? skew_l : skew_r," ");
+    int i=0;
+    while (ptr != NULL){
+        int y0 = atoi(ptr);
+        ampData.push_back(y0);
+        idxData.push_back(i);
+        data.at(0).push_back(i);
+        data.at(1).push_back(y0);
+        i++;
+        ptr = strtok (NULL," ");
+    }
+
+    GaussianFitter fitter;
+    std::vector<Peak*> peaks;
+
+    for (size_t i = 0; fitter.pass == 0; i++){
+        fitter.smoothing_expt(&ampData);
+        int count = fitter.find_peaks(&peaks,ampData,idxData,i);
+        std::cout << "Number of iterations: " << i << std::endl;
+        std::cout << "Equation: " << fitter.get_equation(0) << std::endl;
+        std::vector<double> temp;
+        for (auto it = data.at(0).begin(); it != data.at(0).end(); ++it){
+            double val = peaks.at(0)->amp * exp(-0.5 * pow((*it - peaks.at(0)->location) / (peaks.at(0)->fwhm / 2), 2));
+            temp.push_back(val);
+        }
+        data.push_back(temp);
+    }
+    myFile << "T," << "A,";
+    for (int i = 0; i < data.size() - 2; i ++){
+        myFile << i << " Iters" << (i != data.size() - 3 ? "," : "");
+    }
+    myFile << std::endl;
+    for (auto it = data.at(0).begin(); it != data.at(0).end(); ++it){
+        for (int i = 0; i < data.size(); i ++){
+            myFile << data.at(i).at(*it) << (i != data.size() - 1 ? "," : "");
+        }
+        myFile << std::endl;
+    }
+    myFile.close();
     }
 }

@@ -6,25 +6,30 @@
 
 #include "FittingInfoDriver.hpp"
 
-void FittingInfoDriver::writeData(FlightLineData &data, std::ofstream outfile){
+void FittingInfoDriver::writeData(FlightLineData &data, std::string out_file_name){
     PulseData pd;
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
+
+    //Open output file
+    std::ofstream outFile(out_file_name);
 
     while(data.hasNextPulse()){
         peaks.clear();
 
         data.getNextPulse(&pd);
 
-        if (pd.returningIdx.empty()){
-            continue;
-        }
+        if (pd.returningIdx.empty()) continue;
 
         try {
+            fitter.pass = 0;
+
             fitter.smoothing_expt(&pd.returningWave);
 
-            for (size_t i = 0; fitter.pass == 0; i ++)}
-                int peak_count = fitter.find_peaks(peaks, pd.returningWave,
+            size_t i;
+            int peak_count;
+            for (i = 0; fitter.pass == 0; i++){
+                peak_count = fitter.find_peaks(&peaks, pd.returningWave,
                                   pd.returningIdx, i);
             }
 
@@ -35,7 +40,8 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::ofstream outfile){
             }
             outFile << ",Number of Iterations: " << i << std::endl;
 
-            for (int k = 0; k < pd.returningIdx.size(); k++){
+            int num_points = pd.returningIdx.size();
+            for (int k = 0; k < num_points; k++){
                 outFile << pd.returningIdx.at(k) << "," <<
                     pd.returningWave.at(k);
                 for (auto it = peaks.begin(); it != peaks.end(); ++it){
@@ -50,12 +56,13 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::ofstream outfile){
             std::cout << msg << std::endl;
         }
 
-                outFile << std::endl << std::endl;
+        outFile << std::endl << std::endl;
     }
+    //Close output file
+    outFile.close();
 }
 
 std::string FittingInfoDriver::parse_args(int argc, char *argv[]){
-    bool printUsageMessage;
     std::vector<std::string> msgs;
     std::string file_name;
 
@@ -72,7 +79,7 @@ std::string FittingInfoDriver::parse_args(int argc, char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
    */
-    while((optChar = getopt(argc, argv, ":f:")!= -1){
+    while((optChar = getopt(argc, argv, ":f:")) != -1){
         if (optChar == 'f'){
             file_name = optarg;
             check_input_file_exists(file_name, msgs);
@@ -88,6 +95,7 @@ std::string FittingInfoDriver::parse_args(int argc, char *argv[]){
     for (auto it = msgs.begin(); it != msgs.end(); ++it){
         std::string line(it->length(), '-');
         std::cout << "\n" << *it << "\n" << line << std::endl;
+    }
 
     if (printUsageMessage){
         std::cout << getUsageMessage() << std::endl;
@@ -100,16 +108,16 @@ std::string FittingInfoDriver::parse_args(int argc, char *argv[]){
 /**
  * check if the input file exists, print error message if not
  */
-void check_input_file_exists(std::string optarg,
-                                      std::vector<std::string> msgs)) {
-    plsFileName = optarg;
+void FittingInfoDriver::check_input_file_exists(std::string file_name,
+                                                std::vector<std::string> msgs){
+    std::string plsFileName = file_name;
     if (!std::ifstream(plsFileName.c_str())) {
         msgs.push_back(std::string("File ") + plsFileName +
             std::string(" not found."));
         printUsageMessage = true;
     }
     std::size_t idx = plsFileName.rfind(".pls");
-    wvsFileName = plsFileName.substr(0,idx) + ".wvs";
+    std::string wvsFileName = plsFileName.substr(0,idx) + ".wvs";
     if (!std::ifstream(wvsFileName.c_str())) {
         msgs.push_back(std::string("File ") + wvsFileName +
            std::string(" not found."));
@@ -123,19 +131,19 @@ void check_input_file_exists(std::string optarg,
  * @param pls True returns pls file name, false returns wvs file name
  * @return input file name stripped of path or extension information
  */
-std::string FittingInfoDriver::getTrimmedFileName(){
-    size_t start = getInputFileName(pls).find_last_of("/");
-    if(start==string::npos){
+std::string FittingInfoDriver::getTrimmedFileName(std::string name){
+    size_t start = name.find_last_of("/");
+    if(start==std::string::npos){
         start = 0;
     }else{
         start++;
     }
-    size_t end = getInputFileName(pls).find_last_of(".");
+    size_t end = name.find_last_of(".");
     int len = end - start;
-    return getInputFileName(pls).substr(start,len);
+    return name.substr(start,len);
 }
 
-std::string getUsageMessage(){
+std::string FittingInfoDriver::getUsageMessage(){
     std::stringstream buffer;
     buffer << "\nUsage: " << std::endl;
     buffer << "       path_to_executable -f <path to pls file>"

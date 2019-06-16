@@ -363,10 +363,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //get guessed peaks and figure out how many peaks there are
     size_t peakCount = guess_peaks(results, ampData, idxData);
 
-    if (peakCount==0){
-        return 0;
-    }
-
     // FOR TESTING PURPOSES
     // fprintf(stderr, "Peak count is %d\n", peakCount);
 
@@ -440,24 +436,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     std::cerr << "peakCount = " << peakCount << std::endl;
 #endif
 
-    if(true){
-        if(solve_system(x, &fdf, &fdf_params, max_iter)){
-            std::cout << "FAIL" << std::endl;
-            incr_fail();
-            /*for (auto it = ampData.begin(); it != ampData.end(); ++it){
-                std::cout << *it << " ";
-            }
-            std::cout << std::endl;
-            exit(EXIT_FAILURE);*/
-        } else {
-            std::cout << "PASS" << std::endl;
-            incr_pass();
-            /*for (auto it = ampData.begin(); it != ampData.end(); ++it){
-                std::cout << *it << " ";
-            }
-            std::cout << std::endl;
-            exit(EXIT_FAILURE);*/
-        }
+    if(!solve_system(x, &fdf, &fdf_params, max_iter)){
+        incr_pass();
+ 
         //this loop is going through every peak
         int i=0;
         for(auto iter = results->begin(); iter != results->end(); ++iter) {
@@ -555,7 +536,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             std::cerr << std::endl ;
         #endif
 
-        peakCount = 0;
         incr_fail();
 
         #ifdef DEBUG

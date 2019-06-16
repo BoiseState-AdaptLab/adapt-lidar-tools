@@ -15,11 +15,17 @@
 #include <math.h>
 #include <getopt.h>
 
-class FitterInfoDriver {
+class FittingInfoDriver {
     public:
-        void write_data(FlightLineData &data, ofstream outFile);
+        bool printUsageMessage;
+        void writeData(FlightLineData &data, std::string out_file_name);
         std::string parse_args(int argc, char *argv[]);
-        std::string getTrimmedFileName();
+        std::string getTrimmedFileName(std::string name);
+
+    private:
+        std::string getUsageMessage();
+        void check_input_file_exists(std::string name,
+            std::vector<std::string> msgs);
 };
 
 #endif /* FITTINGINFODIRVER_HPP_ */

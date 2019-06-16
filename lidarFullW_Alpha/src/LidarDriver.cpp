@@ -181,7 +181,7 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
         }
 
         //For every returning wave peak, calculate the backscatter coefficient
-	for (auto it = peaks.begin(); it != peaks.end(); ++it){
+        for (auto it = peaks.begin(); it != peaks.end(); ++it){
             if (emitted_peaks.size() == 0){
                 (*it)->backscatter_coefficient = NO_DATA;
             } else {

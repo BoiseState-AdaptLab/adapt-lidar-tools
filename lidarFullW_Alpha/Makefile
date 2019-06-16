@@ -164,9 +164,6 @@ $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
 	$(CXX) -std=c++11 -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
-$(OBJ)/FittingInfoDriver.o: $(SRC)/FittingInfoDriver.cpp
-	$(CXX) -std=c++11 -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
-
 # Builds all object files
 $(OBJ)/%.o: $(SRC)/%.cpp
 	$(CXX) -std=c++11 -c -o $@ $^ $(CFLAGS)
@@ -185,10 +182,10 @@ $(OBJ)/GetPLSDetails.o: $(SRC)/GetPLSDetails.cpp
 geotiff-driver: $(BIN)/geotiff-driver
 
 $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
-					$(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
-					$(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
-                    $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
-                    $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
+                       $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
+                       $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
+                       $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
+                       $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas -lpng
@@ -200,9 +197,10 @@ $(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
 fitting-info: $(BIN)/fitting-info
 
 $(BIN)/fitting-info: $(OBJ)/fitting_info.o $(OBJ)/FlightLineData.o \
-			$(OBJ)/PulseData.o $(OBJ)/Peak.o \
-			$(OBJ)/GaussianFitter.o $(OBJ)/FittingInfoDriver.o
-	$(CXX) $(CPPFLAGS) $(cXXFLAGS) -g -lpthread $^ -o $@ -L \
+                     $(OBJ)/PulseData.o $(OBJ)/Peak.o \
+                     $(OBJ)/GaussianFitter.o $(OBJ)/WaveGPSInformation.o \
+                     $(OBJ)/FittingInfoDriver.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas -lpng
 

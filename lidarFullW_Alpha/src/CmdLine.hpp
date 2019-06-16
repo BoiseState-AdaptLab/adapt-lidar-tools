@@ -49,7 +49,6 @@ public:
     //True stifles all output statements
     bool quiet;
 
-    // bool max_elevation_flag;
     CmdLine();
 
 

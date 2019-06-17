@@ -6,7 +6,14 @@
 
 #include "FittingInfoDriver.hpp"
 
+FittingInfoDriver::FittingInfoDriver(){
+    printUsageMessage = false;
+    lowerBound = 0;
+    upperBound = INFINITY;
+}
+
 void FittingInfoDriver::writeData(FlightLineData &data, std::string out_file_name){
+    //Initialize necessary tools
     PulseData pd;
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
@@ -14,37 +21,59 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_file_nam
     //Open output file
     std::ofstream outFile(out_file_name);
 
+    //Keep track of the number waveforms
+    int num_waveforms = 0;
+
+    //Cycle through every pulse
     while(data.hasNextPulse()){
+        //Clear our peaks vector just to be sure
         peaks.clear();
 
+        //Get the next pulse/waveform
         data.getNextPulse(&pd);
 
+        //If there is no data, skip the waveform
         if (pd.returningIdx.empty()) continue;
 
         try {
+            //Reset the number of passes
             fitter.pass = 0;
 
+            //Smooth the data before performing fitting
             fitter.smoothing_expt(&pd.returningWave);
 
+            //Increase the maximum number of iterations for gaussian fittings
+            //until the wave is fit or the number exceeds the upper bound
             size_t i;
             int peak_count;
-            for (i = 0; fitter.pass == 0; i++){
+            for (i = 0; fitter.pass == 0 && i <= upperBound + 1; i++){
                 peak_count = fitter.find_peaks(&peaks, pd.returningWave,
                                   pd.returningIdx, i);
             }
 
+            //Check that the number of iterations is within our range
+            if (i < lowerBound || i > upperBound) continue;
+
+            num_waveforms ++;
+
+            //Print waveform number and collumn labels
+            outFile << "Waveform " << num_waveforms  << std::endl;
             outFile << "Time," << "Amplitude";
 
             for (int j = 1; j <= peak_count; j++){
                 outFile << ",Peak " << j;
             }
+
             outFile << ",Number of Iterations: " << i << std::endl;
 
+            //Write the data for each row
             int num_points = pd.returningIdx.size();
             for (int k = 0; k < num_points; k++){
+                //Time index and amplitude from the data
                 outFile << pd.returningIdx.at(k) << "," <<
                     pd.returningWave.at(k);
                 for (auto it = peaks.begin(); it != peaks.end(); ++it){
+                    //Calculated amplitude for each peak
                     double val = (*it)->amp * exp(-0.5 * pow((
                         pd.returningIdx.at(k) - (*it)->location) /
                         ((*it)->fwhm / 2), 2));
@@ -79,10 +108,24 @@ std::string FittingInfoDriver::parse_args(int argc, char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
    */
-    while((optChar = getopt(argc, argv, ":f:")) != -1){
+    while((optChar = getopt(argc, argv, ":f:l:u:")) != -1){
         if (optChar == 'f'){
             file_name = optarg;
             check_input_file_exists(file_name, msgs);
+        } else if (optChar == 'l'){
+            try {
+                lowerBound = std::stoi(optarg);
+            } catch (std::invalid_argument e){
+                msgs.push_back("Failed to convert lower bound to an integer");
+                printUsageMessage = true;
+            }
+        } else if (optChar == 'u'){
+            try {
+                upperBound = std::stoi(optarg);
+            } catch (std::invalid_argument e){
+                msgs.push_back("Failed to convert upper bound to an integer");
+                printUsageMessage = true;
+            }
         } else if (optChar == ':'){
             msgs.push_back("Missing arguments");
             printUsageMessage = true;
@@ -90,6 +133,11 @@ std::string FittingInfoDriver::parse_args(int argc, char *argv[]){
             msgs.push_back(std::string("Invalid Argument: ") + optChar);
             printUsageMessage = true;
         }
+    }
+
+    if (upperBound < lowerBound){
+        msgs.push_back("Upper bound must be greater than lower bound");
+        printUsageMessage = true;
     }
 
     for (auto it = msgs.begin(); it != msgs.end(); ++it){
@@ -146,7 +194,15 @@ std::string FittingInfoDriver::getTrimmedFileName(std::string name){
 std::string FittingInfoDriver::getUsageMessage(){
     std::stringstream buffer;
     buffer << "\nUsage: " << std::endl;
-    buffer << "       path_to_executable -f <path to pls file>"
-        << std::endl;
+    buffer << "       path_to_executable -f <path to pls file> "
+        << "[-l lower-bound] [-u upper-bound]" << std::endl;
+    buffer << "\nOptions: " << std::endl;
+    buffer << "       -f <path to pls file>: Sets the file to be used" << std::endl;
+    buffer << "       -l <lower-bound>: Waveforms requiring a number of "
+        << "iterations to be fit that is less than the lower bound will "
+        << "not be reported" << std::endl;
+    buffer << "       -u <upper-bound>: Waveforms requiring a number of "
+        << "iterations to be fit that is greater than the upper bound "
+        << "will not be reported" << std::endl;
     return buffer.str();
 }

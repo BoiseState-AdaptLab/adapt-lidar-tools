@@ -18,6 +18,10 @@
 class FittingInfoDriver {
     public:
         bool printUsageMessage;
+        int lowerBound;
+        int upperBound;
+
+        FittingInfoDriver();
         void writeData(FlightLineData &data, std::string out_file_name);
         std::string parse_args(int argc, char *argv[]);
         std::string getTrimmedFileName(std::string name);

@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
     //Get fitting data and write it to the output file
     driver.writeData(data, ss.str());
 
-    std::cout << "\nDone" << std::endl;
+    std::cout << "Done" << std::endl;
 
     return 0;
 }

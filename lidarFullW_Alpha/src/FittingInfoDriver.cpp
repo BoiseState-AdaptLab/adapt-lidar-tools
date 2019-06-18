@@ -36,19 +36,29 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_file_nam
         if (pd.returningIdx.empty()) continue;
 
         try {
-            //Reset the number of passes
-            fitter.pass = 0;
-
             //Smooth the data before performing fitting
             fitter.smoothing_expt(&pd.returningWave);
 
-            //Increase the maximum number of iterations for gaussian fittings
-            //until the wave is fit or the number exceeds the upper bound
+            //Reset fail counts
+            fitter.fail = 0;
+
+            //Test the upper bound.
+            //If it fails, the waveform is not within our range of iterations
+            fitter.find_peaks(&peaks, pd.returningWave, pd.returningIdx,
+                             upperBound);
+            if (fitter.fail != 0) continue;
+
+            //Reset pass counts
+            fitter.pass = 0;
+
+            /*Increase the maximum number of iterations for gaussian fittings
+             *until the wave is fit. start one below the lower bound so we
+             *don't have to check all the iterations before that */
             size_t i;
             int peak_count;
-            for (i = 0; fitter.pass == 0 && i <= upperBound + 1; i++){
+            for (i = std::min(lowerBound - 1, 0); fitter.pass == 0; i++){
                 peak_count = fitter.find_peaks(&peaks, pd.returningWave,
-                                  pd.returningIdx, i);
+                                              pd.returningIdx, i);
             }
 
             //Check that the number of iterations is within our range
@@ -108,10 +118,12 @@ std::string FittingInfoDriver::parse_args(int argc, char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
    */
-    while((optChar = getopt(argc, argv, ":f:l:u:")) != -1){
+    while((optChar = getopt(argc, argv, ":hf:l:u:")) != -1){
         if (optChar == 'f'){
             file_name = optarg;
             check_input_file_exists(file_name, msgs);
+        } else if (optChar == 'h'){
+            printUsageMessage = true;
         } else if (optChar == 'l'){
             try {
                 lowerBound = std::stoi(optarg);
@@ -197,7 +209,9 @@ std::string FittingInfoDriver::getUsageMessage(){
     buffer << "       path_to_executable -f <path to pls file> "
         << "[-l lower-bound] [-u upper-bound]" << std::endl;
     buffer << "\nOptions: " << std::endl;
-    buffer << "       -f <path to pls file>: Sets the file to be used" << std::endl;
+    buffer << "       -h: Prints this usage message" << std::endl;
+    buffer << "       -f <path to pls file>: Sets the file to be used"
+        << std::endl;
     buffer << "       -l <lower-bound>: Waveforms requiring a number of "
         << "iterations to be fit that is less than the lower bound will "
         << "not be reported" << std::endl;

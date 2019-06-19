@@ -19,67 +19,73 @@ product numbers specifies the desired output.
 ### Width
 - Short flag -w
 - Long flag --width
+### Rise Time
+- Short flag -r
+- Long flag --rise
+### Backscatter Coefficient
+- Short flag -b
+- Long flag --backscatter
 
 ### Arguments
 Combine the property type flag above with one or more product types below to generate products
 
 | Function | Peak Type | Product Number |
 |----------|-----------|----------------|
-| Max      | All       | 1              |
-|          | First     | 7              |
-|          | Last      | 13             |
-| Min      | All       | 2              |
-|          | First     | 8              |
-|          | Last      | 14             |
-| Mean     | All       | 3              |
-|          | First     | 9              |
-|          | Last      | 15             |
-| Std.Dev  | All       | 4              |
-|          | First     | 10             |
-|          | Last      | 16             |
-| Skew     | All       | 5              |
-|          | First     | 11             |
-|          | Last      | 17             |
-| Kurtosis | All       | 6              |
-|          | First     | 12             |
-|          | Last      | 18             |
+| Max      | First     | 1              |
+|          | Last      | 7              |
+|          | All       | 13             |
+| Min      | First     | 2              |
+|          | Last      | 8              |
+|          | All       | 14             |
+| Mean     | First     | 3              |
+|          | Last      | 9              |
+|          | All       | 15             |
+| Std.Dev  | First     | 4              |
+|          | Last      | 10             |
+|          | All       | 16             |
+| Skew     | First     | 5              |
+|          | Last      | 11             |
+|          | All       | 17             |
+| Kurtosis | First     | 6              |
+|          | Last      | 12             |
+|          | All       | 18             |
 
 Sorted by Product Number
 
 | Function | Peak Type | Product Number |
 |----------|-----------|----------------|
-| Max      | All       | 1              |
-| Min      | All       | 2              |
-| Mean     | All       | 3              |
-| Std.Dev  | All       | 4              |
-| Skew     | All       | 5              |
-| Kurtosis | All       | 6              |
-| Max      | First     | 7              |
-| Min      | First     | 8              |
-| Mean     | First     | 9              |
-| Std.Dev  | First     | 10             |
-| Skew     | First     | 11             |
-| Kurtosis | First     | 12             |
-| Max      | Last      | 13             |
-| Min      | Last      | 14             |
-| Mean     | Last      | 15             |
-| Std.Dev  | Last      | 16             |
-| Skew     | Last      | 17             |
-| Kurtosis | Last      | 18             |
+| Max      | First     | 1              |
+| Min      | First     | 2              |
+| Mean     | First     | 3              |
+| Std.Dev  | First     | 4              |
+| Skew     | First     | 5              |
+| Kurtosis | First     | 6              |
+| Max      | Last      | 7              |
+| Min      | Last      | 8              |
+| Mean     | Last      | 9              |
+| Std.Dev  | Last      | 10             |
+| Skew     | Last      | 11             |
+| Kurtosis | Last      | 12             |
+| Max      | All       | 13             |
+| Min      | All       | 14             |
+| Mean     | All       | 15             |
+| Std.Dev  | All       | 16             |
+| Skew     | All       | 17             |
+| Kurtosis | All       | 18             |
 
 ### Examples
 ```shell
-//generate max all elevation, min all elevation, mean all elevation
+//generate max first elevation, min first elevation, mean first elevation
 geotiff-driver -f etc/test-file-1.pls -e 1,2,3
 ```
 
 ```shell
-//generate std.dev all amplitude, min first amplitude, skew last amplitude
+//generate std.dev first amplitude, min last amplitude, skew all amplitude
 geotiff-driver -f etc/test-file-1.pls -a 4,8,17
 ```
 
 ```shell
-//generate max last width, skew first width, min last width
+//generate max all width, skew last width, min all width
 geotiff-driver -f etc/test-file-1.pls -w 13,11,14
 ```
 
@@ -100,8 +106,9 @@ Estimated pulse width
 Height on Z axis(Elevation from mean sea level (MSL))
 ### Peaks
 Number of peaks
-### Back Scatter Cross Section
+### Backscatter Coefficient
+The backscatter coefficient compares the emitted pulse to the returning pulse within a plane normal to the path of the emitted pulse centered at the location of the peak of the returning pulse.
 ### Rise time
-leading edge (Number of time bins between 10% and 90% of maximum amplitude at rising edge of each pulse)
+Leading edge (Time between the activation point and maximum amplitude at the rising edge of each pulse)
 ### Total Energy
 Total energy from the estimated wave (summation of all amplitudes from wave triggering location to the wave end). Wave triggering location is found by the location that has amplitude value of max amplitude * 1/e(1). 

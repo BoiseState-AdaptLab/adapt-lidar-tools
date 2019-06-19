@@ -21,7 +21,7 @@ product numbers specifies the desired output.
 - Long flag --width
 ### Rise Time
 - Short flag -r
-- Long flag --rise
+- Long flag --risetime
 ### Backscatter Coefficient
 - Short flag -b
 - Long flag --backscatter

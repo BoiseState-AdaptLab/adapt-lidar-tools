@@ -577,7 +577,7 @@ double LidarDriver::get_deviation(std::vector<Peak*> *peaks, double avg,
     if (peak_count == 0){
         return NO_DATA;
     }
-    double inverse = 1.0 / static_cast<double>(peak_count);
+    double inverse = 1.0 / static_cast<double>(peak_count-1);
     return sqrt(inverse * E);
 }
 

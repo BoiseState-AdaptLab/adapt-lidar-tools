@@ -231,6 +231,11 @@ TEST_F(CmdLineTest, invalidProductNumber){
     strncpy(commonArgSpace[4],"-1",3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
+
+    optind = 0;
+    strncpy(commonArgSpace[4],"3000000000000",3);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
 }
 
 /****************************************************************************

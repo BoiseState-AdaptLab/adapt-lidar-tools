@@ -173,8 +173,6 @@ bool CmdLine::parse_args(int argc,char *argv[]){
 
     //Stores if we need a calibration constant
     bool need_const = false;
-    //Stores if wee need gaussian fitting
-    bool need_fitting = false;
     // getopt_long stores the option index here.
     int option_index = 0;
     //Tacks the last option used
@@ -204,24 +202,26 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                 while(ss.good()) {
                     string substr;
                     getline(ss, substr, ',');
-                    //If the inputted product number is above 18, stop now
-                    int prod_num = stoi(substr.c_str());
-                    if (atoi(substr.c_str()) > 18){
-                        msgs.push_back("Invalid product code: " + prod_num);
-                        printUsageMessage = true;
-                    }
-                    int arg;
                     try {
-                        arg = prod_offset + prod_num;
+                        //If the inputted product number is above 18, stop now
+                        int prod_num = stoi(substr.c_str());
+                        if (prod_num > 18 || prod_num <= 0){
+                            msgs.push_back(string("Invalid product code: ")
+                                + substr);
+                            printUsageMessage = true;
+                        }
+                        selected_products.push_back(prod_offset + prod_num);
                     } catch (std::invalid_argument e) {
                         msgs.push_back(string("Product list could not be") + 
                             string(" converted into integers"));
                         printUsageMessage = true;
+                    } catch (std::out_of_range e) {
+                        msgs.push_back(string("Invalid product code: ")
+                            + substr);
+                        printUsageMessage = true;
                     }
-                    selected_products.push_back(arg);
                 }
                 need_const = optionChar == 'b' ? true : need_const;
-                need_fitting = optionChar == 'r' ? true : need_fitting;
             }
         } else if (optionChar == 1 && lastOpt == 'b'
                   && calibration_constant == 0){ //Set calibration coefficient
@@ -243,15 +243,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         }
         lastOpt = optionChar;
     }
-
-    //Rise time requires gaussian fitting
-    if (need_fitting && !useGaussianFitting){
-        msgs.push_back(string("One or more products do not support First") +
-            string(" Differencing\nProducts that do not support First") +
-            string("Differencing: Rise Time"));
-        printUsageMessage = true;
-    }
-    
+   
     //Backscatter coefficient requires a calibration constant
     if (need_const && calibration_constant == 0){
         msgs.push_back("Missing Calibration Constant");

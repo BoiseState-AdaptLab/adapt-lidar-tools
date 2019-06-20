@@ -4,7 +4,8 @@
 
 #include "GaussianFitter.hpp"
 #include <iostream>
-#include <math.h>
+//#include <math.h>
+#include <cmath>
 #include <algorithm>
 
 
@@ -409,7 +410,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     for(i=0; i< peakCount; i++){
         gsl_vector_set(x, i*3+0, (*results)[i]->amp);
         gsl_vector_set(x, i*3+1, (*results)[i]->location);
-        gsl_vector_set(x, i*3+2, (*results)[i]->fwhm);
+        gsl_vector_set(x, i*3+2, (*results)[i]->fwhm / 2);
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -458,14 +459,15 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             peak->fwhm_t_negative =
                 (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp)) 
                 + peak->location;
-            peak->fwhm = abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
-
-            //calculate triggering location
-            //t_t = +/- sqrt(-2 * c^2 * log(a_t / a)) + t
-            //wgere t_t = triggering location (time)
-            //      a_t = tiggering amplitude
-            //      a = peak amplitude
-            //      t = peak time location
+            peak->fwhm = std::abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
+            
+            /*calculate triggering location
+             *t_t = +/- sqrt(-2 * c^2 * log(a_t / a)) + t
+             *where t_t = triggering location (time)
+             *      a_t = tiggering amplitude
+             *      a = peak amplitude
+             *      t = peak time location
+             *      c = 1/2*FWHM*/
             peak->triggering_amp = noise_level + 1;
             peak->triggering_location = std::min(
                  sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
@@ -749,7 +751,23 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         Peak* peak = new Peak();
         peak->amp = ampData[peak_guesses_loc[i]];
         peak->location = idxData[peak_guesses_loc[i]];
-        peak->fwhm = guess;
+        peak->fwhm = guess * 2;
+        /*calculate triggering location
+         *t_t = +/- sqrt(-2 * c^2 * log(a_t / a)) + t
+         *where t_t = triggering location (time)
+         *      a_t = tiggering amplitude
+         *      a = peak amplitude
+         *      t = peak time location
+         *      c = 1/2*FWHM*/
+        double c = guess;
+        peak->triggering_amp = noise_level + 1;
+        peak->triggering_location = std::min(
+            sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
+            + peak->location,
+            (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
+            + peak->location);
+        //Rise time = peak_location - triggering_location
+        peak->rise_time = peak->location - peak->triggering_location;
         peak->position_in_wave = peaks_found;
         results->push_back(peak);
 

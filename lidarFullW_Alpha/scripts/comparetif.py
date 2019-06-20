@@ -150,7 +150,6 @@ def compareText(tifA, tifB, path, compare_no):
   fifty=0
   seventyFive=0
   oneHundred=0
-  fifty_perc=0
   #Begin comparison
   #Cycle through the data for each y value
   for y in range(maxY + 1):
@@ -188,7 +187,7 @@ def compareText(tifA, tifB, path, compare_no):
             if pct >= .25:
               twentyFive += 1
               if pct >= .5:
-                fifty_perc += 1
+                fifty += 1
                 if pct >= .75:
                   seventyFive += 1
                   if pct >= 1:
@@ -293,6 +292,8 @@ def compareImage(tif1, tif2, path, compare_no):
               break
             counters[idx] += 1
           color_data[y, x] = tif1.getHeatMapColor(colors, frac)
+        else:
+          color_data[y, x] = [128,128,128]
     print ("\rCreating comparison heatmap {}%".format(
            round(y*100/(data_h-1))), end="")
 
@@ -318,7 +319,7 @@ def compareImage(tif1, tif2, path, compare_no):
   #set each line of text
   text = ["0%  >100%",
           "Max Relative Difference: {}%".format(round(max_dif * 100, 2)),
-          #" " + tif1.file_name, " " + tif2.file_name,
+          " " + tif1.file_name, " " + tif2.file_name,
           "Relative differences greater than:",
           count_text]
   #Find widths of each line of the legend
@@ -326,13 +327,13 @@ def compareImage(tif1, tif2, path, compare_no):
   #Add space for difference gradient
   line_w[0] *= 2
   #Add space for color key if included
-  #line_w[2] += line_h
-  #line_w[3] += line_h
+  line_w[2] += line_h
+  line_w[3] += line_h
   #Get greatest text width
   legend_w = max(line_w)
   #Height of the legend is 6 lines or 1 line
   #+2.1 for 5 1/2 spaces or +1.2 for 1 space
-  legend_h = math.floor(line_h * 5.8)
+  legend_h = math.floor(line_h * 8.1)
   #Append rows for the legend
   extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
   color_data = np.vstack((color_data, extra_rows))
@@ -369,7 +370,7 @@ def compareImage(tif1, tif2, path, compare_no):
       #Max text
       draw.text((hor_pos, vert_pos - vert_offset), " >100%", (0,0,0), font=font)
     #File names with color key
-    elif i == 20 or i == 30:
+    elif i == 2 or i == 3:
       #Make both names start where the longest starts
       long_name = max(line_w[2], line_w[3])
       hor_pos = math.floor((max(data_w, legend_w) - long_name) / 2)

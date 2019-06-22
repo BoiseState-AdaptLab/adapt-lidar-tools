@@ -85,8 +85,6 @@ def main():
       print (fail, err)
     print(usage)
     sys.exit(1)
-  
-  print () 
  
   #Run the tif file
   tif = Tif(file_name)
@@ -103,7 +101,7 @@ def main():
 def writeData(tif, path):
   #Go through each data point in the band
   #Print data to file
-  print ("\nWriting data to file", end='')
+  print ("Writing data to file", end='')
   #Create output file
   output = open(path + tif.file_name[:-4] + ".out", 'w')
   output.write("Max Y = {}\n\n".format(tif.maxY))
@@ -123,7 +121,7 @@ def writeData(tif, path):
         output.write("NA" + ("" if last else ", "))
     output.write("\n\n")
     print ("\rWriting data to file {}%".format(
-             round(y*100/(tif.maxY-1))), end="")
+             round(y*100/(tif.maxY))), end="")
   output.close()
 
 #Create heatmap image
@@ -138,7 +136,8 @@ def createImage(tif, path):
   #Get dimensions of data
   data_w, data_h = tif.data.shape[1], tif.data.shape[0]
   #Min/max values of the data array
-  data_values = [i for i in tif.data.flatten() if i != tif.no_value]
+  data_values = [i for i in tif.data.flatten() if math.isfinite(i) and
+                 i != tif.no_value]
   max_val, min_val = max(data_values), min(data_values)
   #Get the string of these values rounded to 2 decimal places
   max_str, min_str = str(round(max_val, 2)), str(round(min_val, 2))
@@ -153,13 +152,12 @@ def createImage(tif, path):
   for y, vals in enumerate(tif.data):
     for x, val in enumerate(vals):
       #Check if value is no data
-      if val != tif.no_value:
+      if val != tif.no_value and math.isfinite(val):
         #Normalize value between 0 and 1
-        val_frac = (val - min_val) / (max_val - min_val)
-        #if the percent difference isn't a number, skip it
-        if math.isfinite(val_frac):
-          #write color value to array, inputted as [row, col]
-          color_data[y, x] = tif.getHeatMapColor(colors, val_frac)
+        val_frac = ((val - min_val) / (max_val - min_val) if max_val != min_val
+                   else 1);
+        #write color value to array, inputted as [row, col]
+        color_data[y, x] = tif.getHeatMapColor(colors, val_frac)
     print ("\rCreating heatmap {}%".format(
            round(y*100/(data_h-1))), end="")
 

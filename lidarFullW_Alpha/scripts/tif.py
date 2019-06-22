@@ -37,10 +37,12 @@ class Tif:
     num_data = []
     if y >= 0:
       num_data = [self.data[y, x] for x in range(self.maxX + 1) 
-                  if self.data[y, x] != self.no_value]
+                  if math.isfinite(self.data[y, x]) and self.data[y, x]
+                  != self.no_value]
     else:
-      num_data = [z for z in self.data.flatten() if z != self.no_value]
-    return self.no_value if len(num_data) == 0 else (sum(num_data) / len(num_data))
+      num_data = [z for z in self.data.flatten() if math.isfinite(z) and
+                  z != self.no_value]
+    return self.no_data if len(num_data) == 0 else (sum(num_data) / len(num_data))
 
   #Get tif data
   def getData(self):
@@ -92,156 +94,6 @@ class Tif:
     self.maxX, self.maxY = band.XSize - 1, band.YSize - 1
     #Save data
     self.data = data
-
-  def createCompareImage(self, tif2, path, compare_no):
-    #Dimension conventions
-    #Width (w) is always measured in columnns
-    #Height (h) is always measured in rows
-    #Each column and row has a width/height of 1 pixel (px)
-
-    print ("Creating comparison heatmap", end="")
-
-    #Get tif2 details
-    data2 = tif2.data
-    #Get width and height
-    data_w = min(data2.shape[1], self.data.shape[1])
-    data_h = min(data2.shape[0], self.data.shape[0])
-    #Create color array
-    color_data = np.zeros((data_h, data_w, 3), dtype=np.uint8)
-    #Colors- white (lowest), red, black (highest)
-    colors = [[255,255,255], [255,0,0], [0,0,0]]
-
-    first_compare = True
-    max_dif = 0
-    
-    #Counters for percent differences above these threshholds
-    threshholds = [.05,.1,.25,.5,.75,1]
-    counters = [0,0,0,0,0,0]
-
-    #Go through each y value
-    for y, (vals1, vals2) in enumerate(zip(self.data, data2)):
-      #Go through each x value
-      for x, (val1, val2) in enumerate(zip(vals1, vals2)):
-        no_value1 = val1 == self.no_value
-        no_value2 = val2 == tif2.no_value
-        #If neither has data, color is white
-        if no_value1 and no_value2:
-          color_data[y, x] = [255,255,255]
-        #If only A has data, color is blue
-        elif not no_value1 and no_value2:
-          color_data[y, x] = [0,0,255]
-        #If only B has data, color is green
-        elif no_value1 and not no_value2:
-          color_data[y, x] = [0,255,0] 
-        #Else analyze the data
-        else:
-          #Get difference as a % of min
-          frac = abs(val1 - val2) / min(val1, val2)
-          #Check if that % is our ne biggest
-          if first_compare or frac > max_dif:
-            max_dif = frac
-          #Get difference statistics
-          for idx, perc in enumerate(threshholds):
-            if frac < perc:
-              break
-            counters[idx] += 1
-          color_data[y, x] = getHeatMapColor(colors, frac)
-      print ("\rCreating comparison heatmap {}%".format(
-             round(y*100/(data_h-1))), end="")
-
-    #Add space for the legend
-    #Height of each line of the legend is the image height / 30
-    line_h = math.floor(data_h / 30)
-    #Create font
-    font_type = os.path.dirname(__file__) + "/../etc/times-new-roman.ttf"
-    font = ImageFont.truetype(font_type, line_h)
-    #Get relevant threshholds
-    start, end = len(counters) - 2, len(counters) - 1
-    for idx, count in enumerate(counters):
-      if count == 0:
-        start = max(0, idx - 2)
-        end = idx
-        break
-    count_text = ""
-    for idx, count in enumerate(counters[start:end + 1]):
-      count_text += " " if idx != 0 else ""
-      count_text += "{}%: {}".format(round(100*threshholds[start+idx]),count)
-    print (count_text)
-    #set each line of text
-    text = ["0%  >100%",
-            "Max Percent Difference: {}%".format(round(max_dif * 100, 2)),
-            " " + self.file_name, " " + tif2.file_name,
-            "Percent differences greater than:", 
-            count_text]
-    #Find widths of each line of the legend
-    line_w = [font.getsize(t)[0] for t in text]
-    #Add space for difference gradient
-    line_w[0] *= 2
-    #Add space for color key if included
-    line_w[2] += line_h
-    line_w[3] += line_h
-    #Get greatest text width
-    legend_w = max(line_w)
-    #Height of the legend is 6 lines or 1 line
-    #+2.1 for 5 1/2 spaces or +1.2 for 1 space
-    legend_h = math.floor(line_h * 8.1)
-    #Append rows for the legend
-    extra_rows = np.full((legend_h, data_w, 3), 255, dtype=np.uint8)
-    color_data = np.vstack((color_data, extra_rows))
-    #Append columns for the legend
-    if data_w < legend_w:
-      extra_columns = np.full((data_h + legend_h,
-                              math.floor((legend_w - data_w) / 2), 3),
-                              255, dtype=np.uint8)
-      #Add to start and end
-      color_data = np.hstack((extra_columns, color_data, extra_columns))
-
-    #Write in text for legend
-    img = Image.fromarray(color_data, 'RGB')
-    draw = ImageDraw.Draw(img)
-    #Get vertical spacing size
-    vert_space = math.floor(line_h / 5)
-    #Set vertical position
-    vert_pos = data_h + line_h
-    for i, item in enumerate(text):
-      #Get vertical offset of text
-      vert_offset = math.floor(font.getoffset(item)[1] / 2)
-      #Set horizontal position
-      hor_pos = math.floor((max(data_w, legend_w) - line_w[i]) / 2)
-      #Difference gradient
-      if i == 0:
-        #Min text
-        draw.text((hor_pos, vert_pos - vert_offset), "0% ", (0,0,0), font=font)
-        hor_pos += font.getsize("0% ")[0]
-        #Gradient
-        for j in range(math.floor(line_w[0] / 2)):
-          draw.line((hor_pos + j, vert_pos, hor_pos + j, vert_pos + line_h),
-                    fill = getHeatMapColor(colors, j / (line_w[0] / 2)))
-        hor_pos += j
-        #Max text
-        draw.text((hor_pos, vert_pos - vert_offset), " >100%", (0,0,0), font=font)
-      #File names with color key
-      elif i == 2 or i == 3:
-        #Make both names start where the longest starts
-        long_name = max(line_w[2], line_w[3])
-        hor_pos = math.floor((max(data_w, legend_w) - long_name) / 2)
-        #File color key
-        draw.rectangle((hor_pos, vert_pos, hor_pos + line_h, vert_pos + line_h),
-                  fill=((0,0,255) if i == 2 else (0,255,0)), outline=(0,0,0))
-        hor_pos += line_h
-        #File name
-        draw.text((hor_pos, vert_pos - vert_offset), item, (0,0,0), font=font)
-        #No space between file A name and file B name
-        if i == 2:
-          vert_pos -= math.floor(vert_space / 2)
-      #Just text
-      else:
-        #Write the text
-        draw.text((hor_pos, vert_pos - vert_offset), item, (0,0,0), font=font)
-      vert_pos += line_h + vert_space
-
-    img.save("{}compare_{}.png".format(path, compare_no))
-    print ("\nHeatmap has been saved to compare_{}.png".format(compare_no))
 
   def getHeatMapColor(self, colors, val_frac):
     num_colors = len(colors) - 1

@@ -175,23 +175,24 @@ def compareText(tifA, tifB, path, compare_no):
         #Both
         raw.write("[{}|{}]".format(a, b))
         result[3] += 1
-        #Record difference and percent difference
-        difs.append(float(a) - float(b))
-        #Record percent difference and check if they are above certain threshholds
-        pct=abs((a-b)/min(a,b))
-        pct_difs.append(pct)
-        if pct >= .05:
-          five += 1
-          if pct >= .1:
-            ten += 1
-            if pct >= .25:
-              twentyFive += 1
-              if pct >= .5:
-                fifty += 1
-                if pct >= .75:
-                  seventyFive += 1
-                  if pct >= 1:
-                    oneHundred += 1
+        if math.isfinite(a) and math.isfinite(b):
+          #Record difference and percent difference
+          difs.append(float(a) - float(b))
+          #Record percent difference and check if they are above certain threshholds
+          pct=abs((a-b)/min(a,b))
+          pct_difs.append(pct)
+          if pct >= .05:
+            five += 1
+            if pct >= .1:
+              ten += 1
+              if pct >= .25:
+                twentyFive += 1
+                if pct >= .5:
+                  fifty += 1
+                  if pct >= .75:
+                    seventyFive += 1
+                    if pct >= 1:
+                      oneHundred += 1
       elif a != nvA and b == nvB:
         #Just A
         raw.write("[{}|NA]".format(a))

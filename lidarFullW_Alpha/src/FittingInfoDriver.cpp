@@ -12,14 +12,22 @@ FittingInfoDriver::FittingInfoDriver(){
     upperBound = INFINITY;
 }
 
-void FittingInfoDriver::writeData(FlightLineData &data, std::string out_file_name){
+void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
+                                 std::string out_name_2){
     //Initialize necessary tools
     PulseData pd;
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
 
     //Open output file
-    std::ofstream outFile(out_file_name);
+    std::ofstream rawFile(out_name_1);
+    std::ofstream statsFile(out_name_2);
+
+    //Holds number waveforms that had idx # of peaks
+    std::vector<int> num_waves;
+
+    //Holds the number of iterations required for waveforms with idx # of peaks
+    std::vector<std::vector<size_t>> num_iters;
 
     //Keep track of the number waveforms
     int num_waveforms = 0;
@@ -55,50 +63,72 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_file_nam
              *until the wave is fit. start one below the lower bound so we
              *don't have to check all the iterations before that */
             size_t i;
-            int peak_count;
-            for (i = std::min(lowerBound - 1, 0); fitter.pass == 0; i++){
+            size_t peak_count;
+            for (i = std::max(lowerBound - 1, 0); fitter.pass == 0; i++){
                 peak_count = fitter.find_peaks(&peaks, pd.returningWave,
                                               pd.returningIdx, i);
             }
 
             //Check that the number of iterations is within our range
-            if (i < lowerBound || i > upperBound) continue;
+            if ((int) i < lowerBound || (int) i > upperBound) continue;
+
+
+            //If we haven't had a waveform with this number of peaks befors,
+            //add a new int for num peaks and vector for num iterations
+            while (peak_count > num_waves.size()) {
+                num_waves.push_back(0);
+            }
+            while (peak_count > num_iters.size()) {
+                num_iters.push_back(std::vector<size_t>(0));
+            }
+
+            //Record peak_count and number of iterations for the waveform
+            num_waves.at(peak_count - 1) ++;
+            num_iters.at(peak_count - 1).push_back(i);
 
             num_waveforms ++;
 
             //Print waveform number and collumn labels
-            outFile << "Waveform " << num_waveforms  << std::endl;
-            outFile << "Time," << "Amplitude";
+            rawFile << "Waveform " << num_waveforms  << std::endl;
+            rawFile << "Time," << "Amplitude";
 
-            for (int j = 1; j <= peak_count; j++){
-                outFile << ",Peak " << j;
+            for (size_t j = 1; j <= peak_count; j++){
+                rawFile << ",Peak " << j;
             }
 
-            outFile << ",Number of Iterations: " << i << std::endl;
+            rawFile << ",Number of Iterations: " << i << std::endl;
 
             //Write the data for each row
-            int num_points = pd.returningIdx.size();
-            for (int k = 0; k < num_points; k++){
+            for (size_t k = 0; k < pd.returningIdx.size(); k++){
                 //Time index and amplitude from the data
-                outFile << pd.returningIdx.at(k) << "," <<
+                rawFile << pd.returningIdx.at(k) << "," <<
                     pd.returningWave.at(k);
                 for (auto it = peaks.begin(); it != peaks.end(); ++it){
                     //Calculated amplitude for each peak
                     double val = (*it)->amp * exp(-0.5 * pow((
                         pd.returningIdx.at(k) - (*it)->location) /
                         ((*it)->fwhm / 2), 2));
-                    outFile << "," << std::to_string(val);
+                    rawFile << "," << std::to_string(val);
                 }
-                outFile << std::endl;
+                rawFile << std::endl;
             }
         } catch (const char* msg){
             std::cout << msg << std::endl;
         }
 
-        outFile << std::endl << std::endl;
+        rawFile << std::endl << std::endl;
     }
     //Close output file
-    outFile.close();
+    rawFile.close();
+
+    //Write to stats file
+    statsFile << "# Peaks,# Waveforms,Avg. Iterations" << std::endl;
+    for (size_t i = 0; i < num_waves.size() && i < num_iters.size(); i ++){
+        int avg = accumulate(num_iters.at(i).begin(), num_iters.at(i).end(),
+            0)/num_iters.at(i).size();
+        statsFile << i << "," << num_waves.at(i) << "," << avg << std::endl;
+    }
+    statsFile.close();
 }
 
 std::string FittingInfoDriver::parse_args(int argc, char *argv[]){

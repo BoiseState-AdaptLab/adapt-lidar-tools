@@ -20,12 +20,21 @@ int main(int argc, char *argv[]){
     data.setFlightLineData(file_name);
 
     //Get output file name
+    std::string name = driver.getTrimmedFileName(file_name);
     std::stringstream ss;
-    ss << driver.getTrimmedFileName(file_name) << "_fittingInfo_["
-        << driver.lowerBound << "," << driver.upperBound << "].csv";
+    ss << name << "_fittingInfo_[" << driver.lowerBound << "," <<
+        driver.upperBound << "]";
+
+    //Raw file
+    std::stringstream one;
+    one << ss.str() << "_raw.csv";
+
+    //Stats file
+    std::stringstream two;
+    two << ss.str() << "_stats.csv";
    
     //Get fitting data and write it to the output file
-    driver.writeData(data, ss.str());
+    driver.writeData(data, one.str(), two.str());
 
     std::cout << "Done" << std::endl;
 

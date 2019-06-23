@@ -21,7 +21,6 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
 
     //Open output file
     std::ofstream rawFile(out_name_1);
-    std::ofstream statsFile(out_name_2);
 
     //Holds number waveforms that had idx # of peaks
     std::vector<int> num_waves;
@@ -69,22 +68,22 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
                                               pd.returningIdx, i);
             }
 
-            //Check that the number of iterations is within our range
-            if ((int) i < lowerBound || (int) i > upperBound) continue;
-
-
-            //If we haven't had a waveform with this number of peaks befors,
+            //If we haven't had a waveform with this number of peaks before,
             //add a new int for num peaks and vector for num iterations
-            while (peak_count > num_waves.size()) {
+            while (peak_count + 1 > num_waves.size()) {
                 num_waves.push_back(0);
             }
-            while (peak_count > num_iters.size()) {
+            while (peak_count + 1 > num_iters.size()) {
                 num_iters.push_back(std::vector<size_t>(0));
             }
 
             //Record peak_count and number of iterations for the waveform
+            //Check that the number of iterations is within our range
             num_waves.at(peak_count - 1) ++;
-            num_iters.at(peak_count - 1).push_back(i);
+            num_iters.at(peak_count).push_back(i);
+
+            //Check that the number of iterations is within our range
+            if ((int) i < lowerBound || (int) i > upperBound || true) continue;
 
             num_waveforms ++;
 
@@ -122,9 +121,11 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
     rawFile.close();
 
     //Write to stats file
+    std::ofstream statsFile(out_name_2);
     statsFile << "# Peaks,# Waveforms,Avg. Iterations" << std::endl;
     for (size_t i = 0; i < num_waves.size() && i < num_iters.size(); i ++){
-        int avg = accumulate(num_iters.at(i).begin(), num_iters.at(i).end(),
+        int avg = num_iters.at(i).size() == 0 ? 0:
+            accumulate(num_iters.at(i).begin(), num_iters.at(i).end(),
             0)/num_iters.at(i).size();
         statsFile << i << "," << num_waves.at(i) << "," << avg << std::endl;
     }

@@ -46,22 +46,24 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 # Flags passed to the C and C++ compiler
 ########################################
-# -g:       Produce debugging information in the operating system’s 
-#           native format
+# -std=c++11: Set standard to C++11
 #
-# -Wall:    Enables all warning flags 
-#  	    (https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html)
+# -g:         Produce debugging information in the operating system’s 
+#             native format
 #
-# -Wextra:  This enables extra warning flags that are not enabled by -Wall
+# -Wall:      Enables all warning flags 
+#             (https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html)
 #
-# -pthread: Link with the POSIX threads library
+# -Wextra:    This enables extra warning flags that are not enabled by -Wall
 #
-# -Idir:    Add the directory 'dir' to the list of directories to be searched 
-#           for heade# files during preprocessing
-
-# -llib:    Search the library named 'lib' when linking
-CXXFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
-CFLAGS += -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
+# -pthread:   Link with the POSIX threads library
+#
+# -Idir:      Add the directory 'dir' to the list of directories to be searched 
+#             for heade# files during preprocessing
+#
+# -llib:      Search the library named 'lib' when linking
+CXXFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
+CFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -139,11 +141,11 @@ $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 
 # Builds specific object files
 $(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
-	$(CXX) -std=c++11 $(CPPFLAGS) $(CXXFLAGS) -c \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c \
 		-o $@ $^
 
 $(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp
-	$(CXX) -std=c++11 $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 $(OBJ)/FlightLineData.o: $(SRC)/FlightLineData.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
@@ -162,11 +164,11 @@ $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 		-lgsl -lgslcblas
 
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
-	$(CXX) -std=c++11 -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds all object files
 $(OBJ)/%.o: $(SRC)/%.cpp
-	$(CXX) -std=c++11 -c -o $@ $^ $(CFLAGS)
+	$(CXX) -c -o $@ $^ $(CFLAGS)
 
 # Builds the info tool
 pls-info: $(BIN)/pls-info
@@ -191,7 +193,7 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
 		-lgslcblas -lpng
 
 $(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
-	$(CXX) -std=c++11 $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 #Builds the fitting information tool
 fitting-info: $(BIN)/fitting-info

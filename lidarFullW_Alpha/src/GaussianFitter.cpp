@@ -539,6 +539,11 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         #endif
 
         incr_fail();
+        
+        for (auto it = ampData.begin(); it != ampData.end(); ++it){
+            std::cout << *it << " ";
+        }
+        std::cout << std::endl;
 
         #ifdef DEBUG
             // PRINT DATA AND MODEL FOR TESTING PURPOSES

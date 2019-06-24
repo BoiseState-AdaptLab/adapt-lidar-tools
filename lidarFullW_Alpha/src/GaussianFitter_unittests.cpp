@@ -697,8 +697,9 @@ TEST_F(GaussianFitterTest, num_iterations_10){
     for (auto it = num_iters.begin(); it != num_iters.end(); ++it){
         int count = fitter.find_peaks(&peaks,ampData,idxData,*it);
         std::cout << "Number of iterations: " << *it << std::endl;
-        std::cout << "Equation: " << fitter.get_equation(0) << std::endl;
-
+        for (int i = 0; fitter.get_equation(i) != ""; i ++){
+             std::cout << "Equation " << i << ": " << fitter.get_equation(i) << std::endl;
+        }
         EXPECT_EQ(2,count);
     }
 }

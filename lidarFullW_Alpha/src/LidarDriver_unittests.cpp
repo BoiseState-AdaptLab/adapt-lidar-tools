@@ -83,9 +83,9 @@
 /* Adjust these to tweak the acceptable error between expected & actual vals */
 #define MAX_ERR 0.5
 #define MEAN_ERR 0.5
-#define STDEV_ERR 0.05
-#define SKEW_ERR 0.05
-#define KURT_ERR 0.05
+#define STDEV_ERR 0.5
+#define SKEW_ERR 0.5
+#define KURT_ERR 0.5
 
 class LidarDriverTest: public testing::Test
 {
@@ -111,7 +111,7 @@ class LidarDriverTest: public testing::Test
         LidarDriver driver3;
 
         //Variables
-        std::vector<char> vars = {'z', 'a', 'w', 'b'};
+        std::vector<char> vars = {'z', 'a', 'w', 'r', 'b'};
 
         /**
          * Creates a vector of Peak pointers for testing purposes. Artificially
@@ -133,6 +133,7 @@ class LidarDriverTest: public testing::Test
                 p->amp = z0;
                 p->fwhm = z0;
                 p->backscatter_coefficient = z0;
+                p->rise_time = z0;
                 p->position_in_wave = 3;
                 p->is_final_peak = false;
                 peaks.push_back(p);

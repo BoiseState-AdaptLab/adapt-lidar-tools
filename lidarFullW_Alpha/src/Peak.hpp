@@ -18,12 +18,12 @@ class Peak{
 
         //Keeps track of whether this is final peak in wave
         bool is_final_peak;
-       
+
         //Given 'n'peaks, the position of this peak
         int position_in_wave;
 
-       
-        int triggering_idx;      
+
+        int triggering_idx;
 
         //Peak triggering amplitude - noise level + 1
         int triggering_amp;
@@ -52,7 +52,7 @@ class Peak{
 
         //Default constructor
         Peak();
-      
+
         //Calculates backscatter coefficient
         void calcBackscatter(double emitted_amp, double emitted_fwhm,
                               double calibration_constant, double x_anchor,

@@ -79,7 +79,7 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
 
             //Record peak_count and number of iterations for the waveform
             //Check that the number of iterations is within our range
-            num_waves.at(peak_count - 1) ++;
+            num_waves.at(peak_count) ++;
             num_iters.at(peak_count).push_back(i);
 
             //Check that the number of iterations is within our range

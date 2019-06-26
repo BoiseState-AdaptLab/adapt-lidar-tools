@@ -167,6 +167,9 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                             WaveGPSInformation &gps_info){
     // Backscatter coefficient
     if (cmdLine.calcBackscatter){
+        if (pulse.outgoingIdx.size() == 0){
+            return;
+        }
         //Go through fitting process with emitted waveform
         fitter.smoothing_expt(&pulse.outgoingWave);
 

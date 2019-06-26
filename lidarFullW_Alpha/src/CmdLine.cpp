@@ -171,8 +171,6 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         {0, 0, 0, 0}
     };
 
-    //Stores if we need a calibration constant
-    bool need_const = false;
     // getopt_long stores the option index here.
     int option_index = 0;
     //Tacks the last option used
@@ -221,7 +219,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                         printUsageMessage = true;
                     }
                 }
-                need_const = optionChar == 'b' ? true : need_const;
+                calcBackscatter = optionChar == 'b' ? true : calcBackscatter;
             }
         } else if (optionChar == 1 && lastOpt == 'b'
                   && calibration_constant == 0){ //Set calibration coefficient
@@ -245,7 +243,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
     }
    
     //Backscatter coefficient requires a calibration constant
-    if (need_const && calibration_constant == 0){
+    if (calcBackscatter && calibration_constant == 0){
         msgs.push_back("Missing Calibration Constant");
         printUsageMessage = true;
     }

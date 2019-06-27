@@ -302,12 +302,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
     }
     current_wave_gps_info.populateGPS(pReader);
 
-    //Clear the vectors since we're storing a single pulse at a time
-    pd->outgoingIdx.clear();
-    pd->outgoingWave.clear();
-    pd->returningIdx.clear();
-    pd->returningWave.clear();
-
     pulse_returning_start_time = 0;
 
     int sampling_number = 0;    // can only be 0 or 1
@@ -410,7 +404,7 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
                                   current_wave_gps_info.z_first;
 
 
-    if((*it)->z_activation < bb_z_min || (*it)->z_activation > bb_z_max){
+    if(((*it)->z_activation < bb_z_min || (*it)->z_activation > bb_z_max)){
       std::cerr << "\nz activation: "<< (*it)->z_activation
                 << " not in range: " << bb_z_min << " - " << bb_z_max <<
                 std::endl;

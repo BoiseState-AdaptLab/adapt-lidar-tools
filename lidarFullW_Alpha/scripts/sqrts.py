@@ -142,51 +142,30 @@ def createImage(tif, path):
   #Get the string of these values rounded to 2 decimal places
   max_str, min_str = str(round(max_val, 2)), str(round(min_val, 2))
 
-  colors = [[128,0,128],[0,0,255],[0,255,0],[255,255,0],[255,0,0]]
-
-  log_values = [math.log10(i) for i in data_values if i > 0]
-  lower = math.floor(min(log_values))
-  num_sections = math.ceil(max(log_values)) - lower
-  maxes = [0] * num_sections
-  mins = [0] * num_sections
-  max_fracs = [0] * num_sections
-  bin_colors = [[[],[],[]] for _ in range(num_sections)]
-  #bin_colors = [[[255,255,255],[],[0,0,0]] for _ in range(num_sections)]
-  for i in range(num_sections):
-    temp = tif.getHeatMapColor(colors, (2*i+1)/(num_sections*2))
-    bin_colors[i][0] = tif.getHeatMapColor([[255,255,255],temp], .25)
-    bin_colors[i][1] = temp
-    bin_colors[i][2] = tif.getHeatMapColor([temp,[0,0,0]], .25)
-    #bin_colors[i][1] = temp
-    temp = [j for j in log_values if j >= i + lower and j < i + lower + 1]
-    maxes[i] = math.pow(10,max(temp)) if len(temp) != 0 else 0
-    mins[i] = math.pow(10,min(temp)) if len(temp) != 0 else 0
-    max_fracs[i] = (len(temp) / len(log_values)) + (max_fracs[i - 1]
-      if i != 0 else 0)
+  data_values.sort()
+  extremes = getExtremes(data_values)
 
   #Create an array that store RGB values for each data point
   color_data = np.full((data_h, data_w, 3), 255, dtype=np.uint8)
   #These are the colors for each coloring 'tier'
   #(low) dark green, yellow, red (high)
   #colors = [[0,71,0],[255,255,0],[255,0,0]]
+  colors = [[[128,0,128],[0,0,255]],
+           [[0,128,0],[255,255,0]],
+           [[255,128,0],[255,0,0]]]
 
   #Loop through each y value for each x value
   for y, vals in enumerate(tif.data):
     for x, val in enumerate(vals):
       #Check if value is no data
       if val != tif.no_value and math.isfinite(val) and val > 0:
-        section = math.floor(math.log10(val)) - lower
-        max_v = maxes[section]
-        min_v = mins[section]
-        #Normalize value between 0 and 1
-        val_frac = ((val - min_v) / (max_v - min_v) if max_v != min_v
-                   else .5);
-        #lb = 0 if section == 0 else max_fracs[section - 1]
-        #ub = max_fracs[section]
-        #Normalize between lb and ub
-        #val_frac = (val_frac * (ub - lb)) + lb
+        data_type = 0 if val < extremes[0] else 2 if val > extremes[1] else 1
+        min_v = min_val if data_type == 0 else extremes[0] if data_type == 1 else extremes[1]
+        max_v = extremes[0] if data_type == 0 else extremes[1] if data_type == 1 else max_val
+        print (val, min_v, max_v)
+        val_frac = (val - min_val) / (max_val - min_val)
         #write color value to array, inputted as [row, col]
-        color_data[y, x] = tif.getHeatMapColor(bin_colors[section], val_frac)
+        color_data[y, x] = tif.getHeatMapColor(colors[data_type], val_frac)
     print ("\rCreating heatmap {}%".format(
            round(y*100/(data_h-1))), end="")
 
@@ -228,26 +207,12 @@ def createImage(tif, path):
             min_str + ' ', (0,0,0), font=font)
   #Draw color gradient into image
   x_offset += font.getsize(min_str + ' ')[0]
-  section = 0
-  upper_val = math.pow(10, section + lower + 1)
   for i in range(grad_len + 1):
-    frac = i * max_val / grad_len
-    if frac <= min_val or frac >= max_val:
-      frac = 0 if frac <= min_val else 1
-    else:
-      while section < len(max_fracs) - 1:
-        if frac >= upper_val:
-          section += 1
-          upper_val = math.pow(10, section + lower + 1) if section != len(max_fracs) - 1 else max_val
-        else:
-          break
-      lower_val = math.pow(10, section + lower) if section != 0 else min_val
-      frac = (frac - lower_val) / (upper_val - lower_val) if frac >= lower_val else 0
-      #ub = max_fracs[section]
-      #lb = max_fracs[section - 1] if section != 0 else 0
-      #frac = frac * (ub - lb) + lb if ub != lb else 1 
+    frac = i / grad_len
     #Get current color
-    color = tif.getHeatMapColor(bin_colors[section], frac)
+    val = frac * max_val
+    color_set = 0 if val < extremes[0] else 2 if val > extremes[1] else 1
+    color = tif.getHeatMapColor(colors[color_set], val_frac)
     #Draw a vertical line, width = 1px (1 col), height = legend height
     draw.line((x_offset + i, data_h + line_h, x_offset + i,
               data_h + (2 * line_h)), fill=color)
@@ -257,6 +222,23 @@ def createImage(tif, path):
             ' ' + max_str, (0,0,0), font=font)
   #Save image
   img.save(path + tif.file_name[:-4] + '.png')
+
+#@params: data - a sorted list of integers
+def getExtremes(data):
+  l = len(data)
+  #Get the length of half and a quarter of the list
+  half = math.floor(l/2)
+  quart = math.floor(half/2)
+  #Calculate quartile 1 and 3 values
+  q1 = (data[quart] if half % 2 == 1 else
+    (data[quart-1] + data[quart]) / 2)
+  q3 = (data[l-quart] if half % 2 == 1 else
+    (data[l-quart] + data[l-1-quart]) / 2)
+  #Calculate range of non-outlier data
+  extension = 1.5 * (q3 - q1)
+  q1 -= extension
+  q3 += extension
+  return [q1,q3]
 
 #Run it
 main()

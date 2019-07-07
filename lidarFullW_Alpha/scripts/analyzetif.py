@@ -139,30 +139,22 @@ def createImage(tif, path):
   data_values = [i for i in tif.data.flatten() if math.isfinite(i) and
                  i != tif.no_value]
   max_val, min_val = max(data_values), min(data_values)
-  #print (min_val, math.log(min_val))
   #Get the string of these values rounded to 2 decimal places
   max_str, min_str = str(round(max_val, 2)), str(round(min_val, 2))
 
-  log_values = [math.log(i) for i in data_values if i > 0]#if i > 0 else 0 for i in data_values]
-  #max_val = max(log_values)
-  #min_val = min(log_values)
-  num_points = len(log_values)
-  upper = math.ceil(max(log_values))
+  log_values = [math.log10(i) for i in data_values if i > 0]
   lower = math.floor(min(log_values))
-  #print (min(log_values))
-  #print (lower, upper)
-  num_sections = upper - lower
+  num_sections = math.ceil(max(log_values)) - lower
   maxes = [0] * num_sections
   mins = [0] * num_sections
   max_fracs = [0] * num_sections
   for i in range(num_sections):
     temp = [j for j in log_values if j >= i + lower and j < i + lower + 1]
-    #print ("[",(i + lower),",",(i + lower + 1),")")
     maxes[i] = max(temp) if len(temp) != 0 else 0
     mins[i] = min(temp) if len(temp) != 0 else 0
-    max_fracs[i] = (len(temp) / num_points) + (max_fracs[i - 1] if i != 0 else 0)
-  #print (max_fracs[14], max_fracs[13], maxes[14], mins[14])
-  
+    max_fracs[i] = (len(temp) / len(log_values)) + (max_fracs[i - 1]
+      if i != 0 else 0)
+
   #Create an array that store RGB values for each data point
   color_data = np.full((data_h, data_w, 3), 255, dtype=np.uint8)
   #These are the colors for each coloring 'tier'
@@ -174,16 +166,13 @@ def createImage(tif, path):
     for x, val in enumerate(vals):
       #Check if value is no data
       if val != tif.no_value and math.isfinite(val) and val > 0:
-        val = math.log(val)
+        val = math.log10(val)
         section = math.floor(val) - lower
         max_v = maxes[section]
         min_v = mins[section]
-        #print (max_val, min_val)
         #Normalize value between 0 and 1
         val_frac = ((val - min_v) / (max_v - min_v) if max_v != min_v
-                   else 1);
-        #if section == 14:
-          #print (val_frac)
+                   else .5);
         lb = 0 if section == 0 else max_fracs[section - 1]
         ub = max_fracs[section]
         #Normalize between lb and ub
@@ -233,24 +222,22 @@ def createImage(tif, path):
   x_offset += font.getsize(min_str + ' ')[0]
   section = 0
   upper_val = math.pow(10, section + lower + 1)
-  print()
-  for i in range(grad_len):
+  for i in range(grad_len + 1):
     frac = i * max_val / grad_len
-    print (frac, end=" ")
-    while section < len(max_fracs) - 1:
-      if frac >= upper_val:
-        section += 1
-        upper_val = math.pow(10, section + lower + 1) if section != len(max_fracs) - 1 else max_val
-      else:
-        break
-    lower_val = math.pow(10, section + lower) if section != 0 else min_val
-    print (upper_val, lower_val, end=" ")
-    frac = (frac - lower_val) / (upper_val - lower_val)
-    print (frac, end=" ")
-    up = max_fracs[section]
-    lb = max_fracs[section - 1] if section != 0 else 0
-    frac = (frac - lb) / (ub - lb) if ub != lb else 1 
-    print (frac)
+    if frac <= min_val or frac >= max_val:
+      frac = 0 if frac <= min_val else 1
+    else:
+      while section < len(max_fracs) - 1:
+        if frac >= upper_val:
+          section += 1
+          upper_val = math.pow(10, section + lower + 1) if section != len(max_fracs) - 1 else max_val
+        else:
+          break
+      lower_val = math.pow(10, section + lower) if section != 0 else min_val
+      frac = (frac - lower_val) / (upper_val - lower_val) if frac >= lower_val else 0
+      ub = max_fracs[section]
+      lb = max_fracs[section - 1] if section != 0 else 0
+      frac = frac * (ub - lb) + lb if ub != lb else 1 
     #Get current color
     color = tif.getHeatMapColor(colors, frac)
     #Draw a vertical line, width = 1px (1 col), height = legend height

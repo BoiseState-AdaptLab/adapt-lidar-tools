@@ -12,7 +12,7 @@ from tif import Tif
 def main():
   print ()
   #Stores the tif file name
-  file_name = ""
+  file_names = []
   #Stores the path to ouput files
   custom_path = "./"
   #Stores what outputs to create
@@ -41,11 +41,16 @@ def main():
     #Argument is a file
     if arg == '-f':
       try:
-        file_name = sys.argv[i + 1]
-        #File does not have '.tif' extension
-        if not file_name.endswith(".tif"):
-          arg_errors.append("Invalid file type, must have extension '.tif'")
-        i += 1
+         while True:
+          name = sys.argv[i + 1]
+          #File does not have '.tif' extension
+          if not name.endswith(".tif"):
+            if len(file_names) == 0:
+              arg_errors.append("Invalid file type, must have extension '.tif'")
+            break
+          else:
+            file_names.append(name)
+          i += 1       
       #No file was input
       except IndexError:
         arg_errors.append("No input file provided")
@@ -87,15 +92,16 @@ def main():
     sys.exit(1)
  
   #Run the tif file
-  tif = Tif(file_name)
-  if text_output:
-    writeData(tif, custom_path)
-    print (done, "Data written to {}.out\n".format(
-           custom_path + tif.file_name_trimmed))
-  if image_output:
-    createImage(tif, custom_path)
-    print (done, "Heatmap has been saved to {}.png\n".format(
-           custom_path + tif.file_name_trimmed))
+  for name in file_names:
+    tif = Tif(name)
+    if text_output:
+      writeData(tif, custom_path)
+      print (done, "Data written to {}.out\n".format(
+             custom_path + tif.file_name_trimmed))
+    if image_output:
+      createImage(tif, custom_path)
+      print (done, "Heatmap has been saved to {}.png\n".format(
+             custom_path + tif.file_name_trimmed))
 
 #Write data to .out file
 def writeData(tif, path):
@@ -142,21 +148,29 @@ def createImage(tif, path):
   #Get the string of these values rounded to 2 decimal places
   max_str, min_str = str(round(max_val, 2)), str(round(min_val, 2))
 
+  #Get an array with the log of all our data points
   log_values = [math.log10(i) for i in data_values if i > 0]
+  #Calculate the lowest power of ten in log_vals
+  #This will also be our offset when converting from powers of ten
+  #to list indexes
   lower = math.floor(min(log_values))
+  #Get the number of section (unique powers of ten)
   num_sections = math.ceil(max(log_values)) - lower
+  #This stores max values for each section
   maxes = [0] * num_sections
+  #This stores min values for each section
   mins = [0] * num_sections
+  #This stores the highest color fraction for each section. This is calculated
+  #proportionately to the number of vals in the section so larger sections have
+  #more expressibility than smaller sections
   max_fracs = [0] * num_sections
+  #For each section, calculate or find the above values
   for i in range(num_sections):
     temp = [j for j in log_values if j >= i + lower and j < i + lower + 1]
     maxes[i] = math.pow(10, max(temp)) if len(temp) != 0 else 0
     mins[i] = math.pow(10, min(temp)) if len(temp) != 0 else 0
     max_fracs[i] = (len(temp) / len(log_values)) + (max_fracs[i - 1]
       if i != 0 else 0)
-  print()
-  print (maxes)
-  print (mins)
 
   #Create an array that store RGB values for each data point
   color_data = np.full((data_h, data_w, 3), 255, dtype=np.uint8)
@@ -169,12 +183,14 @@ def createImage(tif, path):
     for x, val in enumerate(vals):
       #Check if value is no data
       if val != tif.no_value and math.isfinite(val) and val > 0:
+        #Get this val's section and the max and min values in that section
         section = math.floor(math.log10(val)) - lower
         max_v = maxes[section]
         min_v = mins[section]
         #Normalize value between 0 and 1
         val_frac = ((val - min_v) / (max_v - min_v) if max_v != min_v
                    else .5);
+        #Get lower and upper bounds for this section's colors
         lb = 0 if section == 0 else max_fracs[section - 1]
         ub = max_fracs[section]
         #Normalize between lb and ub
@@ -216,35 +232,47 @@ def createImage(tif, path):
   grad_len = math.floor(legend_w / 2)
   #Get half the verticle offset of text to center text wth gradient
   vert_offset = math.floor(font.getoffset(test_text)[1] / 2)
+  
   #Write min value into image
   x_offset = 0 if data_w <= legend_w else math.floor((data_w - legend_w) / 2)
   draw.text((x_offset, data_h + line_h - vert_offset),
             min_str + ' ', (0,0,0), font=font)
+  
   #Draw color gradient into image
   x_offset += font.getsize(min_str + ' ')[0]
+  #As we go along the gradient, store which range the corresponding number lies
+  #in as well as the lower and upper bounds of that range
   section = 0
-  upper_val = math.pow(10, section + lower + 1)
+  num_ub = (math.pow(10, section + lower + 1) if
+            section != len(max_fracs) - 1 else max_val)
+  num_lb = min_val
   for i in range(grad_len + 1):
-    frac = i * max_val / grad_len
-    if frac <= min_val or frac >= max_val:
-      frac = 0 if frac <= min_val else 1
-    else:
-      while section < len(max_fracs) - 1:
-        if frac >= upper_val:
-          section += 1
-          upper_val = math.pow(10, section + lower + 1) if section != len(max_fracs) - 1 else max_val
-        else:
-          break
-      lower_val = math.pow(10, section + lower) if section != 0 else min_val
-      frac = (frac - lower_val) / (upper_val - lower_val) if frac >= lower_val else 0
-      ub = max_fracs[section]
-      lb = max_fracs[section - 1] if section != 0 else 0
-      frac = frac * (ub - lb) + lb if ub != lb else 1 
+    #Get the number this slice of the gradient represents
+    frac = ((i / grad_len) * (max_val - min_val)) + min_val
+    #Make sure we are in the correct power of ten range
+    while section < len(max_fracs) - 1:
+      if frac >= num_ub:
+        section += 1
+        #Update our lower and upper bounds
+        num_lb = num_ub
+        num_ub = (math.pow(10, section + lower + 1) if
+                  section != len(max_fracs) - 1 else max_val)
+      else:
+        break
+    #Calculate how far from the lower bound to the upper bound our value is
+    frac = (frac - num_lb) / (num_ub - num_lb)
+    #Get the upper and lower bounds for our color
+    color_ub = max_fracs[section]
+    color_lb = max_fracs[section - 1] if section != 0 else 0
+    #Calculate the color fraction for our value
+    frac = (frac * (color_ub - color_lb) + color_lb if
+            color_ub != color_lb else 1)
     #Get current color
     color = tif.getHeatMapColor(colors, frac)
     #Draw a vertical line, width = 1px (1 col), height = legend height
     draw.line((x_offset + i, data_h + line_h, x_offset + i,
               data_h + (2 * line_h)), fill=color)
+  
   #Write max value into image
   x_offset += i
   draw.text((x_offset, data_h + line_h - vert_offset),

@@ -12,7 +12,7 @@ from tif import Tif
 def main():
   print ()
   #Stores the tif file name
-  file_name = ""
+  file_names = []
   #Stores the path to ouput files
   custom_path = "./"
   #Stores what outputs to create
@@ -22,7 +22,7 @@ def main():
   #Create the usage message
   usage = """
     Usage:
-    $ python {} -f file_name -wi [-p pathname]
+    $ python {} -f file_name [file_name2 ...] -wi [-p pathname]
        -f filename: Name of tif file to be analyzed
        -w: Creates a .out text file containing the data of the tif file
        -i: Creates a heatmap png of the tif file
@@ -34,6 +34,7 @@ def main():
 
   #Iterate through every argument
   i = 1
+  opts = ['-w','-i','-wi','-iw']
   while i < len(sys.argv):
     arg = sys.argv[i]
     #Get length of arg_errors
@@ -41,11 +42,16 @@ def main():
     #Argument is a file
     if arg == '-f':
       try:
-        file_name = sys.argv[i + 1]
-        #File does not have '.tif' extension
-        if not file_name.endswith(".tif"):
-          arg_errors.append("Invalid file type, must have extension '.tif'")
-        i += 1
+        while True:
+          name = sys.argv[i + 1]
+          #File does not have '.tif' extension
+          if not name.endswith(".tif"):
+            if len(file_names) == 0:
+              arg_errors.append("Invalid file type, must have extension '.tif'")
+            break
+          else:
+            file_names.append(name)
+          i += 1
       #No file was input
       except IndexError:
         arg_errors.append("No input file provided")
@@ -87,15 +93,16 @@ def main():
     sys.exit(1)
  
   #Run the tif file
-  tif = Tif(file_name)
-  if text_output:
-    writeData(tif, custom_path)
-    print (done, "Data written to {}.out\n".format(
-           custom_path + tif.file_name_trimmed))
-  if image_output:
-    createImage(tif, custom_path)
-    print (done, "Heatmap has been saved to {}.png\n".format(
-           custom_path + tif.file_name_trimmed))
+  for name in file_names:
+    tif = Tif(name)
+    if text_output:
+      writeData(tif, custom_path)
+      print (done, "Data written to {}.out\n".format(
+             custom_path + tif.file_name_trimmed))
+    if image_output:
+      createImage(tif, custom_path)
+      print (done, "Heatmap has been saved to {}.png\n".format(
+             custom_path + tif.file_name_trimmed))
 
 #Write data to .out file
 def writeData(tif, path):

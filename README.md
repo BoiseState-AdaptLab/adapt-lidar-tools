@@ -8,24 +8,25 @@ The PulseWaves format is a new, open, vendor-neutral, LGPL-licensed and LAS-comp
 
 This project aims at developing full waveform LiDAR processing tools based on the PulseWaves data exchange format 
 
-### Build instructions
-* After cloning the repo, from the root of the repo, initialize and update the **gtest** and **PulseWaves** submodules
-```
-git submodule init
-git submodule update
-```
-* From the `deps/PulseWaves/src` folder, edit `pulsefilter.cpp` and `pulsetransform.cpp` to replace any instances of `atoill` with `atoll`.
-* From the same folder, run `make libpulsewaves.a`. If the make is succesfull, you're good to go. 
+## Installation
 
-### To build and run
+* Clone the repository to your local filesystem/ Boise State R2 account: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
+* After cloning the directory, 
+  * If the installation is on the R2 compute cluster, you will need to load the following:
+    * `module load gsl/gcc/2.4`
+    * `module load gdal/intel/2.2.2` this shoould automatically load other modules that are required
+  * If the installation is on your local filesystem, make sure you have the following installed: 
+    * g++ (GCC 4.8.5)
+    * GSL 2.4
+    * GDAL 2.2.2
+* Run the install script `./install.sh` to automatically download, update & build the dependencies, and make the executables.
+  * For R2 users, if you had errors during the installation process you most likely have a module loaded that is causing a conflict. We recommend you remove all modules `module purge` and load only the ones required to make the executables.
+* If the install script ran successfully, you can find the executables in either your choice of directory if you so chose during installation, or the `bin/` folder of the `adapt-lidar-tools` directory.
 
-* To make and run unit tests: `make test`
-* To make the geotiff-driver: `make geotiff-driver`
+**Note:** After running the install script to make sure the dependencies are built, you can at any time regenerate the executables by running `make geotiff-driver` or `make pls-info`. To cleanup and remove all executables and object files , run `make clean`.
 
-### Note:
-The waveform samples of the pulses that are reported in the Pulse Records are 
-stored in a separate Waves file that must be in the same directory and have the 
-same base name as the *.pls file, but have the ending *.wvs.
+**The waveform samples of the pulses that are reported in the Pulse Records are stored in a separate Waves file that must be in the same directory and have the same base name as the *.pls file, but have the ending *.wvs. **
+
 
 ## Implemented Products
 These are the properties the program can analyze currently. For each property of interest, a comma separated list of 
@@ -101,22 +102,22 @@ Sorted by Product Number
 ### Examples
 ```shell
 //generate max first elevation, min first elevation, mean first elevation
-geotiff-driver -f etc/test-file-1.pls -e 1,2,3
+bin/geotiff-driver -f etc/test-file-1.pls -e 1,2,3
 ```
 
 ```shell
 //generate std.dev first amplitude, min last amplitude, skew all amplitude
-geotiff-driver -f etc/test-file-1.pls -a 4,8,17
+bin/geotiff-driver -f etc/test-file-1.pls -a 4,8,17
 ```
 
 ```shell
 //generate max all width, skew last width, min all width
-geotiff-driver -f etc/test-file-1.pls -w 13,11,14
+bin/geotiff-driver -f etc/test-file-1.pls -w 13,11,14
 ```
 
 ```shell
 //combine the three above commands into a single run for efficiency
-geotiff-driver -f etc/test-file-1.pls -w 13,11,14 -a 4,8,17 -e 1,2,3
+bin/geotiff-driver -f etc/test-file-1.pls -w 13,11,14 -a 4,8,17 -e 1,2,3
 ```
 
 

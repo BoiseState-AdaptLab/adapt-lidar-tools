@@ -10,15 +10,43 @@ This project aims at developing full waveform LiDAR processing tools based on th
 
 ## Installation
 
-* Clone the repository to your local filesystem/ Boise State R2 account: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
+### Installation on Boise State's R2 cluster
+
+* Clone the repository: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
 * After cloning the directory, 
-  * If the installation is on the R2 compute cluster, you will need to load the following:
+  * Load the following modules:
     * `module load gsl/gcc/2.4`
-    * `module load gdal/intel/2.2.2` this shoould automatically load other modules that are required
+    * `module load gdal/intel/2.2.2` this should automatically load other modules that are required
   * If the installation is on your local filesystem, make sure you have the following installed: 
     * g++ (GCC 4.8.5)
     * GSL 2.4
     * GDAL 2.2.2
+
+### Installation on a local machine running CentOS 7 linux distribution
+
+* GSL 2.4 from: [https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz](https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz)   
+follow these install instructions modified from: [http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html](http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html)
+```
+$>./configure --prefix=/usr
+$>make
+$>make check
+$>sudo make install
+
+$>gsl-config --lib
+```
+
+* GDAL 2.2.2 from: [https://trac.osgeo.org/gdal/wiki/DownloadSource#a2.2.2-September2017](https://trac.osgeo.org/gdal/wiki/DownloadSource#a2.2.2-September2017)   
+follow theses instructions modified from [https://trac.osgeo.org/gdal/wiki/BuildingOnUnix](https://trac.osgeo.org/gdal/wiki/BuildingOnUnix)
+
+```
+$>./configure --prefix=/usr
+$>make
+$>sudo make install
+```   
+test that gdal installed with `gdalinfo --version`
+
+* add the library path for the linker `export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH`
+    
 * Run the install script `./install.sh` to automatically download, update & build the dependencies, and make the executables.
   * For R2 users, if you had errors during the installation process you most likely have a module loaded that is causing a conflict. We recommend you remove all modules `module purge` and load only the ones required to make the executables.
 * If the install script ran successfully, you can find the executables in either your choice of directory if you so chose during installation, or the `bin/` folder of the `adapt-lidar-tools` directory.

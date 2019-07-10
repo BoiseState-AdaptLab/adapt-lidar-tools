@@ -8,24 +8,53 @@ The PulseWaves format is a new, open, vendor-neutral, LGPL-licensed and LAS-comp
 
 This project aims at developing full waveform LiDAR processing tools based on the PulseWaves data exchange format 
 
-### Build instructions
-* After cloning the repo, from the root of the repo, initialize and update the **gtest** and **PulseWaves** submodules
+## Installation
+
+### Installation on Boise State's R2 cluster
+
+* Clone the repository: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
+* After cloning the directory, 
+  * Load the following modules:
+    * `module load gsl/gcc/2.4`
+    * `module load gdal/intel/2.2.2` this should automatically load other modules that are required
+
+### Installation on a local machine running CentOS 7 linux distribution
+
+* g++ (GCC 4.8.5)
+
+* GSL 2.4 from: [https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz](https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz)   
+follow these install instructions modified from: [http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html](http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html)
 ```
-git submodule init
-git submodule update
+$>./configure --prefix=/usr
+$>make
+$>make check
+$>sudo make install
+
+$>gsl-config --lib
 ```
-* From the `deps/PulseWaves/src` folder, edit `pulsefilter.cpp` and `pulsetransform.cpp` to replace any instances of `atoill` with `atoll`.
-* From the same folder, run `make libpulsewaves.a`. If the make is succesfull, you're good to go. 
 
-### To build and run
+* GDAL 2.2.2 from: [https://trac.osgeo.org/gdal/wiki/DownloadSource#a2.2.2-September2017](https://trac.osgeo.org/gdal/wiki/DownloadSource#a2.2.2-September2017)   
+follow theses instructions modified from [https://trac.osgeo.org/gdal/wiki/BuildingOnUnix](https://trac.osgeo.org/gdal/wiki/BuildingOnUnix)
 
-* To make and run unit tests: `make test`
-* To make the geotiff-driver: `make geotiff-driver`
+```
+$>./configure --prefix=/usr
+$>make
+$>sudo make install
+```   
+test that gdal installed with `gdalinfo --version`
 
-### Note:
-The waveform samples of the pulses that are reported in the Pulse Records are 
-stored in a separate Waves file that must be in the same directory and have the 
-same base name as the *.pls file, but have the ending *.wvs.
+* add the library path for the linker `export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH`
+---
+After GDAL and GSL have been loaded/installed
+    
+* Run the install script `./install.sh` to automatically download, update & build the dependencies, and make the executables.
+  * For R2 users, if you had errors during the installation process you most likely have a module loaded that is causing a conflict. We recommend you remove all modules `module purge` and load only the ones required to make the executables.
+* If the install script ran successfully, you can find the executables in either your choice of directory if you so chose during installation, or the `bin/` folder of the `adapt-lidar-tools` directory.
+
+**Note:** After running the install script to make sure the dependencies are built, you can at any time regenerate the executables by running `make geotiff-driver` or `make pls-info`. To cleanup and remove all executables and object files , run `make clean`.
+
+__The waveform samples of the pulses that are reported in the Pulse Records are stored in a separate Waves file that must be in the same directory and have the same base name as the *.pls file, but have the ending *.wvs__.
+
 
 ## Implemented Products
 These are the properties the program can analyze currently. For each property of interest, a comma separated list of 
@@ -101,22 +130,22 @@ Sorted by Product Number
 ### Examples
 ```shell
 //generate max first elevation, min first elevation, mean first elevation
-geotiff-driver -f etc/test-file-1.pls -e 1,2,3
+bin/geotiff-driver -f etc/test-file-1.pls -e 1,2,3
 ```
 
 ```shell
 //generate std.dev first amplitude, min last amplitude, skew all amplitude
-geotiff-driver -f etc/test-file-1.pls -a 4,8,17
+bin/geotiff-driver -f etc/test-file-1.pls -a 4,8,17
 ```
 
 ```shell
 //generate max all width, skew last width, min all width
-geotiff-driver -f etc/test-file-1.pls -w 13,11,14
+bin/geotiff-driver -f etc/test-file-1.pls -w 13,11,14
 ```
 
 ```shell
 //combine the three above commands into a single run for efficiency
-geotiff-driver -f etc/test-file-1.pls -w 13,11,14 -a 4,8,17 -e 1,2,3
+bin/geotiff-driver -f etc/test-file-1.pls -w 13,11,14 -a 4,8,17 -e 1,2,3
 ```
 
 

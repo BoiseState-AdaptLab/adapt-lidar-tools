@@ -1,6 +1,0 @@
-[submodule "lidarFullW_Alpha/deps/PulseWaves"]
-	path = lidarFullW_Alpha/deps/PulseWaves
-	url = https://github.com/PulseWaves/PulseWaves.git
-[submodule "lidarFullW_Alpha/deps/googletest"]
-	path = lidarFullW_Alpha/deps/googletest
-	url = https://github.com/google/googletest.git

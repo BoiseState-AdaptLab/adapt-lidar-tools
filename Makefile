@@ -190,7 +190,7 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
-		-lgslcblas -lpng
+		-lgslcblas 
 
 $(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
@@ -204,7 +204,7 @@ $(BIN)/fitting-info: $(OBJ)/fitting_info.o $(OBJ)/FlightLineData.o \
                      $(OBJ)/FittingInfoDriver.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
-		-lgslcblas -lpng
+		-lgslcblas 
 
 $(OBJ)/fitting_info.o: $(SRC)/fitting_info.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^

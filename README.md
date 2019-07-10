@@ -17,12 +17,10 @@ This project aims at developing full waveform LiDAR processing tools based on th
   * Load the following modules:
     * `module load gsl/gcc/2.4`
     * `module load gdal/intel/2.2.2` this should automatically load other modules that are required
-  * If the installation is on your local filesystem, make sure you have the following installed: 
-    * g++ (GCC 4.8.5)
-    * GSL 2.4
-    * GDAL 2.2.2
 
 ### Installation on a local machine running CentOS 7 linux distribution
+
+* g++ (GCC 4.8.5)
 
 * GSL 2.4 from: [https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz](https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz)   
 follow these install instructions modified from: [http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html](http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html)
@@ -46,6 +44,8 @@ $>sudo make install
 test that gdal installed with `gdalinfo --version`
 
 * add the library path for the linker `export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH`
+---
+After GDAL and GSL have been loaded/installed
     
 * Run the install script `./install.sh` to automatically download, update & build the dependencies, and make the executables.
   * For R2 users, if you had errors during the installation process you most likely have a module loaded that is causing a conflict. We recommend you remove all modules `module purge` and load only the ones required to make the executables.

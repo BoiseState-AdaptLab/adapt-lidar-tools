@@ -16,7 +16,7 @@
 #include <iomanip>
 #include <vector>
 
-const double NO_DATA = -99999.99;
+const double NO_DATA = -99999;
 const double MAX_ELEV = 99999.99;
 
 class LidarDriver {

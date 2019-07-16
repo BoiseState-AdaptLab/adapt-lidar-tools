@@ -5,6 +5,9 @@
 #ifndef PEAK_HPP_
 #define PEAK_HPP_
 
+#include <string>
+#include <vector>
+
 class Peak{
 
     public:
@@ -57,6 +60,9 @@ class Peak{
         void calcBackscatter(double emitted_amp, double emitted_fwhm,
                               double calibration_constant, double x_anchor,
                               double y_anchor, double z_anchor);
+
+        //Creates list of variables specified by varlist in string form
+        void toString(std::string& str, std::vector<int> varlist);
 };
 
 #endif /* PEAK_HPP_ */

@@ -86,3 +86,68 @@ void Peak::calcBackscatter(double emitted_amp, double emitted_fwhm,
 #endif
 }
 
+/**
+ * Creates string that describes a user specified list of peak data.
+ * Note that string provided will be COMPLETELY OVERWRITTEN.
+ * @param str String result will be held here\
+ * @param varlist list of ints describing the peak data to be written
+ */
+void Peak::toString(std::string& str, std::vector<int> varlist) {
+    str.clear();
+
+    size_t i = 1;
+
+    //Populate string with specified values
+    for (auto itr = varlist.begin(); itr != varlist.end(); ++itr) {
+        switch (*itr) {
+            case 1:  //Amplitude
+                str += std::to_string(this->amp);
+                break;
+            case 2:  //Location
+                str += std::to_string(this->location);
+                break;
+            case 3:  //Width
+                str += std::to_string(this->fwhm);
+                break;
+            case 4:  //Is Final Peak
+                str += (this->is_final_peak ? "True" : "False");
+                break;
+            case 5:  //Position in Wave
+                str += std::to_string(this->position_in_wave);
+                break;
+            case 6:  //Triggering Amplitude
+                str += std::to_string(this->triggering_amp);
+                break;
+            case 7:  //Triggering Location
+                str += std::to_string(this->triggering_location);
+                break;
+            case 8:  //Peak x, y, z
+                str += std::to_string(this->x);
+                str += ", ";
+                str += std::to_string(this->y);
+                str += ", ";
+                str += std::to_string(this->z);
+                break;
+            case 9:  //Triggering x, y, z
+                str += std::to_string(this->x_activation);
+                str += ", ";
+                str += std::to_string(this->y_activation);
+                str += ", ";
+                str += std::to_string(this->z_activation);
+                break;
+            case 10: //Samples (Number of gaussian fitter iteratoins for peak)
+                str += "(Samples not yet supported)"; //TODO
+                break;
+            default:
+                str += "(Invalid arg)";
+                break;
+        }
+
+        //Unless tihs is the last element let's add a comma and space
+        if (i < varlist.size()) {
+            str += ", ";
+        }
+
+        i++;
+    }
+}

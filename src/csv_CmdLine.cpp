@@ -61,8 +61,8 @@ void csv_CmdLine::setUsageMessage()
     buffer << "| Triggering Amp          | 6      | Amplitude at inflection point" << std::endl;
     buffer << "| Triggering Location     | 7      | Time of inflection point occurance" << std::endl;
     buffer << "| Peak x, y, z            | 8      | x, y, z coordinate of peak" << std::endl;
-    buffer << "| Triggering z, y, z      | 9      | x, y, z of inflection point" << std::endl;
-    buffer << "| Samples                 | 11     | Number of Gaussian Fitter iterations used on peak" << std::endl;
+    buffer << "| Triggering x, y, z      | 9      | x, y, z of inflection point" << std::endl;
+    buffer << "| Samples                 | 10     | Number of Gaussian Fitter iterations used on peak" << std::endl;
     buffer << std::endl;
     buffer << "Valid ways to format the product list include:" << std::endl;
     buffer << "                   -p 1,2,3           (no white-space)" << std::endl;

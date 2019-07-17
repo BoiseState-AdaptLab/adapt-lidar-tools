@@ -3,7 +3,6 @@
 // Author: ravi
 
 #include "FlightLineData.hpp"
-#include <iomanip>
 
 //#define DEBUG
 
@@ -247,63 +246,25 @@ bool FlightLineData::hasNextPulse(){
  */
 void FlightLineData::getNextPulse(PulseData *pd){
 
-  if(!next_pulse_exists){
-    std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next pulse\n";
-    exit(EXIT_FAILURE);
-  }
-  current_wave_gps_info.populateGPS(pReader);
-
-  //Clear the vectors since we're storing a single pulse at a time
-  pd->outgoingIdx.clear();
-  pd->outgoingWave.clear();
-  pd->returningIdx.clear();
-  pd->returningWave.clear();
-
-  double pulse_outgoing_start_time;
-  double pulse_outgoing_segment_time;
-  double pulse_returning_start_time;
-  double pulse_returning_segment_time;
-
-  int sampling_number = 0;  // can only be 0 or 1
-  sampling = pReader->waves->get_sampling(sampling_number);
-
-  //If the first sampling is not of type outgoing, there is some error
-  if(sampling->get_type() != PULSEWAVES_OUTGOING){
-    std::cout << "CRITICAL ERROR! \
-                  The first sampling must be an outgoing wave!\n";
-    exit(EXIT_FAILURE);
-  }
-
-  //FOR TESTING PURPOSES
-  // std::cout << "Starting outgoing" << std::endl; 
-
-  //Populate outgoing wave data
-  for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
-    pulse_outgoing_start_time = 0;
-
-    sampling->set_active_segment(j);
-    //set the start time of the outgoing wave and keep track of the times
-    if(j == 0){
-      pulse_outgoing_start_time =
-                              sampling->get_duration_from_anchor_for_segment();
-      pulse_outgoing_segment_time =
-                              sampling->get_duration_from_anchor_for_segment();
-    }
-    else{
-      pulse_outgoing_segment_time =
-                              sampling->get_duration_from_anchor_for_segment();
-    }
-    for(int k = 0; k < sampling->get_number_of_samples(); k++){
-      pd->outgoingIdx.push_back(pulse_outgoing_segment_time -
-                                pulse_outgoing_start_time);
-      int temp_amp = sampling->get_sample(k);
-      pd->outgoingWave.push_back(temp_amp);
-      pulse_outgoing_segment_time++;
+    if(!next_pulse_exists){
+        std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next "
+            << "pulse" << std::endl;
+        exit(EXIT_FAILURE);
     }
     current_wave_gps_info.populateGPS(pReader);
 
-    pulse_returning_start_time = 0;
+    //Clear the vectors since we're storing a single pulse at a time
+    pd->outgoingIdx.clear();
+    pd->outgoingWave.clear();
+    pd->returningIdx.clear();
+    pd->returningWave.clear();
 
+    double pulse_outgoing_start_time;
+    double pulse_outgoing_segment_time;
+    double pulse_returning_start_time;
+    double pulse_returning_segment_time;
+
+    int num_samplings = pReader->waves->get_number_of_samplings();
     int sampling_number = 0;    // can only be 0 or 1
     sampling = pReader->waves->get_sampling(sampling_number);
 
@@ -313,45 +274,85 @@ void FlightLineData::getNextPulse(PulseData *pd){
             << "outgoing wave!" << std::endl;
         exit(EXIT_FAILURE);
     }
-    //Populate returing wave data
-    //The outgoing wave is sampling_number = 0
-    for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
-      sampling->set_active_segment(j);
-      //set the start time of the returning wave and keep track of the times
-      if(j == 0){
-       pulse_returning_start_time =
-                              sampling->get_duration_from_anchor_for_segment();
-        pulse_returning_segment_time =
-                              sampling->get_duration_from_anchor_for_segment();
-      }
-      else{
-        pulse_returning_segment_time =
-                              sampling->get_duration_from_anchor_for_segment();
-      }
-      pd->pulse_returning_start_time = pulse_returning_start_time; 
-      for(int k = 0; k < sampling->get_number_of_samples(); k++){
-        pd->returningIdx.push_back(pulse_returning_segment_time -
-                                   pulse_returning_start_time);
-        pd->returningWave.push_back(sampling->get_sample(k));
-        pulse_returning_segment_time++;
-      }
 
-      // FOR TESTING PURPOSES
-      // std::cerr << std::endl << "DEBUG SAMPLES: ";
-      // for(int i=0; i< (int)pd->returningWave.size(); i++){
-      //   std::cerr<< pd->returningWave[i] << " ";
-      // }
-      // std::cerr << std::endl ;
+    //FOR TESTING PURPOSES
+    // std::cout << "Starting outgoing" << std::endl; 
+
+    //Populate outgoing wave data
+    for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+        sampling->set_active_segment(j);
+        //set the start time of the outgoing wave and keep track of the times
+        if(j == 0){
+            pulse_outgoing_start_time =
+                sampling->get_duration_from_anchor_for_segment();
+            pulse_outgoing_segment_time =
+                sampling->get_duration_from_anchor_for_segment();
+        }
+        else{
+            pulse_outgoing_segment_time =
+                sampling->get_duration_from_anchor_for_segment();
+        }
+        for(int k = 0; k < sampling->get_number_of_samples(); k++){
+            pd->outgoingIdx.push_back(pulse_outgoing_segment_time -
+                    pulse_outgoing_start_time);
+            int temp_amp = sampling->get_sample(k);
+            pd->outgoingWave.push_back(temp_amp);
+            pulse_outgoing_segment_time++;
+        }
     }
- 
-  }
-  //Check if there exists a next pulse
-  if(pReader->read_pulse()){
-    if(pReader->read_waves()){
-      next_pulse_exists = true;
-      return;
+
+    //If there exists a returning wave
+    if(++sampling_number < num_samplings){
+        // FOR TESTING PURPOSES
+        // std::cout << "Starting returning" << std::endl;  
+        sampling = pReader->waves->get_sampling(sampling_number);
+        if(sampling->get_type() != PULSEWAVES_RETURNING) {
+            std::cout << "CRITICAL ERROR! The second sampling must be a "
+                << "returning wave!" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        //Populate returing wave data
+        for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
+            sampling->set_active_segment(j);
+            //set the start time of the returning wave and keep track of the
+            //times
+            if(j == 0){
+                pulse_returning_start_time =
+                    sampling->get_duration_from_anchor_for_segment();
+                pulse_returning_segment_time =
+                    sampling->get_duration_from_anchor_for_segment();
+            }
+            else{
+                pulse_returning_segment_time =
+                    sampling->get_duration_from_anchor_for_segment();
+            }
+            for(int k = 0; k < sampling->get_number_of_samples(); k++){
+                pd->returningIdx.push_back(pulse_returning_segment_time -
+                        pulse_returning_start_time);
+                pd->returningWave.push_back(sampling->get_sample(k));
+                pulse_returning_segment_time++;
+            }
+
+            // FOR TESTING PURPOSES
+            // std::cerr << std::endl << "DEBUG SAMPLES: ";
+            // for(int i=0; i< (int)pd->returningWave.size(); i++){
+            //   std::cerr<< pd->returningWave[i] << " ";
+            // }
+            // std::cerr << std::endl ;
+        }
     }
-  }
+    else{
+        // FOR TESTING PURPOSES
+        // std::cout << "No returning Wave" << std::endl;
+    }
+
+    //Check if there exists a next pulse
+    if(pReader->read_pulse()){
+        if(pReader->read_waves()){
+            next_pulse_exists = true;
+            return;
+        }
+    }
     next_pulse_exists = false;
     return;
 }
@@ -363,54 +364,57 @@ void FlightLineData::getNextPulse(PulseData *pd){
  * @return the number of peaks left after calculation
  */
 int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
-  std::vector<Peak*>::iterator it;
-  // for each of the incoming peaks
-  for(it = peaks->begin(); it != peaks->end();it++){
-    // if the amplitude of the peak is too small just ignore the whole
-    // thing
-    if((*it)->amp <= (*it)->triggering_amp){
-      it = peaks->erase(it);
-      continue;
-    }
-    // check to see that each of the gps locations is within our
-    // bounding box -- this is for x y and z
-    (*it)->x_activation =
-         (*it)->triggering_location * current_wave_gps_info.dx +
-                                  current_wave_gps_info.x_first;
-
-    
-    if((*it)->x_activation < bb_x_min || (*it)->x_activation > bb_x_max){
-      std::cerr << "\nx activation: "<< (*it)->x_activation
+    int i = 1;
+    std::vector<Peak*>::iterator it;
+    // for each of the incoming peaks
+    for(it = peaks->begin(); it != peaks->end();){
+        // if the amplitude of the peak is too small just ignore the whole
+        // thing
+        if((*it)->amp <= (*it)->triggering_amp){
+            free(*it);
+            it = peaks->erase(it);
+            continue;
+        }
+        // check to see that each of the gps locations is within our
+        // bounding box -- this is for x y and z
+        (*it)->x_activation =
+            (*it)->triggering_location * current_wave_gps_info.dx +
+            current_wave_gps_info.x_first;
+        if((*it)->x_activation < bb_x_min || (*it)->x_activation > bb_x_max){
+            std::cerr << "\nx activation: "<< (*it)->x_activation
                 << " not in range: " << bb_x_min << " - " << bb_x_max <<
                 std::endl;
-    //  exit (EXIT_FAILURE);
-    }
+            exit (EXIT_FAILURE);
+        }
 
-    (*it)->y_activation =
-                  (*it)->triggering_location * current_wave_gps_info.dy +
-                                  current_wave_gps_info.y_first;
-
-
-
-    if((*it)->y_activation < bb_y_min || (*it)->y_activation > bb_y_max){
-      std::cerr << "\ny activation: "<< (*it)->y_activation
+        (*it)->y_activation =
+            (*it)->triggering_location * current_wave_gps_info.dy +
+            current_wave_gps_info.y_first;
+        if((*it)->y_activation < bb_y_min || (*it)->y_activation > bb_y_max){
+            std::cerr << "\ny activation: "<< (*it)->y_activation
                 << " not in range: " << bb_y_min << " - " << bb_y_max <<
                 std::endl;
-     // exit (EXIT_FAILURE);
-    }
+            exit (EXIT_FAILURE);
+        }
 
-    (*it)->z_activation =
-                  (*it)->triggering_location * current_wave_gps_info.dz +
-                                  current_wave_gps_info.z_first;
-
-
-    if(((*it)->z_activation < bb_z_min || (*it)->z_activation > bb_z_max)){
-      std::cerr << "\nz activation: "<< (*it)->z_activation
+        (*it)->z_activation =
+            (*it)->triggering_location * current_wave_gps_info.dz +
+            current_wave_gps_info.z_first;
+        if((*it)->z_activation < bb_z_min || (*it)->z_activation > bb_z_max){
+            std::cerr << "\nz activation: "<< (*it)->z_activation
                 << " not in range: " << bb_z_min << " - " << bb_z_max <<
                 std::endl;
-    //  exit (EXIT_FAILURE);
+            exit (EXIT_FAILURE);
+        }
+        //mark the position in case any peaks were filtered
+        (*it)->position_in_wave = i;
+        i++;
+        it++;
     }
-  }
+    //make sure that if our final peak got filtered out, we mark the new one
+    if(peaks->size() > 0) {
+        peaks->back()->is_final_peak=true;
+    }
     return peaks->size();
 }
 
@@ -497,14 +501,14 @@ int FlightLineData::locate_utm_field(std::vector<std::string> *tokens){
  * parameters field
  * @return the index of the geog_cs field, or -1 if no geog_cs field located
  */
-int FlightLineData::locate_geog_cs_field(std::vector<std::string> *tokens){
-	for (int i = 0; i<(int)tokens->size();i++){
-		if(tokens->at(i).find("WGS")!=std::string::npos||tokens->at(i).find("NAD")!=std::string::npos){
-			return i;
-		}
-	}
-	//no geog_cs value found
-	return -1;
-
-
+int FlightLineData::locate_geog_cs_field(std::vector<std::string> *tokens)
+{
+    for (int i = 0; i<(int)tokens->size();i++) {
+        if(tokens->at(i).find("WGS")!=std::string::npos
+                || tokens->at(i).find("NAD")!=std::string::npos) {
+            return i;
+        }
+    }
+    //no geog_cs value found
+    return -1;
 }

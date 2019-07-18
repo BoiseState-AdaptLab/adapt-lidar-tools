@@ -142,8 +142,6 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
 
     // getopt_long stores the option index here.
     int option_index = 0;
-    //Tacks the last option used
-    char lastOpt = ' ';
     /* Using getopt_long to get the arguments with an option.
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
@@ -198,7 +196,6 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
             msgs.push_back(string("Invalid argument: ") + optarg);
             printUsageMessage = true;
         }
-        lastOpt = optionChar;
     }
 
     // For non option input

@@ -150,7 +150,6 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
 
     //parse each pulse
     while (raw_data.hasNextPulse()) {
-        // make sure that we have an empty vector and string
         peaks.clear();
 
         // gets the raw data from the file
@@ -184,8 +183,12 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
         } catch (const char *msg) {
             std::cerr << msg << std::endl;
         }
+
+        // make sure that we have an empty vector and string
+        for (auto i = peaks.begin(); i != peaks.end(); ++i) {
+            delete (*i);
+        }
     }
-    peaks.clear(); //TODO: Make sure all peaks are deleted, you don't need them.
 }
 
 /**

@@ -87,6 +87,9 @@
 #define SKEW_ERR 0.5
 #define KURT_ERR 0.5
 
+#define INPUT_SMALL \
+    "1 2 3 4 5"
+
 class LidarDriverTest: public testing::Test
 {
     public:
@@ -99,6 +102,7 @@ class LidarDriverTest: public testing::Test
         std::vector<Peak*> risingPeaks;
         std::vector<Peak*> fallingPeaks;
         std::vector<Peak*> constantPeaks;
+        std::vector<Peak*> smallPeaks;
 
         //Args
         char** commonArgSpace;
@@ -140,7 +144,7 @@ class LidarDriverTest: public testing::Test
                 i++;
                 ptr = strtok (NULL," ");
             }
- 
+
             return peaks;
         }
 
@@ -166,6 +170,7 @@ class LidarDriverTest: public testing::Test
             char *risingInput = (char*) malloc(sizeof(char) * 1028);
             char *fallingInput = (char*) malloc(sizeof(char) * 1028);
             char *constantInput = (char*) malloc(sizeof(char) * 1028);
+            char *smallInput = (char*) malloc(sizeof(char) * 1028);
 
             strncpy(typicalInput, INPUT_TYPICAL, 1028);
             typicalInput[1028] = '\0';
@@ -175,6 +180,8 @@ class LidarDriverTest: public testing::Test
             fallingInput[1028] = '\0';
             strncpy(constantInput, INPUT_CONST, 1028);
             constantInput[1028] = '\0';
+            strncpy(smallInput, INPUT_SMALL, 1028);
+            smallInput[1028] = '\0';
 
             typicalPeaks = makeTestPeaks(typicalInput);
             free(typicalInput);
@@ -184,9 +191,9 @@ class LidarDriverTest: public testing::Test
             free(fallingInput);
             constantPeaks = makeTestPeaks(constantInput);
             free(constantInput);
+            smallPeaks = makeTestPeaks(smallInput);
+            free(smallInput);
 
-            // Adding first and last peak data to the typical peaks-- The rest
-            // don't have any.
             typicalPeaks.at(TYPICAL_FIRST_PEAK)->position_in_wave = 1;
             typicalPeaks.at(TYPICAL_LAST_PEAK)->is_final_peak = true;
         }
@@ -737,3 +744,11 @@ TEST_F(LidarDriverTest, add_peaks_to_volume_test)
             at(0)->z_activation);
 }
 
+/*******************************************************************************
+ *
+ * fit_data_csv and peaks_to_string tests
+ *
+ ******************************************************************************/
+
+//These need to be made testable along with fit_data, but that is an issue for
+//later I think. Not too much later though.

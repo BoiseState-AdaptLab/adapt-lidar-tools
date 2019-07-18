@@ -62,7 +62,7 @@ class Peak{
                               double y_anchor, double z_anchor);
 
         //Creates list of variables specified by varlist in string form
-        void toString(std::string& str, std::vector<int> varlist);
+        void to_string(std::string& str, std::vector<int> varlist);
 };
 
 #endif /* PEAK_HPP_ */

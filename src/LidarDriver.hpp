@@ -15,6 +15,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include "csv_CmdLine.hpp"
 
 const double NO_DATA = -99999;
 const double MAX_ELEV = 99999.99;
@@ -26,6 +27,13 @@ class LidarDriver {
 
         void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
                 CmdLine &cmdLine);
+
+        void fit_data_csv(FlightLineData &raw_data,
+                          std::vector<std::string*> &strings,
+                          csv_CmdLine &cmdLine);
+
+        void peaks_to_string(std::string &str, csv_CmdLine &cmdLine,
+                             std::vector<Peak*> &peaks);
 
         void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds,
                 int prod_id);

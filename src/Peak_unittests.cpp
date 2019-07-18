@@ -21,7 +21,7 @@ class PeakTest : public testing::Test{
             peak0->fwhm = 5;
             //----------------------------------------------------
 
-            //peak1: toString tests
+            //peak1: to_string tests
             peak1->amp = expected_double;
             peak1->location = expected_double;
             peak1->fwhm = expected_double;
@@ -88,41 +88,41 @@ TEST_F(PeakTest, backscatterDivZeroTest){
 }
 
 //-------------------------------------------------------------------------
-//Peak1 tests / toString tests
+//Peak1 tests / to_string tests
 //-------------------------------------------------------------------------
 
-//Test that toString can produce a single valid double
-TEST_F(PeakTest, toString_valid_singleDouble) {
+//Test that to_string can produce a single valid double
+TEST_F(PeakTest, to_string_valid_singleDouble) {
     std::vector<int> varlist_valid_singleDouble = {1};
     std::string expect_valid_singleDouble = "1.234567";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_valid_singleDouble));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_valid_singleDouble));
     EXPECT_TRUE(stringsMatch(expect_valid_singleDouble, str));
 }
 
-//Test that toString can produce a single valid int
-TEST_F(PeakTest, toString_valid_singleInt) {
+//Test that to_string can produce a single valid int
+TEST_F(PeakTest, to_string_valid_singleInt) {
     std::vector<int> varlist_valid_singleInt = {7};
     std::string expect_valid_singleInt = "1234567";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_valid_singleInt));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_valid_singleInt));
     EXPECT_TRUE(stringsMatch(expect_valid_singleInt, str));
 }
 
-//Test that toString can produce a single valid bool
-TEST_F(PeakTest, toString_valid_singleBool) {
+//Test that to_string can produce a single valid bool
+TEST_F(PeakTest, to_string_valid_singleBool) {
     std::vector<int> varlist_valid_singleBool = {4};
     std::string expect_valid_singleBool = "True";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_valid_singleBool));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_valid_singleBool));
     EXPECT_TRUE(stringsMatch(expect_valid_singleBool, str));
 }
 
-//Test that toString can produce all valid inputs
-TEST_F(PeakTest, toString_valid_all) {
+//Test that to_string can produce all valid inputs
+TEST_F(PeakTest, to_string_valid_all) {
     std::vector<int> varlist_valid_all = {1,2,3,4,5,6,7,8,9,10};
     std::string expect_valid_all =
         "1.234567, 1.234567, 1.234567, True, 1234567, 1234567, 1234567, "
@@ -130,47 +130,47 @@ TEST_F(PeakTest, toString_valid_all) {
         "(Samples not yet supported)";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_valid_all));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_valid_all));
     EXPECT_TRUE(stringsMatch(expect_valid_all, str));
 }
 
-//Test that toString can handle a single invalid input
-TEST_F(PeakTest, toString_invalid_single) {
+//Test that to_string can handle a single invalid input
+TEST_F(PeakTest, to_string_invalid_single) {
     std::vector<int> varlist_invalid_single = {20};
     std::string expect_invalid_single = "(Invalid arg)";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_invalid_single));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_invalid_single));
     EXPECT_TRUE(stringsMatch(expect_invalid_single, str));
 }
 
-//Test that toString can handle multiple invalid inputs
-TEST_F(PeakTest, toString_invalid_multiple) {
+//Test that to_string can handle multiple invalid inputs
+TEST_F(PeakTest, to_string_invalid_multiple) {
     std::vector<int> varlist_invalid_multiple = {20,21,22};
     std::string expect_invalid_multiple =
         "(Invalid arg), (Invalid arg), (Invalid arg)";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_invalid_multiple));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_invalid_multiple));
     EXPECT_TRUE(stringsMatch(expect_invalid_multiple, str));
 }
 
-//Test that toString can handle mixed valid and invalid inputs
-TEST_F(PeakTest, toString_mixed) {
+//Test that to_string can handle mixed valid and invalid inputs
+TEST_F(PeakTest, to_string_mixed) {
     std::vector<int> varlist_mixed = {1,20,2};
     std::string expect_mixed = "1.234567, (Invalid arg), 1.234567";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_mixed));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_mixed));
     EXPECT_TRUE(stringsMatch(expect_mixed, str));
 }
 
-//Test that toString can handle 0 args
-TEST_F(PeakTest, toString_empty) {
+//Test that to_string can handle 0 args
+TEST_F(PeakTest, to_string_empty) {
     std::vector<int> varlist_empty = {};
     std::string expect_empty = "";
 
     std::string str;
-    EXPECT_NO_THROW(peak1->toString(str, varlist_empty));
+    EXPECT_NO_THROW(peak1->to_string(str, varlist_empty));
     EXPECT_TRUE(stringsMatch(expect_empty, str));
 }

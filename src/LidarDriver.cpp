@@ -129,6 +129,87 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
 }
 
 /**
+ * Fits the raw data using either gaussian or first difference fitting,
+ * and sends each wave of peaks to be written to a CSV file.
+ * @param raw_data reference to FlightLineData object that holds raw data
+ * @param strings a place where peak to_string calls will be stored
+ * @param csv_CmdLine object that knows what data we want from peaks
+ */
+void LidarDriver::fit_data_csv(FlightLineData &raw_data,
+        std::vector<std::string*> &strings, csv_CmdLine &cmdLine) 
+{
+    PulseData pd;
+    std::ostringstream stream;
+    GaussianFitter fitter;
+    std::vector<Peak*> peaks;
+
+    //message the user
+    std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
+        "first difference";
+    std::cerr << "Finding peaks with " << fit_type << std::endl;
+
+    //parse each pulse
+    while (raw_data.hasNextPulse()) {
+        // make sure that we have an empty vector and string
+        peaks.clear();
+
+        // gets the raw data from the file
+        raw_data.getNextPulse(&pd);
+
+        //Skip all the empty returning waveforms
+        if (pd.returningIdx.empty()){
+            continue;
+        }
+        try {
+            // Smooth the data and test result
+            fitter.smoothing_expt(&pd.returningWave);
+
+            // Check parameter for using gaussian fitting or first differencing
+            if (cmdLine.useGaussianFitting) {
+                fitter.find_peaks(&peaks, pd.returningWave,
+                                     pd.returningIdx, 200);
+            } else {
+                fitter.guess_peaks(&peaks, pd.returningWave,
+                                     pd.returningIdx);
+            }
+
+            // for each peak - find the activation point
+            //               - calculate x,y,z
+            raw_data.calc_xyz_activation(&peaks);
+
+            // for each peak we will call to_string and append them together
+            std::string *str = new std::string;
+            this->peaks_to_string(*str, cmdLine, peaks);
+            strings.push_back(str);
+        } catch (const char *msg) {
+            std::cerr << msg << std::endl;
+        }
+    }
+    peaks.clear(); //TODO: Make sure all peaks are deleted, you don't need them.
+}
+
+/**
+ * Takes a vector of peaks from a single waveform and concats them together
+ * @param str string will be put here
+ * @param cmdLine csv_CmdLine object
+ * @param peaks vector of peaks to process
+ */
+void LidarDriver::peaks_to_string(std::string &str, csv_CmdLine &cmdLine,
+                                  std::vector<Peak*> &peaks) {
+    size_t n = 1;
+    std::vector<int> prods = cmdLine.selected_products;
+    for (auto i = peaks.begin(); i != peaks.end(); ++i) {
+        (*i)->to_string(str, prods);
+
+        if (n < peaks.size()) {
+            str += ", ";
+        }
+
+        n++;
+    }
+}
+
+/**
  * setup the bounding and allocate memory for the LidarVolume
  * @param raw_data the flight light data to get values from
  * @param lidar_volume the lidar volume object to allocate

@@ -468,12 +468,17 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
              *      a = peak amplitude
              *      t = peak time location
              *      c = 1/2*FWHM*/
-            peak->triggering_amp = noise_level + 1;
+            /*peak->triggering_amp = noise_level + 1;
             peak->triggering_location = std::min(
                  sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
                 + peak->location,
                 (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
-                + peak->location);
+                + peak->location);*/
+
+            peak->triggering_location = ceil(peak->location-
+                sqrt((-2)*(c*c)*log(noise_level/peak->amp)));
+            peak->triggering_amp = peak->amp * exp(-.5 *
+                pow((peak->triggering_location-peak->location)/c, 2));
 
             std::stringstream ss;
             ss << "y = " << peak->amp << "*e^(-0.5*((t-" << peak->location <<
@@ -483,8 +488,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
 
-            if(peak->amp > 2.0*max || peak->amp < 10 ||
-               peak->triggering_location > n || peak->triggering_location < 0){
+            if(peak->amp >= 2*max || peak->amp < 10 || 
+                peak->triggering_location > n || peak->triggering_location < 0){
                 delete(peak);
                 results->erase(iter--);
             } else{
@@ -610,6 +615,9 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //are pointing to space used in LidarVolume
     results->clear();
 
+
+    //UPDATE: We are only using a noise level of 6 because we want all peaks
+    //with an amplitude >= 10
     //Level up to and including which peaks will be excluded
     //For the unaltered wave, noise_level = 16
     //for the second derivative of the wave, noise_level = 3
@@ -617,7 +625,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     // well if we have guesses that have an amplitude more than an order
     // of magnitute apart. We are going to set the noise level to be the
     // max value/ 10 - max*.05;
-    max = 0;
+    /*max = 0;
     for(int i = 0; i<(int)ampData.size(); i++){
         if(ampData[i]>max){
             max = ampData[i];
@@ -628,11 +636,9 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     #ifdef DEBUG
         std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09
                             << std::endl;
-    #endif
+    #endif*/
 
-    if(noise_level < 6){
-        noise_level = 6;
-    }
+    noise_level = 6;
 
     //Sign of gradient:
     // =    1 for increasing
@@ -761,11 +767,17 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
          *      c = 1/2*FWHM*/
         double c = guess;
         peak->triggering_amp = noise_level + 1;
-        peak->triggering_location = std::min(
+        /*peak->triggering_location = std::min(
             sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
             + peak->location,
             (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
-            + peak->location);
+            + peak->location);*/
+        peak->triggering_location = ceil(peak->location-
+             sqrt((-2)*(c*c)*log(noise_level/peak->amp)));
+        peak->triggering_amp = peak->amp * exp(-.5 *
+                 pow((peak->triggering_location-peak->location)/
+                 (peak->fwhm/2), 2));
+
         //Rise time = peak_location - triggering_location
         peak->rise_time = peak->location - peak->triggering_location;
         peak->position_in_wave = peaks_found;

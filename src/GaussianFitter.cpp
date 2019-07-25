@@ -483,8 +483,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
 
-            if(peak->amp > 2.0*max || peak->amp < 0 ||
-               peak->triggering_location > n || peak->triggering_location <0){
+            if(peak->amp > 2.0*max || peak->amp < 10 ||
+               peak->triggering_location > n || peak->triggering_location < 0){
                 delete(peak);
                 results->erase(iter--);
             } else{

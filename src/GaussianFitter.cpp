@@ -625,7 +625,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     // well if we have guesses that have an amplitude more than an order
     // of magnitute apart. We are going to set the noise level to be the
     // max value/ 10 - max*.05;
-    /*max = 0;
+    max = 0;
     for(int i = 0; i<(int)ampData.size(); i++){
         if(ampData[i]>max){
             max = ampData[i];
@@ -636,9 +636,11 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     #ifdef DEBUG
         std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09
                             << std::endl;
-    #endif*/
-
-    noise_level = 6;
+    #endif
+    
+    if (noise_level < 6){
+        noise_level = 6;
+    }
 
     //Sign of gradient:
     // =    1 for increasing

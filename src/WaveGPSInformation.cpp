@@ -84,6 +84,9 @@ void WaveGPSInformation::populateGPS(PULSEreader *pReader){
     x_first = pReader->pulse.get_first_x();
     y_first = pReader->pulse.get_first_y();
     z_first = pReader->pulse.get_first_z();
+    x_last = pReader->pulse.get_last_x();
+    y_last = pReader->pulse.get_last_y();
+    z_last = pReader->pulse.get_last_z();
 
     // these are saved so that we can print them if need be
     edge = pReader->pulse.edge_of_scan_line;

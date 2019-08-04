@@ -9,7 +9,7 @@
 FittingInfoDriver::FittingInfoDriver(){
     printUsageMessage = false;
     lowerBound = 0;
-    upperBound = INFINITY;
+    upperBound = 200;
 }
 
 void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
@@ -26,7 +26,7 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
     std::vector<int> num_waves;
 
     //Holds the number of iterations required for waveforms with idx # of peaks
-    std::vector<std::vector<size_t>> num_iters;
+    std::vector<int> num_iters;
 
     //Keep track of the number waveforms
     int num_waveforms = 0;
@@ -74,16 +74,16 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
                 num_waves.push_back(0);
             }
             while (peak_count + 1 > num_iters.size()) {
-                num_iters.push_back(std::vector<size_t>(0));
+                num_iters.push_back(0);
             }
 
             //Record peak_count and number of iterations for the waveform
             //Check that the number of iterations is within our range
             num_waves.at(peak_count) ++;
-            num_iters.at(peak_count).push_back(i);
+            num_iters.at(peak_count) += i;
 
             //Check that the number of iterations is within our range
-            if ((int) i < lowerBound || (int) i > upperBound || true) continue;
+            if ((int) i < lowerBound || (int) i > upperBound) continue;
 
             num_waveforms ++;
 
@@ -124,9 +124,7 @@ void FittingInfoDriver::writeData(FlightLineData &data, std::string out_name_1,
     std::ofstream statsFile(out_name_2);
     statsFile << "# Peaks,# Waveforms,Avg. Iterations" << std::endl;
     for (size_t i = 0; i < num_waves.size() && i < num_iters.size(); i ++){
-        int avg = num_iters.at(i).size() == 0 ? 0:
-            accumulate(num_iters.at(i).begin(), num_iters.at(i).end(),
-            0)/num_iters.at(i).size();
+        int avg = num_iters.at(i) / num_waves.at(i);
         statsFile << i << "," << num_waves.at(i) << "," << avg << std::endl;
     }
     statsFile.close();
@@ -249,5 +247,6 @@ std::string FittingInfoDriver::getUsageMessage(){
     buffer << "       -u <upper-bound>: Waveforms requiring a number of "
         << "iterations to be fit that is greater than the upper bound "
         << "will not be reported" << std::endl;
+    buffer << "                         Default: 200" << std::endl;
     return buffer.str();
 }

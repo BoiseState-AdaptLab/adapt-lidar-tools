@@ -364,6 +364,12 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //get guessed peaks and figure out how many peaks there are
     size_t peakCount = guess_peaks(results, ampData, idxData);
 
+    //No peaks found
+    //Prvents the "Parameter 7 to routine source_gemv_r.h was incorrect" error
+    if(peakCount == 0){
+      return 0;
+    }
+
     // FOR TESTING PURPOSES
     // fprintf(stderr, "Peak count is %d\n", peakCount);
 

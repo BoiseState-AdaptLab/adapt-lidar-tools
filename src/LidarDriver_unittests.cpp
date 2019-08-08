@@ -21,23 +21,17 @@
 #define TYPICAL_FIRST_MAX 200
 #define TYPICAL_FIRST_MIN 200
 #define TYPICAL_FIRST_MEAN 200
-#define TYPICAL_FIRST_STDEV 0
-#define TYPICAL_FIRST_SKEW 0
-#define TYPICAL_FIRST_KURT 0
 
 #define TYPICAL_LAST_MAX 70
 #define TYPICAL_LAST_MIN 70
 #define TYPICAL_LAST_MEAN 70
-#define TYPICAL_LAST_STDEV 0
-#define TYPICAL_LAST_SKEW 0
-#define TYPICAL_LAST_KURT 0
 
 #define TYPICAL_MAX 200
 #define TYPICAL_MIN 0
 #define TYPICAL_MEAN 45.8833
-#define TYPICAL_STDEV 60.08025
-#define TYPICAL_SKEW 1.3757
-#define TYPICAL_KURT 3.745619643
+#define TYPICAL_STDEV 60.58726489
+#define TYPICAL_SKEW 1.399027994 
+#define TYPICAL_KURT 3.683192649
 
 #define INPUT_RISING \
     "1 1 2 3 3 4 5 6 6 7 8 9 9 10 20 20 30 40 50 50 53 58 60 62 64 68 70 80 " \
@@ -49,9 +43,9 @@
 #define RISING_MAX 640
 #define RISING_MIN 1
 #define RISING_MEAN 152.8039
-#define RISING_STDEV 186.0385
-#define RISING_SKEW 1.4518
-#define RISING_KURT 4.127892193
+#define RISING_STDEV 187.8896506
+#define RISING_SKEW 1.480859916
+#define RISING_KURT 4.04695313
 
 #define INPUT_FALLING \
     "800 800 700 700 600 600 590 590 580 580 580 540 420 420 420 419 419 419 " \
@@ -63,9 +57,9 @@
 #define FALLING_MAX 800
 #define FALLING_MIN 0
 #define FALLING_MEAN 278.0741
-#define FALLING_STDEV 238.2384
-#define FALLING_SKEW 0.5008
-#define FALLING_KURT 2.103732506
+#define FALLING_STDEV 240.4754608
+#define FALLING_SKEW 0.510258279
+#define FALLING_KURT 2.064774496
 
 #define INPUT_CONST "70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 " \
     "70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 70 " \
@@ -397,7 +391,7 @@ TEST_F(LidarDriverTest, get_deviation_first_test)
     for(auto it = vars.begin(); it != vars.end(); ++it){
         double mean = driver1.get_mean(&typicalPeaks,0,*it);
         double val = driver1.get_deviation(&typicalPeaks,mean,0,*it);
-        EXPECT_NEAR(TYPICAL_FIRST_STDEV,val,STDEV_ERR);
+        EXPECT_NEAR(NO_DATA,val,STDEV_ERR);
 
         mean = driver1.get_mean(&risingPeaks,0,*it);
         val = driver1.get_deviation(&risingPeaks,mean,0,*it);
@@ -418,7 +412,7 @@ TEST_F(LidarDriverTest, get_deviation_last_test)
     for(auto it = vars.begin(); it != vars.end(); ++it){
         double mean = driver1.get_mean(&typicalPeaks,1,*it);
         double val = driver1.get_deviation(&typicalPeaks,mean,1,*it);
-        EXPECT_NEAR(TYPICAL_LAST_STDEV,val,STDEV_ERR);
+        EXPECT_NEAR(NO_DATA,val,STDEV_ERR);
 
         mean = driver1.get_mean(&risingPeaks,1,*it);
         val = driver1.get_deviation(&risingPeaks,mean,1,*it);
@@ -466,7 +460,7 @@ TEST_F(LidarDriverTest, get_skewness_first_test)
         double mean = driver1.get_mean(&typicalPeaks,0,*it);
         double stdev = driver1.get_deviation(&typicalPeaks,mean,0,*it);
         double val = driver1.get_skewtosis(&typicalPeaks,mean,stdev,0,*it,3);
-        EXPECT_NEAR(TYPICAL_FIRST_SKEW,val,SKEW_ERR);
+        EXPECT_NEAR(NO_DATA,val,SKEW_ERR);
 
         mean = driver1.get_mean(&risingPeaks,0,*it);
         stdev = driver1.get_deviation(&risingPeaks,mean,0,*it);
@@ -491,7 +485,7 @@ TEST_F(LidarDriverTest, get_skewness_last_test)
         double mean = driver1.get_mean(&typicalPeaks,1,*it);
         double stdev = driver1.get_deviation(&typicalPeaks,mean,1,*it);
         double val = driver1.get_skewtosis(&typicalPeaks,mean,stdev,1,*it,3);
-        EXPECT_NEAR(TYPICAL_LAST_SKEW,val,SKEW_ERR);
+        EXPECT_NEAR(NO_DATA,val,SKEW_ERR);
 
         mean = driver1.get_mean(&risingPeaks,1,*it);
         stdev = driver1.get_deviation(&risingPeaks,mean,1,*it);
@@ -546,7 +540,7 @@ TEST_F(LidarDriverTest, get_kurtosis_first_test)
         double mean = driver1.get_mean(&typicalPeaks,0,*it);
         double stdev = driver1.get_deviation(&typicalPeaks,mean,0,*it);
         double val = driver1.get_skewtosis(&typicalPeaks,mean,stdev,0,*it,4);
-        EXPECT_NEAR(TYPICAL_FIRST_KURT,val,KURT_ERR);
+        EXPECT_NEAR(NO_DATA,val,KURT_ERR);
 
         mean = driver1.get_mean(&risingPeaks,0,*it);
         stdev = driver1.get_deviation(&risingPeaks,mean,0,*it);
@@ -571,7 +565,7 @@ TEST_F(LidarDriverTest, get_kurtosis_last_test)
         double mean = driver1.get_mean(&typicalPeaks,1,*it);
         double stdev = driver1.get_deviation(&typicalPeaks,mean,1,*it);
         double val = driver1.get_skewtosis(&typicalPeaks,mean,stdev,1,*it,4);
-        EXPECT_NEAR(TYPICAL_LAST_KURT,val,KURT_ERR);
+        EXPECT_NEAR(NO_DATA,val,KURT_ERR);
 
         mean = driver1.get_mean(&risingPeaks,1,*it);
         stdev = driver1.get_deviation(&risingPeaks,mean,1,*it);

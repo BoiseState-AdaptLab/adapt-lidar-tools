@@ -74,6 +74,10 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         "first difference";
     std::cerr << "Finding peaks with " << fit_type << std::endl;
 
+    //Initialize variables to store max and min xyz values of the data
+    //bool first = true;
+    //int bb_x_min, bb_x_max, bb_y_min, bb_y_max, bb_z_min, bb_z_max;
+
     //parse each pulse
     while (raw_data.hasNextPulse()) {
         // make sure that we have an empty vector
@@ -81,6 +85,25 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
 
         // gets the raw data from the file
         raw_data.getNextPulse(&pd);
+
+        //Check if the xyz of the last data point in the waveform is a new
+        //max or min
+        /*int x = raw_data.current_wave_gps_info.x_last;
+        int y = raw_data.current_wave_gps_info.y_last;
+        int z = raw_data.current_wave_gps_info.z_last;
+        if (first){
+            bb_x_min = bb_x_max = x;
+            bb_y_min = bb_y_max = y;
+            bb_z_min = bb_z_max = z;
+            first = false;
+        } else {
+            bb_x_min = bb_x_min > x ? x : bb_x_min;
+            bb_x_max = bb_x_max < x ? x : bb_x_max;
+            bb_y_min = bb_y_min > y ? y : bb_y_min;
+            bb_y_max = bb_y_max < y ? y : bb_y_max;
+            bb_z_min = bb_z_min > z ? z : bb_z_min;
+            bb_z_max = bb_z_max < z ? z : bb_z_max;
+        }*/
        
         //Skip all the empty returning waveforms
         if (pd.returningIdx.empty()){
@@ -120,6 +143,15 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
 #endif
     }
     peaks.clear();
+
+    //Print the bounding box and our extreme x,y,z coordinates
+    /*std::cout << "Bounding Box: " << fitted_data.bb_x_min << "-" <<
+        fitted_data.bb_x_max << " X " << fitted_data.bb_y_min << "-" <<
+        fitted_data.bb_y_max << " X " << fitted_data.bb_z_min << "-" <<
+        fitted_data.bb_z_max << std::endl;
+    std::cout << "Extreme XYZ: " << bb_x_min << "-" << bb_x_max << " X " <<
+        bb_y_min << "-" << bb_y_max << " X " << bb_z_min << "-" << bb_z_max <<
+        std::endl;*/
 
 #ifdef DEBUG
     std::cerr << "Total: " << fitter.get_total() << std::endl;
@@ -665,7 +697,8 @@ double LidarDriver::get_deviation(std::vector<Peak*> *peaks, double avg,
         return NO_DATA;
     }
     double inverse = 1.0 / static_cast<double>(peak_count-1);
-    return sqrt(inverse * E);
+    inverse = sqrt(inverse * E);
+    return std::isfinite(inverse) ? inverse : NO_DATA;
 }
 
 
@@ -691,7 +724,7 @@ double LidarDriver::get_skewtosis(std::vector<Peak*> *peaks, double avg,
     double G=0;
     double cur_val = 0;
     int peak_count = 0;
-    if(peaks==NULL || peaks->empty()){
+    if(peaks==NULL || peaks->empty() || dev == NO_DATA){
         return NO_DATA;
     }
     //All data points were exactly the same so return normal distribution
@@ -727,6 +760,7 @@ double LidarDriver::get_skewtosis(std::vector<Peak*> *peaks, double avg,
     if (peak_count == 0){
         return NO_DATA;
     }
-    double inverse = 1.0 / static_cast<double>(peak_count);
-    return (inverse * G) / pow(dev,power) ;
+    double inverse = 1.0 / static_cast<double>(peak_count-1);
+    inverse = (inverse * G) / pow(dev,power);
+    return std::isfinite(inverse) ? inverse : NO_DATA;
 }

@@ -270,11 +270,11 @@ void handler (const char * reason,
  */
 int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
                  gsl_multifit_nlinear_parameters *params, 
-                 const size_t max_iter) {
+                 const size_t max_iter, int max) {
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
-    const double xtol = 1.0e-8;
-    const double gtol = 1.0e-8;
-    const double ftol = 1.0e-8;
+    const double xtol = max / 100;
+    const double gtol = max / 100;
+    const double ftol = max / 100;
     const size_t n = fdf->n;
     const size_t p = fdf->p;
 
@@ -443,7 +443,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     std::cerr << "peakCount = " << peakCount << std::endl;
 #endif
 
-    if(!solve_system(x, &fdf, &fdf_params, max_iter)){
+    if(!solve_system(x, &fdf, &fdf_params, max_iter, max)){
         incr_pass();
  
         //this loop is going through every peak
@@ -766,20 +766,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         peak->amp = ampData[peak_guesses_loc[i]];
         peak->location = idxData[peak_guesses_loc[i]];
         peak->fwhm = guess * 2;
-        /*calculate triggering location
-         *t_t = +/- sqrt(-2 * c^2 * log(a_t / a)) + t
-         *where t_t = triggering location (time)
-         *      a_t = tiggering amplitude
-         *      a = peak amplitude
-         *      t = peak time location
-         *      c = 1/2*FWHM*/
         double c = guess;
-        peak->triggering_amp = noise_level + 1;
-        /*peak->triggering_location = std::min(
-            sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
-            + peak->location,
-            (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
-            + peak->location);*/
         peak->triggering_location = ceil(peak->location-
              sqrt((-2)*(c*c)*log(noise_level/peak->amp)));
         peak->triggering_amp = peak->amp * exp(-.5 *
@@ -790,7 +777,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         peak->rise_time = peak->location - peak->triggering_location;
         peak->position_in_wave = peaks_found;
         results->push_back(peak);
-
     }
     if (results->size() != 0){
         results->back()->is_final_peak=true;

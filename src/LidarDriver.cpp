@@ -2,7 +2,7 @@
 // Created by arezaii on 3/24/19.
 //
 #include "LidarDriver.hpp"
-//#define DEBUG
+#include "spdlog/spdlog.h"
 
 /**
  * setup the gdal dataset (file) with metadata
@@ -36,14 +36,11 @@ GDALDataset* LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver,
 void LidarDriver::setup_flight_data(FlightLineData &data,
         std::string inputFileName)
 {
-#ifdef DEBUG
-    std::cerr << "data.setFlightLineData about to be called..." << std::endl;
-#endif
+    spdlog::debug("data.setFlightLineData about to be called...");
+
     data.setFlightLineData(inputFileName);
- 
-#ifdef DEBUG
-    std::cerr << "data.setFlightLineData returned" << std::endl;
-#endif
+
+    spdlog::debug("data.setFlightLineData returned");
 }
 
 /**
@@ -61,10 +58,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     std::vector<Peak*> peaks;
     int peak_count = 0;
 
-#ifdef DEBUG
-    std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ 
-        << std::endl;
-#endif
+    spdlog::debug("Start finding peaks. In {}:{}", __FILE__, __LINE__);
 
     //setup the lidar volume bounding and allocate memory
     setup_lidar_volume(raw_data, fitted_data);
@@ -72,7 +66,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
-    std::cerr << "Finding peaks with " << fit_type << std::endl;
+    spdlog::info("Finding peaks with {}", fit_type);
 
     //parse each pulse
     while (raw_data.hasNextPulse()) {
@@ -112,20 +106,12 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         } catch (const char *msg) {
             std::cerr << msg << std::endl;
         }
-        // FOR TESTING PURPOSES
-#ifdef DEBUG
-        pd.displayPulseData(&stream);
-        std::cout << stream.str() << std::endl;
-        stream.str("");
-#endif
     }
     peaks.clear();
 
-#ifdef DEBUG
-    std::cerr << "Total: " << fitter.get_total() << std::endl;
-    std::cerr << "Pass: " << fitter.get_pass() << std::endl;
-    std::cerr << "Fail: " << fitter.get_fail() << std::endl;
-#endif
+    spdlog::debug("Total: {}", fitter.get_total());
+    spdlog::debug("Pass: {}", fitter.get_pass());
+    spdlog::debug("Fail: {}", fitter.get_fail());
 }
 
 /**

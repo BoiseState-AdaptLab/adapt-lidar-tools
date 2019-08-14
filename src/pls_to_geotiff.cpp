@@ -5,13 +5,24 @@
 #include "LidarDriver.hpp"
 #include <chrono>
 
-//#define DEBUG
+// Activity level must be defined before spdlog is included.
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
+#include "spdlog/spdlog.h"
+#include "spdlog/async.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 typedef std::chrono::high_resolution_clock Clock;
 
-
 // Lidar driver
 int main (int argc, char *argv[]) {
+
+    // Setting up logger
+    spdlog::set_pattern("[%D %X%z][%t:%@][%^%=8l%$] %v");
+        // Sets new pattern for timestamp
+
+    auto logger = spdlog::create_async<spdlog::sinks::stdout_color_sink_mt>(
+            "logger");
 
     LidarDriver driver; //driver object with tools
     CmdLine cmdLineArgs; //command line options
@@ -26,32 +37,22 @@ int main (int argc, char *argv[]) {
     //Collect start time
     Clock::time_point t1 = Clock::now();
 
-    std::cout << "\nProcessing  " << cmdLineArgs.getInputFileName(true).c_str()
-        << std::endl;
-
-#ifdef DEBUG
-    std::cerr << "Debug is defined for this run" << std::endl;
-#endif
+    spdlog::info("Processing {}", cmdLineArgs.getInputFileName(true));
 
     //ingest the raw flight data into an object
     driver.setup_flight_data(rawData, cmdLineArgs.getInputFileName(true));
 
-#ifdef DEBUG
-    std::cerr << "driver.setup_flight_data returned" << std::endl;
-#endif
+    spdlog::debug("driver.setup_flight_data returned");
+
     //fit data
     driver.fit_data(rawData, intermediateData, cmdLineArgs);
-#ifdef DEBUG
-    std::cerr << "driver.fit_data returned" << std::endl;
-#endif
+
+    spdlog::debug("driver.fit_data returned");
 
     //Represents the output file format. This is used only to write data sets
     GDALDriver *driverTiff = driver.setup_gdal_driver();
 
-#ifdef DEBUG
-    std::cerr << "driver.fit_data returned, will loop through products next."
-        << std::endl;
-#endif
+    spdlog::debug("driver.fit_data returned, will loop through products next.");
 
     // TODO: None of this should be in main - it should be abstracted away
     //produce the product(s)
@@ -86,8 +87,7 @@ int main (int argc, char *argv[]) {
     //Compute total run time and convert to appropriate units
     double diff = std::chrono::duration_cast<std::chrono::seconds>(t2-t1).
         count();
-    std::cout << "All done!\nTime elapsed: " << diff << " seconds\n" <<
-        std::endl;
+    spdlog::info("All done! Time elapsed: {} seconds", diff);
 
     return 0;
 }

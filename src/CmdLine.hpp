@@ -49,6 +49,10 @@ public:
     //True stifles all output statements
     bool quiet;
 
+    std::string verbosity;
+    std::string logDir;
+    bool useLog;
+
     CmdLine();
 
 

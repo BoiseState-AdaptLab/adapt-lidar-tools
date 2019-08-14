@@ -1,0 +1,14 @@
+﻿p7_trace #0001 [06.08.2019 18:48:22.989'594"4] INFO  Tr:#0x18439:APP CPU:04 Md:Main {pls_to_geotiff.cpp:107:main} Processing etc/140823_183115_1_clipped_test.pls
+p7_trace #0002 [06.08.2019 18:48:22.989'939"0] DEBUG Tr:#0x18439:APP CPU:00 Md:Main {pls_to_geotiff.cpp:113:main} driver.setup_flight_data returned
+p7_trace #0003 [06.08.2019 18:48:22.989'946"3] DEBUG Tr:#0x18439:APP CPU:00 Md:p7_trace {LidarDriver.cpp:070:fit_data} Start finding peaks
+p7_trace #0004 [06.08.2019 18:48:22.989'953"2] INFO  Tr:#0x18439:APP CPU:00 Md:p7_trace {LidarDriver.cpp:079:fit_data} Finding peaks with gaussian fitting
+p7_trace #0005 [06.08.2019 18:48:22.990'504"2] DEBUG Tr:#0x18439:APP CPU:00 Md:p7_trace {LidarDriver.cpp:124:fit_data} Total: 2; Pass: 2; Fail: 0
+p7_trace #0006 [06.08.2019 18:48:22.990'508"3] DEBUG Tr:#0x18439:APP CPU:00 Md:Main {pls_to_geotiff.cpp:119:main} driver.fit_data returned
+p7_trace #0007 [06.08.2019 18:48:22.992'948"7] DEBUG Tr:#0x18439:APP CPU:00 Md:Main {pls_to_geotiff.cpp:126:main} driver.fit_data returned, will loop through products next.
+p7_trace #0008 [06.08.2019 18:48:22.992'952"1] INFO  Tr:#0x18439:APP CPU:00 Md:Main {pls_to_geotiff.cpp:133:main} Writing GeoTIFF max_first_elev
+p7_trace #0009 [06.08.2019 18:48:22.997'349"9] DEBUG Tr:#0x18439:APP CPU:04 Md:p7_trace {LidarDriver.cpp:323:produce_product} Entering write image loop.
+p7_trace #0010 [06.08.2019 18:48:22.997'352"2] DEBUG Tr:#0x18439:APP CPU:04 Md:p7_trace {LidarDriver.cpp:369:produce_product} In writeImage loop. Writing band: 4, 3
+p7_trace #0011 [06.08.2019 18:48:22.998'607"1] DEBUG Tr:#0x18439:APP CPU:04 Md:p7_trace {LidarDriver.cpp:369:produce_product} In writeImage loop. Writing band: 4, 2
+p7_trace #0012 [06.08.2019 18:48:22.998'611"6] DEBUG Tr:#0x18439:APP CPU:04 Md:p7_trace {LidarDriver.cpp:369:produce_product} In writeImage loop. Writing band: 4, 1
+p7_trace #0013 [06.08.2019 18:48:22.998'613"5] DEBUG Tr:#0x18439:APP CPU:04 Md:p7_trace {LidarDriver.cpp:369:produce_product} In writeImage loop. Writing band: 4, 0
+p7_trace #0014 [06.08.2019 18:48:22.999'272"4] INFO  Tr:#0x18439:APP CPU:04 Md:Main {pls_to_geotiff.cpp:164:main} All done! Time elapsed: 0.000000 seconds

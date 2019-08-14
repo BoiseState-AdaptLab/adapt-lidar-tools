@@ -2,7 +2,20 @@
 // Created by arezaii on 3/24/19.
 //
 #include "LidarDriver.hpp"
-//#define DEBUG
+
+LidarDriver::LidarDriver() {
+    l_pTrace = NULL;
+    l_hModule = NULL;
+
+    l_pTrace = P7_Get_Shared_Trace(TM("p7_trace"));
+    l_pTrace->Register_Module(TM("p7_trace"), &l_hModule);
+}
+
+LidarDriver::~LidarDriver() {
+    if (l_pTrace) {
+        this->l_pTrace->Release();
+    }
+}
 
 /**
  * setup the gdal dataset (file) with metadata
@@ -36,14 +49,7 @@ GDALDataset* LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver,
 void LidarDriver::setup_flight_data(FlightLineData &data,
         std::string inputFileName)
 {
-#ifdef DEBUG
-    std::cerr << "data.setFlightLineData about to be called..." << std::endl;
-#endif
     data.setFlightLineData(inputFileName);
- 
-#ifdef DEBUG
-    std::cerr << "data.setFlightLineData returned" << std::endl;
-#endif
 }
 
 /**
@@ -61,10 +67,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     std::vector<Peak*> peaks;
     int peak_count = 0;
 
-#ifdef DEBUG
-    std::cerr << "Start finding peaks. In " << __FILE__ << ":" << __LINE__ 
-        << std::endl;
-#endif
+    this->l_pTrace->P7_DEBUG(this->l_hModule, TM("Start finding peaks"));
 
     //setup the lidar volume bounding and allocate memory
     setup_lidar_volume(raw_data, fitted_data);
@@ -72,7 +75,8 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
-    std::cerr << "Finding peaks with " << fit_type << std::endl;
+    this->l_pTrace->P7_INFO(this->l_hModule, 
+            TM("Finding peaks with %s"), fit_type.c_str());
 
     //parse each pulse
     while (raw_data.hasNextPulse()) {
@@ -81,7 +85,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
 
         // gets the raw data from the file
         raw_data.getNextPulse(&pd);
-       
+
         //Skip all the empty returning waveforms
         if (pd.returningIdx.empty()){
             continue;
@@ -89,7 +93,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         try {
             // Smooth the data and test result
             fitter.smoothing_expt(&pd.returningWave);
-           
+
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
                 peak_count = fitter.find_peaks(&peaks, pd.returningWave,
@@ -98,11 +102,11 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
                 peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
                                      pd.returningIdx);
             }
- 
+
             // for each peak - find the activation point
             //               - calculate x,y,z
             peak_count = raw_data.calc_xyz_activation(&peaks);
-           
+
             // Calculate all requested information - Backscatter Coefficient
             // - Energy at % Height  - Height at % Energy
             peak_calculations(pd, peaks, fitter, cmdLine,
@@ -110,22 +114,14 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
 
             add_peaks_to_volume(fitted_data, peaks, peak_count);
         } catch (const char *msg) {
-            std::cerr << msg << std::endl;
+            this->l_pTrace->P7_ERROR(this->l_hModule, TM("%s"), msg);
         }
-        // FOR TESTING PURPOSES
-#ifdef DEBUG
-        pd.displayPulseData(&stream);
-        std::cout << stream.str() << std::endl;
-        stream.str("");
-#endif
     }
     peaks.clear();
 
-#ifdef DEBUG
-    std::cerr << "Total: " << fitter.get_total() << std::endl;
-    std::cerr << "Pass: " << fitter.get_pass() << std::endl;
-    std::cerr << "Fail: " << fitter.get_fail() << std::endl;
-#endif
+    this->l_pTrace->P7_DEBUG(this->l_hModule, TM(
+                "Total: %i; Pass: %i; Fail: %i"), fitter.get_total(),
+            fitter.get_pass(), fitter.get_fail());
 }
 
 /**
@@ -146,7 +142,8 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
-    std::cerr << "Finding peaks with " << fit_type << std::endl;
+    this->l_pTrace->P7_INFO(this->l_hModule,
+            TM("Finding peaks with %s"), fit_type.c_str());
 
     //parse each pulse
     while (raw_data.hasNextPulse()) {
@@ -181,7 +178,7 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
             this->peaks_to_string(*str, cmdLine, peaks);
             strings.push_back(str);
         } catch (const char *msg) {
-            std::cerr << msg << std::endl;
+            this->l_pTrace->P7_ERROR(this->l_hModule, TM("%s"), msg);
         }
 
         // make sure that we have an empty vector and string
@@ -274,7 +271,8 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
             } else {
                 (*it)->calcBackscatter(emitted_peaks.at(0)->amp,
                         emitted_peaks.at(0)->fwhm, cmdLine.calibration_constant,
-                        gps_info.x_anchor, gps_info.y_anchor, gps_info.z_anchor);
+                        gps_info.x_anchor, gps_info.y_anchor,
+                        gps_info.z_anchor);
             }
             if ((*it)->backscatter_coefficient == INFINITY){
                 (*it)->backscatter_coefficient = NO_DATA;
@@ -322,10 +320,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
                                            sizeof(float));
     float avg = 0 ;
     float dev = 0;
-#ifdef DEBUG
-    std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__
-        << std::endl;
-#endif
+    this->l_pTrace->P7_DEBUG(this->l_hModule, TM("Entering write image loop."));
 
     //loop through every pixel position
     for (y = fitted_data.y_idx_extent - 1; y >= 0; y--) {
@@ -369,10 +364,10 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
                     break;
             }
         }
-#ifdef DEBUG
-        std::cerr << "In writeImage loop. Writing band: "<< x << "," << y
-            << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
-#endif
+
+        this->l_pTrace->P7_DEBUG(this->l_hModule,
+                TM("In writeImage loop. Writing band: %i, %i"), x, y);
+
         //add the pixel values to the raster, one column at a time
         // Refer to http://www.gdal.org/classGDALRasterBand.html
         retval = gdal_ds->GetRasterBand(1)->RasterIO(GF_Write, 0,
@@ -380,7 +375,8 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
                 pixel_values, fitted_data.x_idx_extent, 1, GDT_Float32, 0, 0,
                 NULL);
         if (retval != CE_None) {
-            std::cerr << "Error during writing band: 1 " << std::endl;
+            this->l_pTrace->P7_ERROR(this->l_hModule,
+                    TM("Error during writing band: 1"));
         }
     }
 
@@ -613,8 +609,8 @@ float LidarDriver::get_peak_property(Peak *peak, char peak_property)
             break;
     }
     //TODO: get rid of the exit statement
-    std::cout << "CRITICAL ERROR! \
-        No implemented peak property for identifier "<<peak_property<<"\n";
+    this->l_pTrace->P7_ERROR(this->l_hModule, TM("CRITICAL ERROR! \
+        No implemented peak property for identifier %c"), peak_property);
     exit(EXIT_FAILURE);
 }
 

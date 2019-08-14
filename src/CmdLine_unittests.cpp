@@ -35,7 +35,7 @@ class CmdLineTest : public testing::Test {
 
         static char** allocateTestArgs(int N,int M){
             char** someArgs = (char**)malloc(sizeof(char*)*N);
-            for(int i=0;i<10;i++){
+            for(int i=0;i<N;i++){
                 someArgs[i] = (char*)malloc(sizeof(char)*M);
             }
             return someArgs;
@@ -266,6 +266,83 @@ TEST_F(CmdLineTest, invalidNonProductOption){
     numberOfArgs = 6;
     strncpy(commonArgSpace[5],"-p",3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+}
+
+//Tests for verbosity option
+TEST_F(CmdLineTest, validVerbosityVals) {
+    optind = 0;
+    numberOfArgs = 7;
+    strncpy(commonArgSpace[5], "-v", 3);
+    const char *chars[] = {"0", "1", "2", "3", "4", "5"};
+    for (int i = 0; i <= 5; i++) {
+        strncpy(commonArgSpace[6], chars[i], 2);
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+        ASSERT_FALSE(cmd.printUsageMessage);
+    }
+}
+
+TEST_F(CmdLineTest, invalidVerbosityVals_outOfRange) {
+    optind = 0;
+    numberOfArgs = 7;
+    strncpy(commonArgSpace[5], "-v", 3);
+    const char *chars[] = {"-10", "-1", "6", "12"};
+    for (int i = 0; i <= 3; i++) {
+        strncpy(commonArgSpace[6], chars[i], 4);
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
+        ASSERT_TRUE(cmd.printUsageMessage);
+    }
+}
+
+TEST_F(CmdLineTest, invalidVerbosityVals_notNumber) {
+    optind = 0;
+    numberOfArgs = 7;
+    strncpy(commonArgSpace[5], "-v", 3);
+    const char *chars[] = {"abc", "a", ";", " ", ""};
+    for (int i = 0; i <= 4; i++) {
+        strncpy(commonArgSpace[6], chars[i], 4);
+        ASSERT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
+        ASSERT_TRUE(cmd.printUsageMessage);
+    }
+}
+
+//Tests for logfile option
+TEST_F(CmdLineTest, logfileOption) {
+    optind = 0;
+    numberOfArgs = 6;
+    strncpy(commonArgSpace[5], "-l", 3);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_TRUE(cmd.useLog);
+    ASSERT_TRUE(cmd.logDir == ".");
+}
+
+TEST_F(CmdLineTest, logfileOption_off) {
+    optind = 0;
+    numberOfArgs = 5;
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_FALSE(cmd.useLog);
+}
+
+//Tests for logdir option
+TEST_F(CmdLineTest, logdirOption_valid) {
+    optind = 0;
+    numberOfArgs = 7;
+    strncpy(commonArgSpace[5], "-L", 3);
+    strncpy(commonArgSpace[6], "dir", 4);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_TRUE(cmd.useLog);
+    ASSERT_TRUE(cmd.logDir == "dir");
+}
+
+TEST_F(CmdLineTest, logdirOption_no_optarg) {
+    optind = 0;
+    numberOfArgs = 6;
+    strncpy(commonArgSpace[5], "-L", 3);
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs, commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
 }
 

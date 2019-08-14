@@ -16,12 +16,19 @@
 #include <iomanip>
 #include <vector>
 #include "csv_CmdLine.hpp"
+#include "GTypes.h"
+#include "P7_Trace.h"
 
 const double NO_DATA = -99999;
 const double MAX_ELEV = 99999.99;
 
 class LidarDriver {
     public:
+        IP7_Trace *l_pTrace; // Keeps track of shared trace that we pass logs to
+        IP7_Trace::hModule l_hModule;
+
+        LidarDriver();
+        ~LidarDriver();
 
         void setup_flight_data(FlightLineData &data, std::string inputFileName);
 

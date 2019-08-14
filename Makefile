@@ -26,6 +26,12 @@ GTEST_DIR = deps/googletest/googletest
 # Points to the root of Pulse Waves, relative to where this file is.
 PULSE_DIR = deps/PulseWaves
 
+# Points to logger static lib file
+P7_LIB = deps/P7_v5.2/Binaries/libP7.a
+
+# Points to logger headers
+P7_INC = -Ideps/P7_v5.2/Headers
+
 # Where to find user code, relative to where this file is.
 SRC = src
 
@@ -48,8 +54,9 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 ########################################
 # -std=c++11: Set standard to C++11
 #
-# -g:         Produce debugging information in the operating system’s 
-#             native format
+# -gdwarf-2:  Produce debugging information in the operating system’s 
+#             native format. Valgrind on R2 uses Dwarf2, so we have to specify
+#             that, otherwise we would use just -g.
 #
 # -Wall:      Enables all warning flags 
 #             (https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html)
@@ -60,10 +67,10 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 #
 # -Idir:      Add the directory 'dir' to the list of directories to be searched 
 #             for heade# files during preprocessing
-#
-# -llib:      Search the library named 'lib' when linking
-CXXFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
-CFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
+CXXFLAGS += -std=c++11 -gdwarf-2 -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
+			$(P7_INC)
+CFLAGS += -std=c++11 -gdwarf-2 -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
+		  $(P7_INC)
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -133,8 +140,8 @@ $(BIN)/LidarDriver_unittests: $(OBJ)/LidarDriver_unittests.o \
                               $(OBJ)/PulseData.o \
                               $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o\
                               $(LIB)/gtest_main.a
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lgsl -lgslcblas
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $(P7_INC) $^ $(P7_LIB) -o $@ -L \
+		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lgsl -lgslcblas -lrt
 
 $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
@@ -161,7 +168,7 @@ $(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -lgdal -L$(PULSE_DIR)/lib
 
 $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
-	$(CXX) -std=c++11 -g -fpermissive -c -o $@ $^ -lm \
+	$(CXX) -std=c++11 -gdwarf-2 -fpermissive -c -o $@ $^ -lm \
 		-lgsl -lgslcblas
 
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
@@ -189,12 +196,12 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
                        $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
-		-lgslcblas
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ $(P7_LIB) -o $@ -L \
+		$(PULSE_DIR)/lib -lpthread -lpulsewaves -lgdal -lm -lgsl \
+		-lgslcblas -lrt
 
 $(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(P7_INC) -c -o $@ $^
 
 # Builds the csv driver file
 
@@ -205,8 +212,8 @@ $(BIN)/csv-driver: $(OBJ)/pls_to_csv.o $(OBJ)/csv_CmdLine.o \
 				   $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o \
 				   $(OBJ)/PulseData.o $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
 				   $(OBJ)/CsvWriter.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(P7_LIB) -o $@ -L \
+		$(PULSE_DIR)/lib $(P7_INC) -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
 
 # Builds the fitting information tool
@@ -216,7 +223,7 @@ $(BIN)/fitting-info: $(OBJ)/fitting_info.o $(OBJ)/FlightLineData.o \
                      $(OBJ)/PulseData.o $(OBJ)/Peak.o \
                      $(OBJ)/GaussianFitter.o $(OBJ)/WaveGPSInformation.o \
                      $(OBJ)/FittingInfoDriver.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
 

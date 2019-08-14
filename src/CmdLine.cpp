@@ -8,13 +8,17 @@
 using namespace std;
 
 //type is ((id - 1) % 6)
-const static std::string product_type[6] = {"max", "min", "mean", "stdev", "skew",
-    "kurt"};
+const static std::string product_type[6] = {"max", "min", "mean", "stdev",
+    "skew", "kurt"};
 //data used is floor(((id -1) % 18) / 6)
 const static std::string product_data[3] = {"first", "last", "all"};
 //variable is ((id - 1) / 18)
 const static std::string product_variable[5] = {"elev", "amp", "width",
     "riseTime", "backscatter"};
+
+//Verbosity
+const static std::string verbosities[6] = {"Trace", "Debug", "Info", "Warning",
+    "Error", "Critical"};
 
 /****************************************************************************
  *
@@ -47,7 +51,17 @@ void CmdLine::setUsageMessage()
     buffer << "       -f  <path to pls file>"
         << "  :Generates a Geotif file" << std::endl;
     buffer << "       -d"
-        << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
+        << "  :Disables gaussian fitter, using first diff method instead"
+        << std::endl;
+    buffer << "       -v  <Verbosity level>"
+        << "  :Sets verbosity of program with numbers 0 through 5 representing"
+        << std::endl;
+    buffer << "                               Trace, Debug, Info, Warn, Error,"
+        << " and Critical, respectively" << std::endl;
+    buffer << "       -l  :Send logger output to file in current directory"
+        << std::endl;
+    buffer << "       -L  <directory>  :Like -l, but output is sent to "
+        << "<directory>" << std::endl;
     buffer << "       -h"
         << "  :Prints this help message" << std::endl;
      buffer << std::endl;
@@ -90,11 +104,15 @@ void CmdLine::setUsageMessage()
     buffer << "| Kurtosis    | All        | 18             |" << std::endl;
     buffer << std::endl;
     buffer << "Valid ways to format the product list include:" << std::endl;
-    buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
-    buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
-    buffer << "                   -e \" 1 , 2 , 3 \"   (white-space allowed inside quotes)" << std::endl;
+    buffer << "                   -e 1,2,3           (no white-space)" 
+        << std::endl;
+    buffer << "                   -e 1 -e 3 -e 2     \
+        (broken into multiple arguments)" << std::endl;
+    buffer << "                   -e \" 1 , 2 , 3 \"   \
+        (white-space allowed inside quotes)" << std::endl;
     buffer << "\nExample: " << std::endl;
-    buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5 -w 14,9 -b 13,4 .768"
+    buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test\
+        .pls -e 1,2 -a 3,4,5 -w 14,9 -b 13,4 .768"
         << std::endl;
     usageMessage.append(buffer.str());
 }
@@ -120,6 +138,10 @@ CmdLine::CmdLine(){
     calcBackscatter = false;
     exeName = "";
     setUsageMessage();
+
+    verbosity = "2";
+    useLog = false;
+    logDir = ".";
 }
 
 
@@ -168,6 +190,9 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         {"width", required_argument,NULL,'w'},
         {"risetime", required_argument,NULL,'r'},
         {"backscatter", required_argument,NULL,'b'},
+        {"verbosity", required_argument, NULL, 'v'},
+        {"logfile", no_argument, NULL, 'l'},
+        {"logdir", required_argument, NULL, 'L'},
         {0, 0, 0, 0}
     };
 
@@ -179,7 +204,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:r:b:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:r:b:v:lL:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -221,6 +246,30 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                 }
                 calcBackscatter = optionChar == 'b' ? true : calcBackscatter;
             }
+        } else if (optionChar == 'v') {
+            // If verbosity is not a number, print Usage.
+            std::string str = optarg;
+            std::string::const_iterator it = str.begin();
+            while (it != str.end() && std::isdigit(*it)) ++it;
+            if (str.empty() || it != str.end()) {
+                msgs.push_back("Verbosity must be number in 0 to 5 range");
+                printUsageMessage = true;
+            } else {
+                int verbint = std::atoi(optarg);
+                // If verbosity out of range, print Usage.
+                if (verbint < 0 || verbint > 5) {
+                    msgs.push_back("Verbosity must be number in 0 to 5 range");
+                    printUsageMessage = true;
+                } else {
+                    verbosity = optarg;
+                    msgs.push_back("Verbosity set to " + verbosities[verbint]);
+                }
+            }
+        } else if (optionChar == 'l') {
+            useLog = true;
+        } else if (optionChar == 'L') {
+            useLog = true;
+            logDir = optarg;
         } else if (optionChar == 1 && lastOpt == 'b'
                   && calibration_constant == 0){ //Set calibration coefficient
             calibration_constant = std::atof(optarg);
@@ -241,8 +290,8 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         }
         lastOpt = optionChar;
     }
-   
-    //Backscatter coefficient requires a calibration constant
+
+    // Backscatter coefficient requires a calibration constant
     if (calcBackscatter && calibration_constant == 0){
         msgs.push_back("Missing Calibration Constant");
         printUsageMessage = true;
@@ -281,7 +330,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         if (!quiet) std::cout << getUsageMessage() << std::endl;
         return false;
     }
-    
+
     return true;
 }
 

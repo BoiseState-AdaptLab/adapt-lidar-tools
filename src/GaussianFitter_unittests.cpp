@@ -672,10 +672,7 @@ TEST_F(GaussianFitterTest, num_iterations_10){
     std::vector<int> idxData;
     std::vector<int> ampData;
     
-    /*char input[] = "1 0 0 1 1 1 1 2 2 2 3 4 5 13 28 56 91 124 143 141 125 112 "
-        "114 127 135 127 102 74 49 31 19 14 10 10 10 10 8 6 5 4 4 4 4 4 4 4 3 "
-         "3 3 4 3 3 2 2 1 0 0 1 2 1";
-*/
+    //Put your waveform here
     char input[] = "26 36 37 30 21 22 47 96 153 190 186 147 94 49 21 7 3 4 4 3 3 2 1 0 0 0 0 0";
 
     char* ptr;
@@ -692,13 +689,14 @@ TEST_F(GaussianFitterTest, num_iterations_10){
     GaussianFitter fitter;
     fitter.smoothing_expt(&ampData);
     std::vector<Peak*> peaks;
+    //Put the number of iterations you want to test here
     std::vector<size_t> num_iters = {50,100,250,500};
 
     for (auto it = num_iters.begin(); it != num_iters.end(); ++it){
         int count = fitter.find_peaks(&peaks,ampData,idxData,*it);
         std::cout << "Number of iterations: " << *it << std::endl;
         for (int i = 0; fitter.get_equation(i) != ""; i ++){
-             std::cout << "Equation " << i << ": " << fitter.get_equation(i) << std::endl;
+             std::cout << "equation " << i << ": " << fitter.get_equation(i) << std::endl;
         }
         EXPECT_EQ(2,count);
     }

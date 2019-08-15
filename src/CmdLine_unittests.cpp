@@ -80,8 +80,8 @@ TEST_F(CmdLineTest, validFileName){
     numberOfArgs = 5;
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
-    ASSERT_EQ("do_not_use.pls", cmd.getInputFileName(true));
-    ASSERT_EQ("do_not_use.wvs", cmd.getInputFileName(false));
+    EXPECT_EQ("do_not_use.pls", cmd.getInputFileName(true));
+    EXPECT_EQ("do_not_use.wvs", cmd.getInputFileName(false));
 }
 
 //Tests file was incorrectly set
@@ -118,8 +118,8 @@ TEST_F(CmdLineTest, invalidFileName){
 TEST_F(CmdLineTest, fileTrimmingTestPath){
     numberOfArgs = 5;
 
-    //Same path, child path, sister path
-    std::vector<std::string> paths = {"./", "etc/", "../lidarFullW_Alpha/"};
+    //Same path, child path, parent path
+    std::vector<std::string> paths = {"./", "etc/", "../"};
     for (auto it = paths.begin(); it != paths.end(); ++it){
         //Create test files
         std::ofstream pls2 (*it + std::string("do_not_use.pls"));
@@ -132,8 +132,8 @@ TEST_F(CmdLineTest, fileTrimmingTestPath){
             (*it + std::string("do_not_use.pls")).c_str(),15 + it->length());
         ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
         ASSERT_FALSE(cmd.printUsageMessage);
-        ASSERT_EQ("do_not_use", cmd.getTrimmedFileName(true));
-        ASSERT_EQ("do_not_use", cmd.getTrimmedFileName(false));
+        EXPECT_EQ("do_not_use", cmd.getTrimmedFileName(true));
+        EXPECT_EQ("do_not_use", cmd.getTrimmedFileName(false));
   
         //Delete test files
         std::remove((*it + std::string("do_not_use.pls")).c_str());
@@ -154,8 +154,8 @@ TEST_F(CmdLineTest, fileTrimmingTestName){
     strncpy (commonArgSpace[2],"do.not.use.pls",15);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
-    ASSERT_EQ("do.not.use", cmd.getTrimmedFileName(true));
-    ASSERT_EQ("do.not.use", cmd.getTrimmedFileName(false));
+    EXPECT_EQ("do.not.use", cmd.getTrimmedFileName(true));
+    EXPECT_EQ("do.not.use", cmd.getTrimmedFileName(false));
 
     //Delete test files
     std::remove("do.not.use.pls");
@@ -186,7 +186,7 @@ TEST_F(CmdLineTest, validProductOption){
     strncpy(commonArgSpace[5], "6", 3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
-    ASSERT_EQ(6, cmd.calibration_constant);
+    EXPECT_EQ(6, cmd.calibration_constant);
 }
 
 //Tests invalid product variable char
@@ -203,7 +203,7 @@ TEST_F(CmdLineTest, invalidProductOption){
     strncpy(commonArgSpace[3],"-b",3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
-    ASSERT_EQ(0,cmd.calibration_constant);
+    EXPECT_EQ(0,cmd.calibration_constant);
 }
 
 //Tests for an invalid product number
@@ -223,11 +223,6 @@ TEST_F(CmdLineTest, invalidProductNumber){
     ASSERT_TRUE(cmd.printUsageMessage);
 
     optind = 0;
-    strncpy(commonArgSpace[4],"0",2);
-    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
-    ASSERT_TRUE(cmd.printUsageMessage);
-  
-    optind = 0;
     strncpy(commonArgSpace[4],"-1",3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
@@ -236,6 +231,47 @@ TEST_F(CmdLineTest, invalidProductNumber){
     strncpy(commonArgSpace[4],"3000000000000",3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_TRUE(cmd.printUsageMessage);
+}
+
+//Tests requesting all products for a single variable
+TEST_F(CmdLineTest, allProductNums){
+    //All product numbers for elevation
+    optind = 0;
+    numberOfArgs = 5;
+    strncpy(commonArgSpace[4],"0",2);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_EQ(cmd.selected_products.size(), 18);
+    for (size_t i = 0; i < 18; i++){
+        EXPECT_EQ(cmd.selected_products.at(i),i+1);
+    }
+
+    //All product numbers for backscatter coefficient
+    optind = 0;
+    numberOfArgs = 6;
+    strncpy(commonArgSpace[3],"-b",3);
+    strncpy(commonArgSpace[4],"0",2);
+    strncpy(commonArgSpace[5],"9e-8",5);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_EQ(cmd.selected_products.size(), 18);
+    for (size_t i = 0; i < 18; i++){
+        EXPECT_EQ(cmd.selected_products.at(i),i+73);
+    }
+}
+
+//Tests requesting ALL products
+TEST_F(CmdLineTest, allProducts){
+    optind = 0;
+    numberOfArgs = 5;
+    strncpy(commonArgSpace[3],"--all",6);
+    strncpy(commonArgSpace[4],"9e-8",5);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_FALSE(cmd.printUsageMessage);
+    ASSERT_EQ(cmd.selected_products.size(), 102);
+    for (size_t i = 0; i < 102; i++){
+        EXPECT_EQ(cmd.selected_products.at(i),i+1);
+    }
 }
 
 /****************************************************************************
@@ -305,7 +341,7 @@ TEST_F(CmdLineTest, validLongProductOption){
     strncpy(commonArgSpace[5],"1.5E2",6);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
-    ASSERT_EQ(150,cmd.calibration_constant);
+    EXPECT_EQ(150,cmd.calibration_constant);
 }
 
 //Tests valid lon non-product options
@@ -377,7 +413,7 @@ TEST_F(CmdLineTest, outputFileNameMethod){
     numberOfArgs = 5;
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
-    ASSERT_EQ("do_not_use_max_first_elev_gaussian.tif",
+    EXPECT_EQ("do_not_use_max_first_elev_gaussian.tif",
             cmd.get_output_filename(1));
 
     optind = 0;
@@ -385,7 +421,7 @@ TEST_F(CmdLineTest, outputFileNameMethod){
     strncpy(commonArgSpace[5],"-d",3);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
-    ASSERT_EQ("do_not_use_max_first_elev_firstDiff.tif",
+    EXPECT_EQ("do_not_use_max_first_elev_firstDiff.tif",
             cmd.get_output_filename(1));
 }
 
@@ -397,7 +433,7 @@ TEST_F(CmdLineTest, outputFileNameVariable){
     std::vector<std::string> opts = {"-e", "-a", "-w", "-r", "-b"};
     std::vector<std::string> names = {"elev", "amp", "width", "riseTime",
         "backscatter"};
-    for (int i = 0; i < 4; i ++){
+    for (size_t i = 0; i < names.size(); i ++){
         optind = 0;
         numberOfArgs = opts.at(i) == "-b" ? 6 : 5;
         strncpy(commonArgSpace[3],opts.at(i).c_str(),3);
@@ -405,8 +441,8 @@ TEST_F(CmdLineTest, outputFileNameVariable){
             + names.at(i) + std::string("_gaussian.tif");
         ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
         ASSERT_FALSE(cmd.printUsageMessage);
-        ASSERT_EQ(expectedName.c_str(),cmd.get_output_filename(
-            cmd.selected_products.at(i)));
+        EXPECT_EQ(expectedName.c_str(),cmd.get_output_filename(
+            cmd.selected_products.at(0)));
     }
 }
 
@@ -422,14 +458,13 @@ TEST_F(CmdLineTest, outputFileNamePeaks){
             + names.at(i) + std::string("_elev_gaussian.tif");
         ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
         ASSERT_FALSE(cmd.printUsageMessage);
-        ASSERT_EQ(expectedName.c_str(),cmd.get_output_filename(
-            cmd.selected_products.at(i)));
+        EXPECT_EQ(expectedName.c_str(),cmd.get_output_filename(
+            cmd.selected_products.at(0)));
     }
 }
 
 //Tests correct naming of calculation
 TEST_F(CmdLineTest, outputFileNameCalculation){
-    cmd.quiet = false;
     std::vector<std::string> names = {"max", "min", "mean", "stdev", "skew",
         "kurt"};
     for (int i = 0; i < 6; i ++){
@@ -440,8 +475,8 @@ TEST_F(CmdLineTest, outputFileNameCalculation){
             + names.at(i) + std::string("_first_elev_gaussian.tif");
         ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
         ASSERT_FALSE(cmd.printUsageMessage);
-        ASSERT_EQ(expectedName.c_str(),cmd.get_output_filename(
-            cmd.selected_products.at(i)));
+        EXPECT_EQ(expectedName.c_str(),cmd.get_output_filename(
+            cmd.selected_products.at(0)));
     }
 }
 

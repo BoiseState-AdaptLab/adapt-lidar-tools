@@ -62,6 +62,9 @@ public:
     std::string getTrimmedFileName(bool pls);
     std::string get_output_filename(int product_id);
     std::string get_product_desc(int product_id);
+    int get_calculation_code(int id);
+    int get_peaks_code(int id);
+    int get_variable_code(int id);
     std::vector<int> selected_products;
 };
 

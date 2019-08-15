@@ -329,24 +329,15 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
  * write the fitted lidar volume data to the given GDAL dataset
  * @param fitted_data the populated lidar volume
  * @param gdal_ds pointer to a prepared dataset to populate
- * @param prod_id the id (product type) of the product to generate
+ * @param prod_calc the code of the calculation to use
+ * @param prod_peaks the code of the peaks to use
+ * @param prod_var the code the variable to use
  */
 void LidarDriver::produce_product(LidarVolume &fitted_data,
-        GDALDataset *gdal_ds, int prod_id)
+        GDALDataset *gdal_ds, int prod_calc, int prod_peaks, int prod_var)
 {
     CPLErr retval;
-    //determinr product variable, 'z' = elevation, 'a' = amplitude,
-    //'w' = width, 'b' = backscatter coefficient
-    char prod_var = prod_id <= 18 ? 'z' : prod_id <= 36 ? 'a' : prod_id <= 54 ?
-        'w' : prod_id <= 72 ? 'r' : prod_id <= 90 ? 'b' : '-';
-    //determine what data to use, 0 = first, 1 = last, 2 = all
-    int prod_data = ((prod_id - 1) % 18) / 6;
-    //Make sure it is a valid product
-    if (prod_var == '-') {
-        //std::cout << "Product # " << prod_id << " Not yet implemented" << 
-        //    std::endl;
-        return;
-    }
+    
     //indexes
     int x, y;
     //place to hold the elevations
@@ -366,33 +357,33 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
             std::vector<Peak*> *peaks =
                 fitted_data.volume[fitted_data.position(y, x)];
             //decide what to do with the peak data at this pixel
-            switch (prod_id % 6) {
-                case 1 : //max
-                    pixel_values[x] = get_extreme(peaks, true, prod_data,
+            switch (prod_calc) {
+                case 0: //max
+                    pixel_values[x] = get_extreme(peaks, true, prod_peaks,
                         prod_var);
                     break;
-                case 2 : //min
-                    pixel_values[x] = get_extreme(peaks, false, prod_data,
+                case 1: //min
+                    pixel_values[x] = get_extreme(peaks, false, prod_peaks,
                         prod_var);
                     break;
-                case 3 : //mean
-                    pixel_values[x] = get_mean( peaks, prod_data, prod_var);
+                case 2: //mean
+                    pixel_values[x] = get_mean( peaks, prod_peaks, prod_var);
                     break;
-                case 4: //std-dev
-                    avg = get_mean(peaks,prod_data,prod_var);
-                    pixel_values[x] = get_deviation(peaks, avg, prod_data,
+                case 3: //std-dev
+                    avg = get_mean(peaks,prod_peaks,prod_var);
+                    pixel_values[x] = get_deviation(peaks, avg, prod_peaks,
                         prod_var);
                     break;
-                case 5: //skewness
-                    avg = get_mean(peaks, prod_data, prod_var);
-                    dev = get_deviation(peaks, avg, prod_data, prod_var);
-                    pixel_values[x] = get_skewtosis(peaks, avg, dev, prod_data,
+                case 4: //skewness
+                    avg = get_mean(peaks, prod_peaks, prod_var);
+                    dev = get_deviation(peaks, avg, prod_peaks, prod_var);
+                    pixel_values[x] = get_skewtosis(peaks, avg, dev, prod_peaks,
                         prod_var, 3);
                     break;
-                case 0: //kurtosis
-                    avg = get_mean(peaks, prod_data, prod_var);
-                    dev = get_deviation(peaks, avg, prod_data, prod_var);
-                    pixel_values[x] = get_skewtosis(peaks, avg, dev, prod_data,
+                case 5: //kurtosis
+                    avg = get_mean(peaks, prod_peaks, prod_var);
+                    dev = get_deviation(peaks, avg, prod_peaks, prod_var);
+                    pixel_values[x] = get_skewtosis(peaks, avg, dev, prod_peaks,
                         prod_var, 4);
                     break;
                 default:
@@ -631,15 +622,15 @@ float LidarDriver::get_mean(std::vector<Peak*> *peaks, int peak_pos,
 float LidarDriver::get_peak_property(Peak *peak, char peak_property)
 {
     switch (peak_property){
-        case 'z':
+        case 0: //elevation
             return peak->z_activation;
-        case 'a':
+        case 1: //amplitude
             return peak->amp;
-        case 'w':
+        case 2: //pulse width
             return peak->fwhm;
-        case 'r':
+        case 3: //rise time
             return peak->rise_time;
-        case 'b':
+        case 4: //backscatter coefficient
             return peak->backscatter_coefficient;
         default:
             break;

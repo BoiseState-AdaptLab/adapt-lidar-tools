@@ -36,7 +36,7 @@ class LidarDriver {
                              std::vector<Peak*> &peaks);
 
         void produce_product(LidarVolume &fitted_data, GDALDataset *gdal_ds,
-                int prod_id);
+                int prod_calc, int prod_peaks, int prod_var);
 
         void setup_lidar_volume(FlightLineData &raw_data,
                 LidarVolume &lidar_volume);

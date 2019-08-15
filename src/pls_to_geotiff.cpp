@@ -71,7 +71,10 @@ int main (int argc, char *argv[]) {
         driver.geo_orient_gdal(intermediateData,gdal_ds,
                 rawData.geog_cs, rawData.utm);
         //write the tiff data
-        driver.produce_product(intermediateData, gdal_ds, prod);
+        driver.produce_product(intermediateData, gdal_ds,
+                cmdLineArgs.get_calculation_code(prod),
+                cmdLineArgs.get_peaks_code(prod),
+                cmdLineArgs.get_variable_code(prod));
 
         //kill it with fire!
         GDALClose((GDALDatasetH) gdal_ds);

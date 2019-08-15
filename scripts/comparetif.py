@@ -179,7 +179,10 @@ def compareText(tifA, tifB, path, compare_no):
           #Record difference and percent difference
           difs.append(float(a) - float(b))
           #Record percent difference and check if they are above certain threshholds
-          pct=abs((a-b)/min(a,b))
+          if a == 0 or b == 0:
+            pct = 1
+          else:
+            pct=abs((a-b)/min(a,b))
           pct_difs.append(pct)
           if pct >= .05:
             five += 1
@@ -257,7 +260,10 @@ def compareImage(tif1, tif2, path, compare_no):
   #Colors- white (lowest), red, black (highest)
   colors = [[255,255,255], [255,0,0], [0,0,0]]
 
-  max_dif = abs(data1[0][0] - data2[0][0]) / min(data1[0][0],data2[0][0])
+  if data1[0][0] == 0 or data2[0][0]:
+    max_dif = 1
+  else:
+    max_dif = abs(data1[0][0] - data2[0][0]) / min(data1[0][0],data2[0][0])
 
   #Counters for percent differences above these threshholds
   threshholds = [.05,.1,.25,.5,.75,1]
@@ -281,7 +287,10 @@ def compareImage(tif1, tif2, path, compare_no):
       #Else analyze the data
       else:
         #Get difference as a % of min
-        frac = abs(val1 - val2) / min(val1, val2)
+        if val1 == 0 or val2 == 0:
+          frac = 1
+        else:
+          frac = abs(val1 - val2) / min(val1, val2)
         #if the percent difference isn't a number, skip it
         if math.isfinite(frac):
           #Check if that % is our new biggest

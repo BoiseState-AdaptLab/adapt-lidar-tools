@@ -39,6 +39,14 @@ int main (int argc, char *argv[]) {
 #ifdef DEBUG
     std::cerr << "driver.setup_flight_data returned" << std::endl;
 #endif
+
+    //calculate size in memory of the tif products
+    driver.calc_product_size(rawData, cmdLineArgs.selected_products.size());
+
+#ifdef DEBUG
+    std::cerr << "driver.calc_product_size returned" << std::endl;
+#endif
+
     //fit data
     driver.fit_data(rawData, intermediateData, cmdLineArgs);
 #ifdef DEBUG

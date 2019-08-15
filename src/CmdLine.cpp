@@ -68,7 +68,7 @@ void CmdLine::setUsageMessage()
     buffer << "           Scientific notation allowed for calibration constant"
         << " (e.g. 0.78 = 7.8e-1 = 7.8E-1)"
         << std::endl;
-    buffer << "       -all <calibration constant>"
+    buffer << "       --all <calibration constant>"
         << "  :Generates all products for every variable. calibration constant"
         << " is used for backscatter coefficient calculations" << std::endl;
     buffer << std::endl;

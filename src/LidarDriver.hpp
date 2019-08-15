@@ -25,6 +25,8 @@ class LidarDriver {
 
         void setup_flight_data(FlightLineData &data, std::string inputFileName);
 
+        void calc_product_size(FlightLineData &data, int num_products);
+
         void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
                 CmdLine &cmdLine);
 

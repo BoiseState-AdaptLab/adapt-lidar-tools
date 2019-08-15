@@ -16,7 +16,7 @@ const static std::string prod_peaks[3] = {"first", "last", "all"};
 const static std::string prod_vars[7] = {"elev", "amp", "width",
     "riseTime", "backscatter", "heightAtEnergy", "energyAtHeight"};
 
-const static std::vector<int> start = {0,18,36,54,72,90,96,102};
+const static std::vector<int> start = {0,18,36,54,72,90};//,96,102};
 
 /****************************************************************************
  *

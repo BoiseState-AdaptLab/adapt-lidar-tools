@@ -71,7 +71,7 @@ TESTS = $(BIN)/CmdLine_unittests $(BIN)/FlightLineData_unittests \
 		$(BIN)/WaveGPSInformation_unittests $(BIN)/PulseData_unittests \
 		$(BIN)/LidarVolume_unittests $(BIN)/GaussianFitter_unittests \
 		$(BIN)/LidarDriver_unittests $(BIN)/Peak_unittests \
-		$(BIN)/csv_CmdLine_unittests
+		$(BIN)/csv_CmdLine_unittests $(BIN)/TxtWaveReader_unittests
 
 # All Google Test headers.  Usually you shouldn't change this definition.
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
@@ -136,6 +136,12 @@ $(BIN)/LidarDriver_unittests: $(OBJ)/LidarDriver_unittests.o \
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lgsl -lgslcblas
 
+$(BIN)/TxtWaveReader_unittests: $(OBJ)/TxtWaveReader_unittests.o \
+                                $(OBJ)/TxtWaveReader.o \
+                                $(OBJ)/PulseData.o $(LIB)/gtest_main.a
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
+		$(PULSE_DIR)/lib -lpulsewaves
+
 $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
@@ -165,6 +171,9 @@ $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 		-lgsl -lgslcblas
 
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
+	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+
+$(OBJ)/TxtWaveReader.o: $(SRC)/TxtWaveReader.cpp
 	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds all object files
@@ -242,10 +251,11 @@ test: $(TESTS)
 	-$(BIN)/FlightLineData_unittests
 	-$(BIN)/Peak_unittests
 	-$(BIN)/csv_CmdLine_unittests
+	-$(BIN)/TxtWaveReader_unittests
 
 # Clean up when done. 
 # Removes all object, library and executable files
-clean: 
+clean:
 	clear
 	rm -f $(BIN)/*
 	rm -f $(OBJ)/*

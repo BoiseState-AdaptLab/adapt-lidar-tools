@@ -65,6 +65,13 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 CXXFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 CFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc
 
+# If this is a profiler build, add -pg flag to all uses of CXX
+ifdef PROFILER_BUILD
+PFLAG += -pg
+else
+PFLAG =
+endif
+
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FlightLineData_unittests \
@@ -76,7 +83,6 @@ TESTS = $(BIN)/CmdLine_unittests $(BIN)/FlightLineData_unittests \
 # All Google Test headers.  Usually you shouldn't change this definition.
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
-
 
 # Builds gtest.a and gtest_main.a.
 # Usually you shouldn't tweak such internal variables, indicated by a
@@ -148,47 +154,47 @@ $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 
 # Builds specific object files
 $(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c \
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c \
 		-o $@ $^
 
 $(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 $(OBJ)/FlightLineData.o: $(SRC)/FlightLineData.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)//WaveGPSInformation.o: $(SRC)/WaveGPSInformation.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)/PulseData.o: $(SRC)/PulseData.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -lgdal -L$(PULSE_DIR)/lib
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -lgdal -L$(PULSE_DIR)/lib
 
 $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
-	$(CXX) -std=c++11 -g -fpermissive -c -o $@ $^ -lm \
+	$(CXX) $(PFLAG) -std=c++11 -g -fpermissive -c -o $@ $^ -lm \
 		-lgsl -lgslcblas
 
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)/TxtWaveReader.o: $(SRC)/TxtWaveReader.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds all object files
 $(OBJ)/%.o: $(SRC)/%.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS)
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS)
 
 # Builds the info tool
 pls-info: $(BIN)/pls-info
 
 $(BIN)/pls-info: $(OBJ)/GetPLSDetails.o $(OBJ)/PulseData.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
 
 $(OBJ)/GetPLSDetails.o: $(SRC)/GetPLSDetails.cpp
-	$(CXX) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds the main driver file 
 geotiff-driver: $(BIN)/geotiff-driver
@@ -198,12 +204,12 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
                        $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
 
 $(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 # Builds the csv driver file
 
@@ -214,7 +220,7 @@ $(BIN)/csv-driver: $(OBJ)/pls_to_csv.o $(OBJ)/csv_CmdLine.o \
 				   $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o \
 				   $(OBJ)/PulseData.o $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
 				   $(OBJ)/CsvWriter.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
 
@@ -225,12 +231,12 @@ $(BIN)/fitting-info: $(OBJ)/fitting_info.o $(OBJ)/FlightLineData.o \
                      $(OBJ)/PulseData.o $(OBJ)/Peak.o \
                      $(OBJ)/GaussianFitter.o $(OBJ)/WaveGPSInformation.o \
                      $(OBJ)/FittingInfoDriver.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
 
 $(OBJ)/fitting_info.o: $(SRC)/fitting_info.cpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
 
 # A phony target is one that is not really the name of a file; rather it 
 # is just a name for a recipe to be executed when you make an explicit request. 

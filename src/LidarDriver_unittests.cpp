@@ -109,7 +109,7 @@ class LidarDriverTest: public testing::Test
         LidarDriver driver3;
 
         //Variables
-        std::vector<char> vars = {'z', 'a', 'w', 'r', 'b'};
+        std::vector<char> vars = {0,1,2,3,4};
 
         /**
          * Creates a vector of Peak pointers for testing purposes. Artificially

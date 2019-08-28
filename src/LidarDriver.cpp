@@ -54,7 +54,7 @@ void LidarDriver::setup_flight_data(FlightLineData &data,
 void LidarDriver::calc_product_size(FlightLineData &data, int num_products){
     //This keeps track of units
     size_t i = 0;
-    int bytes = -1;
+    double bytes = -1;
     std::vector<std::string> units = {"B","KB","MB","GB"};
 
     //If we get bytes < 0 then we had an overflow
@@ -63,7 +63,7 @@ void LidarDriver::calc_product_size(FlightLineData &data, int num_products){
         double vals_per_product = std::ceil(data.bb_x_max - data.bb_x_min) *
             std::ceil(data.bb_y_max - data.bb_y_min);
         //The number of bytes allocated for each float value
-        double bytes_per_val = (double) sizeof(float) / 8;
+        float bytes_per_val = sizeof(float);
         //Find conversion from bytes to current prefix (kilo,mega,giga)
         int prefix_conversion = i == 0 ? 1 : pow(1024,i);
         //Use dimensional analysis to cancel out all units except for bytes
@@ -82,6 +82,9 @@ void LidarDriver::calc_product_size(FlightLineData &data, int num_products){
     for (i = 0; i < units.size() && bytes >= 1024; i ++){
         bytes /= 1024;
     }
+
+    //Round to two decimals
+    bytes = floorf(bytes * 100) / 100;
 
     std::cout << num_products << " Tif files will require approximately " <<
         bytes << units.at(i) << std::endl;

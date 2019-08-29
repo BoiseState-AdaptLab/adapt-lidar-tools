@@ -74,6 +74,7 @@ class LidarDriver {
 
         double get_skewtosis(std::vector<Peak*> *peaks, double avg, double dev,
                 int peak_pos, char peak_property, int power);
+
 };
 
 

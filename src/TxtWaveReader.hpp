@@ -1,22 +1,19 @@
 #ifndef WAVETXTREADER_H
 #define WAVETXTREADER_H
 
+#include <vector>
 #include <fstream>
-
-#include "PulseData.hpp"
 
 class TxtWaveReader {
     public:
         TxtWaveReader();
-        TxtWaveReader(int);
+        TxtWaveReader(int maxWaveLen);
         int open_file(const char* filename);
-        PulseData* next_wave();
+        bool next_wave();
         ~TxtWaveReader();
 
-        bool good();
-        bool bad();
-        bool fail();
-        bool eof();
+        std::vector<int> idx;
+        std::vector<int> wave;
 
     private:
         int maxWaveLen;
@@ -24,7 +21,8 @@ class TxtWaveReader {
         char *line;
 
         bool is_line_valid();
-        int get_vector(std::vector<int>*);
+        bool get_vector(std::vector<int>& vect);
+        int line_count;
 };
 
 #endif /* WAVETXTREADER_H */

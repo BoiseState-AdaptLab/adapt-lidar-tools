@@ -6,6 +6,7 @@
 #include <cstring>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "gtest/gtest.h"
 #include "TxtWaveReader.hpp"
@@ -21,12 +22,23 @@ class TxtWaveReaderTest: public testing::Test {
         std::string message;
         TxtWaveReader reader;
 
-        std::vector<PulseData*> data;
-
         void writeTestFile () {
             std::ofstream ofs (fileName);
             ofs << message;
             ofs.close();
+        }
+
+        // Useful tool for debugging
+        void printVector (std::vector<int>& vect) {
+            std::string str = "";
+
+            for (std::vector<int>::iterator it = vect.begin(); it != vect.end();
+                    ++it) {
+                str += *it;
+                str += " ";
+            }
+
+            std::cout << str << std::endl;
         }
 
         virtual void SetUp() {
@@ -37,10 +49,6 @@ class TxtWaveReaderTest: public testing::Test {
         virtual void TearDown() {
             std::remove(fileName);
             free(fileName);
-            for (auto it = data.begin(); it != data.end(); ++it) {
-                delete(*it);
-            }
-            data.clear();
         }
 };
 
@@ -78,53 +86,58 @@ TEST_F(TxtWaveReaderTest, tmpFileGetsDeletedTest) {
 
 // Test proves blank files are handled properly
 TEST_F(TxtWaveReaderTest, blankFileTest) {
-    message = "";
     writeTestFile();
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
-
-    EXPECT_TRUE(data[0] == NULL);
+    EXPECT_FALSE(reader.next_wave());
+    EXPECT_TRUE(reader.idx.empty());
 }
 
-// This and next test prove files without enough information to make a PulseData
-// object are handled properly.
+// One token: Reader expected to open fine and return false when wave is read.
 TEST_F(TxtWaveReaderTest, oneIntTest) {
     message = "9";
     writeTestFile();
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
-
-    EXPECT_TRUE(data[0] == NULL);
+    EXPECT_FALSE(reader.next_wave());
 }
 
+// One line: Reader is expected to open fine and return false when wave is read.
 TEST_F(TxtWaveReaderTest, oneValidLineTest) {
     message = "9 8 7 6 5 4 3 2 1 0";
+
+    // These are the expected vectors. In this case, waves technically undefined
+    std::vector<int> exp_idx = { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+    std::vector<int> exp_wave = { };
     writeTestFile();
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
+    EXPECT_FALSE(reader.next_wave());
 
-    EXPECT_TRUE(data[0] == NULL);
+    //printVector(reader.idx);
+    //printVector(reader.wave);
+
+    EXPECT_TRUE(reader.idx == exp_idx);
+    EXPECT_TRUE(reader.wave == exp_wave);
 }
 
-// Proves that file containing a single valid wave will process correctly and
-// produce accurate PulseData objects.
+// Proves that file containing a single valid wave will process correctly
 TEST_F(TxtWaveReaderTest, oneValidWaveTest) {
     message = "9 8 7 6 5 4\n3 2 1 0";
 
-    // These are what PulseData vectors should look like after parsing
-    std::vector<int> idx = { 9, 8, 7, 6, 5, 4 };
-    std::vector<int> wave = { 3, 2, 1, 0 };
+    std::vector<int> exp_idx = { 9, 8, 7, 6, 5, 4 };
+    std::vector<int> exp_wave = { 3, 2, 1, 0 };
     writeTestFile();
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
+    EXPECT_TRUE(reader.next_wave());
 
-    ASSERT_FALSE(data[0] == NULL);
-    EXPECT_TRUE(data[0]->returningIdx == idx);
-    EXPECT_TRUE(data[0]->returningWave == wave);
+    //printVector(reader.idx);
+    //printVector(reader.wave);
+
+    EXPECT_TRUE(reader.idx == exp_idx);
+    EXPECT_TRUE(reader.wave == exp_wave);
+    EXPECT_FALSE(reader.next_wave());
 }
 
 // Proves that incorrect characters present in pulsewave are handled properly.
@@ -132,34 +145,37 @@ TEST_F(TxtWaveReaderTest, oneInvalidWaveTest) {
     message = "9 8 7 6 5 4\n3 bahbah 4";
     writeTestFile();
 
-    std::vector<int> idx = { 9, 8, 7, 6, 5, 4 };
-    std::vector<int> wave = { };
+    std::vector<int> idx0 = { 9, 8, 7, 6, 5, 4 };
+    std::vector<int> wave0 = { };
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
+    EXPECT_TRUE(reader.next_wave());
 
-    ASSERT_FALSE(data[0] == NULL);
-    EXPECT_TRUE(data[0]->returningIdx == idx);
-    EXPECT_TRUE(data[0]->returningWave == wave);
+    //printVector(reader.idx);
+    //printVector(reader.wave);
+
+    EXPECT_TRUE(reader.idx == idx0);
+    EXPECT_TRUE(reader.wave == wave0);
+    EXPECT_FALSE(reader.next_wave());
 }
 
-// Test proves that if file has odd number of lines, the last line is ignored.
 TEST_F(TxtWaveReaderTest, threeValidLineTest) {
     message = "9 8 7\n6 5 3\n2 1 0";
     writeTestFile();
 
-    std::vector<int> idx = { 9, 8, 7 };
-    std::vector<int> wave = { 6, 5, 3 };
+    std::vector<int> idx0 = { 9, 8, 7 };
+    std::vector<int> wave0= { 6, 5, 3 };
+    std::vector<int> idx1 = { 2, 1, 0 };
+    std::vector<int> wave1 = { };
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
+    EXPECT_TRUE(reader.next_wave());
+    EXPECT_TRUE(reader.idx == idx0);
+    EXPECT_TRUE(reader.wave == wave0);
 
-    ASSERT_FALSE(data[0] == NULL);
-    EXPECT_TRUE(data[1] == NULL);
-
-    EXPECT_TRUE(data[0]->returningIdx == idx);
-    EXPECT_TRUE(data[0]->returningWave == wave);
+    EXPECT_FALSE(reader.next_wave());
+    EXPECT_TRUE(reader.idx == idx1);
+    EXPECT_TRUE(reader.wave == wave1);
 }
 
 TEST_F(TxtWaveReaderTest, twoValidWaveTest) {
@@ -172,16 +188,18 @@ TEST_F(TxtWaveReaderTest, twoValidWaveTest) {
     std::vector<int> wave1 = { 0, 1, 2 };
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
+    EXPECT_TRUE(reader.next_wave());
 
-    ASSERT_FALSE(data[0] == NULL);
-    ASSERT_FALSE(data[1] == NULL);
+    //printVector(reader.idx);
+    //printVector(reader.wave);
 
-    EXPECT_TRUE(data[0]->returningIdx == idx0);
-    EXPECT_TRUE(data[0]->returningWave == wave0);
-    EXPECT_TRUE(data[1]->returningIdx == idx1);
-    EXPECT_TRUE(data[1]->returningWave == wave1);
+    EXPECT_TRUE(reader.idx == idx0);
+    EXPECT_TRUE(reader.wave == wave0);
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx1);
+    EXPECT_TRUE(reader.wave == wave1);
+    EXPECT_FALSE(reader.next_wave());
 }
 
 TEST_F(TxtWaveReaderTest, Valid_Invalid_ValidWaveTest) {
@@ -196,18 +214,17 @@ TEST_F(TxtWaveReaderTest, Valid_Invalid_ValidWaveTest) {
     std::vector<int> wave2 = { 6, 7, 8 };
 
     EXPECT_NO_THROW(reader.open_file (fileName));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
-    EXPECT_NO_THROW(data.push_back(reader.next_wave()));
+    EXPECT_TRUE(reader.next_wave());
 
-    ASSERT_FALSE(data[0] == NULL);
-    ASSERT_FALSE(data[1] == NULL);
-    ASSERT_FALSE(data[2] == NULL);
+    EXPECT_TRUE(reader.idx == idx0);
+    EXPECT_TRUE(reader.wave == wave0);
+    EXPECT_TRUE(reader.next_wave());
 
-    EXPECT_TRUE(data[0]->returningIdx == idx0);
-    EXPECT_TRUE(data[0]->returningWave == wave0);
-    EXPECT_TRUE(data[1]->returningIdx == idx1);
-    EXPECT_TRUE(data[1]->returningWave == wave1);
-    EXPECT_TRUE(data[2]->returningIdx == idx2);
-    EXPECT_TRUE(data[2]->returningWave == wave2);
+    EXPECT_TRUE(reader.idx == idx1);
+    EXPECT_TRUE(reader.wave == wave1);
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx2);
+    EXPECT_TRUE(reader.wave == wave2);
+    EXPECT_FALSE(reader.next_wave());
 }

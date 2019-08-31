@@ -1,19 +1,28 @@
 #define STR_MAX_DEFAULT 100
+#define C_NAME typeid(*this).name()
 
 #include <string>
 #include <cstring>
 
+#include "spdlog/spdlog.h"
+
 #include "TxtWaveReader.hpp"
 
 TxtWaveReader::TxtWaveReader () {
+    idx.clear();
+    wave.clear();
     maxWaveLen = STR_MAX_DEFAULT;
     line = (char*) malloc(maxWaveLen * sizeof(char));
     line[0] = '\0';
+    line_count = 0;
 }
 
 TxtWaveReader::TxtWaveReader (int maxWaveLen) {
+    idx.clear();
+    wave.clear();
     line = (char*) malloc(maxWaveLen * sizeof(char));
     line[0] = '\0';
+    line_count = 0;
 }
 
 /**
@@ -35,105 +44,72 @@ bool TxtWaveReader::is_line_valid() {
             return false;
         }
     }
-
     return true;
 }
 
 /**
  * Reads a line from text file and converts it to a vector of integers.
  * @param array std::vector<int> to place data in
- * @return 0 if things go fine, 1 if badbit is set after line read or if the
- * line recieved contains characters other than 0-9 and space. If EOF
- * was reached prior to calling this, it returns 2.
+ * @return False if end of file is reached, true otherwise.
  */
-int TxtWaveReader::get_vector (std::vector<int> *array) {
+bool TxtWaveReader::get_vector (std::vector<int>& vect) {
+    vect.clear();
 
-    // If EOF is 1, we're at the end of the file and should return NULL.
+    // If last read set eof bit, return false.
     if (txtFile.eof()) {
-        return 2;
+        spdlog::debug("{}: stream at eof", C_NAME);
+        return false;
     }
 
+    // Else, we are good to read the next line.
     txtFile.getline (line, maxWaveLen);
+
+    line_count++;
+    spdlog::trace("{}: reading line {}", C_NAME, line_count);
 
     // Makes sure an error has not occured during the last read.
     if (txtFile.bad() || txtFile.fail()) {
-        //TODO: push_back 'NO DATA'?
-        return 1;
+        spdlog::error("{}: bad read on line {}", C_NAME, line_count);
+        return true;
     }
 
     // Makes sure it is a sequence of digits 0-9 and space.
     bool valid = is_line_valid();
     if (!valid) {
-        //TODO: push_back 'NO DATA'?
-        return 1;
+        spdlog::error("{}: bad format read at line {}", C_NAME,
+                line_count);
+        return true;
     }
 
     char *pos = strtok (line, " ");
     while (pos != NULL) {
         std::string str(pos);
-        array->push_back(std::stoi(str, NULL));
+        vect.push_back(std::stoi(str, NULL));
         pos = strtok(0, " ");
     }
-    return 0;
+
+    // Send warning if vector is empty
+    if (vect.empty()) {
+        spdlog::warn("{}: empty line read at line {}", C_NAME,
+                line_count);
+    }
+
+    return true;
 }
 
 /**
- * Reads next PulseData object from text file.
- * @return Returns pointer to a new PulseWave object. It will contain NO_DATA if
- * any errors occured, and will be set to NULL if EOF was reached.
- * An incomplete read will be thrown away and NULL will still be returned.
+ * Reads next pulse from text file. Errors in reading will result in empty
+ * vectors, and an entry in the logs specifying what went wrong.
+ * @return False if end of file was reached, true otherwise.
  */
-PulseData* TxtWaveReader::next_wave () {
-    std::vector<int> *idxArray;
-    std::vector<int> *waveArray;
-    PulseData *wave;
+bool TxtWaveReader::next_wave () {
+    bool status_idx = get_vector(idx);
+    bool status_wave = get_vector(wave);
 
-    idxArray = new std::vector<int>;
-    waveArray = new std::vector<int>;
-    wave = new PulseData;
-
-    idxArray->clear();
-    waveArray->clear();
-
-    int status = get_vector (idxArray);
-    if (status == 1) {
-        //TODO: log error
-        //TODO: Denote vector as having 'NO DATA'
-    } else if (status == 2) {
-        //TODO: log error
-        return NULL;
-    }
-
-    status = get_vector (waveArray);
-    if (status == 1) {
-        //TODO: log error
-        //TODO: Denote vector as having 'NO DATA'
-    } else if (status == 2) {
-        //TODO: log error
-        return NULL;
-    }
-
-    wave->setReturning(idxArray, waveArray);
-    return wave;
+    return ( status_idx && status_wave );
 }
 
 TxtWaveReader::~TxtWaveReader () {
     txtFile.close();
     free(line);
-}
-
-bool TxtWaveReader::good() {
-    return txtFile.good();
-}
-
-bool TxtWaveReader::bad() {
-    return txtFile.bad();
-}
-
-bool TxtWaveReader::fail() {
-    return txtFile.fail();
-}
-
-bool TxtWaveReader::eof() {
-    return txtFile.eof();
 }

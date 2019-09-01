@@ -208,7 +208,7 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
-    std::cerr << "Finding peaks with " << fit_type << std::endl;
+    std::info("Finding peaks with {}", fit_type);
 
     //parse each pulse
     while (raw_data.hasNextPulse()) {
@@ -243,7 +243,7 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
             this->peaks_to_string(*str, cmdLine, peaks);
             strings.push_back(str);
         } catch (const char *msg) {
-            std::cerr << msg << std::endl;
+            std::error("{}", msg);
         }
 
         // make sure that we have an empty vector and string

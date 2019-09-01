@@ -99,7 +99,7 @@ TEST_F(csv_CmdLineTest, invalidFileName){
     std::remove("do_not_use.wvs");
     std::ofstream pls ("do_not_use.pls");
     pls.close();
-    
+
     //Invalid wvs
     optind = 0;
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
@@ -119,7 +119,7 @@ TEST_F(csv_CmdLineTest, fileTrimmingTestPath){
     numberOfArgs = 5;
 
     //Same path, child path, sister path
-    std::vector<std::string> paths = {"./", "etc/", "../lidarFullW_Alpha/"};
+    std::vector<std::string> paths = {"./", "etc/"};
     for (auto it = paths.begin(); it != paths.end(); ++it){
         //Create test files
         std::ofstream pls2 (*it + std::string("do_not_use.pls"));
@@ -160,6 +160,31 @@ TEST_F(csv_CmdLineTest, fileTrimmingTestName){
     //Delete test files
     std::remove("do.not.use.pls");
     std::remove("do.not.use.wvs");
+}
+
+//Tests the setInputFileName function against valid cases
+TEST_F(csv_CmdLineTest, setInputFileNameTest_valid) {
+    //Test file names
+    char f0[15] = "do.not.use.pls";
+    char f1[15] = "do.not.use.wvs";
+    char f2[15] = "do.not.use.txt";
+
+    //Create test files
+    std::ofstream pls (f0);
+    pls.close();
+    std::ofstream wvs (f1);
+    wvs.close();
+    std::ofstream txt (f2);
+    txt.close();
+
+    //Run tests
+    EXPECT_NO_THROW(cmd.setInputFileName(f0));
+    EXPECT_NO_THROW(cmd.setInputFileName(f1));
+        EXPECT_NO_THROW(cmd.setInputFileName(f2));
+
+    std::remove("do.not.use.pls");
+    std::remove("do.not.use.wvs");
+    std::remove("do.not.use.txt");
 }
 
 /****************************************************************************

@@ -24,8 +24,27 @@ const static std::string peakvars[10] = {
  * @param args
  */
 void csv_CmdLine::setInputFileName(char *args){
+    //Check if the filename is a txt or a pls
     plsFileName = args;
-    check_input_file_exists();
+    size_t begin = plsFileName.find_last_of(".");
+    if (begin == string::npos) {
+        std::cerr << "File not specified or has no extension" << std::endl;
+        printUsageMessage = true;
+        return;
+    }
+
+    size_t len = plsFileName.size() - begin;
+    std::string file_ext = plsFileName.substr(begin, len);
+
+    if (file_ext == ".pls") {
+        check_input_file_exists();
+    } else if (file_ext == ".txt") {
+        is_txt = true;
+        check_input_txt_exists();
+    } else {
+        std::cerr << "Not a supported filetype" << std::endl;
+        printUsageMessage = true;
+    }
 }
 
 
@@ -41,7 +60,7 @@ void csv_CmdLine::setUsageMessage()
         << std::endl;
     buffer << std::endl;
     buffer << "Options:  " << std::endl;
-    buffer << "       -f  <path to pls file>"
+    buffer << "       -f  <path to pls/txt file>"
         << "  :Reads pls file for peak data" << std::endl;
     buffer << "       -d"
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
@@ -89,6 +108,7 @@ std::string csv_CmdLine::getUsageMessage(){
  */
 csv_CmdLine::csv_CmdLine(){
     quiet = false;
+    is_txt = false;
     printUsageMessage = false;
     useGaussianFitting = true;
     exeName = "";
@@ -104,7 +124,6 @@ csv_CmdLine::csv_CmdLine(){
 std::string csv_CmdLine::getInputFileName(bool pls){
     return pls ? plsFileName : wvsFileName;
 }
-
 
 
 /**
@@ -235,6 +254,7 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
     return true;
 }
 
+
 /**
  * check if the input file exists, print error message if not
  */
@@ -258,6 +278,21 @@ void csv_CmdLine::check_input_file_exists() {
     }
 }
 
+
+/**
+ * check if the input file exists, print error message if not
+ */
+void csv_CmdLine::check_input_txt_exists() {
+    if (!std::ifstream(plsFileName.c_str())) {
+        if (!quiet) {
+            std::cout << "\nFile " << plsFileName << " not found."
+                << std::endl;
+        }
+        printUsageMessage = true;
+    }
+}
+
+
 /**
  * get the input file name, stripped of leading path info and trailing
  * extension info
@@ -276,6 +311,7 @@ std::string csv_CmdLine::getTrimmedFileName(bool pls){
     return getInputFileName(pls).substr(start,len);
 }
 
+
 /**
  * get the output filename based on the command line arguments and input
  * filename
@@ -290,6 +326,7 @@ std::string csv_CmdLine::get_output_filename(int product_id) {
     std::string prod_desc = "_" + get_product_desc(product_id);
     return output_filename +  prod_desc + fit_type + file_type;
 }
+
 
 /**
  * get the description of the product being produced

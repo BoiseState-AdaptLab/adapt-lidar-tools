@@ -43,6 +43,9 @@ public:
     //True stifles all output statements
     bool quiet;
 
+    //True means input file was a txt file
+    bool is_txt;
+
     csv_CmdLine();
 
 
@@ -50,6 +53,7 @@ public:
     void setUsageMessage();
     std::string getUsageMessage();
     void check_input_file_exists();
+    void check_input_txt_exists();
     void setInputFileName(char *args);
     void setInputFileName(std::string filename);
     std::string getInputFileName(bool pls);

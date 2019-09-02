@@ -14,7 +14,7 @@ int main (int argc, char *argv[]) {
 
     if(argc < 2){
         std::cerr << "Usage: " << argv[0] << " <path to .pls file>" <<std::endl;
-        exit(EXIT_FAILURE);
+        return 1;
     }
 
     std::string fileName    = argv[1];
@@ -22,7 +22,7 @@ int main (int argc, char *argv[]) {
     pReader = pOpener.open();
     if(pReader == NULL){
         throw "Unable to Open File" + fileName;
-        exit (EXIT_FAILURE);
+        return 1;
     }
 
     /* This record is simply an array of ASCII data. It contains one or 

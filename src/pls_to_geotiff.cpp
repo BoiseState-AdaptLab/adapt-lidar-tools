@@ -40,7 +40,9 @@ int main (int argc, char *argv[]) {
     spdlog::info("Processing {}", cmdLineArgs.getInputFileName(true));
 
     //ingest the raw flight data into an object
-    driver.setup_flight_data(rawData, cmdLineArgs.getInputFileName(true));
+    if (rawData.setFlightLineData(cmdLineArgs.getInputFileName(true))) {
+        return 1;
+    }
 
     spdlog::debug("driver.setup_flight_data returned");
 

@@ -29,21 +29,6 @@ GDALDataset* LidarDriver::setup_gdal_ds(GDALDriver *tiff_driver,
 }
 
 /**
- * creates FlightLineData object from the raw data in the input file
- * @param data the FlightLineData object to store the raw data in
- * @param inputFileName the file name and path of the input file
- */
-void LidarDriver::setup_flight_data(FlightLineData &data,
-        std::string inputFileName)
-{
-    spdlog::debug("data.setFlightLineData about to be called...");
-
-    data.setFlightLineData(inputFileName);
-
-    spdlog::debug("data.setFlightLineData returned");
-}
-
-/**
  * Calculates the memory needed to store all the requested products
  * @param data the FlightLineData object containing bounding box information
  * @param num_products the number of products that will be produced

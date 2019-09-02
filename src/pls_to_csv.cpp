@@ -37,7 +37,9 @@ int main (int argc, char *argv[]) {
     spdlog::info("Processing {}", cmdLineArgs.getInputFileName(true).c_str());
 
     // ingest the raw flight data into an object
-    driver.setup_flight_data(rawData, cmdLineArgs.getInputFileName(true));
+    if (rawData.setFlightLineData(cmdLineArgs.getInputFileName(true))) {
+        return 1;
+    }
 
     // fit data
     driver.fit_data_csv(rawData, *writer.getLines(), cmdLineArgs);

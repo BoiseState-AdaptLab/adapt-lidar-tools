@@ -43,23 +43,18 @@ FlightLineData::FlightLineData(){
 /**
  * Stores the instrument information and initializes pReader
  * @param fileName path to pls file to open
+ * @return 0 if successful, 1 if file can't be used.
  */
-void FlightLineData::setFlightLineData(std::string fileName){
-
-#ifdef DEBUG
-    std::cerr << "Debug messages enabled for this run of setFlightLineData" <<
-        std::endl;
-#endif
+int FlightLineData::setFlightLineData(std::string fileName){
 
     pOpener.set_file_name(fileName.c_str());
     pReader = pOpener.open();
     if(pReader == NULL){
         throw "Unable to Open File" + fileName;
-        exit (EXIT_FAILURE);
+        return 1;
     }
-#ifdef DEBUG
-    std::cerr << "Target file opened for reading, wasn't empty" << std::endl;
-#endif
+
+    spdlog::trace("Target file opened for reading, wasn't empty");
 
     //bounding box x,y & z mins and maxes
     bb_x_min = pReader->header.min_x;
@@ -75,57 +70,42 @@ void FlightLineData::setFlightLineData(std::string fileName){
     // Vector of string to save tokens
     std::vector <std::string> tokens;
 
-#ifdef DEBUG
-    std::cerr << "Vector of strings to save tokens made" << std::endl;
-#endif
+    spdlog::trace("Vector of strings to save tokens made");
 
     // use stringstream to parse
     std::stringstream geo_stream(geoascii_params);
 
     tokenize_geoascii_params_to_vector(&geo_stream,&tokens);
 
-#ifdef DEBUG
-    std::cerr << "tokenize_geoascii_params_to_vector returned" << std::endl;
-#endif
+    spdlog::trace("tokenize_geoascii_params_to_vector returned");
 
     int utm_loc = locate_utm_field(&tokens);
     if(utm_loc < 0){
         //no utm found, trouble!
-        std::cerr << "CRITICAL ERROR! No UTM value found in PLS header!"
-            << std::endl;
-        exit(EXIT_FAILURE);
+        spdlog::critical("No UTM value found in PLS header!");
     }
     utm_str = tokens[utm_loc];
 
-#ifdef DEBUG
-    std::cerr << "UTM values found in PLS header" << std::endl;
-#endif
+    spdlog::trace("UTM values found in PLS header");
 
     utm = parse_for_UTM_value(utm_str);
     int geog_cs_loc = locate_geog_cs_field(&tokens);
     if(geog_cs_loc < 0){
         //no geog_cs found, trouble!
-        std::cerr << "CRITICAL ERROR! No geog_cs (NAD/WGS) value found in PLS "
-            << "header!" << std::endl;
-        exit(EXIT_FAILURE);
+        spdlog::critical("No geog_cs (NAD/WGS) value found in PLS header!");
     }
     geog_cs = tokens.at(geog_cs_loc);
 
-#ifdef DEBUG
-    std::cerr << "geog_cs found in PLS header" << std::endl;
+    spdlog::trace("geog_cs found in PLS header");
 
-    std::cerr << "utm_str: " << utm_str << std::endl;
-    std::cerr << "utm: " << utm << std::endl;
-    std::cerr << "geog_cs: "<< geog_cs << std::endl;
+    spdlog::debug("utm_str: {}; utm: {}; geog_cs: {}", utm_str, utm, geog_cs);
 
-    fprintf(stderr,"TEST: min_x %lf max_y %lf\n",bb_x_min,bb_y_max);
-#endif
+    spdlog::debug("TEST: min_x {} max_y {}",bb_x_min,bb_y_max);
+
     int i = 1;
     while(pReader->header.get_scanner(&scanner, i)) {
 
-#ifdef DEBUG
-        std::cerr << "scanner " << i << " being read ..." << std::endl;
-#endif
+        spdlog::trace("scanner {} being read ...", i);
 
         scanner_id = i;
         wave_length = scanner.wave_length;
@@ -141,28 +121,20 @@ void FlightLineData::setFlightLineData(std::string fileName){
         minimal_range = scanner.minimal_range;
         maximal_range = scanner.maximal_range;
 
-#ifdef DEBUG
-        std::cerr << "scanner " << i << " read complete" << std::endl;
-#endif
+        spdlog::trace("scanner {} read complete", i);
 
         i++;
     }
 
-#ifdef DEBUG
-    std::cerr << "scanner reads complete" << std::endl;
-#endif
+    spdlog::debug("scanner reads complete");
 
     //Initialize the pReader to read the pulse and the wave
     //If no data, throw an exception and exit
     try{
         if(pReader->read_pulse()){
-#ifdef DEBUG
-            std::cerr << "pReader->read_pulse() returned" << std::endl;
-#endif
+            spdlog::trace("pReader->read_pulse() returned");
             if(pReader->read_waves()){
-#ifdef DEBUG
-                std::cerr << "pReader->read_waves() returned" << std::endl;
-#endif
+                spdlog::trace("pReader->read_waves() returned");
                 next_pulse_exists = true;
             }
         }
@@ -172,13 +144,12 @@ void FlightLineData::setFlightLineData(std::string fileName){
         }
     }
     catch(int e){
-        std::cout << "CRITICAL ERROR! No data!\n";
-        // TODO: FIXME!!
-        exit(EXIT_FAILURE);
+        spdlog::critical("Input file had no data!");
+        return 1;
     }
-#ifdef DEBUG
-    std::cerr << "setFlightLineData complete, returning" << std::endl;
-#endif
+
+    spdlog::trace("setFlightLineData complete, returning");
+    return 0;
 }
 
 

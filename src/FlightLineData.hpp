@@ -65,7 +65,7 @@ class FlightLineData{
         WaveGPSInformation current_wave_gps_info;
 
         FlightLineData();
-        void setFlightLineData(std::string fileName);
+        int setFlightLineData(std::string fileName);
         void FlightLineDataToCSV();
         bool hasNextPulse();
         void getNextPulse(PulseData* pd);;

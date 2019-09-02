@@ -615,7 +615,7 @@ TEST_F(LidarDriverTest, get_kurtosis_all_test)
  *
  ******************************************************************************/
 
-TEST_F(LidarDriverTest, setup_flight_data_test)
+TEST_F(LidarDriverTest, call_setFlightLineData_test)
 {
     // Known FlightLineData
     int known_scanner_id = 1;
@@ -643,7 +643,7 @@ TEST_F(LidarDriverTest, setup_flight_data_test)
     std::string filename;
     filename = "etc/140823_183115_1_clipped_test.pls";
 
-    EXPECT_NO_THROW(driver1.setup_flight_data(fld,filename));
+    EXPECT_NO_THROW(fld.setFlightLineData(filename));
 
     EXPECT_EQ(fld.hasNextPulse(),true);
 
@@ -685,7 +685,7 @@ TEST_F(LidarDriverTest, add_peaks_to_volume_test)
     std::string filename;
     filename = "etc/140823_183115_1_clipped_test.pls";
 
-    EXPECT_NO_THROW(driver1.setup_flight_data(fld,filename));
+    EXPECT_NO_THROW(fld.setFlightLineData(filename));
 
 
     double known_amp = 142;

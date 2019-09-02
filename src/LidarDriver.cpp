@@ -650,10 +650,10 @@ float LidarDriver::get_peak_property(Peak *peak, char peak_property)
         default:
             break;
     }
-    //TODO: get rid of the exit statement
-    std::cout << "CRITICAL ERROR! \
-        No implemented peak property for identifier "<<peak_property<<"\n";
-    exit(EXIT_FAILURE);
+
+    spdlog::critical("No implemented peak property for identifier {}. Result of"
+            " property request undefined (returning 0)", peak_property);
+    return 0;
 }
 
 /**

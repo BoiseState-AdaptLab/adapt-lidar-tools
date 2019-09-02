@@ -4,7 +4,7 @@
 
 #include "FlightLineData.hpp"
 
-//#define DEBUG
+#include "spdlog/spdlog.h"
 
 //Default constructor
 FlightLineData::FlightLineData(){
@@ -246,18 +246,19 @@ bool FlightLineData::hasNextPulse(){
  */
 void FlightLineData::getNextPulse(PulseData *pd){
 
-    if(!next_pulse_exists){
-        std::cout << "CRITICAL ERROR! Cannot be here if there isn't a next "
-            << "pulse" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    current_wave_gps_info.populateGPS(pReader);
-
-    //Clear the vectors since we're storing a single pulse at a time
+    // Clear vectors since we're storing a single pulse at a time
     pd->outgoingIdx.clear();
     pd->outgoingWave.clear();
     pd->returningIdx.clear();
     pd->returningWave.clear();
+
+    if(!next_pulse_exists){
+        spdlog::critical("CRITICAL ERROR! Cannot be here if there isn't a next "
+                "pulse");
+
+        return; // Returning empty pd
+    }
+    current_wave_gps_info.populateGPS(pReader);
 
     double pulse_outgoing_start_time;
     double pulse_outgoing_segment_time;
@@ -270,9 +271,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
     //If the first sampling is not of type outgoing, there is some error
     if(sampling->get_type() != PULSEWAVES_OUTGOING){
-        std::cout << "CRITICAL ERROR! The first sampling must be an "
-            << "outgoing wave!" << std::endl;
-        exit(EXIT_FAILURE);
+        spdlog::critical("The first sampling must be an outgoing wave!");
+        return;
     }
 
     //FOR TESTING PURPOSES
@@ -307,9 +307,12 @@ void FlightLineData::getNextPulse(PulseData *pd){
         // std::cout << "Starting returning" << std::endl;  
         sampling = pReader->waves->get_sampling(sampling_number);
         if(sampling->get_type() != PULSEWAVES_RETURNING) {
-            std::cout << "CRITICAL ERROR! The second sampling must be a "
-                << "returning wave!" << std::endl;
-            exit(EXIT_FAILURE);
+            spdlog::critical("The second sampling must be a returning wave!");
+
+            // Clearing outgoing idx so no bad data is returned.
+            pd->outgoingIdx.clear();
+            pd->outgoingWave.clear();
+            return;
         }
         //Populate returing wave data
         for(int j = 0; j < sampling->get_number_of_segments(); j++ ){

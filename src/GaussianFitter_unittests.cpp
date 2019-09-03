@@ -20,6 +20,22 @@ class GaussianFitterTest: public testing::Test{
         //Function to set up space used by all tests
         virtual void SetUp(){
         }
+
+        int parseWave(char *input,
+                      std::vector<int> &idxData, std::vector<int> &ampData){
+
+          char* ptr;
+          ptr = strtok (input," ");
+          int i=0;
+          while (ptr != NULL){
+              int y0 = atoi(ptr);
+              ampData.push_back(y0);
+              idxData.push_back(i);
+              i++;
+              ptr = strtok (NULL," ");
+          }
+          return 0;
+        }
 };
 
 /****************************************************************************
@@ -37,16 +53,7 @@ TEST_F(GaussianFitterTest, NayaniClipped1){
         "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 "
         "8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int y0 = atoi(ptr);
-        ampData.push_back(y0);
-        idxData.push_back(i);
-        i++;
-        ptr = strtok (NULL," ");
-    }
+    parseWave(input, idxData, ampData);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -69,16 +76,7 @@ TEST_F(GaussianFitterTest, NayaniClipped2){
         "155 110 67 39 24 18 16 15 15 15 14 11 10 9 8 7 6 5 5 4 3 3 4 5 4 4 3 "
         "3 1 2 1 2 3 3 4 4 5 4 2";
 
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int y0 = atoi(ptr);
-        ampData.push_back(y0);
-        idxData.push_back(i);
-        i++;
-        ptr = strtok (NULL," ");
-    }
+    parseWave(input, idxData, ampData);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -98,23 +96,16 @@ TEST_F(GaussianFitterTest, gaussianFitter){
         "42 18 12 13 14 15 15 14 13 10 8 8 8 8 7 6 6 4 4 4 3 4 5 6 4 4 3 2 2 1 "
         "1 0 1 2 3 4 4 2";
 
-    char* ptr;
-    ptr = strtok (input," ");
-    int i=0;
-    while (ptr != NULL){
-        int y0 = atoi(ptr);
-        ampData.push_back(y0);
-        idxData.push_back(i);
-        i++;
-        ptr = strtok (NULL," ");
-    }
+    parseWave(input, idxData, ampData);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(1,peaks.size());
+    EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(240,peaks.at(0)->amp);
+    EXPECT_EQ(15,peaks.at(1)->amp);
+    
 }
 
 TEST_F(GaussianFitterTest, NayaniClipped3){

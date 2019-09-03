@@ -175,7 +175,7 @@ $(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
 	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -lgdal -L$(PULSE_DIR)/lib
 
 $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
-	$(CXX) $(PFLAG) -std=c++11 -g -fpermissive -c -o $@ $^ -lm \
+	$(CXX) $(PFLAG) -Ideps -std=c++11 -g -fpermissive -c -o $@ $^ -lm \
 		-lgsl -lgslcblas
 
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp

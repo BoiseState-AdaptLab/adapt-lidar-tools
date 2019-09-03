@@ -146,7 +146,8 @@ TEST_F(GaussianFitterTest, NayaniClipped3){
     EXPECT_EQ(238,peaks.at(0)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(1,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -186,7 +187,8 @@ TEST_F(GaussianFitterTest, NayaniClipped4){
     EXPECT_EQ(240,peaks.at(0)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(1,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -226,7 +228,8 @@ TEST_F(GaussianFitterTest, NayaniClipped5){
     EXPECT_EQ(146,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -266,7 +269,8 @@ TEST_F(GaussianFitterTest, NayaniClipped6){
     EXPECT_EQ(151,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -306,7 +310,8 @@ TEST_F(GaussianFitterTest, NayaniClipped7){
     EXPECT_EQ(168,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -347,7 +352,8 @@ TEST_F(GaussianFitterTest, NayaniClipped8){
     EXPECT_EQ(221,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -395,7 +401,8 @@ TEST_F(GaussianFitterTest, max_iter_1){
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -436,7 +443,8 @@ TEST_F(GaussianFitterTest, max_iter_2){
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -477,7 +485,8 @@ TEST_F(GaussianFitterTest, max_iter_3){
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -522,7 +531,8 @@ TEST_F(GaussianFitterTest, max_iter_4){
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(4,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -574,7 +584,8 @@ TEST_F(GaussianFitterTest, max_iter_5){
     EXPECT_EQ(22,peaks.at(6)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(7,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
@@ -615,7 +626,8 @@ TEST_F(GaussianFitterTest, trig_loc_1){
     EXPECT_EQ(172,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks before find Peaks--\n " << std::endl;
@@ -656,7 +668,8 @@ TEST_F(GaussianFitterTest, trig_loc_2){
     EXPECT_EQ(135, peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,10);
+    fitter.max_iter = 10;
+    int count = fitter.find_peaks(&peaks,ampData,idxData);
 
     EXPECT_EQ(2,count);
     //std::cerr << "--After guess_peaks before find Peaks--\n " << std::endl;
@@ -693,7 +706,8 @@ TEST_F(GaussianFitterTest, num_iterations_10){
     std::vector<size_t> num_iters = {50,100,250,500};
 
     for (auto it = num_iters.begin(); it != num_iters.end(); ++it){
-        int count = fitter.find_peaks(&peaks,ampData,idxData,*it);
+        fitter.max_iter = *it;
+        int count = fitter.find_peaks(&peaks,ampData,idxData);
         std::cout << "Number of iterations: " << *it << std::endl;
         for (int i = 0; fitter.get_equation(i) != ""; i ++){
              std::cout << "equation " << i << ": " << fitter.get_equation(i) << std::endl;

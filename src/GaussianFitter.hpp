@@ -16,11 +16,26 @@
 #include <vector>
 #include <sstream>
 
+// Compile-time defaults for fitter params
+#define MAX_ITER 200
+
+#define TOL_SCALES true
+#define X_TOL 100
+#define G_TOL 100
+#define F_TOL 100
+
+#define GUESS_LT0_DEFAULT 4
+#define GUESS_UPPER_LIM 20
+#define GUESS_GT_UPPER_LIM_DEFAULT 10
+
+#define AMP_UPPER_BOUND 2
+#define AMP_LOWER_BOUND 10
+
 class GaussianFitter{
 
     public:
         int find_peaks(std::vector<Peak*>* results,std::vector<int> ampData,
-                std::vector<int> idxData, const size_t max_iter);
+                std::vector<int> idxData);
         int noise_level;
         int guess_peaks(std::vector<Peak*>* results, 
                 std::vector<int> ampData, 
@@ -39,7 +54,27 @@ class GaussianFitter{
         int pass;
         int total;
 
+
+        // *** Fitter parameters (that were magic numbers once) ***
+
+        size_t max_iter;
+
+        bool tolerance_scales;
+        double x_tolerance;
+        double g_tolerance;
+        double f_tolerance;
+
+        int guess_lt0_default;
+        int guess_upper_lim;
+        int guess_gt_upper_lim_default;
+
+        int amp_upper_bound; // Val is multiplied by max data point in wave
+        int amp_lower_bound; // Val is unmodified (no multiplication)
     private:
+        int solve_system(gsl_vector *x,
+                gsl_multifit_nlinear_fdf *fdf,
+                gsl_multifit_nlinear_parameters *params, int max);
+
         std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
         void incr_fail();
         void incr_pass();

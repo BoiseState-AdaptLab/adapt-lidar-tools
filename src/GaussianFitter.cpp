@@ -4,15 +4,30 @@
 
 #include "GaussianFitter.hpp"
 #include <iostream>
-//#include <math.h>
 #include <cmath>
 #include <algorithm>
 
+#include "spdlog/spdlog.h"
 
 GaussianFitter::GaussianFitter(){
     fail = 0;
     pass = 0;
     total = 0;
+
+    // Set fitter params to default values
+    max_iter = MAX_ITER;
+
+    tolerance_scales = TOL_SCALES;
+    x_tolerance = X_TOL;
+    g_tolerance = G_TOL;
+    f_tolerance = F_TOL;
+
+    guess_lt0_default = GUESS_LT0_DEFAULT;
+    guess_upper_lim = GUESS_UPPER_LIM;
+    guess_gt_upper_lim_default = GUESS_GT_UPPER_LIM_DEFAULT;
+
+    amp_upper_bound = AMP_UPPER_BOUND;
+    amp_lower_bound = AMP_LOWER_BOUND;
 }
 
 
@@ -268,13 +283,16 @@ void handler (const char * reason,
  * @param params
  * @return
  */
-int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
-                 gsl_multifit_nlinear_parameters *params, 
-                 const size_t max_iter, int max) {
+int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
+                 gsl_multifit_nlinear_parameters *params, int max) {
+    const size_t max_iter = this->max_iter;
+
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
-    const double xtol = max / 100;
-    const double gtol = max / 100;
-    const double ftol = max / 100;
+
+    const double xtol = tolerance_scales ? max / x_tolerance : x_tolerance;
+    const double gtol = tolerance_scales ? max / g_tolerance : g_tolerance;
+    const double ftol = tolerance_scales ? max / f_tolerance : f_tolerance;
+
     const size_t n = fdf->n;
     const size_t p = fdf->p;
 
@@ -347,8 +365,7 @@ int solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  */
 int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                                std::vector<int> ampData,
-                               std::vector<int> idxData,
-                               const size_t max_iter) {
+                               std::vector<int> idxData) {
     incr_total();
 
     //Error handling
@@ -443,7 +460,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     std::cerr << "peakCount = " << peakCount << std::endl;
 #endif
 
-    if(!solve_system(x, &fdf, &fdf_params, max_iter, max)){
+    if(!solve_system(x, &fdf, &fdf_params, max)){
         incr_pass();
  
         //this loop is going through every peak
@@ -494,8 +511,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
 
-            if(peak->amp >= 2*max || peak->amp < 10 || 
-                peak->triggering_location > n || peak->triggering_location < 0){
+            if(peak->amp >= amp_upper_bound*max || peak->amp < amp_lower_bound
+                    || peak->triggering_location > n
+                    || peak->triggering_location <0) {
                 delete(peak);
                 results->erase(iter--);
             } else{
@@ -720,7 +738,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     int peaks_found=0;
     for(int i=0; i< peakCount; i++){
         // Create a better guess by using a better width
-        int guess = -1;
+        int guess = -1; // "guess" represents our guess of the width value.
         int half_ampData_guess = ampData[peak_guesses_loc[i]]/2;
         int idx_lo=0,idx_hi=0;
         // look low
@@ -751,16 +769,18 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 }
             }
         }
-        if(guess<0){
-            guess = 4;
+
+        if(guess< 0) {
+            guess = guess_lt0_default;
         }
-        #ifdef DEBUG
-            std::cerr << "Guess: amp " << ampData[peak_guesses_loc[i]] <<
-            " time " << idxData[peak_guesses_loc[i]] <<
-            " width:" << guess <<std::endl;
-        #endif
-         if(guess > 20){guess = 10;}
-            peaks_found++;
+
+        spdlog::debug("Guess: amp {}; time: {}; width: {}",
+                ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
+                guess);
+
+        if(guess > 20) {guess = 10;}
+        peaks_found++;
+
         //Create a peak
         Peak* peak = new Peak();
         peak->amp = ampData[peak_guesses_loc[i]];

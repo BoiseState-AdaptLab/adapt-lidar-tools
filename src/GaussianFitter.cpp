@@ -14,6 +14,8 @@ GaussianFitter::GaussianFitter(){
     pass = 0;
     total = 0;
 
+    callback_diagnostics = CALLBACK_DIAGNOSTICS;
+
     // Set fitter params to default values
     max_iter = MAX_ITER;
 
@@ -241,20 +243,20 @@ void callback(const size_t iter, void *params,
 
     /* compute reciprocal condition number of J(x) */
     gsl_multifit_nlinear_rcond(&rcond, w);
-/*
+
     size_t npeaks = x->size/3;
     fprintf(stderr, "iter %2zu: ",iter);
     size_t j;
     for(j=0; j<npeaks; j++){
         fprintf(stderr," a = %.4f, b = %.4f, c = %.4f",
-                    gsl_vector_get(x,3*j+ 0),
-                    gsl_vector_get(x,3*j+ 1),
-                    gsl_vector_get(x,3*j+ 2));
+                gsl_vector_get(x,3*j+ 0),
+                gsl_vector_get(x,3*j+ 1),
+                gsl_vector_get(x,3*j+ 2));
     }
     fprintf(stderr,", |a|/|v| = %.4f cond(J) = %8.4f, |f(x)| = %.4f\n",
-                    avratio,
-                    1.0 / rcond,
-                    gsl_blas_dnrm2(f));*/
+                avratio,
+                1.0 / rcond,
+                gsl_blas_dnrm2(f));
 }
 
 

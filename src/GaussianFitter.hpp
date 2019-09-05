@@ -54,7 +54,6 @@ class GaussianFitter{
         int pass;
         int total;
 
-
         // *** Fitter parameters (that were magic numbers once) ***
 
         size_t max_iter;
@@ -70,8 +69,10 @@ class GaussianFitter{
 
         int amp_upper_bound; // Val is multiplied by max data point in wave
         int amp_lower_bound; // Val is unmodified (no multiplication)
+
+
     private:
-        int solve_system(gsl_vector *x,
+        int solve_system (gsl_vector *x,
                 gsl_multifit_nlinear_fdf *fdf,
                 gsl_multifit_nlinear_parameters *params, int max);
 

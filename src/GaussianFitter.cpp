@@ -243,15 +243,15 @@ void callback(const size_t iter, void *params,
     gsl_multifit_nlinear_rcond(&rcond, w);
 
     size_t npeaks = x->size/3;
-    fprintf(stderr, "iter %2zu: ",iter);
+    spdlog::trace("iter {}: ",iter);
     size_t j;
     for(j=0; j<npeaks; j++){
-        fprintf(stderr," a = %.4f, b = %.4f, c = %.4f",
+        spdlog::trace("amp = {}, t = {}, width = {}",
                 gsl_vector_get(x,3*j+ 0),
                 gsl_vector_get(x,3*j+ 1),
                 gsl_vector_get(x,3*j+ 2));
     }
-    fprintf(stderr,", |a|/|v| = %.4f cond(J) = %8.4f, |f(x)| = %.4f\n",
+    spdlog::trace("Also, |a|/|v| = {} cond(J) = {}, |f(x)| = {}",
                 avratio,
                 1.0 / rcond,
                 gsl_blas_dnrm2(f));

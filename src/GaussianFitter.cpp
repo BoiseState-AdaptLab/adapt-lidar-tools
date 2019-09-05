@@ -243,10 +243,11 @@ void callback(const size_t iter, void *params,
     gsl_multifit_nlinear_rcond(&rcond, w);
 
     size_t npeaks = x->size/3;
-    spdlog::trace("iter {}: ",iter);
+    spdlog::trace("iter {}:",iter);
     size_t j;
     for(j=0; j<npeaks; j++){
-        spdlog::trace("amp = {}, t = {}, width = {}",
+        spdlog::trace("peak {}: amp = {}, t = {}, width = {}",
+                j,
                 gsl_vector_get(x,3*j+ 0),
                 gsl_vector_get(x,3*j+ 1),
                 gsl_vector_get(x,3*j+ 2));

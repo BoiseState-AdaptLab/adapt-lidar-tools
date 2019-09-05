@@ -18,7 +18,7 @@ typedef std::chrono::high_resolution_clock Clock;
 int main (int argc, char *argv[]) {
 
     // Setting up logger
-    spdlog::set_pattern("[%D %X%z][%t:%@][%^%=8l%$] %v");
+    spdlog::set_pattern("[%^%=8l%$] %v");
         // Sets new pattern for timestamp
 
     auto logger = spdlog::create_async<spdlog::sinks::stdout_color_sink_mt>(

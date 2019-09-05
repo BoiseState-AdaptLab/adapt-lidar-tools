@@ -14,8 +14,6 @@ GaussianFitter::GaussianFitter(){
     pass = 0;
     total = 0;
 
-    callback_diagnostics = CALLBACK_DIAGNOSTICS;
-
     // Set fitter params to default values
     max_iter = MAX_ITER;
 

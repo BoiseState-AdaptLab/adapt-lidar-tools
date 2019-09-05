@@ -774,8 +774,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             guess = guess_lt0_default;
         }
 
-        spdlog::debug("Guess: amp {}; time: {}; width: {}",
-                ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
+        spdlog::debug("Guess for peak {}: amp {}; time: {}; width: {}",
+                i, ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
                 guess);
 
         if(guess > 20) {guess = 10;}

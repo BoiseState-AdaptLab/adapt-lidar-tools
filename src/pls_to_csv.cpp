@@ -7,6 +7,8 @@
 #include "CsvWriter.hpp"
 #include <chrono>
 
+// Activity level must be included before spdlog
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include "spdlog/spdlog.h"
 
 typedef std::chrono::high_resolution_clock Clock;

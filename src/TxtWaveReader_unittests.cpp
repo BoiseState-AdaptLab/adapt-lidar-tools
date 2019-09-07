@@ -282,3 +282,24 @@ TEST_F(TxtWaveReaderTest, Valid_Valid_EmptyAndReadsAnyways_Test) {
     EXPECT_TRUE(reader.wave == wave2);
     EXPECT_FALSE(reader.next_wave());
 }
+
+TEST_F(TxtWaveReaderTest, Valid_Valid_EOF_andReadsAnyways_Test) {
+    message = "1 1 1\n1 1 1\n2 2 2\n 2 2 2\n";
+    writeTestFile();
+
+    std::vector<int> idx0 = { 1, 1, 1 };
+    std::vector<int> wave0 = { 1, 1, 1 };
+    std::vector<int> idx1 = { 2, 2, 2 };
+    std::vector<int> wave1 = { 2, 2, 2 };
+
+    EXPECT_NO_THROW(reader.open_file (fileName));
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx0);
+    EXPECT_TRUE(reader.wave == wave0);
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx1);
+    EXPECT_TRUE(reader.wave == wave1);
+    EXPECT_FALSE(reader.next_wave());
+}

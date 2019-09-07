@@ -246,16 +246,18 @@ void callback(const size_t iter, void *params,
     spdlog::trace("iter {}:",iter);
     size_t j;
     for(j=0; j<npeaks; j++){
-        spdlog::trace("peak {}: amp = {}, t = {}, width = {}",
+        spdlog::trace(
+                "peak {}: amp = {:#.6g}, t = {:#.6g}, width = {:#.6g}",
                 j,
                 gsl_vector_get(x,3*j+ 0),
                 gsl_vector_get(x,3*j+ 1),
                 gsl_vector_get(x,3*j+ 2));
     }
-    spdlog::trace("Also, |a|/|v| = {} cond(J) = {}, |f(x)| = {}",
-                avratio,
-                1.0 / rcond,
-                gsl_blas_dnrm2(f));
+    spdlog::trace(
+            "Also, |a|/|v| = {:#.6g} cond(J) = {:#.6g}, |f(x)| = {:#.6g}",
+            avratio,
+            1.0 / rcond,
+            gsl_blas_dnrm2(f));
 }
 
 
@@ -775,7 +777,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             guess = guess_lt0_default;
         }
 
-        spdlog::debug("Guess for peak {}: amp {}; time: {}; width: {}",
+        spdlog::debug(
+                "Guess for peak {}: amp {}; time: {}; width: {}",
                 i, ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
                 guess);
 

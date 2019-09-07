@@ -228,3 +228,57 @@ TEST_F(TxtWaveReaderTest, Valid_Invalid_ValidWaveTest) {
     EXPECT_TRUE(reader.wave == wave2);
     EXPECT_FALSE(reader.next_wave());
 }
+
+TEST_F(TxtWaveReaderTest, Valid_Invalid_readanyways_Test) {
+    message = "9 8 7 6 5 4\n9 8 7 6 5 4\n3 2 1\n";
+    writeTestFile();
+
+    std::vector<int> idx0 = { 9, 8, 7, 6, 5, 4};
+    std::vector<int> wave0 = { 9, 8, 7, 6, 5, 4};
+    std::vector<int> idx1 = { 3, 2, 1 };
+    std::vector<int> wave1 = { };
+    std::vector<int> idx2 = { };
+    std::vector<int> wave2 = { };
+
+    EXPECT_NO_THROW(reader.open_file (fileName));
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx0);
+    EXPECT_TRUE(reader.wave == wave0);
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx1);
+    EXPECT_TRUE(reader.wave == wave1);
+    EXPECT_FALSE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx2);
+    EXPECT_TRUE(reader.wave == wave2);
+    EXPECT_FALSE(reader.next_wave());
+}
+
+TEST_F(TxtWaveReaderTest, Valid_Valid_EmptyAndReadsAnyways_Test) {
+    message = "1 2 3\n1 2 3\n4 5 6\n4 5 6\n\n";
+    writeTestFile();
+
+    std::vector<int> idx0 = { 1, 2, 3 };
+    std::vector<int> wave0 = { 1, 2, 3 };
+    std::vector<int> idx1 = { 4, 5, 6 };
+    std::vector<int> wave1 = { 4, 5, 6 };
+    std::vector<int> idx2 = { };
+    std::vector<int> wave2 = { };
+
+    EXPECT_NO_THROW(reader.open_file (fileName));
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx0);
+    EXPECT_TRUE(reader.wave == wave0);
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx1);
+    EXPECT_TRUE(reader.wave == wave1);
+    EXPECT_TRUE(reader.next_wave());
+
+    EXPECT_TRUE(reader.idx == idx2);
+    EXPECT_TRUE(reader.wave == wave2);
+    EXPECT_FALSE(reader.next_wave());
+}

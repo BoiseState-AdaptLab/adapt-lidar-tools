@@ -175,6 +175,17 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     spdlog::debug("Fail: {}", fitter.get_fail());
 }
 
+void log_raw_data(std::vector<int> idx, std::vector<int> wave) {
+    //Print raw wave
+    std::stringstream idxstr;
+    std::stringstream wavestr;
+    std::copy(idx.begin(), idx.end(), std::ostream_iterator<int>(idxstr, " "));
+    std::copy(wave.begin(), wave.end(),
+            std::ostream_iterator<int>(wavestr, " "));
+    spdlog::trace("raw pulse idx: {}; raw pulse wave: {}", idxstr.str(),
+            wavestr.str());
+}
+
 /**
  * Fits the raw data using either gaussian or first difference fitting,
  * and sends each wave of peaks to be written to a CSV file.
@@ -190,6 +201,10 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
 
+    bool log_diagnostics = cmdLine.log_diagnostics;
+
+    if (log_diagnostics) fitter.setDiagnostics(true);
+
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
@@ -202,10 +217,19 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
         // gets the raw data from the file
         raw_data.getNextPulse(&pd);
 
-        //Skip all the empty returning waveforms
+        // Skip all the empty returning waveforms
         if (pd.returningIdx.empty()){
+            if (log_diagnostics) {
+                spdlog::trace("pulse idx was empty, skipping");
+            }
             continue;
         }
+
+        // Log data
+        if (log_diagnostics) {
+            log_raw_data(pd.returningIdx, pd.returningWave);
+        }
+
         try {
             // Smooth the data and test result
             fitter.smoothing_expt(&pd.returningWave);
@@ -251,6 +275,10 @@ void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
 
+    bool log_diagnostics = cmdLine.log_diagnostics;
+
+    if (log_diagnostics) fitter.setDiagnostics(true);
+
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
@@ -261,7 +289,15 @@ void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
 
         //Skip all the empty returning waveforms
         if (raw_data.idx.empty()){
+            if (log_diagnostics) {
+                spdlog::trace("pulse idx was empty, skipping");
+            }
             continue;
+        }
+
+        // Log data
+        if (log_diagnostics) {
+            log_raw_data(raw_data.idx, raw_data.wave);
         }
 
         try {

@@ -28,6 +28,12 @@ GaussianFitter::GaussianFitter(){
 
     amp_upper_bound = AMP_UPPER_BOUND;
     amp_lower_bound = AMP_LOWER_BOUND;
+
+    log_diagnostics = false;
+}
+
+void GaussianFitter::setDiagnostics(bool newval) {
+    log_diagnostics = newval;
 }
 
 
@@ -237,27 +243,27 @@ void callback(const size_t iter, void *params,
     double avratio = gsl_multifit_nlinear_avratio(w);
     double rcond;
 
-    (void) params; /* not used */
-
     /* compute reciprocal condition number of J(x) */
     gsl_multifit_nlinear_rcond(&rcond, w);
 
-    size_t npeaks = x->size/3;
-    spdlog::trace("iter {}:",iter);
-    size_t j;
-    for(j=0; j<npeaks; j++){
-        spdlog::trace(
+    if (*((bool*) params)) { //solve system passes log_diagnostics over params.
+        size_t npeaks = x->size/3;
+        spdlog::trace("iter {}:",iter);
+        size_t j;
+        for(j=0; j<npeaks; j++){
+            spdlog::trace(
                 "peak {}: amp = {:#.6g}, t = {:#.6g}, width = {:#.6g}",
                 j,
                 gsl_vector_get(x,3*j+ 0),
                 gsl_vector_get(x,3*j+ 1),
                 gsl_vector_get(x,3*j+ 2));
-    }
-    spdlog::trace(
+        }
+        spdlog::trace(
             "Also, |a|/|v| = {:#.6g} cond(J) = {:#.6g}, |f(x)| = {:#.6g}",
             avratio,
             1.0 / rcond,
             gsl_blas_dnrm2(f));
+    }
 }
 
 
@@ -318,7 +324,8 @@ int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
     /* iterate until convergence */
     status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
-                                         callback, NULL, &info, work);
+                                         callback, (void*) &log_diagnostics
+                                         , &info, work);
     if (status) {
         // std::cerr << "There was an error: " << gsl_strerror (status) 
         // << "\n" << std::endl;
@@ -776,10 +783,12 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             guess = guess_lt0_default;
         }
 
-        spdlog::debug(
-                "Guess for peak {}: amp {}; time: {}; width: {}",
-                i, ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
-                guess);
+        if (log_diagnostics) {
+            spdlog::debug(
+                    "Guess for peak {}: amp {}; time: {}; width: {}",
+                    i, ampData[peak_guesses_loc[i]],
+                    idxData[peak_guesses_loc[i]], guess);
+        }
 
         if(guess > 20) {guess = 10;}
         peaks_found++;

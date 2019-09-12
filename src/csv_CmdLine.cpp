@@ -68,6 +68,8 @@ void csv_CmdLine::setUsageMessage()
         << "  :Prints this help message" << std::endl;
     buffer << "       -p "
         << "  :Writes peak data to CSV" << std::endl;
+    buffer << "       -l "
+        << "  :Logs extra diagnostics information about peaks" << std::endl;
     buffer << std::endl;
     buffer << "Peak variable options and letters:" << std::endl << std::endl;
     buffer << "| Variable                | Number | Description " << std::endl;
@@ -111,6 +113,7 @@ csv_CmdLine::csv_CmdLine(){
     is_txt = false;
     printUsageMessage = false;
     useGaussianFitting = true;
+    log_diagnostics = false;
     exeName = "";
     setUsageMessage();
 }
@@ -156,6 +159,7 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
         {"help", no_argument, NULL, 'h'},
         {"firstdiff", no_argument, NULL, 'd'},
         {"peaks", required_argument,NULL,'p'},
+        {"log-diag", no_argument, NULL, 'l'},
         {0, 0, 0, 0}
     };
 
@@ -165,7 +169,7 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:p:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:p:l",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -174,6 +178,8 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
+        } else if (optionChar == 'l') {//Sets log_diagnostics
+            log_diagnostics = true;
         } else if (optionChar == 'p') {
             //Sets which pruducts to create and for which variable
             { // Without curly braces wrapping this case, there are compilation

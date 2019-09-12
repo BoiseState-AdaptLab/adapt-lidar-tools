@@ -39,6 +39,10 @@ int main (int argc, char *argv[]) {
     // Collect start time
     Clock::time_point t1 = Clock::now();
 
+    if (cmdLineArgs.log_diagnostics) {
+        spdlog::info("Diagnostics enabled for this run");
+    }
+
     spdlog::info("Processing {}", fname);
 
     // Initialize data input per CmdLine specification

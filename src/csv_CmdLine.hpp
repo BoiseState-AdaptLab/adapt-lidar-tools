@@ -46,6 +46,9 @@ public:
     //True means input file was a txt file
     bool is_txt;
 
+    //True means we're gonna print a lot of extra diagnostic info
+    bool log_diagnostics;
+
     csv_CmdLine();
 
 

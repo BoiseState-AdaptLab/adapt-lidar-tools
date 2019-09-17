@@ -114,9 +114,6 @@ TEST_F(TxtWaveReaderTest, oneValidLineTest) {
     EXPECT_NO_THROW(reader.open_file (fileName));
     EXPECT_FALSE(reader.next_wave());
 
-    //printVector(reader.idx);
-    //printVector(reader.wave);
-
     EXPECT_TRUE(reader.idx == exp_idx);
     EXPECT_TRUE(reader.wave == exp_wave);
 }
@@ -131,9 +128,6 @@ TEST_F(TxtWaveReaderTest, oneValidWaveTest) {
 
     EXPECT_NO_THROW(reader.open_file (fileName));
     EXPECT_TRUE(reader.next_wave());
-
-    //printVector(reader.idx);
-    //printVector(reader.wave);
 
     EXPECT_TRUE(reader.idx == exp_idx);
     EXPECT_TRUE(reader.wave == exp_wave);
@@ -150,9 +144,6 @@ TEST_F(TxtWaveReaderTest, oneInvalidWaveTest) {
 
     EXPECT_NO_THROW(reader.open_file (fileName));
     EXPECT_TRUE(reader.next_wave());
-
-    //printVector(reader.idx);
-    //printVector(reader.wave);
 
     EXPECT_TRUE(reader.idx == idx0);
     EXPECT_TRUE(reader.wave == wave0);
@@ -189,9 +180,6 @@ TEST_F(TxtWaveReaderTest, twoValidWaveTest) {
 
     EXPECT_NO_THROW(reader.open_file (fileName));
     EXPECT_TRUE(reader.next_wave());
-
-    //printVector(reader.idx);
-    //printVector(reader.wave);
 
     EXPECT_TRUE(reader.idx == idx0);
     EXPECT_TRUE(reader.wave == wave0);

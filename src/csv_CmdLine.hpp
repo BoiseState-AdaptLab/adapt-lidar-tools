@@ -40,23 +40,26 @@ public:
     // True = gaussian fitting, False = first differencing
     bool useGaussianFitting;
 
-    //True stifles all output statements
+    // True stifles all output statements
     bool quiet;
 
-    //True means input file was a txt file
+    // True means input file was a txt file
     bool is_txt;
 
-    //True means we're gonna print a lot of extra diagnostic info
+    // True means we're gonna print a lot of extra diagnostic info
     bool log_diagnostics;
 
-    csv_CmdLine();
+    // Used to communicate filetype efficiently between functions
+    enum file_type { pls, txt, other };
 
+    csv_CmdLine();
 
     bool parse_args(int argc, char *argv[]);
     void setUsageMessage();
     std::string getUsageMessage();
     void check_input_file_exists();
     void check_input_txt_exists();
+    file_type get_file_type(std::string &f_name);
     void setInputFileName(char *args);
     void setInputFileName(std::string filename);
     std::string getInputFileName(bool pls);

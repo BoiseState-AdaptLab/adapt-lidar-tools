@@ -5,6 +5,7 @@
 #include "math.h"
 #include "Peak.hpp"
 #include <iostream>
+#include "spdlog/spdlog.h"
 
 //Default constructor
 Peak::Peak(){
@@ -75,15 +76,12 @@ void Peak::calcBackscatter(double emitted_amp, double emitted_fwhm,
     backscatter_coefficient =  calibration_constant * 
         (pow(range, 2)*amp*standard_dev) / (emitted_amp*n_atm);
 
-#ifdef debug    
-       std::cout << "Outgoing Amplitude = " << emitted_amp
-            << std::endl;
-        std::cout << "Returning Amplitude = " << amp << std::endl;
-        std::cout << "Range = " << range << std::endl;
-        std::cout << "Standard Deviation = " << standard_dev << std::endl;
-        std::cout << "Atmoshperic Transmission Factor = " << n_atm << std::endl;
-        std::cout << "Backscatter Coefficient = " << backscatter_coefficient << std::endl;
-#endif
+    spdlog::trace("Outgoing Amplitude = {}", emitted_amp);
+    spdlog::trace("Returning Amplitude = {}", amp);
+    spdlog::trace("Range = {}", range);
+    spdlog::trace("Standard Deviation = {}", standard_dev);
+    spdlog::trace("Atmoshperic Transmission Factor = {}", n_atm);
+    spdlog::trace("Backscatter Coefficient = {}", backscatter_coefficient);
 }
 
 /**

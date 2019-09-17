@@ -50,7 +50,7 @@ int FlightLineData::setFlightLineData(std::string fileName){
     pOpener.set_file_name(fileName.c_str());
     pReader = pOpener.open();
     if(pReader == NULL){
-        throw "Unable to Open File" + fileName;
+        spdlog::critical("Unable to Open File {}", fileName);
         return 1;
     }
 
@@ -356,18 +356,18 @@ int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
             (*it)->triggering_location * current_wave_gps_info.dx +
             current_wave_gps_info.x_first;
         if((*it)->x_activation < bb_x_min || (*it)->x_activation > bb_x_max+1){
-            std::cerr << "\nx activation: "<< (*it)->x_activation
-                << " not in range: " << bb_x_min << " - " << bb_x_max <<
-                std::endl;
+            spdlog::error("\nx activation: {} not in range: {} - {}", 
+                         (*it)->x_activation, bb_x_min, bb_x_max);
+              
         }
 
         (*it)->y_activation =
             (*it)->triggering_location * current_wave_gps_info.dy +
             current_wave_gps_info.y_first;
         if((*it)->y_activation < bb_y_min || (*it)->y_activation > bb_y_max+1){
-            std::cerr << "\ny activation: "<< (*it)->y_activation
-                << " not in range: " << bb_y_min << " - " << bb_y_max <<
-                std::endl;
+            spdlog::error("\ny activation: {} not in range: {} - {}",
+                         (*it)->y_activation, bb_y_min, bb_y_max);
+               
         }
 
         (*it)->z_activation =

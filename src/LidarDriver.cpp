@@ -51,13 +51,11 @@ void LidarDriver::calc_product_size(FlightLineData &data, int num_products){
         //Use dimensional analysis to cancel out all units except for bytes
         bytes = bytes_per_val * vals_per_product * num_products / prefix_conversion;
 
-#ifdef DEBUG   
-        std::cerr << "Values per product: " << vals_per_product << std::endl;
-        std::cerr << "Bytes per value (float): " << bytes_per_val << std::endl;
-        std::cerr << "Conversion to " << units.at(i) << ". Divide by " <<
-            prefix_conversion << std::endl;
-        std::cerr << "Total bytes needed: " << bytes << std::endl;
-#endif
+        spdlog::error("Values per product: {}", vals_per_product);
+        spdlog::trace("Bytes per value (float): {}", bytes_per_val);
+        spdlog::trace("Conversion to {}. Divide by {}", units.at(i), prefix_conversion);
+        spdlog::trace("Total bytes needed: {}", bytes);
+
     }
 
     //Find the best unit
@@ -68,8 +66,8 @@ void LidarDriver::calc_product_size(FlightLineData &data, int num_products){
     //Round to two decimals
     bytes = floorf(bytes * 100) / 100;
 
-    std::cout << num_products << " Tif files will require approximately " <<
-        bytes << units.at(i) << std::endl;
+    spdlog::trace("{} Tif files will require approximately {} {}", num_products,
+                  bytes, units.at(i));
 }
 
 /**
@@ -363,10 +361,10 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
                                            sizeof(float));
     float avg = 0 ;
     float dev = 0;
-#ifdef DEBUG
-    std::cerr << "Entering write image loop. In "<< __FILE__ << ":" << __LINE__
-        << std::endl;
-#endif
+
+    spdlog::error("Entering write image loop. In {} : {}", __FILE__, __LINE__);
+
+
 
     //loop through every pixel position
     for (y = fitted_data.y_idx_extent - 1; y >= 0; y--) {
@@ -410,10 +408,10 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
                     break;
             }
         }
-#ifdef DEBUG
-        std::cerr << "In writeImage loop. Writing band: "<< x << "," << y
-            << ". In " << __FILE__ << ":" << __LINE__ << std::endl;
-#endif
+
+        spdlog::error("In writeImage loop. Writing band: {}, {}. In {} : {}", x, y,
+                       __FILE__, __LINE__);
+
         //add the pixel values to the raster, one column at a time
         // Refer to http://www.gdal.org/classGDALRasterBand.html
         retval = gdal_ds->GetRasterBand(1)->RasterIO(GF_Write, 0,
@@ -421,7 +419,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
                 pixel_values, fitted_data.x_idx_extent, 1, GDT_Float32, 0, 0,
                 NULL);
         if (retval != CE_None) {
-            std::cerr << "Error during writing band: 1 " << std::endl;
+            spdlog::error("Error during writing band: 1 ");
         }
     }
 

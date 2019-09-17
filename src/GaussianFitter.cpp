@@ -440,18 +440,14 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
-    #ifdef DEBUG
-        std::cout << "Gaussian sum based on guesses - before solve system:"
-            << std::endl;
+        spdlog::trace("Gaussian sum based on guesses - before solve system:");
+           
         for (int i = 0; i < n; ++i){
             double ti = fit_data.t[i];
             // double yi = fit_data.y[i];
             double fi = gaussianSum(x, ti);
             printf("%f ", fi);
         }
-        std::cout << std::endl;
-        std::cout << std::endl;
-    #endif
 
 
     fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
@@ -459,9 +455,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fdf_params.solver = gsl_multifit_nlinear_solver_svd;
     fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
-#ifdef DEBUG
-    std::cerr << "peakCount = " << peakCount << std::endl;
-#endif
+    spdlog::error("peakCount = {}",peakCount);
 
     if(!solve_system(x, &fdf, &fdf_params, max)){
         incr_pass();
@@ -526,11 +520,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 peak->position_in_wave = i+1;
             }
 
-#ifdef FINAL_PEAK_TEST
-            std::cerr << "--------------------" << std::endl;
-            std::cerr << "results.size = " << results->size() << std::endl;
-            std::cerr << "is empty = " << results->empty() << std::endl;
-#endif
+            spdlog::error("--------------------");
+            spdlog::error("results.size = {}", results->size());
+            spdlog::error("is empty = {}", results->empty());
 
             if (!results->empty()) {
                 Peak* final_peak_ptr = results->back();
@@ -539,49 +531,39 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             }
             i++;
         }
-        #ifdef DEBUG
             // PRINT DATA AND MODEL FOR TESTING PURPOSES
-            std::cout << "Gaussian sum in solve system and not failed:"
-                << std::endl;
+            spdlog::trace("Gaussian sum in solve system and not failed:");
+               
             for (int i = 0; i < n; ++i){
                 double ti = fit_data.t[i];
                 // double yi = fit_data.y[i];
                 double fi = gaussianSum(x, ti);
                 printf("%f ", fi);
             }
-            std::cout << std::endl;
-            std::cout << std::endl;
-        #endif
     }
     else{
-        #ifdef DEBUG
             // FOR TESTING PURPOSES
-            std::cout << "In solve system and failed:" <<std::endl;
-            std::cerr << "Amplitudes: " << std::endl;
+            spdlog::trace("In solve system and failed:");
+            spdlog::error("Amplitudes: ");
 
             for(int i=0; i< (int)ampData.size(); i++){
-                std::cerr<< ampData[i] << " ";
+                spdlog::error("{}", ampData[i]);
             }
-            std::cerr << std::endl ;
-            std::cerr << "Indices in time: " << std::endl;
+            spdlog::error("Indices in time: ");
             for(int i=0; i< (int)idxData.size(); i++){
-                std::cerr<< idxData[i] << " ";
+                spdlog::error( "{}", idxData[i]);
             }
-            std::cerr << std::endl ;
-        #endif
 
         incr_fail();
        
-        #ifdef DEBUG
             // PRINT DATA AND MODEL FOR TESTING PURPOSES
-            std::cout << "Gaussian sum in solve system failed:" <<std::endl;
+            spdlog::trace("Gaussian sum in solve system failed:");
             for (int i = 0; i < n; ++i){
                 double ti = fit_data.t[i];
                 double yi = fit_data.y[i];
                 double fi = gaussianSum(x, ti);
                 printf("%f %f %f\n", ti, yi, fi);
             }
-        #endif
     }
 
     free(fit_data.t);
@@ -660,10 +642,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     }
     noise_level = ((float)max)*.09;
 
-    #ifdef DEBUG
-        std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09
-                            << std::endl;
-    #endif
+    spdlog::error("Max = {} Noise = {}", max, ((float)max)*.09);
+                          
     
     if (noise_level < 6){
         noise_level = 6;

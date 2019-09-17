@@ -3,7 +3,7 @@
 // Author: ravi
 
 #include "LidarVolume.hpp"
-
+#include "spdlog/spdlog.h"
 
 //Default constructor
 LidarVolume::LidarVolume(){
@@ -114,7 +114,7 @@ void LidarVolume::insert_peak(Peak* peak){
 
     // make sure we are in our bounding box
     if((long int)x_idx > x_idx_extent || (long int)y_idx > y_idx_extent){
-        std::cerr << "ERROR: Invalid peak ignored" << std::endl;
+        spdlog::error("ERROR: Invalid peak ignored");
         return;
     }
     unsigned long int p = position(y_idx,x_idx);

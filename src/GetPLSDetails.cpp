@@ -7,13 +7,26 @@
 #include "pulsewriter.hpp"
 #include "PulseData.hpp"
 
+// Activity level must be defined before spdlog is included.
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
+#include "spdlog/spdlog.h"
+#include "spdlog/async.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 int main (int argc, char *argv[]) {
+
+    // Setting up logger
+    spdlog::set_pattern("[%^%=8l%$] %v");
+    // Sets new pattern for timestamp
+  
+    auto logger = spdlog::create_async<spdlog::sinks::stdout_color_sink_mt>(
+                 "logger");    
 
     PULSEreadOpener pOpener;
     PULSEreader *pReader;
 
     if(argc < 2){
-        std::cerr << "Usage: " << argv[0] << " <path to .pls file>" <<std::endl;
+        spdlog::error("Usage: {} <path to .pls file>", argv[0]);
         return 1;
     }
 
@@ -21,7 +34,7 @@ int main (int argc, char *argv[]) {
     pOpener.set_file_name(fileName.c_str());
     pReader = pOpener.open();
     if(pReader == NULL){
-        throw "Unable to Open File" + fileName;
+        spdlog::critical("Unable to Open File {}", fileName);
         return 1;
     }
 
@@ -66,34 +79,32 @@ int main (int argc, char *argv[]) {
     std::string utm_str = tokens[0];
     std::string geog_cs = tokens[1];
 
-    std::cout << "\nReading information from the header of: " <<    argv[1]
-        << std::endl;
-    std::cout << "----------------------------------------";
+    spdlog::trace("\nReading information from the header of: {}", argv[1]);
+       
+    spdlog::trace("----------------------------------------")
     for(std::size_t i = 0; i < strlen(argv[1]); i++){
-        std::cout << "-";
+        spdlog::trace("-");
     }
-    std::cout << std::endl;
-    std::cout << "No of pulses: " << number_of_pulses << std::endl;
+    spdlog::trace("No of pulses: {}", number_of_pulses);
 
-    std::cout << "\nUTM: " << utm_str << std::endl;
-    std::cout << "Geog_cs: "<< geog_cs << std::endl;
+    spdlog::trace("\nUTM: {}", utm_str);
+    spdlog::trace("Geog_cs: {}", geog_cs);
 
-    std::cout << "\nMin x: "<< bb_x_min << std::endl;
-    std::cout << "Max x: "<< bb_x_max << std::endl;
-    std::cout << "Min y: "<< bb_y_min << std::endl;
-    std::cout << "Max y: "<< bb_y_max << std::endl;
+    spdlog::trace("\nMin x: {}", bb_x_min);
+    spdlog::trace("Max x: {}", bb_x_max);
+    spdlog::trace("Min y: {}", bb_y_min);
+    spdlog::trace("Max y: {}", bb_y_max);
 
     fprintf(stdout,"\nMin x: %Lf\nMax y: %Lf\n",bb_x_min,bb_y_max);
 
-    std::cout << "\nCalculating i, j max, mins and extents:"<< std::endl;
-    std::cout << "---------------------------------------"<< std::endl;
-    std::cout << "\nBounding box 'x_idx' min: "<< bb_x_idx_min << std::endl;
-    std::cout << "Bounding box 'x_idx' max: "<< bb_x_idx_max << std::endl;
-    std::cout << "Bounding box 'y_idx' min: "<< bb_y_idx_min << std::endl;
-    std::cout << "Bounding box 'y_idx' max: "<< bb_y_idx_max << std::endl;
+    spdlog::trace("\nCalculating i, j max, mins and extents:");
+    spdlog::trace("---------------------------------------");
+    spdlog::trace("\nBounding box 'x_idx' min: {}", bb_x_idx_min);
+    spdlog::trace("Bounding box 'x_idx' max: {}", bb_x_idx_max);
+    spdlog::trace("Bounding box 'y_idx' min: {}", bb_y_idx_min);
+    spdlog::trace("Bounding box 'y_idx' max: {}", bb_y_idx_max);
 
-    std::cout << "\nBounding box 'x_idx' extent: "<< x_idx_extent << std::endl;
-    std::cout << "Bounding box 'y_idx' extent: "<< y_idx_extent << std::endl;
-    std::cout << std::endl;
+    spdlog::trace("\nBounding box 'x_idx' extent: {}", x_idx_extent);
+    spdlog::trace("Bounding box 'y_idx' extent: {}", y_idx_extent);
 
 }

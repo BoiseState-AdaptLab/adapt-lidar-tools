@@ -11,10 +11,28 @@
 #include "cmdLine.hpp"
 #include "parseFile.hpp"
 
+// Activity level must be defined before spdlog is included.
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
+#include "spdlog/spdlog.h"
+#include "spdlog/async.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+
+
 int testCmdLine();
 int testFileReader();
 
 int main (){
+
+    // Setting up logger
+    spdlog::set_pattern("[%^%=8l%$] %v");
+    // Sets new pattern for timestamp
+    
+    auto logger = spdlog::create_async<spdlog::sinks::stdout_color_sink_mt>(
+                   "logger");
+
+
+
     int failCount = 0;
 
     // Call all tests associated with cmdLine parsing
@@ -23,8 +41,8 @@ int main (){
     // Call all tests associated with fileReading
     failCount += testFileReader();
 
-    std::cerr << "All Testing Complete: " << failCount << " tests failed\n"
-        << std::endl;
+    spdlog::error("All Testing Complete: {} tests failed\n", failCount);
+        
 }
 
 /**
@@ -62,8 +80,8 @@ int testCmdLine(){
     } 
     // if getting space failed just return with a failure
     if(someArgs == NULL){
-        std::cerr << "FAILURE: Malloc failed for testing" << 
-            std::endl;
+        spdlog::error("FAILURE: Malloc failed for testing");  
+            
         return 1;
     }
 
@@ -83,7 +101,7 @@ int testCmdLine(){
         noOfArgs = 1;
         strncpy( someArgs[0],"test",4);
         parseCmdLineArgs(noOfArgs,someArgs);
-        std::cerr << "\nFAIL: Test 1 - No command line arguments" << std::endl;
+        spdlog::error("\nFAIL: Test 1 - No command line arguments");
         failCount++;
     }catch(const std::exception& e){
         passCount++;
@@ -101,8 +119,8 @@ int testCmdLine(){
         strncpy( someArgs[1],"-f",2);
         parseCmdLineArgs(noOfArgs,someArgs);
         failCount++;
-        std::cerr << "FAIL: Test 2 - Valid option '-f' without argument" 
-            << std::endl;
+        spdlog::error("FAIL: Test 2 - Valid option '-f' without argument"); 
+           
     }catch(const std::exception& e){
         passCount++;
         std::cerr << e.what();
@@ -119,16 +137,16 @@ int testCmdLine(){
         strncpy( someArgs[1],"-g",2);
         parseCmdLineArgs(noOfArgs,someArgs);
         failCount++;
-        std::cerr << "FAIL: Test 3 - Invalid option '-f' without argument" 
-            << std::endl;
+        spdlog::error("FAIL: Test 3 - Invalid option '-f' without argument");
+            
     }catch(const std::exception& e){
         passCount++;
         std::cerr << e.what();
     }
 
 
-    std::cerr << "\nTesting Complete: " << failCount << " of " <<
-        failCount+passCount << " tests failed" << std::endl;
+    spdlog::error("\nTesting Complete: {} of {} tests failed", failCount, 
+                  failCount+passCount);
     return failCount;
 }
 

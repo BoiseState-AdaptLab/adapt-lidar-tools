@@ -5,6 +5,8 @@
 #include <iostream>
 #include "WaveGPSInformation.hpp"
 #include <iomanip>
+#include "spdlog/spdlog.h"
+
 //Default constructor
 WaveGPSInformation::WaveGPSInformation(){
     // enter default values
@@ -100,20 +102,21 @@ void WaveGPSInformation::populateGPS(PULSEreader *pReader){
  * Displays all GPS data
  */
 void WaveGPSInformation::displayGPSData(){
-    std::cout << x_anchor << std::endl;
-    std::cout << y_anchor << std::endl;
-    std::cout << z_anchor << std::endl;
-    std::cout << x_target << std::endl;
-    std::cout << y_target << std::endl;
-    std::cout << z_target << std::endl;
-    std::cout << x_first << std::endl;
-    std::cout << y_first << std::endl;
-    std::cout << z_first << std::endl;
-    std::cout << x_last << std::endl;
-    std::cout << y_last << std::endl;
-    std::cout << z_last << std::endl;
-    std::cout << edge << std::endl;
-    std::cout << facet << std::endl;
-    std::cout << scanDirection << std::endl;
-    std::cout << intensity << std::endl;
+    spdlog::trace("{}", x_anchor);
+    spdlog::trace("{}", y_anchor);
+    spdlog::trace("{}", z_anchor);
+    spdlog::trace("{}", x_target);
+    spdlog::trace("{}", y_target);
+    spdlog::trace("{}", z_target);
+    spdlog::trace("{}", x_first);
+    spdlog::trace("{}", y_first);
+    spdlog::trace("{}", z_first);
+    spdlog::trace("{}", x_last);
+    spdlog::trace("{}", y_last);
+    spdlog::trace("{}", z_last);
+    spdlog::trace("{}", edge);
+    spdlog::trace("{}", facet);
+    spdlog::trace("{}", scanDirection);
+    spdlog::trace("{}", intensity);
+
 }

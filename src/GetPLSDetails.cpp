@@ -81,7 +81,7 @@ int main (int argc, char *argv[]) {
 
     spdlog::trace("\nReading information from the header of: {}", argv[1]);
        
-    spdlog::trace("----------------------------------------")
+    spdlog::trace("----------------------------------------");
     for(std::size_t i = 0; i < strlen(argv[1]); i++){
         spdlog::trace("-");
     }

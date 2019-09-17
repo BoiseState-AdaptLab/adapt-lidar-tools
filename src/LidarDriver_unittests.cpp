@@ -737,12 +737,3 @@ TEST_F(LidarDriverTest, add_peaks_to_volume_test)
     EXPECT_EQ(peaks.at(0)->z_activation, lidarVolume.volume[5]->
             at(0)->z_activation);
 }
-
-/*******************************************************************************
- *
- * fit_data_csv and peaks_to_string tests
- *
- ******************************************************************************/
-
-//These need to be made testable along with fit_data, but that is an issue for
-//later I think. Not too much later though.

@@ -21,9 +21,6 @@ int main (int argc, char *argv[]) {
     spdlog::set_pattern("[%^%=8l%$] %v");
         // Sets new pattern for timestamp
 
-    auto logger = spdlog::create_async<spdlog::sinks::stdout_color_sink_mt>(
-            "logger");
-
     LidarDriver driver; //driver object with tools
     CmdLine cmdLineArgs; //command line options
     FlightLineData rawData; //the raw data read from PLS + WVS files

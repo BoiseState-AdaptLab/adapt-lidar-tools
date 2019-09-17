@@ -173,6 +173,17 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     spdlog::debug("Fail: {}", fitter.get_fail());
 }
 
+void log_raw_data(std::vector<int> idx, std::vector<int> wave) {
+    //Print raw wave
+    std::stringstream idxstr;
+    std::stringstream wavestr;
+    std::copy(idx.begin(), idx.end(), std::ostream_iterator<int>(idxstr, " "));
+    std::copy(wave.begin(), wave.end(),
+            std::ostream_iterator<int>(wavestr, " "));
+    spdlog::trace("raw pulse idx: {}; raw pulse wave: {}", idxstr.str(),
+            wavestr.str());
+}
+
 /**
  * Fits the raw data using either gaussian or first difference fitting,
  * and sends each wave of peaks to be written to a CSV file.
@@ -188,6 +199,10 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
 
+    bool log_diagnostics = cmdLine.log_diagnostics;
+
+    if (log_diagnostics) fitter.setDiagnostics(true);
+
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
         "first difference";
@@ -200,10 +215,19 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
         // gets the raw data from the file
         raw_data.getNextPulse(&pd);
 
-        //Skip all the empty returning waveforms
+        // Skip all the empty returning waveforms
         if (pd.returningIdx.empty()){
+            if (log_diagnostics) {
+                spdlog::trace("pulse idx was empty, skipping");
+            }
             continue;
         }
+
+        // Log data
+        if (log_diagnostics) {
+            log_raw_data(pd.returningIdx, pd.returningWave);
+        }
+
         try {
             // Smooth the data and test result
             fitter.smoothing_expt(&pd.returningWave);
@@ -220,6 +244,74 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
             // for each peak - find the activation point
             //               - calculate x,y,z
             raw_data.calc_xyz_activation(&peaks);
+
+            // for each peak we will call to_string and append them together
+            std::string *str = new std::string;
+            this->peaks_to_string(*str, cmdLine, peaks);
+            strings.push_back(str);
+        } catch (const char *msg) {
+            spdlog::error("{}", msg);
+        }
+
+        // make sure that we have an empty vector and string
+        for (auto i = peaks.begin(); i != peaks.end(); ++i) {
+            delete (*i);
+        }
+    }
+}
+
+/**
+ * Overloads fit_data_csv for TxtWaveReader support
+ * @param raw_data reference to TxtWaveReader object that holds raw data
+ * @param strings a place where peak to_string calls will be stored
+ * @param csv_CmdLine object that knows what data we want from peaks
+ */
+void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
+        std::vector<std::string*> &strings, csv_CmdLine &cmdLine) 
+{
+    std::ostringstream stream;
+    GaussianFitter fitter;
+    std::vector<Peak*> peaks;
+
+    bool log_diagnostics = cmdLine.log_diagnostics;
+
+    if (log_diagnostics) fitter.setDiagnostics(true);
+
+    //message the user
+    std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
+        "first difference";
+    spdlog::info("Finding peaks with {}", fit_type);
+
+    //parse each pulse
+    while (raw_data.next_wave()) {
+
+        //Skip all the empty returning waveforms
+        if (raw_data.idx.empty()){
+            if (log_diagnostics) {
+                spdlog::trace("pulse idx was empty, skipping");
+            }
+            continue;
+        }
+
+        // Log data
+        if (log_diagnostics) {
+            log_raw_data(raw_data.idx, raw_data.wave);
+        }
+
+        try {
+            // Smooth the data and test result
+            fitter.smoothing_expt(&raw_data.idx);
+
+            // Check parameter for using gaussian fitting or first differencing
+            if (cmdLine.useGaussianFitting) {
+                fitter.find_peaks(&peaks, raw_data.wave,
+                                     raw_data.idx);
+            } else {
+                fitter.guess_peaks(&peaks, raw_data.wave,
+                                     raw_data.idx);
+            }
+
+            // xyz calc isn't available for TxtWaveReader
 
             // for each peak we will call to_string and append them together
             std::string *str = new std::string;

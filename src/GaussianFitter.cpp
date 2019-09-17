@@ -648,17 +648,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     }
     noise_level = ((float)max)*.09;
 
-<<<<<<< HEAD
     spdlog::error("Max = {} Noise = {}", max, ((float)max)*.09);
-                          
-    
-=======
-    #ifdef DEBUG
-        std::cerr << "Max = " << max << " Noise = " << ((float)max)*.09
-                            << std::endl;
-    #endif
 
->>>>>>> diagnostics_driver
     if (noise_level < 6){
         noise_level = 6;
     }
@@ -771,19 +762,12 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             guess = guess_lt0_default;
         }
 
-<<<<<<< HEAD
-        spdlog::debug(
+        if (log_diagnostics) {
+            spdlog::debug(
                 "Guess for peak {}: amp {}; time: {}; width: {}",
                 i, ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
                 guess);
-=======
-        if (log_diagnostics) {
-            spdlog::debug(
-                    "Guess for peak {}: amp {}; time: {}; width: {}",
-                    i, ampData[peak_guesses_loc[i]],
-                    idxData[peak_guesses_loc[i]], guess);
         }
->>>>>>> diagnostics_driver
 
         if(guess > 20) {guess = 10;}
         peaks_found++;

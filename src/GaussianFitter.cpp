@@ -14,9 +14,7 @@ GaussianFitter::GaussianFitter(){
     pass = 0;
     total = 0;
 
-    // Set fitter params to default values
-    max_iter = MAX_ITER;
-
+    //Set instance variables to default values, as defined in header.
     tolerance_scales = TOL_SCALES;
     x_tolerance = X_TOL;
     g_tolerance = G_TOL;
@@ -293,9 +291,8 @@ void handler (const char * reason,
  * @return
  */
 int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
-                 gsl_multifit_nlinear_parameters *params, int max) {
-    const size_t max_iter = this->max_iter;
-
+                 gsl_multifit_nlinear_parameters *params, int max,
+                 const size_t max_iter) {
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
 
     const double xtol = tolerance_scales ? max / x_tolerance : x_tolerance;
@@ -371,11 +368,13 @@ int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  * @param results pointer to vector to store peaks
  * @param ampData
  * @param idxData
+ * @param max_iter
  * @return count of found peaks
  */
 int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                                std::vector<int> ampData,
-                               std::vector<int> idxData) {
+                               std::vector<int> idxData,
+                               const size_t max_iter) {
     incr_total();
 
     //Error handling
@@ -464,7 +463,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     spdlog::error("peakCount = {}",peakCount);
 
-    if(!solve_system(x, &fdf, &fdf_params, max)){
+    if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
         incr_pass();
  
         //this loop is going through every peak

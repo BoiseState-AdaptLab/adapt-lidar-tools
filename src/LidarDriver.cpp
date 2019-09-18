@@ -137,7 +137,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
                 peak_count = fitter.find_peaks(&peaks, pd.returningWave,
-                                     pd.returningIdx);
+                                     pd.returningIdx, 200);
             } else {
                 peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
                                      pd.returningIdx);
@@ -235,7 +235,7 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
                 fitter.find_peaks(&peaks, pd.returningWave,
-                                     pd.returningIdx);
+                                     pd.returningIdx, 200);
             } else {
                 fitter.guess_peaks(&peaks, pd.returningWave,
                                      pd.returningIdx);
@@ -305,7 +305,7 @@ void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
                 fitter.find_peaks(&peaks, raw_data.wave,
-                                     raw_data.idx);
+                                     raw_data.idx, 200);
             } else {
                 fitter.guess_peaks(&peaks, raw_data.wave,
                                      raw_data.idx);
@@ -397,11 +397,8 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
         std::vector<Peak*> emitted_peaks;
 
         if (cmdLine.useGaussianFitting){
-            size_t oldval = fitter.max_iter;
-            fitter.max_iter = 10;
             fitter.find_peaks(&emitted_peaks, pulse.outgoingWave,
-                    pulse.outgoingIdx);
-            fitter.max_iter = oldval;
+                    pulse.outgoingIdx, 200);
         } else {
             fitter.guess_peaks(&emitted_peaks, pulse.outgoingWave,
                     pulse.outgoingIdx);

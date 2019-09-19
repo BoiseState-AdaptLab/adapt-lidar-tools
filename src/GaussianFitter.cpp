@@ -662,52 +662,23 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     for(int i = 0; i<(int)ampData.size()-1; i++){
 
         if(ampData[i] > noise_level){
-            // sloping down
-            if(ampData[i+1] < ampData[i]){
-                // were we sloping up before?
-                if(grad == 1){
+            // were we sloping up before?
+            if (grad == 1){
+                // sloping down
+                if(ampData[i+1] < ampData[i]){
                     //record the peak
                     peak_guesses_loc.push_back(i);
+                    //now we are sloping down
+                    grad = -1;
+                }
                     //Peak location
-                // previously flat
-                }else if(grad == 0){
-                    int width = (i-wideStart);
-                    // if we were sloping down and then flat and then down
-                    // we need a width of 2
-                    if(prev_grad == -1){
-                        if(width >2){
-                            // record the center of the flat
-                            peak_guesses_loc.push_back(i-(width/2));
-                            //Peak location
-                        }
-                    }else{
-                        peak_guesses_loc.push_back(i-(width/2));
-                        //Peak location
+                // previously decreasing
+            }else if(grad == -1){
+                    if(ampData[i+1] > ampData[i]){
+                        //sloping up
+                        grad = 1;
                     }
-                }
-                grad = -1;
-            // sloping up
-            }else if(ampData[i+1] > ampData[i]){
-                //was flat
-                if(grad == 0){
-                    // need to look back to before going flat. If we were
-                    // going down then do not record.
-                    if(prev_grad == 1){
-                        peak_guesses_loc.push_back(i-((i-wideStart)/2)); 
-                        //Peak location
-                    }
-                }
-                // previously sloping up or down
-                grad = 1;
-            }else{
-                // if we were flat
-                if(grad != 0){
-                    wideStart = i;
-                }
-                prev_grad = grad;
-                grad = 0;
             }
-
         }
     }
 

@@ -305,6 +305,8 @@ TEST_F(CmdLineTest, invalidNonProductOption){
     ASSERT_TRUE(cmd.printUsageMessage);
 }
 
+//Tests that verbosity is set to the correct value by the -v option
+
 /****************************************************************************
  *
  * Long Option Tests

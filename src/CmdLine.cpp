@@ -16,6 +16,11 @@ const static std::string prod_peaks[3] = {"first", "last", "all"};
 const static std::string prod_vars[7] = {"elev", "amp", "width",
     "riseTime", "backscatter", "heightAtEnergy", "energyAtHeight"};
 
+//Verbosities
+const static int num_verbs = 6;
+const static std::string verbs[num_verbs] = {"trace", "debug", "info", "warn",
+    "error", "critical"};
+
 const static std::vector<int> start = {0,18,36,54,72,90};//,96,102};
 
 /****************************************************************************
@@ -52,7 +57,7 @@ void CmdLine::setUsageMessage()
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
     buffer << "       -h"
         << "  :Prints this help message" << std::endl;
-     buffer << std::endl;
+    buffer << std::endl;
     buffer << "Product Type Options:" << std::endl;
     buffer << "       -e  <list of products>"
         << "  :Generates Elevation products" << std::endl;
@@ -68,6 +73,10 @@ void CmdLine::setUsageMessage()
     buffer << "           Scientific notation allowed for calibration constant"
         << " (e.g. 0.78 = 7.8e-1 = 7.8E-1)"
         << std::endl;
+    buffer << "       -v <verbosity level>"
+        << "  :Sets the level of verbosity for the logger to use" << std::endl;
+    buffer << "           Options are 'trace', 'debug', 'info', 'warn', 'error'"
+        << ", and 'critical'" << std::endl;
     buffer << "       --all <calibration constant>"
         << "  :Generates all products for every variable. calibration constant"
         << " is used for backscatter coefficient calculations" << std::endl;
@@ -124,6 +133,7 @@ CmdLine::CmdLine(){
     printUsageMessage = false;
     useGaussianFitting = true;
     calcBackscatter = false;
+    verb = (verbosity) NULL;
     exeName = "";
     setUsageMessage();
 }
@@ -138,7 +148,18 @@ std::string CmdLine::getInputFileName(bool pls){
     return pls ? plsFileName : wvsFileName;
 }
 
-
+/**
+ * Tries to match option given with verbosity flag to a known value,
+ * and if so, sets verbosity instance variable to match it.
+ */
+void CmdLine::set_verbosity (char* new_verb) {
+    int i;
+    for (i = 0; i < num_verbs; i++) {
+        if (!std::strncmp (new_verb, verbs[i].c_str(), 9)) {
+            verb = (verbosity) i;
+        }
+    }
+}
 
 /**
  * Function that parses the command line arguments
@@ -171,6 +192,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         {"file", required_argument, NULL, 'f'},
         {"help", no_argument, NULL, 'h'},
         {"firstdiff", no_argument, NULL, 'd'},
+        {"verbosity", required_argument, NULL, 'v'},
         {"elevation", required_argument,NULL,'e'},
         {"amplitude", required_argument,NULL,'a'},
         {"width", required_argument,NULL,'w'},
@@ -188,7 +210,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:r:b:l:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:r:b:l:v:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -197,6 +219,11 @@ bool CmdLine::parse_args(int argc,char *argv[]){
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
+        } else if (optionChar == 'v') {
+            set_verbosity(optarg);
+            if (verb == (verbosity) NULL) {
+                printUsageMessage = true;
+            }
         } else if (optionChar == 'e' || optionChar == 'a' || optionChar == 'w'
             || optionChar == 'r' || optionChar == 'b'){
             //Sets which pruducts to create and for which variable

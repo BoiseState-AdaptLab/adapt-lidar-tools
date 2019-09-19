@@ -31,7 +31,7 @@ private:
     // else, use smooth second difference 
     bool max_elev_flag;
 
-
+    void set_verbosity(char* new_verb);
 
 public:
     //calibration constant (for backscatter option)
@@ -48,6 +48,10 @@ public:
 
     //True stifles all output statements
     bool quiet;
+
+    // For conveying verbosity to main function in a readable way
+    enum verbosity { trace, debug, info, warn, error, critical };
+    verbosity verb;
 
     CmdLine();
 

@@ -14,9 +14,7 @@ GaussianFitter::GaussianFitter(){
     pass = 0;
     total = 0;
 
-    // Set fitter params to default values
-    max_iter = MAX_ITER;
-
+    //Set instance variables to default values, as defined in header.
     tolerance_scales = TOL_SCALES;
     x_tolerance = X_TOL;
     g_tolerance = G_TOL;
@@ -28,6 +26,12 @@ GaussianFitter::GaussianFitter(){
 
     amp_upper_bound = AMP_UPPER_BOUND;
     amp_lower_bound = AMP_LOWER_BOUND;
+
+    log_diagnostics = false;
+}
+
+void GaussianFitter::setDiagnostics(bool newval) {
+    log_diagnostics = newval;
 }
 
 
@@ -237,27 +241,27 @@ void callback(const size_t iter, void *params,
     double avratio = gsl_multifit_nlinear_avratio(w);
     double rcond;
 
-    (void) params; /* not used */
-
     /* compute reciprocal condition number of J(x) */
     gsl_multifit_nlinear_rcond(&rcond, w);
 
-    size_t npeaks = x->size/3;
-    spdlog::trace("iter {}:",iter);
-    size_t j;
-    for(j=0; j<npeaks; j++){
-        spdlog::trace(
+    if (*((bool*) params)) { //solve system passes log_diagnostics over params.
+        size_t npeaks = x->size/3;
+        spdlog::trace("iter {}:",iter);
+        size_t j;
+        for(j=0; j<npeaks; j++){
+            spdlog::trace(
                 "peak {}: amp = {:#.6g}, t = {:#.6g}, width = {:#.6g}",
                 j,
                 gsl_vector_get(x,3*j+ 0),
                 gsl_vector_get(x,3*j+ 1),
                 gsl_vector_get(x,3*j+ 2));
-    }
-    spdlog::trace(
+        }
+        spdlog::trace(
             "Also, |a|/|v| = {:#.6g} cond(J) = {:#.6g}, |f(x)| = {:#.6g}",
             avratio,
             1.0 / rcond,
             gsl_blas_dnrm2(f));
+    }
 }
 
 
@@ -287,9 +291,8 @@ void handler (const char * reason,
  * @return
  */
 int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
-                 gsl_multifit_nlinear_parameters *params, int max) {
-    const size_t max_iter = this->max_iter;
-
+                 gsl_multifit_nlinear_parameters *params, int max,
+                 const size_t max_iter) {
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
 
     const double xtol = tolerance_scales ? max / x_tolerance : x_tolerance;
@@ -318,7 +321,8 @@ int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
     /* iterate until convergence */
     status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
-                                         callback, NULL, &info, work);
+                                         callback, (void*) &log_diagnostics
+                                         , &info, work);
     if (status) {
         // std::cerr << "There was an error: " << gsl_strerror (status) 
         // << "\n" << std::endl;
@@ -364,11 +368,13 @@ int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  * @param results pointer to vector to store peaks
  * @param ampData
  * @param idxData
+ * @param max_iter
  * @return count of found peaks
  */
 int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                                std::vector<int> ampData,
-                               std::vector<int> idxData) {
+                               std::vector<int> idxData,
+                               const size_t max_iter) {
     incr_total();
 
     //Error handling
@@ -457,7 +463,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     spdlog::error("peakCount = {}",peakCount);
 
-    if(!solve_system(x, &fdf, &fdf_params, max)){
+    if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
         incr_pass();
  
         //this loop is going through every peak
@@ -624,7 +630,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //are pointing to space used in LidarVolume
     results->clear();
 
-
     //UPDATE: We are only using a noise level of 6 because we want all peaks
     //with an amplitude >= 10
     //Level up to and including which peaks will be excluded
@@ -643,8 +648,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     noise_level = ((float)max)*.09;
 
     spdlog::error("Max = {} Noise = {}", max, ((float)max)*.09);
-                          
-    
+
     if (noise_level < 6){
         noise_level = 6;
     }
@@ -662,52 +666,23 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     for(int i = 0; i<(int)ampData.size()-1; i++){
 
         if(ampData[i] > noise_level){
-            // sloping down
-            if(ampData[i+1] < ampData[i]){
-                // were we sloping up before?
-                if(grad == 1){
+            // were we sloping up before?
+            if (grad == 1){
+                // sloping down
+                if(ampData[i+1] < ampData[i]){
                     //record the peak
                     peak_guesses_loc.push_back(i);
+                    //now we are sloping down
+                    grad = -1;
+                }
                     //Peak location
-                // previously flat
-                }else if(grad == 0){
-                    int width = (i-wideStart);
-                    // if we were sloping down and then flat and then down
-                    // we need a width of 2
-                    if(prev_grad == -1){
-                        if(width >2){
-                            // record the center of the flat
-                            peak_guesses_loc.push_back(i-(width/2));
-                            //Peak location
-                        }
-                    }else{
-                        peak_guesses_loc.push_back(i-(width/2));
-                        //Peak location
+                // previously decreasing
+            }else if(grad == -1){
+                    if(ampData[i+1] > ampData[i]){
+                        //sloping up
+                        grad = 1;
                     }
-                }
-                grad = -1;
-            // sloping up
-            }else if(ampData[i+1] > ampData[i]){
-                //was flat
-                if(grad == 0){
-                    // need to look back to before going flat. If we were
-                    // going down then do not record.
-                    if(prev_grad == 1){
-                        peak_guesses_loc.push_back(i-((i-wideStart)/2)); 
-                        //Peak location
-                    }
-                }
-                // previously sloping up or down
-                grad = 1;
-            }else{
-                // if we were flat
-                if(grad != 0){
-                    wideStart = i;
-                }
-                prev_grad = grad;
-                grad = 0;
             }
-
         }
     }
 
@@ -757,10 +732,12 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             guess = guess_lt0_default;
         }
 
-        spdlog::debug(
+        if (log_diagnostics) {
+            spdlog::debug(
                 "Guess for peak {}: amp {}; time: {}; width: {}",
                 i, ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
                 guess);
+        }
 
         if(guess > 20) {guess = 10;}
         peaks_found++;

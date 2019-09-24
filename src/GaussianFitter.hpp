@@ -35,7 +35,7 @@ class GaussianFitter{
 
     public:
         int find_peaks(std::vector<Peak*>* results,std::vector<int> ampData,
-                std::vector<int> idxData);
+                std::vector<int> idxData, const size_t max_iter);
         int noise_level;
         int guess_peaks(std::vector<Peak*>* results, 
                 std::vector<int> ampData, 
@@ -47,6 +47,8 @@ class GaussianFitter{
         int get_pass();
         int get_total();
 
+        void setDiagnostics(bool newval);
+
         std::vector<std::string> equations; //Fitted equations
 
         int max; //The max peak amplitude of each set of returning waves
@@ -55,8 +57,6 @@ class GaussianFitter{
         int total;
 
         // *** Fitter parameters (that were magic numbers once) ***
-
-        size_t max_iter;
 
         bool tolerance_scales;
         double x_tolerance;
@@ -72,9 +72,12 @@ class GaussianFitter{
 
 
     private:
+        bool log_diagnostics;
+
         int solve_system (gsl_vector *x,
                 gsl_multifit_nlinear_fdf *fdf,
-                gsl_multifit_nlinear_parameters *params, int max);
+                gsl_multifit_nlinear_parameters *params, int max,
+                const size_t max_iter);
 
         std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
         void incr_fail();

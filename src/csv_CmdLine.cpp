@@ -20,30 +20,52 @@ const static std::string peakvars[10] = {
  ****************************************************************************/
 
 /**
+ * Function that returns a file_type enum based on input filetype. 'Other'
+ * represents files that were not pls or txt.
+ * @param f_name filename to parse for file type
+ * @returns file_type enum representing what kind of file it is.
+ */
+csv_CmdLine::file_type csv_CmdLine::get_file_type (std::string &f_name) {
+    const size_t begin = f_name.find_last_of(".");
+    if (begin == string::npos) {
+        return other;
+    }
+
+    const size_t len = f_name.size() - begin;
+    std::string file_ext = f_name.substr(begin, len);
+
+    if (file_ext == ".pls") {
+        return pls;
+    } else if (file_ext == ".txt") {
+        return txt;
+    } else {
+        return other;
+    }
+}
+
+/**
  * Function that sets the command line arguments
  * @param args
  */
 void csv_CmdLine::setInputFileName(char *args){
-    //Check if the filename is a txt or a pls
     plsFileName = args;
-    size_t begin = plsFileName.find_last_of(".");
-    if (begin == string::npos) {
-        std::cerr << "File not specified or has no extension" << std::endl;
-        printUsageMessage = true;
-        return;
-    }
 
-    size_t len = plsFileName.size() - begin;
-    std::string file_ext = plsFileName.substr(begin, len);
+    // Check if the filename is a txt or a pls or other
+    std::string args_str (args);
+    const file_type f_type = get_file_type (args_str);
 
-    if (file_ext == ".pls") {
-        check_input_file_exists();
-    } else if (file_ext == ".txt") {
-        is_txt = true;
-        check_input_txt_exists();
-    } else {
-        std::cerr << "Not a supported filetype" << std::endl;
-        printUsageMessage = true;
+    switch (f_type) {
+        case pls:
+            check_input_file_exists();
+            break;
+        case txt:
+            is_txt = true;
+            check_input_txt_exists();
+            break;
+        case other:
+        default:
+            if (!quiet) std::cerr << "Not a supported filetype" << std::endl;
+            printUsageMessage = true;
     }
 }
 
@@ -68,6 +90,8 @@ void csv_CmdLine::setUsageMessage()
         << "  :Prints this help message" << std::endl;
     buffer << "       -p "
         << "  :Writes peak data to CSV" << std::endl;
+    buffer << "       -l "
+        << "  :Logs extra diagnostics information about peaks" << std::endl;
     buffer << std::endl;
     buffer << "Peak variable options and letters:" << std::endl << std::endl;
     buffer << "| Variable                | Number | Description " << std::endl;
@@ -111,6 +135,7 @@ csv_CmdLine::csv_CmdLine(){
     is_txt = false;
     printUsageMessage = false;
     useGaussianFitting = true;
+    log_diagnostics = false;
     exeName = "";
     setUsageMessage();
 }
@@ -156,6 +181,7 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
         {"help", no_argument, NULL, 'h'},
         {"firstdiff", no_argument, NULL, 'd'},
         {"peaks", required_argument,NULL,'p'},
+        {"log-diag", no_argument, NULL, 'l'},
         {0, 0, 0, 0}
     };
 
@@ -165,7 +191,7 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:p:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:p:l",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -174,6 +200,8 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
+        } else if (optionChar == 'l') {//Sets log_diagnostics
+            log_diagnostics = true;
         } else if (optionChar == 'p') {
             //Sets which pruducts to create and for which variable
             { // Without curly braces wrapping this case, there are compilation
@@ -283,6 +311,7 @@ void csv_CmdLine::check_input_file_exists() {
  * check if the input file exists, print error message if not
  */
 void csv_CmdLine::check_input_txt_exists() {
+    plsFileName = getInputFileName(true);
     if (!std::ifstream(plsFileName.c_str())) {
         if (!quiet) {
             std::cout << "\nFile " << plsFileName << " not found."

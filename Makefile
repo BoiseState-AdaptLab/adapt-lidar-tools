@@ -62,9 +62,9 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 #             for heade# files during preprocessing
 #
 # -llib:      Search the library named 'lib' when linking
-CXXFLAGS += -std=c++11 -g -pg -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
+CXXFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
 			-Ideps
-CFLAGS += -std=c++11 -g -pg -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
+CFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
 		  -Ideps
 
 # If this is a profiler build, add -pg flag to all uses of CXX

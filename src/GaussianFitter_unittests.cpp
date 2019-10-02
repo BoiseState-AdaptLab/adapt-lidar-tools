@@ -74,14 +74,9 @@ TEST_F(GaussianFitterTest, NayaniClipped1){
     EXPECT_EQ(34 ,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
-  
-
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
     EXPECT_EQ(2,count);
-
-  
-
 }
 
 TEST_F(GaussianFitterTest, NayaniClipped2){
@@ -110,16 +105,17 @@ TEST_F(GaussianFitterTest, NayaniClipped2){
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
 
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_EQ(235,peaks.at(0)->amp);
-    EXPECT_EQ(15, peaks.at(1)->amp);
+    
     
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
+    EXPECT_EQ(1,peaks.size());
+    EXPECT_EQ(235,peaks.at(0)->amp);
 
-
-    EXPECT_EQ(2,count);
+    EXPECT_EQ(1,count);
 
    // std::cout<< "second peak: " << peaks.at(1)->amp << std::endl;
    // for (int i = 0; i < ampData.size(); i++) {
@@ -148,19 +144,18 @@ TEST_F(GaussianFitterTest, gaussianFitter){
         ptr = strtok (NULL," ");
     }
 
+    //the noise level for this waveform is 21.6
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(3,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_EQ(240,peaks.at(0)->amp);
-    EXPECT_EQ(15,peaks.at(1)->amp);
-    EXPECT_EQ(8, peaks.at(2)->amp); //this should't be here. 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
-    EXPECT_EQ(3,count);
+    EXPECT_EQ(1,count);
 
 
 }
@@ -190,14 +185,14 @@ TEST_F(GaussianFitterTest, NayaniClipped3){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_EQ(238,peaks.at(0)->amp);
-    EXPECT_EQ(15,peaks.at(1)->amp);
 
+    //the noise level for this waveform is 21.4
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
    
-    EXPECT_EQ(2,count);
+    EXPECT_EQ(1,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
     //for(int i=0;i<count;i++){
     //  std::cerr<<peaks[i].amp<<std::endl;
@@ -231,15 +226,14 @@ TEST_F(GaussianFitterTest, NayaniClipped4){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_EQ(240,peaks.at(0)->amp);
-    EXPECT_EQ(7, peaks.at(1)->amp); 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
 
-    EXPECT_EQ(2,count);
+    EXPECT_EQ(1,count);
     //std::cerr << "--After guess_peaks and find_peaks--\n " << std::endl;
     //for(int i=0;i<count;i++){
     //  std::cerr<<peaks[i].amp<<std::endl;
@@ -277,7 +271,7 @@ TEST_F(GaussianFitterTest, NayaniClipped5){
     EXPECT_EQ(146,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
 
     EXPECT_EQ(2,count);
@@ -308,23 +302,21 @@ TEST_F(GaussianFitterTest, NayaniClipped6){
         i++;
         ptr = strtok (NULL," ");
     }
-
+    
+    //the noise level for this waveform is 17.4
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(5,peaks.size());
-    EXPECT_EQ(11,peaks.at(0)->amp);
-    EXPECT_EQ(193,peaks.at(1)->amp);
-    EXPECT_EQ(151,peaks.at(2)->amp);
-    EXPECT_EQ(12,peaks.at(3)->amp);
-    EXPECT_EQ(10, peaks.at(4)->amp);
+    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(193,peaks.at(0)->amp);
+    EXPECT_EQ(151,peaks.at(1)->amp);
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
-    EXPECT_EQ(5,count);
+    EXPECT_EQ(2,count);
 
 
 }
@@ -354,17 +346,16 @@ TEST_F(GaussianFitterTest, NayaniClipped7){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(3,peaks.size());
+    EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(98,peaks.at(0)->amp);
     EXPECT_EQ(168,peaks.at(1)->amp);
-    EXPECT_EQ(13, peaks.at(2)->amp);
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
  
 
-    EXPECT_EQ(3,count);
+    EXPECT_EQ(2,count);
 
 }
 
@@ -390,6 +381,7 @@ TEST_F(GaussianFitterTest, NayaniClipped8){
         ptr = strtok (NULL," ");
     }
 
+    //the noise level for this waveform is 19.9
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
@@ -400,7 +392,7 @@ TEST_F(GaussianFitterTest, NayaniClipped8){
     EXPECT_EQ(21,peaks.at(2)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
     EXPECT_EQ(3,count);
 
@@ -438,17 +430,16 @@ TEST_F(GaussianFitterTest, max_iter_1){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(3,peaks.size());
+    EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(150,peaks.at(0)->amp);
-    EXPECT_EQ(9,peaks.at(1)->amp);
-    EXPECT_EQ(25,peaks.at(2)->amp);
+    EXPECT_EQ(25,peaks.at(1)->amp);
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
   
 
-    EXPECT_EQ(3,count);
+    EXPECT_EQ(2,count);
 }
 
 //Exceeding max no of iterations
@@ -477,16 +468,15 @@ TEST_F(GaussianFitterTest, max_iter_2){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(3,peaks.size());
+    EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(139,peaks.at(0)->amp);
-    EXPECT_EQ(10,peaks.at(1)->amp);
-    EXPECT_EQ(26,peaks.at(2)->amp);
+    EXPECT_EQ(26,peaks.at(1)->amp);
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
-    EXPECT_EQ(3,count);
+    EXPECT_EQ(2, count);
 }
 
 //Exceeding max no of iterations
@@ -515,16 +505,15 @@ TEST_F(GaussianFitterTest, max_iter_3){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(3,peaks.size());
+    EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(164,peaks.at(0)->amp);
-    EXPECT_EQ(11,peaks.at(1)->amp);
-    EXPECT_EQ(33,peaks.at(2)->amp);
+    EXPECT_EQ(33,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
 
-    EXPECT_EQ(3,count);
+    EXPECT_EQ(2,count);
 }
 
 //Exceeding max no of iterations
@@ -555,14 +544,14 @@ TEST_F(GaussianFitterTest, max_iter_4){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(4,peaks.size());
+    EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(88,peaks.at(0)->amp);
     EXPECT_EQ(34,peaks.at(1)->amp);
     EXPECT_EQ(20,peaks.at(3)->amp);
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
     EXPECT_EQ(3,count);
 }
@@ -599,22 +588,21 @@ TEST_F(GaussianFitterTest, max_iter_5){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    ASSERT_EQ(9,peaks.size());
+    ASSERT_EQ(7,peaks.size());
     EXPECT_EQ(88,peaks.at(0)->amp);
     EXPECT_EQ(34,peaks.at(1)->amp);
-    EXPECT_EQ(9,peaks.at(2)->amp);
-    EXPECT_EQ(20,peaks.at(3)->amp);
-    EXPECT_EQ(25,peaks.at(4)->amp);
-    EXPECT_EQ(13,peaks.at(5)->amp);
-    EXPECT_EQ(132,peaks.at(6)->amp);
-    EXPECT_EQ(22,peaks.at(7)->amp);
+    EXPECT_EQ(20,peaks.at(2)->amp);
+    EXPECT_EQ(25,peaks.at(3)->amp);
+    EXPECT_EQ(13,peaks.at(4)->amp);
+    EXPECT_EQ(132,peaks.at(5)->amp);
+    EXPECT_EQ(22,peaks.at(6)->amp);
  
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
 
-    EXPECT_EQ(8,count);
+    EXPECT_EQ(7,count);
 }
 
 //Triggering location: -2147483648 not in range: 60
@@ -649,7 +637,7 @@ TEST_F(GaussianFitterTest, trig_loc_1){
     EXPECT_EQ(172,peaks.at(1)->amp);
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
 
     EXPECT_EQ(2,count);
@@ -682,17 +670,16 @@ TEST_F(GaussianFitterTest, trig_loc_2){
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(3,peaks.size());
+    EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(143, peaks.at(0)->amp);
     EXPECT_EQ(135, peaks.at(1)->amp);
-    EXPECT_EQ(10, peaks.at(2)->amp);
 
 
     fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
    
-    EXPECT_EQ(3,count);
+    EXPECT_EQ(2,count);
 }
 
 //Test gaussian fitting iterations
@@ -726,9 +713,9 @@ TEST_F(GaussianFitterTest, num_iterations_10){
     EXPECT_EQ(37, peaks.at(0)->amp);
     EXPECT_EQ(190, peaks.at(1)->amp);
 
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData,200);
-    EXPECT_EQ(2,count);
+    //fitter.smoothing_expt(&ampData);
+   // int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+  //  EXPECT_EQ(2,count);
 }
 
 //Collect a list of up to 10 problematic waveforms (first peak is < 10% of second peak). #259
@@ -750,11 +737,9 @@ TEST_F(GaussianFitterTest, problem_waveform_1){
 
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(189, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(12, peaks.at(1)->amp, 1);
     EXPECT_EQ(21, peaks.at(0)->location);
-    EXPECT_EQ(32, peaks.at(1)->location);  
 }
 
 //2
@@ -775,11 +760,9 @@ TEST_F(GaussianFitterTest, problem_waveform_2){
     
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(198, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(13, peaks.at(1)->amp, 1);
     EXPECT_EQ(21, peaks.at(0)->location);
-    EXPECT_EQ(33, peaks.at(1)->location);
      
 }             
 //3
@@ -800,11 +783,9 @@ TEST_F(GaussianFitterTest, problem_waveform_3){
     
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(182, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(12, peaks.at(1)->amp, 1);
     EXPECT_EQ(21, peaks.at(0)->location);
-    EXPECT_EQ(33, peaks.at(1)->location);
 }
              
 //4
@@ -825,11 +806,9 @@ TEST_F(GaussianFitterTest, problem_waveform_4){
     
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(205, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(13, peaks.at(1)->amp, 1);
     EXPECT_EQ(21, peaks.at(0)->location);
-    EXPECT_EQ(31, peaks.at(1)->location);
 }
              
 //5
@@ -850,11 +829,9 @@ TEST_F(GaussianFitterTest, problem_waveform_5){
     
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(186, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(14, peaks.at(1)->amp, 1);
     EXPECT_EQ(20, peaks.at(0)->location);
-    EXPECT_EQ(31, peaks.at(1)->location);
 
 
 }
@@ -877,12 +854,9 @@ TEST_F(GaussianFitterTest, problem_waveform_6){
     
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(3,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(181, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(12, peaks.at(1)->amp, 1);
-    EXPECT_NEAR(19, peaks.at(2)->amp, 1);
     EXPECT_EQ(19, peaks.at(0)->location);
-    EXPECT_EQ(29, peaks.at(1)->location);
 
 }
              
@@ -932,8 +906,8 @@ TEST_F(GaussianFitterTest, problem_waveform_8){
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(191, peaks.at(0)->amp, 1);
     EXPECT_NEAR(174, peaks.at(1)->amp, 1);
-    //WE NEED TO ADD THE LOCATION HERE 
-    //TAKE A LOOK AT NAYANIS WAVEFORM     
+    EXPECT_EQ(19, peaks.at(0)->location);
+    EXPECT_EQ(21, peaks.at(1)->location);
 
 }
              
@@ -953,11 +927,9 @@ TEST_F(GaussianFitterTest, problem_waveform_9){
     
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(183, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(13, peaks.at(1)->amp, 1);
     EXPECT_EQ(20, peaks.at(0)->location);
-    EXPECT_EQ(31, peaks.at(1)->location); 
 }
              
 //10
@@ -976,9 +948,130 @@ TEST_F(GaussianFitterTest, problem_waveform_10){
     
     std::vector<Peak*> peaks;
     fitter.guess_peaks(&peaks, ampData, idxData);
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(184, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(12, peaks.at(1)->amp, 1);
     EXPECT_EQ(14, peaks.at(0)->location);
-    EXPECT_EQ(25, peaks.at(1)->location);
+}
+
+//testing guess.peaks() without flat areas
+//convex, one peak waveform
+TEST_F(GaussianFitterTest, FlatFreeTest1){
+
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "9 11 12 13 15 22 34 68 54 42 27 21 17 15 13 12";
+
+    parseWave(input, idxData, ampData);
+
+    GaussianFitter fitter;
+    fitter.smoothing_expt(&ampData);
+
+    std::vector<Peak*> peaks;
+    fitter.guess_peaks(&peaks, ampData, idxData);
+    EXPECT_EQ(1,peaks.size());
+    EXPECT_NEAR(68, peaks.at(0)->amp, 1);
+    EXPECT_EQ(8, peaks.at(0)->location);
+}
+
+//concave, no peaks waveform
+TEST_F(GaussianFitterTest, FlatFreeTest2){
+
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "87 73 56 41 18 15 26 41 57 57 57 78 81 89 97";
+
+    parseWave(input, idxData, ampData);
+
+    GaussianFitter fitter;
+    fitter.smoothing_expt(&ampData);
+
+    std::vector<Peak*> peaks;
+    fitter.guess_peaks(&peaks, ampData, idxData);
+    EXPECT_EQ(0,peaks.size());
+    //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
+   // EXPECT_EQ(8, peaks.at(0)->location);
+}
+
+//slope up, no peaks waveform
+TEST_F(GaussianFitterTest, FlatFreeTest3){
+
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "14 18 21 26 35 44 52 64 73 82 86 91 103";
+
+    parseWave(input, idxData, ampData);
+
+    GaussianFitter fitter;
+    fitter.smoothing_expt(&ampData);
+
+    std::vector<Peak*> peaks;
+    fitter.guess_peaks(&peaks, ampData, idxData);
+    EXPECT_EQ(0,peaks.size());
+    //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
+    //EXPECT_EQ(8, peaks.at(0)->location);
+}
+
+//slope down, no peaks waveform
+TEST_F(GaussianFitterTest, FlatFreeTest4){
+
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "123	109 93 82 71 64 51 42 33 20 12";
+
+    parseWave(input, idxData, ampData);
+
+    GaussianFitter fitter;
+    fitter.smoothing_expt(&ampData);
+
+    std::vector<Peak*> peaks;
+    fitter.guess_peaks(&peaks, ampData, idxData);
+    EXPECT_EQ(0,peaks.size());
+   // EXPECT_NEAR(68, peaks.at(0)->amp, 1);
+   // EXPECT_EQ(8, peaks.at(0)->location);
+}
+
+//two peaks waveform
+TEST_F(GaussianFitterTest, FlatFreeTest5){
+
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "24 37 52 66 65 52 41 32 22 17 28 56 78 62 45 45 45 27";
+
+    parseWave(input, idxData, ampData);
+
+    GaussianFitter fitter;
+    fitter.smoothing_expt(&ampData);
+
+    std::vector<Peak*> peaks;
+    fitter.guess_peaks(&peaks, ampData, idxData);
+    EXPECT_EQ(2,peaks.size());
+    EXPECT_NEAR(66, peaks.at(0)->amp, 1);
+    EXPECT_EQ(4, peaks.at(0)->location);
+    EXPECT_NEAR(78, peaks.at(1)->amp, 1);
+    EXPECT_EQ(13, peaks.at(1)->location);
+}
+
+//flat areas waveform
+TEST_F(GaussianFitterTest, FlatFreeTest6){
+
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "13 17 17 17 23 32 32 32 32 67 67 67 73 73 89";
+
+    parseWave(input, idxData, ampData);
+
+    GaussianFitter fitter;
+    fitter.smoothing_expt(&ampData);
+
+    std::vector<Peak*> peaks;
+    fitter.guess_peaks(&peaks, ampData, idxData);
+    EXPECT_EQ(0,peaks.size());
+    //EXPECT_NEAR(67, peaks.at(0)->amp, 1);
+   // EXPECT_EQ(12, peaks.at(0)->location);
 }

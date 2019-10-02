@@ -628,30 +628,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //We need to start this function with a clear vector.
     //We can't call destructors because we don't know if the pointers
     //are pointing to space used in LidarVolume
-    results->clear();
-
-    //UPDATE: We are only using a noise level of 6 because we want all peaks
-    //with an amplitude >= 10
-    //Level up to and including which peaks will be excluded
-    //For the unaltered wave, noise_level = 16
-    //for the second derivative of the wave, noise_level = 3
-    // this is creating guesses for a guassian fitter that does not do
-    // well if we have guesses that have an amplitude more than an order
-    // of magnitute apart. We are going to set the noise level to be the
-    // max value/ 10 - max*.05;
-    max = 0;
-    for(int i = 0; i<(int)ampData.size(); i++){
-        if(ampData[i]>max){
-            max = ampData[i];
-        }
-    }
-    noise_level = ((float)max)*.09;
-
-    spdlog::error("Max = {} Noise = {}", max, ((float)max)*.09);
-
-    if (noise_level < 6){
-        noise_level = 6;
-    }
+    results->clear(); 
 
     //Sign of gradient:
     // =    1 for increasing

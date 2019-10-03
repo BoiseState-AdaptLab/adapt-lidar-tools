@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "spdlog/spdlog.h"
+#include "GaussianFitterGpu.cuh"
 
 GaussianFitter::GaussianFitter(){
     fail = 0;
@@ -135,7 +136,8 @@ int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
     struct data *d = (struct data *) params;
 
-    int npeaks = x->size/3;
+    func_df_gpu(x, d->t, d->n, J);
+/*    int npeaks = x->size/3;
     int j;
     size_t i;
     // for each value of time
@@ -173,7 +175,7 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
             gsl_matrix_set(J, i, 3*j+2, c_sum);
         }
     }
-
+*/
     return GSL_SUCCESS;
 }
 

@@ -34,6 +34,9 @@ BIN = bin
 OBJ = obj
 LIB = lib
 
+# Compiler for separating out GPU code and CPU code
+NVCC = nvcc
+
 # Flags passed to the preprocessor
 ##################################
 # Set Google Test's header directory as a system directory, so that
@@ -66,6 +69,8 @@ CXXFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
 			-Ideps
 CFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
 		  -Ideps
+CUDAFLAGS = -std=c++11 -g --compiler-options -Wall --compiler-options -Wextra \
+                  -I$(PULSE_DIR)/inc -Ideps
 
 # If this is a profiler build, add -pg flag to all uses of CXX
 ifdef PROFILER_BUILD
@@ -188,6 +193,9 @@ $(OBJ)/TxtWaveReader.o: $(SRC)/TxtWaveReader.cpp
 $(OBJ)/%.o: $(SRC)/%.cpp
 	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS)
 
+$(OBJ)/%.o: $(SRC)/%.cu
+	$(NVCC) $(CUDAFLAGS) -c -o $@ $^ -lgsl -lgslcublas 
+
 # Builds the info tool
 pls-info: $(BIN)/pls-info
 
@@ -206,8 +214,8 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
                        $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
-                       $(OBJ)/TxtWaveReader.o
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
+                       $(OBJ)/TxtWaveReader.o $(OBJ)/GaussianFitterGpu.o
+	$(NVCC) $(PFLAG) $(CPPFLAGS) $(CUDAFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
 

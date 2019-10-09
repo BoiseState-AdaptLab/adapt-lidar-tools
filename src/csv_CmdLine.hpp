@@ -40,6 +40,9 @@ public:
     // True = gaussian fitting, False = first differencing
     bool useGaussianFitting;
 
+    //TODO What should be the default noise level?
+    int noise_level = 9;
+
     // True stifles all output statements
     bool quiet;
 

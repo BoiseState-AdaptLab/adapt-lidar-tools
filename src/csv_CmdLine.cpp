@@ -88,6 +88,8 @@ void csv_CmdLine::setUsageMessage()
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
     buffer << "       -h"
         << "  :Prints this help message" << std::endl;
+    buffer << "       -n  <level>"
+        << "  :Sets the noise level\n";
     buffer << "       -p "
         << "  :Writes peak data to CSV" << std::endl;
     buffer << "       -l "
@@ -179,6 +181,7 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
     {
         {"file", required_argument, NULL, 'f'},
         {"help", no_argument, NULL, 'h'},
+        {"noise_level", required_argument, NULL, 'n'},
         {"firstdiff", no_argument, NULL, 'd'},
         {"peaks", required_argument,NULL,'p'},
         {"log-diag", no_argument, NULL, 'l'},
@@ -191,7 +194,7 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:p:l",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:n:p:l",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -200,6 +203,8 @@ bool csv_CmdLine::parse_args(int argc,char *argv[]){
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
+        }else if (optionChar == 'n'){
+            noise_level = std::stoi(optarg);
         } else if (optionChar == 'l') {//Sets log_diagnostics
             log_diagnostics = true;
         } else if (optionChar == 'p') {

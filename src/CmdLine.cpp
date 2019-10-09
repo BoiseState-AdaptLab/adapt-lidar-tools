@@ -57,6 +57,8 @@ void CmdLine::setUsageMessage()
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
     buffer << "       -h"
         << "  :Prints this help message" << std::endl;
+    buffer << "       -n  <level>"
+        << "  :Sets the noise level\n";
     buffer << std::endl;
     buffer << "Product Type Options:" << std::endl;
     buffer << "       -e  <list of products>"
@@ -191,6 +193,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
     {
         {"file", required_argument, NULL, 'f'},
         {"help", no_argument, NULL, 'h'},
+        {"noise_level", required_argument, NULL, 'n'},
         {"firstdiff", no_argument, NULL, 'd'},
         {"verbosity", required_argument, NULL, 'v'},
         {"elevation", required_argument,NULL,'e'},
@@ -210,7 +213,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:r:b:l:v:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -219,6 +222,8 @@ bool CmdLine::parse_args(int argc,char *argv[]){
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
+        }else if (optionChar == 'n'){
+            noise_level = std::stoi(optarg);
         } else if (optionChar == 'v') {
             set_verbosity(optarg);
             if (verb == (verbosity) NULL) {

@@ -58,7 +58,7 @@ void CmdLine::setUsageMessage()
     buffer << "       -h"
         << "  :Prints this help message" << std::endl;
     buffer << "       -n  <level>"
-        << "  :Sets the noise level\n";
+        << "  :Sets the noise level. Defaults to 6.\n";
     buffer << std::endl;
     buffer << "Product Type Options:" << std::endl;
     buffer << "       -e  <list of products>"
@@ -223,7 +223,15 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
         }else if (optionChar == 'n'){
-            noise_level = std::stoi(optarg);
+            try{
+                noise_level = std::stoi(optarg);
+            }catch(const std::invalid_argument& e){
+                msgs.push_back("Cannot convert noise level to int. Error: " + std::string(e.what()));
+                printUsageMessage = true;
+            }catch(const std::out_of_range& e){
+                msgs.push_back("Cannot fit noise level in type int. Error: " + std::string(e.what()));
+                printUsageMessage = true;
+            }
         } else if (optionChar == 'v') {
             set_verbosity(optarg);
             if (verb == (verbosity) NULL) {

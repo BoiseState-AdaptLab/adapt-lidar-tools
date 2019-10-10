@@ -42,12 +42,12 @@ public:
     // use find_peaks parameter
     // True = gaussian fitting, False = first differencing
     bool useGaussianFitting;
-    
-    //TODO: What should be the default noise level?
-    int noise_level = 9;
+
+    //Default noise level
+    int noise_level = 6;
 
     // Whether or not backscatter coefficient has been requested
-    bool calcBackscatter;    
+    bool calcBackscatter;
 
     //True stifles all output statements
     bool quiet;

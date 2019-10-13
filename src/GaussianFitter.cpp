@@ -22,7 +22,7 @@ GaussianFitter::GaussianFitter(){
 
     guess_lessthan_0_default = GUESS_LT0_DEFAULT;
     guess_upper_lim = GUESS_UPPER_LIM;
-    guess_gt_upper_lim_default = GUESS_GT_UPPER_LIM_DEFAULT;
+    guess_upper_lim_default = GUESS_UPPER_LIM_DEFAULT;
 
     amp_upper_bound = AMP_UPPER_BOUND;
     amp_lower_bound = AMP_LOWER_BOUND;
@@ -710,7 +710,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 guess);
         }
 
-        if(guess > 20) {guess = 10;}
+        if(guess > guess_upper_lim) {guess = guess_upper_lim_default;}
         peaks_found++;
 
         //Create a peak

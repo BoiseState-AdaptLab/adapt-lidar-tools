@@ -375,6 +375,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                                std::vector<int> ampData,
                                std::vector<int> idxData,
                                const size_t max_iter) {
+    spdlog::trace("--NEW WAVEFORM--");
+
     incr_total();
 
     //Error handling
@@ -390,11 +392,14 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //get guessed peaks and figure out how many peaks there are
     size_t peakCount = guess_peaks(results, ampData, idxData);
 
+    spdlog::trace("Peak Count = {}", peakCount);
+
     //No peaks found
     //Prvents the "Parameter 7 to routine source_gemv_r.h was incorrect" error
     if(peakCount == 0){
       return 0;
     }
+
 
     // FOR TESTING PURPOSES
     // fprintf(stderr, "Peak count is %d\n", peakCount);
@@ -446,22 +451,20 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
-        spdlog::trace("Gaussian sum based on guesses - before solve system:");
-           
-        for (int i = 0; i < n; ++i){
-            double ti = fit_data.t[i];
-            // double yi = fit_data.y[i];
-            double fi = gaussianSum(x, ti);
-            printf("%f ", fi);
-        }
+    spdlog::trace("Gaussian sum based on guesses - before solve system:");
+    std::ostringstream function;
+    for (int i = 0; i < n; ++i){
+        double ti = fit_data.t[i];
+        // double yi = fit_data.y[i];
+        function << gaussianSum(x, ti) << " ";
+    }
+    spdlog::trace("Model Data: {}", function.str());
 
 
     fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
     fdf_params.scale = gsl_multifit_nlinear_scale_more;
     fdf_params.solver = gsl_multifit_nlinear_solver_svd;
     fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
-
-    spdlog::error("peakCount = {}",peakCount);
 
     if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
         incr_pass();
@@ -526,10 +529,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 peak->position_in_wave = i+1;
             }
 
-            spdlog::error("--------------------");
-            spdlog::error("results.size = {}", results->size());
-            spdlog::error("is empty = {}", results->empty());
-
             if (!results->empty()) {
                 Peak* final_peak_ptr = results->back();
                 final_peak_ptr->is_final_peak = true; //mark the last peak as
@@ -537,39 +536,34 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             }
             i++;
         }
-            // PRINT DATA AND MODEL FOR TESTING PURPOSES
-            spdlog::trace("Gaussian sum in solve system and not failed:");
-               
-            for (int i = 0; i < n; ++i){
-                double ti = fit_data.t[i];
-                // double yi = fit_data.y[i];
-                double fi = gaussianSum(x, ti);
-                printf("%f ", fi);
-            }
+
+        spdlog::trace("Number of Peaks Found: {}", results->size());
+
+        // PRINT DATA AND MODEL FOR TESTING PURPOSES
+        spdlog::trace("Gaussian sum in solve system and not failed:");
+        std::ostringstream model;       
+        for (int i = 0; i < n; ++i){
+            double ti = fit_data.t[i];
+            model << gaussianSum(x, ti) << " ";
+        }
+        spdlog::trace("Model Data: {}", model.str());
     }
     else{
-            // FOR TESTING PURPOSES
-            spdlog::trace("In solve system and failed:");
-            spdlog::error("Amplitudes: ");
-
-            for(int i=0; i< (int)ampData.size(); i++){
-                spdlog::error("{}", ampData[i]);
-            }
-            spdlog::error("Indices in time: ");
-            for(int i=0; i< (int)idxData.size(); i++){
-                spdlog::error( "{}", idxData[i]);
-            }
 
         incr_fail();
        
-            // PRINT DATA AND MODEL FOR TESTING PURPOSES
-            spdlog::trace("Gaussian sum in solve system failed:");
-            for (int i = 0; i < n; ++i){
-                double ti = fit_data.t[i];
-                double yi = fit_data.y[i];
-                double fi = gaussianSum(x, ti);
-                printf("%f %f %f\n", ti, yi, fi);
-            }
+        // PRINT DATA AND MODEL FOR TESTING PURPOSES
+        spdlog::trace("Gaussian sum in solve system failed:");
+        std::ostringstream time, data, model;
+        for (int i = 0; i < n; ++i){
+            double ti = fit_data.t[i];
+            time << ti << " ";
+            data << fit_data.y[i] << " ";
+            model << gaussianSum(x, ti) << " ";
+        }
+        spdlog::trace("Time Data: {}",time.str());
+        spdlog::trace("Amp Data: {}",data.str());
+        spdlog::trace("Model Data: {}",model.str());
     }
 
     free(fit_data.t);

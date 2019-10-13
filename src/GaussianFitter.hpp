@@ -63,7 +63,7 @@ class GaussianFitter{
         double g_tolerance;
         double f_tolerance;
 
-        int guess_lt0_default;
+        int guess_lessthan_0_default;
         int guess_upper_lim;
         int guess_gt_upper_lim_default;
 

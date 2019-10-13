@@ -20,7 +20,7 @@ GaussianFitter::GaussianFitter(){
     g_tolerance = G_TOL;
     f_tolerance = F_TOL;
 
-    guess_lt0_default = GUESS_LT0_DEFAULT;
+    guess_lessthan_0_default = GUESS_LT0_DEFAULT;
     guess_upper_lim = GUESS_UPPER_LIM;
     guess_gt_upper_lim_default = GUESS_GT_UPPER_LIM_DEFAULT;
 
@@ -700,7 +700,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         }
 
         if(guess< 0) {
-            guess = guess_lt0_default;
+            guess = guess_lessthan_0_default;
         }
 
         if (log_diagnostics) {

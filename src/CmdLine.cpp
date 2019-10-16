@@ -135,7 +135,6 @@ CmdLine::CmdLine(){
     printUsageMessage = false;
     useGaussianFitting = true;
     calcBackscatter = false;
-    verb = (verbosity) NULL;
     exeName = "";
     setUsageMessage();
 }
@@ -153,14 +152,17 @@ std::string CmdLine::getInputFileName(bool pls){
 /**
  * Tries to match option given with verbosity flag to a known value,
  * and if so, sets verbosity instance variable to match it.
+ * @param new_verb logger level inputted in the command line
+ * @return true if valid leve, else false
  */
-void CmdLine::set_verbosity (char* new_verb) {
-    int i;
-    for (i = 0; i < num_verbs; i++) {
+bool CmdLine::set_verbosity (char* new_verb) {
+    for (int i = 0; i < num_verbs; i++) {
         if (!std::strncmp (new_verb, verbs[i].c_str(), 9)) {
-            verb = (verbosity) i;
+            verb = new_verb;
+            return true;
         }
     }
+    return false;
 }
 
 /**
@@ -233,8 +235,8 @@ bool CmdLine::parse_args(int argc,char *argv[]){
                 printUsageMessage = true;
             }
         } else if (optionChar == 'v') {
-            set_verbosity(optarg);
-            if (verb == (verbosity) NULL) {
+            if (!set_verbosity(optarg)) {
+                msgs.push_back("Invalid logging level");
                 printUsageMessage = true;
             }
         } else if (optionChar == 'e' || optionChar == 'a' || optionChar == 'w'

@@ -89,7 +89,7 @@ void csv_CmdLine::setUsageMessage()
     buffer << "       -h"
         << "  :Prints this help message" << std::endl;
     buffer << "       -n  <level>"
-        << "  :Sets the noise level. defaults to 6.\n";
+        << "  :Sets the noise level. Defaults to 6.\n";
     buffer << "       -p "
         << "  :Writes peak data to CSV" << std::endl;
     buffer << "       -l "

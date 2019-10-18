@@ -67,8 +67,8 @@ class GaussianFitter{
         int guess_upper_lim;          // If guess greater than this value...
         int guess_upper_lim_default;  // It is set to this value
 
-        int max_amp_multiplier; // Val is multiplied by max data point in wave
-        int amp_lower_bound; // Val is unmodified (no multiplication)
+        float max_amp_multiplier; // Val is multiplied by max data point in wave
+        float amp_lower_bound; // Val is unmodified (no multiplication)
 
 
     private:

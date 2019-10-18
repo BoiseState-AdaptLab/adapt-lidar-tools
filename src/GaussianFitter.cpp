@@ -700,6 +700,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         }
 
         if(guess< 0) {
+            spdlog::warn(
+                    "Guess for peak width less than zero, reverting to default"
+                    );
+
             guess = guess_lessthan_0_default;
         }
 

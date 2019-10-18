@@ -28,7 +28,7 @@
 #define GUESS_UPPER_LIM 20
 #define GUESS_UPPER_LIM_DEFAULT 10
 
-#define AMP_UPPER_BOUND 2
+#define MAX_AMP_MULTIPLIER 2.
 #define AMP_LOWER_BOUND 10
 
 class GaussianFitter{
@@ -67,7 +67,7 @@ class GaussianFitter{
         int guess_upper_lim;          // If guess greater than this value...
         int guess_upper_lim_default;  // It is set to this value
 
-        int amp_upper_bound; // Val is multiplied by max data point in wave
+        int max_amp_multiplier; // Val is multiplied by max data point in wave
         int amp_lower_bound; // Val is unmodified (no multiplication)
 
 

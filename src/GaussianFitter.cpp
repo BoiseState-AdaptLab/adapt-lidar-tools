@@ -24,7 +24,7 @@ GaussianFitter::GaussianFitter(){
     guess_upper_lim = GUESS_UPPER_LIM;
     guess_upper_lim_default = GUESS_UPPER_LIM_DEFAULT;
 
-    amp_upper_bound = AMP_UPPER_BOUND;
+    max_amp_multiplier = MAX_AMP_MULTIPLIER;
     amp_lower_bound = AMP_LOWER_BOUND;
 
     log_diagnostics = false;
@@ -517,7 +517,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
 
-            if(peak->amp >= amp_upper_bound*max || peak->amp < amp_lower_bound
+            if(peak->amp >= max_amp_multiplier*max || peak->amp < amp_lower_bound
                     || peak->triggering_location > n
                     || peak->triggering_location <0) {
                 delete(peak);

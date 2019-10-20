@@ -40,6 +40,9 @@ public:
     // True = gaussian fitting, False = first differencing
     bool useGaussianFitting;
 
+    //Default noise level
+    int noise_level = 6;
+
     // True stifles all output statements
     bool quiet;
 

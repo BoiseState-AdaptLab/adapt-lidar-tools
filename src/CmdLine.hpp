@@ -15,6 +15,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <stdlib.h>
+#include <map>
 
 class CmdLine{
 
@@ -31,7 +32,7 @@ private:
     // else, use smooth second difference 
     bool max_elev_flag;
 
-    void set_verbosity(char* new_verb);
+    bool set_verbosity(char* new_verb);
 
 public:
     //calibration constant (for backscatter option)
@@ -43,15 +44,17 @@ public:
     // True = gaussian fitting, False = first differencing
     bool useGaussianFitting;
 
+    //Default noise level
+    int noise_level = 6;
+
     // Whether or not backscatter coefficient has been requested
-    bool calcBackscatter;    
+    bool calcBackscatter;
 
     //True stifles all output statements
     bool quiet;
 
     // For conveying verbosity to main function in a readable way
-    enum verbosity { trace, debug, info, warn, error, critical };
-    verbosity verb;
+    std::string verb = "";
 
     CmdLine();
 

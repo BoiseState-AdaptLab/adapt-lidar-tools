@@ -17,5 +17,5 @@ module load gdal/intel/2.2.2
 make clean
 make PROFILER_BUILD=1 geotiff-driver
 bin/geotiff-driver -f etc/Nayani_clipped_test.pls -w 13,11,14 -a 4,8,17 -e 1,2,3
-gprof bin/geotiff-driver | scripts/gprof2dot/gprof2dot.py | dot -Tpng -o prof.png
+gprof bin/geotiff-driver | scripts/gprof2dot/gprof2dot.py -s -w | dot -Tpng -o prof.png
 mv *.tif gmon.out bin

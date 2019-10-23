@@ -665,24 +665,24 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     int grad = -1;
     for(int i = 0; i<(int)ampData.size()-1; i++){
 
-        if(ampData[i] > noise_level){
-            // were we sloping up before?
-            if (grad == 1){
-                // sloping down
-                if(ampData[i+1] < ampData[i]){
+        // were we sloping up before?
+        if (grad == 1){
+            // sloping down
+            if(ampData[i+1] < ampData[i]){
+                if(ampData[i]>=noise_level){
                     //record the peak
                     peak_guesses_loc.push_back(i);
-                    //now we are sloping down
-                    grad = -1;
-                }
-                    //Peak location
-                // previously decreasing
-            }else if(grad == -1){
-                    if(ampData[i+1] > ampData[i]){
-                        //sloping up
-                        grad = 1;
-                    }
+                 }
+                //now we are sloping down
+                grad = -1;
             }
+                //Peak location
+            // previously decreasing
+        }else if(grad == -1){
+                if(ampData[i+1] > ampData[i]){
+                    //sloping up
+                    grad = 1;
+                }
         }
     }
 
@@ -696,8 +696,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     int peaks_found=0;
     for(int i=0; i< peakCount; i++){
         // Create a better guess by using a better width
-        int guess = -1; // "guess" represents our guess of the width value.
-        int half_ampData_guess = ampData[peak_guesses_loc[i]]/2;
+        float guess = -1; // "guess" represents our guess of the width value.
+        float half_ampData_guess = ampData[peak_guesses_loc[i]]/2.;
         int idx_lo=0,idx_hi=0;
         // look low
         int prev = ampData[peak_guesses_loc[i]];
@@ -708,7 +708,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             prev = ampData[j];
             if(ampData[j] < half_ampData_guess){
                 idx_lo = j;
-                guess = (idxData[peak_guesses_loc[i]] - j -1);
+                guess = (idxData[peak_guesses_loc[i]] - j -1)+.5;
                 break;
             }
         }
@@ -722,7 +722,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 prev = ampData[j];
                 if(ampData[j] < half_ampData_guess){
                     idx_hi = j;
-                    guess = (j-idxData[peak_guesses_loc[i]] -1);
+                    guess = (j-idxData[peak_guesses_loc[i]] -1)-.5;
                     break;
                 }
             }

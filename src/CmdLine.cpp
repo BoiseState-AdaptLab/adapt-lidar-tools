@@ -57,6 +57,8 @@ void CmdLine::setUsageMessage()
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
     buffer << "       -h"
         << "  :Prints this help message" << std::endl;
+    buffer << "       -n  <level>"
+        << "  :Sets the noise level. Defaults to 6.\n";
     buffer << std::endl;
     buffer << "Product Type Options:" << std::endl;
     buffer << "       -e  <list of products>"
@@ -133,7 +135,6 @@ CmdLine::CmdLine(){
     printUsageMessage = false;
     useGaussianFitting = true;
     calcBackscatter = false;
-    verb = (verbosity) NULL;
     exeName = "";
     setUsageMessage();
 }
@@ -151,14 +152,17 @@ std::string CmdLine::getInputFileName(bool pls){
 /**
  * Tries to match option given with verbosity flag to a known value,
  * and if so, sets verbosity instance variable to match it.
+ * @param new_verb logger level inputted in the command line
+ * @return true if valid leve, else false
  */
-void CmdLine::set_verbosity (char* new_verb) {
-    int i;
-    for (i = 0; i < num_verbs; i++) {
+bool CmdLine::set_verbosity (char* new_verb) {
+    for (int i = 0; i < num_verbs; i++) {
         if (!std::strncmp (new_verb, verbs[i].c_str(), 9)) {
-            verb = (verbosity) i;
+            verb = new_verb;
+            return true;
         }
     }
+    return false;
 }
 
 /**
@@ -191,6 +195,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
     {
         {"file", required_argument, NULL, 'f'},
         {"help", no_argument, NULL, 'h'},
+        {"noise_level", required_argument, NULL, 'n'},
         {"firstdiff", no_argument, NULL, 'd'},
         {"verbosity", required_argument, NULL, 'v'},
         {"elevation", required_argument,NULL,'e'},
@@ -210,7 +215,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:e:a:w:r:b:l:v:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -219,9 +224,19 @@ bool CmdLine::parse_args(int argc,char *argv[]){
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
+        }else if (optionChar == 'n'){
+            try{
+                noise_level = std::stoi(optarg);
+            }catch(const std::invalid_argument& e){
+                msgs.push_back("Cannot convert noise level to int. Error: " + std::string(e.what()));
+                printUsageMessage = true;
+            }catch(const std::out_of_range& e){
+                msgs.push_back("Cannot fit noise level in type int. Error: " + std::string(e.what()));
+                printUsageMessage = true;
+            }
         } else if (optionChar == 'v') {
-            set_verbosity(optarg);
-            if (verb == (verbosity) NULL) {
+            if (!set_verbosity(optarg)) {
+                msgs.push_back("Invalid logging level");
                 printUsageMessage = true;
             }
         } else if (optionChar == 'e' || optionChar == 'a' || optionChar == 'w'

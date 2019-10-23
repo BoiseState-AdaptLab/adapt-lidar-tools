@@ -20,11 +20,11 @@ GaussianFitter::GaussianFitter(){
     g_tolerance = G_TOL;
     f_tolerance = F_TOL;
 
-    guess_lt0_default = GUESS_LT0_DEFAULT;
+    guess_lessthan_0_default = GUESS_LT0_DEFAULT;
     guess_upper_lim = GUESS_UPPER_LIM;
-    guess_gt_upper_lim_default = GUESS_GT_UPPER_LIM_DEFAULT;
+    guess_upper_lim_default = GUESS_UPPER_LIM_DEFAULT;
 
-    amp_upper_bound = AMP_UPPER_BOUND;
+    max_amp_multiplier = MAX_AMP_MULTIPLIER;
     amp_lower_bound = AMP_LOWER_BOUND;
 
     log_diagnostics = false;
@@ -375,6 +375,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                                std::vector<int> ampData,
                                std::vector<int> idxData,
                                const size_t max_iter) {
+    spdlog::trace("--NEW WAVEFORM--");
+
     incr_total();
 
     //Error handling
@@ -390,11 +392,14 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //get guessed peaks and figure out how many peaks there are
     size_t peakCount = guess_peaks(results, ampData, idxData);
 
+    spdlog::trace("Peak Count = {}", peakCount);
+
     //No peaks found
     //Prvents the "Parameter 7 to routine source_gemv_r.h was incorrect" error
     if(peakCount == 0){
       return 0;
     }
+
 
     // FOR TESTING PURPOSES
     // fprintf(stderr, "Peak count is %d\n", peakCount);
@@ -446,22 +451,20 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
-        spdlog::trace("Gaussian sum based on guesses - before solve system:");
-           
-        for (int i = 0; i < n; ++i){
-            double ti = fit_data.t[i];
-            // double yi = fit_data.y[i];
-            double fi = gaussianSum(x, ti);
-            printf("%f ", fi);
-        }
+    spdlog::trace("Gaussian sum based on guesses - before solve system:");
+    std::ostringstream function;
+    for (int i = 0; i < n; ++i){
+        double ti = fit_data.t[i];
+        // double yi = fit_data.y[i];
+        function << gaussianSum(x, ti) << " ";
+    }
+    spdlog::trace("Model Data: {}", function.str());
 
 
     fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
     fdf_params.scale = gsl_multifit_nlinear_scale_more;
     fdf_params.solver = gsl_multifit_nlinear_solver_svd;
     fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
-
-    spdlog::error("peakCount = {}",peakCount);
 
     if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
         incr_pass();
@@ -514,7 +517,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
 
-            if(peak->amp >= amp_upper_bound*max || peak->amp < amp_lower_bound
+            if(peak->amp >= max_amp_multiplier*max || peak->amp < amp_lower_bound
                     || peak->triggering_location > n
                     || peak->triggering_location <0) {
                 delete(peak);
@@ -526,10 +529,6 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 peak->position_in_wave = i+1;
             }
 
-            spdlog::error("--------------------");
-            spdlog::error("results.size = {}", results->size());
-            spdlog::error("is empty = {}", results->empty());
-
             if (!results->empty()) {
                 Peak* final_peak_ptr = results->back();
                 final_peak_ptr->is_final_peak = true; //mark the last peak as
@@ -537,39 +536,34 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             }
             i++;
         }
-            // PRINT DATA AND MODEL FOR TESTING PURPOSES
-            spdlog::trace("Gaussian sum in solve system and not failed:");
-               
-            for (int i = 0; i < n; ++i){
-                double ti = fit_data.t[i];
-                // double yi = fit_data.y[i];
-                double fi = gaussianSum(x, ti);
-                printf("%f ", fi);
-            }
+
+        spdlog::trace("Number of Peaks Found: {}", results->size());
+
+        // PRINT DATA AND MODEL FOR TESTING PURPOSES
+        spdlog::trace("Gaussian sum in solve system and not failed:");
+        std::ostringstream model;       
+        for (int i = 0; i < n; ++i){
+            double ti = fit_data.t[i];
+            model << gaussianSum(x, ti) << " ";
+        }
+        spdlog::trace("Model Data: {}", model.str());
     }
     else{
-            // FOR TESTING PURPOSES
-            spdlog::trace("In solve system and failed:");
-            spdlog::error("Amplitudes: ");
-
-            for(int i=0; i< (int)ampData.size(); i++){
-                spdlog::error("{}", ampData[i]);
-            }
-            spdlog::error("Indices in time: ");
-            for(int i=0; i< (int)idxData.size(); i++){
-                spdlog::error( "{}", idxData[i]);
-            }
 
         incr_fail();
        
-            // PRINT DATA AND MODEL FOR TESTING PURPOSES
-            spdlog::trace("Gaussian sum in solve system failed:");
-            for (int i = 0; i < n; ++i){
-                double ti = fit_data.t[i];
-                double yi = fit_data.y[i];
-                double fi = gaussianSum(x, ti);
-                printf("%f %f %f\n", ti, yi, fi);
-            }
+        // PRINT DATA AND MODEL FOR TESTING PURPOSES
+        spdlog::trace("Gaussian sum in solve system failed:");
+        std::ostringstream time, data, model;
+        for (int i = 0; i < n; ++i){
+            double ti = fit_data.t[i];
+            time << ti << " ";
+            data << fit_data.y[i] << " ";
+            model << gaussianSum(x, ti) << " ";
+        }
+        spdlog::trace("Time Data: {}",time.str());
+        spdlog::trace("Amp Data: {}",data.str());
+        spdlog::trace("Model Data: {}",model.str());
     }
 
     free(fit_data.t);
@@ -628,30 +622,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //We need to start this function with a clear vector.
     //We can't call destructors because we don't know if the pointers
     //are pointing to space used in LidarVolume
-    results->clear();
-
-    //UPDATE: We are only using a noise level of 6 because we want all peaks
-    //with an amplitude >= 10
-    //Level up to and including which peaks will be excluded
-    //For the unaltered wave, noise_level = 16
-    //for the second derivative of the wave, noise_level = 3
-    // this is creating guesses for a guassian fitter that does not do
-    // well if we have guesses that have an amplitude more than an order
-    // of magnitute apart. We are going to set the noise level to be the
-    // max value/ 10 - max*.05;
-    max = 0;
-    for(int i = 0; i<(int)ampData.size(); i++){
-        if(ampData[i]>max){
-            max = ampData[i];
-        }
-    }
-    noise_level = ((float)max)*.09;
-
-    spdlog::error("Max = {} Noise = {}", max, ((float)max)*.09);
-
-    if (noise_level < 6){
-        noise_level = 6;
-    }
+    results->clear(); 
 
     //Sign of gradient:
     // =    1 for increasing
@@ -729,7 +700,11 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         }
 
         if(guess< 0) {
-            guess = guess_lt0_default;
+            spdlog::warn(
+                    "Guess for peak width less than zero, reverting to default"
+                    );
+
+            guess = guess_lessthan_0_default;
         }
 
         if (log_diagnostics) {
@@ -739,7 +714,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 guess);
         }
 
-        if(guess > 20) {guess = 10;}
+        if(guess > guess_upper_lim) {guess = guess_upper_lim_default;}
         peaks_found++;
 
         //Create a peak

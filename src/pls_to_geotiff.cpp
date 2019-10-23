@@ -6,7 +6,7 @@
 #include <chrono>
 
 // Activity level must be defined before spdlog is included.
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_CRITICAL
 
 #include "spdlog/spdlog.h"
 #include "spdlog/async.h"
@@ -31,28 +31,19 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
-    // Set verbosity if not null
-    if (cmdLineArgs.verb != (CmdLine::verbosity) NULL) {
-        switch (cmdLineArgs.verb) {
-            case CmdLine::verbosity::trace:
-                spdlog::set_level(spdlog::level::trace);
-                break;
-            case CmdLine::verbosity::debug:
-                spdlog::set_level(spdlog::level::debug);
-                break;
-            case CmdLine::verbosity::info:
-                spdlog::set_level(spdlog::level::info);
-                break;
-            case CmdLine::verbosity::warn:
-                spdlog::set_level(spdlog::level::warn);
-                break;
-            case CmdLine::verbosity::error:
-                spdlog::set_level(spdlog::level::err);
-                break;
-            case CmdLine::verbosity::critical:
-                spdlog::set_level(spdlog::level::critical);
-                break;
-        }
+    // Set verbosiy
+    if (cmdLineArgs.verb == "trace") {
+        spdlog::set_level(spdlog::level::trace);
+    } else if (cmdLineArgs.verb == "debug") {
+        spdlog::set_level(spdlog::level::debug);
+    } else if (cmdLineArgs.verb == "info") {
+        spdlog::set_level(spdlog::level::info);
+    } else if (cmdLineArgs.verb == "warn") {
+        spdlog::set_level(spdlog::level::warn);
+    } else if (cmdLineArgs.verb == "error") {
+        spdlog::set_level(spdlog::level::err);
+    } else if (cmdLineArgs.verb == "critical") {
+        spdlog::set_level(spdlog::level::critical);
     }
 
     //Collect start time

@@ -20,15 +20,15 @@
 #define MAX_ITER 200
 
 #define TOL_SCALES true
-#define X_TOL 100
-#define G_TOL 100
-#define F_TOL 100
+#define X_TOL 100.
+#define G_TOL 100.
+#define F_TOL 100.
 
 #define GUESS_LT0_DEFAULT 4
 #define GUESS_UPPER_LIM 20
-#define GUESS_GT_UPPER_LIM_DEFAULT 10
+#define GUESS_UPPER_LIM_DEFAULT 10
 
-#define AMP_UPPER_BOUND 2
+#define MAX_AMP_MULTIPLIER 2.
 #define AMP_LOWER_BOUND 10
 
 class GaussianFitter{
@@ -63,12 +63,12 @@ class GaussianFitter{
         double g_tolerance;
         double f_tolerance;
 
-        int guess_lt0_default;
-        int guess_upper_lim;
-        int guess_gt_upper_lim_default;
+        int guess_lessthan_0_default; // If guess less than 0, it is set to this
+        int guess_upper_lim;          // If guess greater than this value...
+        int guess_upper_lim_default;  // It is set to this value
 
-        int amp_upper_bound; // Val is multiplied by max data point in wave
-        int amp_lower_bound; // Val is unmodified (no multiplication)
+        float max_amp_multiplier; // Val is multiplied by max data point in wave
+        float amp_lower_bound; // Val is unmodified (no multiplication)
 
 
     private:

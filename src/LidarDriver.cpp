@@ -82,6 +82,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     PulseData pd;
     std::ostringstream stream;
     GaussianFitter fitter;
+    fitter.noise_level = cmdLine.noise_level;
     std::vector<Peak*> peaks;
     int peak_count = 0;
 
@@ -197,6 +198,7 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
     PulseData pd;
     std::ostringstream stream;
     GaussianFitter fitter;
+    fitter.noise_level = cmdLine.noise_level;
     std::vector<Peak*> peaks;
 
     bool log_diagnostics = cmdLine.log_diagnostics;

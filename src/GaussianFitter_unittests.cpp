@@ -10,6 +10,8 @@
 #include "Peak.hpp"
 #include <fstream>
 
+#define MAX_ITER 200
+
 class GaussianFitterTest: public testing::Test{
     public:
         std::vector<PulseData*> pulses;
@@ -315,8 +317,6 @@ TEST_F(GaussianFitterTest, NayaniClipped8_guess){
     EXPECT_NEAR(10.2,peaks.at(2)->fwhm, 1);
 
     EXPECT_EQ(3, count);
-
-
 }
 
 /****************************************************************************
@@ -383,10 +383,9 @@ TEST_F(GaussianFitterTest, max_iter_2_guess){
     EXPECT_EQ(58, peaks.at(1)->location);
     EXPECT_NEAR(5, peaks.at(0)->fwhm, 1);
     EXPECT_NEAR(4.6, peaks.at(1)->fwhm, 1);
-
+    
     EXPECT_EQ(2, count);
 }
-
 //Exceeding max no of iterations
 TEST_F(GaussianFitterTest, max_iter_3_guess){
 
@@ -405,7 +404,7 @@ TEST_F(GaussianFitterTest, max_iter_3_guess){
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
-
+    fitter.guess_peaks(&peaks, ampData, idxData);
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(164,peaks.at(0)->amp);
     EXPECT_EQ(11,peaks.at(1)->amp);
@@ -533,8 +532,7 @@ TEST_F(GaussianFitterTest, trig_loc_1_guess){
     EXPECT_EQ(22,peaks.at(1)->location);
     EXPECT_NEAR(9.8, peaks.at(0)->fwhm, 1);
     EXPECT_NEAR(10, peaks.at(1)->fwhm, 1);
-
-    EXPECT_EQ(2,count);
+    EXPECT_EQ(2, count);
 }
 
 //Triggering location: -2147483648 not in range: 60

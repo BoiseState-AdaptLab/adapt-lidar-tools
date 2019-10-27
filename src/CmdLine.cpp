@@ -55,11 +55,9 @@ void CmdLine::setUsageMessage()
         << "  :Generates a Geotif file" << std::endl;
     buffer << "       -d"
         << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
-    buffer << "       -h"
-        << "  :Prints this help message" << std::endl;
-    buffer << "       -n  <level>"
-        << "  :Sets the noise level. Defaults to 6.\n";
-    buffer << std::endl;
+    buffer << "       -h [adv]"
+        << "  :Prints this help message, the argument 'adv' will display the "
+        << "advanced command line options" << std::endl << std::endl;
     buffer << "Product Type Options:" << std::endl;
     buffer << "       -e  <list of products>"
         << "  :Generates Elevation products" << std::endl;
@@ -75,10 +73,6 @@ void CmdLine::setUsageMessage()
     buffer << "           Scientific notation allowed for calibration constant"
         << " (e.g. 0.78 = 7.8e-1 = 7.8E-1)"
         << std::endl;
-    buffer << "       -v <verbosity level>"
-        << "  :Sets the level of verbosity for the logger to use" << std::endl;
-    buffer << "           Options are 'trace', 'debug', 'info', 'warn', 'error'"
-        << ", and 'critical'" << std::endl;
     buffer << "       --all <calibration constant>"
         << "  :Generates all products for every variable. calibration constant"
         << " is used for backscatter coefficient calculations" << std::endl;
@@ -114,6 +108,16 @@ void CmdLine::setUsageMessage()
     buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5 -w 14,9 -b 13,4 .768"
         << std::endl;
     usageMessage.append(buffer.str());
+
+    std::stringstream advBuffer;
+    advBuffer << "\nAdvanced Options:" << std::endl << std::endl;
+    advBuffer << "       -n  <level>"
+        << "  :Sets the noise level. Defaults to 6.\n";
+    advBuffer << "       -v <verbosity level>"
+        << "  :Sets the level of verbosity for the logger to use" << std::endl;
+    advBuffer << "           Options are 'trace', 'debug', 'info', 'warn', 'error'"
+        << ", and 'critical'" << std::endl;
+    advUsageMessage.append(advBuffer.str());
 }
 
 
@@ -121,8 +125,12 @@ void CmdLine::setUsageMessage()
  * Function that prints correct usage of this program
  * @return usage message
  */
-std::string CmdLine::getUsageMessage(){
-    return usageMessage;
+std::string CmdLine::getUsageMessage(bool adv){
+    if (adv) {
+        return advUsageMessage;
+    } else {
+        return usageMessage;
+    }
 }
 
 
@@ -174,7 +182,10 @@ bool CmdLine::set_verbosity (char* new_verb) {
  * @return true if all arguments were valid, false otherwise
  */
 bool CmdLine::parse_args(int argc,char *argv[]){
+    // Stores all messages to the user
     std::vector<std::string> msgs;
+    // Determines which help statement to print
+    bool advHelp = false;
     //Clear selected products
     selected_products.clear();
 
@@ -215,12 +226,15 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:",
+    while((optionChar = getopt_long (argc, argv, "-:h:df:n:e:a:w:r:b:l:v:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
             setInputFileName(fArg);
         } else if (optionChar == 'h') { //Show help information
+            if (strcmp(optarg, "adv") == 0) {
+                advHelp = true;
+            }
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
@@ -343,7 +357,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
     if (printUsageMessage){
         //Make sure broken data is not used by clearing requested products
         selected_products.clear();
-        if (!quiet) std::cout << getUsageMessage() << std::endl;
+        if (!quiet) std::cout << getUsageMessage(advHelp) << std::endl;
         return false;
     }
     

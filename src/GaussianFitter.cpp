@@ -88,7 +88,8 @@ double gaussianSum(const gsl_vector * x,const double t)
 T: 
     int i = 0;
     double value = 0.;
-    for(i=0;i<(x->size/3);i++){
+    int n = x->size/3;
+    for(i=0;i<n;i++){
         double a = gsl_vector_get(x,3*i+0);
         double b = gsl_vector_get(x,3*i+1);
         double c = gsl_vector_get(x,3*i+2);
@@ -428,7 +429,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fit_data.n = n;
 
     //copy the data to a format
-    for(i=0;i<ampData.size();i++){
+    for(i=0;i<n;i++){
         fit_data.t[i] = (double)idxData[i];
         fit_data.y[i] = (double)ampData[i];
     }
@@ -585,8 +586,9 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
     std::vector<int> ampData){
     int first, second, fDiff, count = 0;
     std::vector<int> firstDifference;
+    int n = (int)ampData.size()-2;
 
-    for(int i = 0; i< (int)ampData.size()-2; i++){
+    for(int i = 0; i< n; i++){
         first = ampData[i+1];
         second = ampData[i+2];
 
@@ -634,7 +636,11 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     int wideStart = -1; //The start of any current wide peak
     int prev_grad = -1;
     int grad = -1;
-    for(int i = 0; i<(int)ampData.size()-1; i++){
+
+    //Figure out the size of ampData
+    size_t n = ampData.size();
+
+    for(int i = 0; i<(int)n-1; i++){
 
         if(ampData[i] > noise_level){
             // were we sloping up before?
@@ -656,9 +662,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             }
         }
     }
-
-    //Figure out the size of ampData
-    size_t n = ampData.size();
 
     //Figure out how many peaks there are
     size_t peakCount = peak_guesses_loc.size();
@@ -752,8 +755,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
  * @param waveArray
  */
 void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
-
-    for(int i=2; i<waveArray->size()-1;i++){
+    int n = waveArray->size()-1;
+    for(int i=2; i<n;i++){
         if(waveArray->at(i) < 7){
             int temp = (waveArray->at(i-2) + waveArray->at(i-1) +
                                     waveArray->at(i)+waveArray->at(i+1))/4;

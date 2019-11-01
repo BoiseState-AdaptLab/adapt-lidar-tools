@@ -226,18 +226,15 @@ bool CmdLine::parse_args(int argc,char *argv[]){
     //Tacks the last option used
     char lastOpt = ' ';
     /* Using getopt_long to get the arguments with an option.
-     * ":hf:s:" indicate that option 'h' is without arguments while
-     * option 'f' and 's' require arguments
+     * ":h:ds:" indicate that option 'd' is without arguments while
+     * option 'h' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:h:df:n:e:a:w:r:b:l:v:m:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:m:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
             setInputFileName(fArg);
         } else if (optionChar == 'h') { //Show help information
-            if (strcmp(optarg, "adv") == 0) {
-                advHelp = true;
-            }
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
@@ -342,8 +339,13 @@ bool CmdLine::parse_args(int argc,char *argv[]){
             msgs.push_back("Invalid option");
             printUsageMessage = true;
         } else {
-            // Invalid option
-            msgs.push_back(string("Invalid argument: ") + optarg);
+            // Invalid argument, if the last option was -h/--help,
+            // then this is considered a valid argument as -h/--help has an optional argument
+            if (lastOpt != 'h') {
+                msgs.push_back(string("Invalid argument: ") + optarg);
+            } else if (strcmp(optarg, "adv") == 0) { 
+                advHelp = true;
+            }
             printUsageMessage = true;
         }
         lastOpt = optionChar;

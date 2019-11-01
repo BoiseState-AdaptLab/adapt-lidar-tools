@@ -4,6 +4,7 @@
 
 
 #include "CmdLine.hpp"
+#include <math.h>
 
 using namespace std;
 
@@ -136,6 +137,7 @@ CmdLine::CmdLine(){
     useGaussianFitting = true;
     calcBackscatter = false;
     exeName = "";
+    max_amp_multiplier = 0.0;
     setUsageMessage();
 }
 
@@ -204,6 +206,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         {"risetime", required_argument,NULL,'r'},
         {"backscatter", required_argument,NULL,'b'},
         {"all", required_argument,NULL,'l'},
+        {"max_amp_multiplier", required_argument, NULL, 'm'},
         {0, 0, 0, 0}
     };
 
@@ -215,7 +218,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      * ":hf:s:" indicate that option 'h' is without arguments while
      * option 'f' and 's' require arguments
      */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:",
+    while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:m:",
                     long_options, &option_index))!= -1){
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
@@ -280,17 +283,42 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         } else if (optionChar == 1 && lastOpt == 'b'
                   && calibration_constant == 0){ //Set calibration coefficient
             calibration_constant = std::atof(optarg);
-            msgs.push_back("Calibration constant for backscatter coefficient = "
-                + std::to_string(calibration_constant));
+            if (fabs(calibration_constant) == HUGE_VALF) {
+                msgs.push_back("calibration_constant out of range");
+                printUsageMessage = true;
+            } else {
+                msgs.push_back(
+                        "Calibration constant for backscatter coefficient = "
+                    + std::to_string(calibration_constant));
+            }
         } else if (optionChar == 'l'){ //Make all products
             //Get the highest product number
             for (int i = 1; i <= start.back(); i++){
                 selected_products.push_back(i);
             }
             calcBackscatter = true;
-            calibration_constant = std::atof(optarg);
-            msgs.push_back("Calibration constant for backscatter coefficient = "
-                + std::to_string(calibration_constant));
+            calibration_constant = std::strtof(optarg, NULL);
+            if (fabs(calibration_constant) == HUGE_VALF) {
+                msgs.push_back("calibration_constant out of range");
+                printUsageMessage = true;
+            } else {
+                msgs.push_back(
+                        "Calibration constant for backscatter coefficient = "
+                    + std::to_string(calibration_constant));
+            }
+        } else if (optionChar == 'm'){
+            // Parse arg for float
+            max_amp_multiplier = std::strtof(optarg, NULL);
+                // atof is unpredictable when provided an input that floats do
+                // not support. strtof will return 'inf', which can be checked
+                // for.
+            if (fabs(max_amp_multiplier) == HUGE_VALF) {
+                    // + or - HUGE_VALF is a macro that is returned when a float
+                    // is too big in positive and negative direction,
+                    // respectively.
+                msgs.push_back("max_amp_multiplier out of range");
+                printUsageMessage = true;
+            }
         } else if (optionChar == ':'){
             // Missing option argument
             msgs.push_back("Missing arguments");

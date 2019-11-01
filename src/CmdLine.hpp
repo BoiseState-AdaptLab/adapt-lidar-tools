@@ -56,6 +56,11 @@ public:
     // For conveying verbosity to main function in a readable way
     std::string verb = "";
 
+    // Decides the multiple by which maximum amplitude is decided in
+    // guess peaks. GaussianFitter will default to a value if this is
+    // not determined.
+    float max_amp_multiplier;
+
     CmdLine();
 
 

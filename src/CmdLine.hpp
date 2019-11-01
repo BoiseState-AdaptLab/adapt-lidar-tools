@@ -26,6 +26,7 @@ private:
 
     // helpful stuff
     std::string usageMessage;
+    std::string advUsageMessage;
     std::string exeName;
 
     // If peakFlag == true, use first difference to find peaks
@@ -66,7 +67,7 @@ public:
 
     bool parse_args(int argc, char *argv[]);
     void setUsageMessage();
-    std::string getUsageMessage();
+    std::string getUsageMessage(bool adv);
     void check_input_file_exists();
     void setInputFileName(char *args);
     void setInputFileName(std::string filename);

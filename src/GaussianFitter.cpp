@@ -401,13 +401,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
 
-    // FOR TESTING PURPOSES
-    // fprintf(stderr, "Peak count is %d\n", peakCount);
-
     size_t p = peakCount*3;
-
-    // try to filter out some of the guesses if they are
-    // near the noise
 
     //allocate space for fitting
     const gsl_rng_type * T = gsl_rng_default;
@@ -663,6 +657,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //Figure out how many peaks there are
     size_t peakCount = peak_guesses_loc.size();
 
+
+    // make a guess for the fwhm value
     int j;
     int peaks_found=0;
     for(int i=0; i< peakCount; i++){

@@ -88,12 +88,13 @@ double gaussianSum(const gsl_vector * x,const double t)
 T: 
     int i = 0;
     double value = 0.;
+    double neg4ln2 = -4.*log(2.);
     for(i=0;i<(x->size/3);i++){
         double a = gsl_vector_get(x,3*i+0);
         double b = gsl_vector_get(x,3*i+1);
-        double c = gsl_vector_get(x,3*i+2);
-        const double z = (t - b) / c;
-        value += (a * exp(-0.5 * z * z));
+        double w = gsl_vector_get(x,3*i+2);
+        const double z = (t - b) / w;
+        value += (a * exp(neg4ln2 * z * z));
     }
     return value;
 }
@@ -127,9 +128,15 @@ int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 
 /**
  *
- * @param x
- * @param params
- * @param J
+ * @param x, these are the unknowns being sent to the fitter
+ * @param params, this is a struct that contains the raw data
+ * @param J, internal state for the solver
+ *
+ * This function provides the Jacobian matrix. It comprises the
+ * partial derivatives for the function that is
+ * being matched. In this case we are using: f(x) = ae^(-4ln2((x-b)/w)^2)
+ * We are going to simplify e^(-4ln2((x-b)^2/w^2)) to
+ * J_{i,j} = \frac{\partial f_i(x)}{\partial x_j}
  * @return
  */
 int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
@@ -138,24 +145,28 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
     int npeaks = x->size/3;
     int j;
     size_t i;
+
+    double neg4ln2 = -4.*log(2.);
+    double eightln2 = 8.*log(2.);
     // for each value of time
     for (i = 0; i < d->n; ++i){
         double a_sum = 0;
         double b_sum = 0;
-        double c_sum = 0;
+        double w_sum = 0;
+        // this is the actual time value (x in the comments above)
         double ti = d->t[i];
-        // calculate the sum of the derivatives
+        // calculate the derivatives
         for(j=0;j<npeaks;j++){
             double a = gsl_vector_get(x, j*3+0);
             double b = gsl_vector_get(x, j*3+1);
-            double c = gsl_vector_get(x, j*3+2);
+            double w = gsl_vector_get(x, j*3+2);
 
-            double zi = (ti - b) / c;
-            double ei = exp(-0.5 * zi * zi);
+            double zi = (ti - b) / w;
+            double ei = exp(neg4ln2 * zi *zi);
 
-            a_sum = (-1)*ei;
-            b_sum = (-1)*a*(ti-b)*ei*(1/(c*c));
-            c_sum = (-1)*a*(ti-b)*(ti-b) * ei * (1/(c*c*c));
+            a_sum = ei;
+            b_sum = a*ei*eightln2*(ti-b)*(1/(w*w));
+            w_sum = a*ei*eightln2*(ti-b)*(ti-b)*(1/(w*w*w));
 
             // first derivative wrt a
             // ei
@@ -170,7 +181,7 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
 
             // first derivative wrt c
             // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
-            gsl_matrix_set(J, i, 3*j+2, c_sum);
+            gsl_matrix_set(J, i, 3*j+2, w_sum);
         }
     }
 
@@ -430,7 +441,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //define function to be minimized
     fdf.f = func_f;
     fdf.df = func_df;
-    fdf.fvv = func_fvv;
+    //fdf.fvv = func_fvv;
     fdf.fvv = NULL;
     fdf.n = n;
     fdf.p = p;
@@ -441,7 +452,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     for(i=0; i< peakCount; i++){
         gsl_vector_set(x, i*3+0, (*results)[i]->amp);
         gsl_vector_set(x, i*3+1, (*results)[i]->location);
-        gsl_vector_set(x, i*3+2, (*results)[i]->fwhm / 2);
+        gsl_vector_set(x, i*3+2, (*results)[i]->fwhm);
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -460,58 +471,42 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fdf_params.solver = gsl_multifit_nlinear_solver_svd;
     fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
+
     if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
         incr_pass();
- 
+
+        // save value for later
+        double neg4ln2 = -4.*log(2); 
         //this loop is going through every peak
         int i=0;
         for(auto iter = results->begin(); iter != results->end(); ++iter) {
             Peak *peak = *iter;
             peak->amp = gsl_vector_get(x,3*i+ 0);
             peak->location = gsl_vector_get(x,3*i+ 1);
-            double c = gsl_vector_get(x,3*i+ 2);
-
-            //calculate fwhm: full width at half maximum
-            // y = a * exp( -1/2 * [ (t - b) / c ]^2 )
-            // where, y: amplitude at the t we are solving for
-            //              a: amplitude at the peak
-            //              t: time
-            // time = +/-sqrt((-2)*(c^2)*ln(y/a) +b
-            peak->fwhm_t_positive = 
-                sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp)) + peak->location;
-            peak->fwhm_t_negative =
-                (-1)*sqrt((-2)*(c*c)*log((peak->amp/2)/peak->amp)) 
-                + peak->location;
-            peak->fwhm = std::abs(peak->fwhm_t_positive - peak->fwhm_t_negative);
+            double w = gsl_vector_get(x,3*i+ 2);
+            peak->fwhm = w;
             
-            /*calculate triggering location
-             *t_t = +/- sqrt(-2 * c^2 * log(a_t / a)) + t
-             *where t_t = triggering location (time)
-             *      a_t = tiggering amplitude
-             *      a = peak amplitude
-             *      t = peak time location
-             *      c = 1/2*FWHM*/
-            /*peak->triggering_amp = noise_level + 1;
-            peak->triggering_location = std::min(
-                 sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
-                + peak->location,
-                (-1)*sqrt((-2)*(c*c)*log(peak->triggering_amp/peak->amp))
-                + peak->location);*/
-
-            peak->triggering_location = ceil(peak->location-
-                sqrt((-2)*(c*c)*log(noise_level/peak->amp)));
-            peak->triggering_amp = peak->amp * exp(-.5 *
-                pow((peak->triggering_location-peak->location)/c, 2));
+            //calculate triggering location
+            peak->triggering_location = ceil(peak->location -
+                sqrt((log(noise_level/peak->amp)*w*w)/neg4ln2));
+            // TODO: fix to use correct function
+            peak->triggering_amp = peak->amp * exp(neg4ln2 *
+                (peak->triggering_location-peak->location)*
+                (peak->triggering_location-peak->location)*
+                (1/(w*w)));
 
             std::stringstream ss;
-            ss << "y = " << peak->amp << "*e^(-0.5*((t-" << peak->location <<
-                ")/" << c << ")^2)";
+            ss << "y = " << peak->amp << "*e^(-4ln2*((t-" << peak->location <<
+                ")/" << w << ")^2)";
             equations.push_back(ss.str());
 
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
 
-            if(peak->amp >= max_amp_multiplier*max || peak->amp < amp_lower_bound
+            // if any of these are true then the peaks and the whole wave
+            // are invalid -- this should be logged
+            if(peak->amp >= max_amp_multiplier*max 
+                    || peak->amp < amp_lower_bound
                     || peak->triggering_location > n
                     || peak->triggering_location <0) {
                 delete(peak);
@@ -535,6 +530,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
         // PRINT DATA AND MODEL FOR TESTING PURPOSES
         spdlog::trace("Gaussian sum in solve system and not failed:");
+        // TODO: this should be wrapped in an ifdef
         std::ostringstream model;       
         for (int i = 0; i < n; ++i){
             double ti = fit_data.t[i];
@@ -659,11 +655,13 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
 
 
     // make a guess for the fwhm value
+    float neg4ln2 = -4.*log(2);
     int j;
     int peaks_found=0;
     for(int i=0; i< peakCount; i++){
         // Create a better guess by using a better width
-        float guess = -1; // "guess" represents our guess of the width value.
+        float guess_lo = -1; // "guess" represents our guess of the width value.
+        float guess_hi = -1; // "guess" represents our guess of the width value.
         float half_ampData_guess = ampData[peak_guesses_loc[i]]/2.;
         int idx_lo=0,idx_hi=0;
         // look low
@@ -675,27 +673,39 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             prev = ampData[j];
             if(ampData[j] < half_ampData_guess){
                 idx_lo = j;
-                guess = (idxData[peak_guesses_loc[i]] - j -1)+.5;
+                //guess = (idxData[peak_guesses_loc[i]] - j -1)+.5;
+                double diff1 = idxData[j]-idxData[peak_guesses_loc[i]];
+                double ydiva = (double)ampData[j]/(double)ampData[peak_guesses_loc[i]];
+                guess_lo = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
                 break;
             }
         }
         // look high
-        if (guess<0){
-            prev = ampData[peak_guesses_loc[i]];
-            for(j=peak_guesses_loc[i];j<n;j++){
-                if(ampData[j] > prev){
+        prev = ampData[peak_guesses_loc[i]];
+        for(j=peak_guesses_loc[i];j<n;j++){
+            if(ampData[j] > prev){
+                break;
+            }
+            prev = ampData[j];
+            if(ampData[j] < half_ampData_guess){
+                idx_hi = j;
+                //guess = (j-idxData[peak_guesses_loc[i]] -1)-.5;
+                double diff1 = idxData[j]-idxData[peak_guesses_loc[i]];
+                double ydiva = 
+                    (double)ampData[j]/(double)ampData[peak_guesses_loc[i]];
+                guess_hi = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
                     break;
-                }
-                prev = ampData[j];
-                if(ampData[j] < half_ampData_guess){
-                    idx_hi = j;
-                    guess = (j-idxData[peak_guesses_loc[i]] -1)-.5;
-                    break;
-                }
             }
         }
 
-        if(guess< 0) {
+        double guess;
+        if(guess_lo > 0 && guess_hi > 0){
+          guess = (guess_lo+guess_hi)*.5;
+        }else if(guess_lo > 0){
+          guess = guess_lo;
+        }else if(guess_hi >0){
+          guess = guess_hi;
+        }else{
             spdlog::warn(
                     "Guess for peak width less than zero, reverting to default"
                     );
@@ -707,7 +717,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             spdlog::debug(
                 "Guess for peak {}: amp {}; time: {}; width: {}",
                 i, ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
-                guess);
+                guess_lo);
         }
 
         if(guess > guess_upper_lim) {guess = guess_upper_lim_default;}
@@ -717,8 +727,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         Peak* peak = new Peak();
         peak->amp = ampData[peak_guesses_loc[i]];
         peak->location = idxData[peak_guesses_loc[i]];
-        peak->fwhm = guess * 2;
-        double c = guess;
+        peak->fwhm = guess;
+        /*double c = guess;
         peak->triggering_location = ceil(peak->location-
              sqrt((-2)*(c*c)*log(noise_level/peak->amp)));
         peak->triggering_amp = peak->amp * exp(-.5 *
@@ -728,6 +738,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         //Rise time = peak_location - triggering_location
         peak->rise_time = peak->location - peak->triggering_location;
         peak->position_in_wave = peaks_found;
+        */
         results->push_back(peak);
     }
     if (results->size() != 0){

@@ -620,7 +620,8 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     // = -1 for decreasing OR level, but previously decreasing
     //A sharp peak is identified by grad=1 -> grad=-1
     //A wide    peak is identified by grad=0 -> grad=-1
-    std::vector<int> peak_guesses_loc; //Store peaks x-values here
+    std::vector<float> peak_guesses_loc; //Store peaks x-values here
+    std::vector<float> peak_guesses_amp;
     int wideStart = -1; //The start of any current wide peak
     int prev_grad = -1;
     int grad = -1;
@@ -633,20 +634,19 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 if(ampData[i]>noise_level){
                  
                     //handle long flat peaks
-           //         float toll = ampData[i]*.02;
-                    float toll = 0;
                     int j = i-1;
-
                     for( j = i-1; 
-                        ampData[j] > ampData[i]-toll &&
-                        ampData[j] < ampData[i] + toll;
+                        ampData[j] == ampData[i] ;
                         j--);
-                     float lenOfFlat = i -j -1;
-                     //this is truncating, we need
-                     //to fix this
-                     int loc = i - lenOfFlat/2;
+                    // there is no body to the above for loop -- just looking
+                    // for the stopping point
+                    float lenOfFlat = i -j -1.;
+                    //this is truncating, we need
+                    //to fix this
+                    float loc = i - lenOfFlat/2.;
                     //record the peak
                     peak_guesses_loc.push_back(loc);
+                    peak_guesses_amp.push_back(ampData[i]);
                  }
                 //now we are sloping down
                 grad = -1;
@@ -676,37 +676,35 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         // Create a better guess by using a better width
         float guess_lo = -1; // "guess" represents our guess of the width value.
         float guess_hi = -1; // "guess" represents our guess of the width value.
-        float half_ampData_guess = ampData[peak_guesses_loc[i]]/2.;
+        float half_ampData_guess = peak_guesses_amp[i]/2.;
         int idx_lo=0,idx_hi=0;
         // look low
-        int prev = ampData[peak_guesses_loc[i]];
-        for(j=peak_guesses_loc[i];j>0;j--){
+        int prev = ampData[(int)peak_guesses_loc[i]];
+        for(j=(int)peak_guesses_loc[i];j>0;j--){
             if(ampData[j] > prev){
                 break;
             }
             prev = ampData[j];
             if(ampData[j] < half_ampData_guess){
                 idx_lo = j;
-                //guess = (idxData[peak_guesses_loc[i]] - j -1)+.5;
-                double diff1 = idxData[j]-idxData[peak_guesses_loc[i]];
-                double ydiva = (double)ampData[j]/(double)ampData[peak_guesses_loc[i]];
+                double diff1 = idxData[j]-peak_guesses_loc[i];
+                double ydiva = (double)ampData[j]/peak_guesses_amp[i];
                 guess_lo = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
                 break;
             }
         }
         // look high
-        prev = ampData[peak_guesses_loc[i]];
-        for(j=peak_guesses_loc[i];j<n;j++){
+        prev = peak_guesses_amp[i];
+        for(j=(int)peak_guesses_loc[i]+1;j<n;j++){
             if(ampData[j] > prev){
                 break;
             }
             prev = ampData[j];
             if(ampData[j] < half_ampData_guess){
                 idx_hi = j;
-                //guess = (j-idxData[peak_guesses_loc[i]] -1)-.5;
-                double diff1 = idxData[j]-idxData[peak_guesses_loc[i]];
+                double diff1 = idxData[j]-peak_guesses_loc[i];
                 double ydiva = 
-                    (double)ampData[j]/(double)ampData[peak_guesses_loc[i]];
+                    (double)ampData[j]/peak_guesses_amp[i];
                 guess_hi = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
                     break;
             }
@@ -730,7 +728,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         if (log_diagnostics) {
             spdlog::debug(
                 "Guess for peak {}: amp {}; time: {}; width: {}",
-                i, ampData[peak_guesses_loc[i]], idxData[peak_guesses_loc[i]],
+                i, peak_guesses_amp[i], peak_guesses_loc[i],
                 guess_lo);
         }
 
@@ -739,30 +737,14 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
 
         //Create a peak
         Peak* peak = new Peak();
-        peak->amp = ampData[peak_guesses_loc[i]];
-        peak->location = idxData[peak_guesses_loc[i]];
+        peak->amp = peak_guesses_amp[i];
+        peak->location = peak_guesses_loc[i];
         peak->fwhm = guess;
-        /*double c = guess;
-        peak->triggering_location = ceil(peak->location-
-             sqrt((-2)*(c*c)*log(noise_level/peak->amp)));
-        peak->triggering_amp = peak->amp * exp(-.5 *
-                 pow((peak->triggering_location-peak->location)/
-                 (peak->fwhm/2), 2));
-
-        //Rise time = peak_location - triggering_location
-        peak->rise_time = peak->location - peak->triggering_location;
-        peak->position_in_wave = peaks_found;
-        */
         results->push_back(peak);
     }
     if (results->size() != 0){
         results->back()->is_final_peak=true;
     }
-    // FOR TESTING PURPOSES
-    // std::cerr << std::endl << "Guesses: \n";
-    // for(int i=0;i<peak_guesses_loc.size();i++){
-    //   std::cerr << peak_guesses_loc[i] << " ";
-    // }
 
     return results->size();
 }

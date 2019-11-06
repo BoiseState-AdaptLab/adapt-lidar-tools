@@ -476,7 +476,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         incr_pass();
 
         // save value for later
-        double neg4ln2 = -4.*log(2); 
+        double neg4ln2 = -4.*log(2.); 
         //this loop is going through every peak
         int i=0;
         for(auto iter = results->begin(); iter != results->end(); ++iter) {
@@ -630,13 +630,27 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         if (grad == 1){
             // sloping down
             if(ampData[i+1] < ampData[i]){
-                if(ampData[i]>=noise_level){
+                if(ampData[i]>noise_level){
+                 
+                    //handle long flat peaks
+           //         float toll = ampData[i]*.02;
+                    float toll = 0;
+                    int j = i-1;
+
+                    for( j = i-1; 
+                        ampData[j] > ampData[i]-toll &&
+                        ampData[j] < ampData[i] + toll;
+                        j--);
+                     float lenOfFlat = i -j -1;
+                     //this is truncating, we need
+                     //to fix this
+                     int loc = i - lenOfFlat/2;
                     //record the peak
-                    peak_guesses_loc.push_back(i);
+                    peak_guesses_loc.push_back(loc);
                  }
                 //now we are sloping down
                 grad = -1;
-            }
+            } 
                 //Peak location
             // previously decreasing
         }else if(grad == -1){

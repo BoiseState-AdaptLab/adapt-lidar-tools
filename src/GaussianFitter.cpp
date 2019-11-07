@@ -614,19 +614,81 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //are pointing to space used in LidarVolume
     results->clear(); 
 
-    //Sign of gradient:
-    // =    1 for increasing
-    // =    0 for level AND PREVIOUSLY INCREASING (so potential wide peak)
-    // = -1 for decreasing OR level, but previously decreasing
-    //A sharp peak is identified by grad=1 -> grad=-1
-    //A wide    peak is identified by grad=0 -> grad=-1
     std::vector<float> peak_guesses_loc; //Store peaks x-values here
     std::vector<float> peak_guesses_amp;
-    int wideStart = -1; //The start of any current wide peak
     int prev_grad = -1;
     int grad = -1;
-    for(int i = 0; i<(int)ampData.size()-1; i++){
+    int firstDiffs[(int)ampData.size()];
+    int secondDiffs[(int)ampData.size()];
+    firstDiffs[1] = ampData[1] - ampData[0];
+    for(int i = 2; i<(int)ampData.size(); i++){
+      firstDiffs[i] = ampData[i] - ampData[i-1];
+      secondDiffs[i] = firstDiffs[i] - firstDiffs[i-1];
+    }
+    for(int i = 2; i<(int)ampData.size(); i++){
+      if(grad == 0){
+        if(firstDiffs[i] > 0){
+          // flat to positive (record peak if not a trough)
+          if(ampData[i]>noise_level && prev_grad == 1){
+              //handle  flat peaks
+              int j = i-2;
+              for( ; ampData[j] == ampData[i-1] ; j--);
+              // there is no body to the above for loop -- just looking
+              // for the stopping point
+              float lenOfFlat = i-1 -j -1.;
+              //this is truncating, we need
+              //to fix this
+              float loc = i-1 - lenOfFlat/2.;
+              //record the peak
+              peak_guesses_loc.push_back(loc);
+              peak_guesses_amp.push_back(ampData[i-1]);
+          }
+          grad = 1;
+        }else if(firstDiffs[i] < 0 ){
+          // flat to negative (record peak)
+          if(ampData[i]>noise_level){
+              //handle  flat peaks
+              int j = i-2;
+              for( ; ampData[j] == ampData[i-1] ; j--);
+              // there is no body to the above for loop -- just looking
+              // for the stopping point
+              float lenOfFlat = i-1 -j -1.;
+              //this is truncating, we need
+              //to fix this
+              float loc = i-1 - lenOfFlat/2.;
+              //record the peak
+              peak_guesses_loc.push_back(loc);
+              peak_guesses_amp.push_back(ampData[i-1]);
+          }
+          grad = -1;
+        }
 
+      }else if(grad == 1){
+        prev_grad = 1;
+        if(firstDiffs[i] == 0 ){
+          grad = 0;
+        }else if(firstDiffs[i] < 0){
+          // positive to negative (record peak)
+          if(ampData[i]>noise_level){
+              //record the peak
+              peak_guesses_loc.push_back(float(i-1));
+              peak_guesses_amp.push_back(ampData[i-1]);
+          }
+          grad = -1;
+        }
+
+      }else{ // gradient is -1
+        prev_grad = -1;
+        if(firstDiffs[i] == 0 ){
+          // down to flat
+          grad = 0; 
+        }else if(firstDiffs[i] > 0){
+          // down to up
+          grad = 1;
+        }
+      }
+    }
+    /*for(int i = 0; i<(int)ampData.size()-1; i++){
         // were we sloping up before?
         if (grad == 1){
             // sloping down
@@ -659,7 +721,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                     grad = 1;
                 }
         }
-    }
+    }*/
 
     //Figure out the size of ampData
     size_t n = ampData.size();

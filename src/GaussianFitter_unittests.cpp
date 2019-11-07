@@ -1362,7 +1362,7 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
     fitter.smoothing_expt(&ampData);
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(164,peaks.at(0)->amp);
     EXPECT_EQ(11,peaks.at(1)->amp);
     EXPECT_EQ(33,peaks.at(2)->amp);
@@ -1373,7 +1373,7 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
     EXPECT_NEAR(8, peaks.at(1)->fwhm, 1); 
     EXPECT_NEAR(5.8, peaks.at(2)->fwhm, 1); 
 
-    EXPECT_EQ(2,count);
+    EXPECT_EQ(3,count);
 }
 
 TEST_F(GaussianFitterTest, max_iter_4_find){
@@ -1600,9 +1600,9 @@ TEST_F(GaussianFitterTest, problem_waveform_2_find){
     EXPECT_EQ(20, peaks.at(0)->location);
     EXPECT_EQ(32, peaks.at(1)->location);
     EXPECT_NEAR(6.2, peaks.at(0)->fwhm, 1);
-    EXPECT_NEAR(5.4, peaks.at(0)->fwhm, 1);
+    EXPECT_NEAR(5.4, peaks.at(1)->fwhm, 1);
 
-    EXPECT_EQ(1, count);
+    EXPECT_EQ(2, count);
      
 }
              
@@ -1851,7 +1851,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest1_find){
     EXPECT_EQ(7, peaks.at(0)->location);
     EXPECT_NEAR(3.3, peaks.at(0)->fwhm, 1);
 
-    EXPECT_EQ(2, count);
+    EXPECT_EQ(1, count);
 }
 
 //concave, no peaks waveform

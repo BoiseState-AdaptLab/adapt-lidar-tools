@@ -625,6 +625,11 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
       firstDiffs[i] = ampData[i] - ampData[i-1];
       secondDiffs[i] = firstDiffs[i] - firstDiffs[i-1];
     }
+    // for the most part any time we get to a flat portion
+    // we will be counting that as a peak.
+    // The exception is when the data never has a real peak.
+    // We need to ignore those waveforms
+    int realPeaks = 0;
     for(int i = 2; i<(int)ampData.size(); i++){
       if(grad == 0){
         if(firstDiffs[i] > 0){
@@ -647,6 +652,9 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         }else if(firstDiffs[i] < 0 ){
           // flat to negative (record peak)
           if(ampData[i]>noise_level){
+              if(prev_grad == 1){
+                realPeaks++;
+              }
               //handle  flat peaks
               int j = i-2;
               for( ; ampData[j] == ampData[i-1] ; j--);
@@ -670,6 +678,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         }else if(firstDiffs[i] < 0){
           // positive to negative (record peak)
           if(ampData[i]>noise_level){
+              realPeaks++;
               //record the peak
               peak_guesses_loc.push_back(float(i-1));
               peak_guesses_amp.push_back(ampData[i-1]);
@@ -729,11 +738,11 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //Figure out how many peaks there are
     size_t peakCount = peak_guesses_loc.size();
 
-
     // make a guess for the fwhm value
     float neg4ln2 = -4.*log(2);
     int j;
     int peaks_found=0;
+    if(realPeaks > 0){
     for(int i=0; i< peakCount; i++){
         // Create a better guess by using a better width
         float guess_lo = -1; // "guess" represents our guess of the width value.
@@ -803,7 +812,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         peak->location = peak_guesses_loc[i];
         peak->fwhm = guess;
         results->push_back(peak);
-    }
+    }}
     if (results->size() != 0){
         results->back()->is_final_peak=true;
     }

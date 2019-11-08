@@ -932,7 +932,7 @@ TEST_F(GaussianFitterTest, problem_waveform_10_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
-    EXPECT_EQ(2,peaks.size());
+    ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(184, peaks.at(0)->amp, 1);
     EXPECT_EQ(13, peaks.at(0)->location);
     EXPECT_NEAR(5.6, peaks.at(0)->fwhm, 1);
@@ -984,15 +984,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
-    EXPECT_EQ(0,peaks.size());
+    ASSERT_EQ(1,peaks.size());
 
     EXPECT_NEAR(57, peaks.at(0)->amp, 1);
     EXPECT_EQ(9, peaks.at(0)->location);
     EXPECT_NEAR(7, peaks.at(0)->fwhm, 1);
 
-    EXPECT_EQ(0, count);
-    //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
-   // EXPECT_EQ(8, peaks.at(0)->location);
+    EXPECT_EQ(1, count);
 }
 
 //slope up, no peaks waveform
@@ -1012,8 +1010,6 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_guess){
 
     EXPECT_EQ(0,peaks.size());
     EXPECT_EQ(0, count);
-    //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
-    //EXPECT_EQ(8, peaks.at(0)->location);
 }
 
 //slope down, no peaks waveform
@@ -1036,36 +1032,6 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_guess){
     EXPECT_EQ(0, count);
 }
 
-//two peaks waveform
-TEST_F(GaussianFitterTest, FlatFreeTest5_guess){
-
-    std::vector<int> idxData;
-    std::vector<int> ampData;
-
-    char input[] = "24 37 52 66 65 52 41 32 22 17 28 56 78 62 45 45 45 27";
-
-    parseWave(input, idxData, ampData);
-
-    GaussianFitter fitter;
-    fitter.noise_level = 9;
-    std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
-
-    EXPECT_EQ(3,peaks.size());
-    EXPECT_NEAR(66, peaks.at(0)->amp, 1);
-    EXPECT_EQ(3, peaks.at(0)->location);
-    EXPECT_NEAR(5.2, peaks.at(0)->fwhm, 1);
-
-    EXPECT_NEAR(78, peaks.at(1)->amp, 1);
-    EXPECT_EQ(12, peaks.at(1)->location);
-    EXPECT_NEAR(3.2, peaks.at(1)->fwhm, 1);
-
-    EXPECT_NEAR(45, peaks.at(2)->amp, 1);
-    EXPECT_EQ(15, peaks.at(2)->location);
-    EXPECT_NEAR(7, peaks.at(2)->fwhm, 1);
-
-    EXPECT_EQ(3, count);
-}
 
 //flat areas waveform
 TEST_F(GaussianFitterTest, FlatFreeTest6_guess){
@@ -1082,26 +1048,14 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
-    EXPECT_EQ(3,peaks.size());
-    EXPECT_NEAR(17, peaks.at(0)->amp, 1);
-    EXPECT_EQ(2, peaks.at(0)->location);
-    EXPECT_NEAR(5.2, peaks.at(0)->fwhm, 1);
-
-    EXPECT_NEAR(32, peaks.at(1)->amp, 1);
-    EXPECT_EQ(6.5, peaks.at(1)->location);
-    EXPECT_NEAR(3.2, peaks.at(1)->fwhm, 1);
-
-    EXPECT_NEAR(45, peaks.at(2)->amp, 1);
-    EXPECT_EQ(10, peaks.at(2)->location);
-    EXPECT_NEAR(7, peaks.at(2)->fwhm, 1);
-
-    EXPECT_EQ(3, count);
+    EXPECT_EQ(0,peaks.size());
+    EXPECT_EQ(0,count);
 }
 
         //////////////////////////
         // TESTING find_peaks() //
         //////////////////////////
-/*
+
 TEST_F(GaussianFitterTest, NayaniClipped1_find){
     
     std::vector<int> idxData;
@@ -1920,7 +1874,7 @@ TEST_F(GaussianFitterTest, problem_waveform_10_find){
     fitter.smoothing_expt(&ampData);
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
-    EXPECT_EQ(2,peaks.size());
+    ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(184, peaks.at(0)->amp, 1);
     EXPECT_NEAR(12, peaks.at(1)->amp, 1);
     EXPECT_EQ(13, peaks.at(0)->location);
@@ -1974,10 +1928,8 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_find){
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
     ASSERT_EQ(0,peaks.size());
-    EXPECT_EQ(0,count);
+    EXPECT_EQ(0, count);
 
-    //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
-   // EXPECT_EQ(8, peaks.at(0)->location);
 }
 
 //slope up, no peaks waveform
@@ -2022,33 +1974,6 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_find){
    // EXPECT_EQ(8, peaks.at(0)->location);
 }
 
-//two peaks waveform
-TEST_F(GaussianFitterTest, FlatFreeTest5_find){
-
-    std::vector<int> idxData;
-    std::vector<int> ampData;
-
-    char input[] = "24 37 52 66 65 52 41 32 22 17 28 56 78 62 45 45 45 27";
-
-    parseWave(input, idxData, ampData);
-
-    GaussianFitter fitter;
-    fitter.noise_level = 9;
-    std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
-
-    EXPECT_EQ(2,peaks.size());
-    EXPECT_NEAR(66, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(78, peaks.at(1)->amp, 1);
-    EXPECT_EQ(3, peaks.at(0)->location);
-    EXPECT_EQ(12, peaks.at(1)->location);
-    EXPECT_NEAR(5.2, peaks.at(0)->fwhm, 1);
-    EXPECT_NEAR(3.2, peaks.at(1)->fwhm, 1);
-
-    EXPECT_EQ(2, count);
-
-}
 
 //flat areas waveform
 TEST_F(GaussianFitterTest, FlatFreeTest6_find){
@@ -2071,5 +1996,4 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_find){
     //EXPECT_NEAR(67, peaks.at(0)->amp, 1);
    // EXPECT_EQ(12, peaks.at(0)->location);
 }
-*/
         //////////////////////////

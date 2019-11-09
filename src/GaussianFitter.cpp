@@ -27,7 +27,7 @@ GaussianFitter::GaussianFitter(){
     max_amp_multiplier = MAX_AMP_MULTIPLIER;
     amp_lower_bound = AMP_LOWER_BOUND;
 
-    log_diagnostics = false;
+    log_diagnostics = true;
 }
 
 void GaussianFitter::setDiagnostics(bool newval) {
@@ -169,18 +169,12 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
             w_sum = a*ei*eightln2*(ti-b)*(ti-b)*(1/(w*w*w));
 
             // first derivative wrt a
-            // ei
-            //gsl_matrix_set(J, i,3*j+ 0, -ei);
             gsl_matrix_set(J, i, 3*j+0, a_sum);
 
             // first derivative wrt b
-            // a(t-b)* e ^ ( -.5*((t-b)/c)^2)* (1/c^2)
-            // a*(ti-b)*ei*(1/(c*c))
-            // gsl_matrix_set(J, i,3*j+ 1, -(a / c) * ei * zi);
             gsl_matrix_set(J, i, 3*j+1, b_sum);
 
-            // first derivative wrt c
-            // a*(ti-b)*(ti-b) * ei * (1/(c*c*c))
+            // first derivative wrt w
             gsl_matrix_set(J, i, 3*j+2, w_sum);
         }
     }
@@ -440,7 +434,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     //define function to be minimized
     fdf.f = func_f;
-    fdf.df = func_df;
+    fdf.df = NULL;
     //fdf.fvv = func_fvv;
     fdf.fvv = NULL;
     fdf.n = n;
@@ -505,12 +499,22 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
             // if any of these are true then the peaks and the whole wave
             // are invalid -- this should be logged
-            if(peak->amp >= max_amp_multiplier*max 
-                    || peak->amp < amp_lower_bound
-                    || peak->triggering_location > n
-                    || peak->triggering_location <0) {
-                delete(peak);
-                results->erase(iter--);
+            if(peak->amp >= 300 ){
+                spdlog::trace("Results invalid: amp too large");
+                results->clear();
+                break;
+            }else if(peak->amp < amp_lower_bound){
+                spdlog::trace("Results invalid: amp too small");
+                results->clear();
+                break;
+            }else if(peak->triggering_location > n){
+                spdlog::trace("Results invalid: triggering location > n");
+                results->clear();
+                break;
+            }else if(peak->triggering_location <0) {
+                spdlog::trace("Results invalid: triggering location <n");
+                results->clear();
+                break;
             } else{
                 //set the peak position in the wave
                 //this will be wrong if a previous peak was removed for any
@@ -529,7 +533,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         spdlog::trace("Number of Peaks Found: {}", results->size());
 
         // PRINT DATA AND MODEL FOR TESTING PURPOSES
-        spdlog::trace("Gaussian sum in solve system and not failed:");
+        spdlog::trace("Gaussian sum in solve system succeeded:");
         // TODO: this should be wrapped in an ifdef
         std::ostringstream model;       
         for (int i = 0; i < n; ++i){
@@ -537,8 +541,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             model << gaussianSum(x, ti) << " ";
         }
         spdlog::trace("Model Data: {}", model.str());
-    }
-    else{
+    }else{
 
         incr_fail();
        
@@ -554,6 +557,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         spdlog::trace("Time Data: {}",time.str());
         spdlog::trace("Amp Data: {}",data.str());
         spdlog::trace("Model Data: {}",model.str());
+        results->clear();
     }
 
     free(fit_data.t);
@@ -634,7 +638,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
       if(grad == 0){
         if(firstDiffs[i] > 0){
           // flat to positive (record peak if not a trough)
-          if(ampData[i]>noise_level && prev_grad == 1){
+          if(ampData[i-1]>noise_level && prev_grad == 1){
               //handle  flat peaks
               int j = i-2;
               for( ; ampData[j] == ampData[i-1] ; j--);
@@ -651,7 +655,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
           grad = 1;
         }else if(firstDiffs[i] < 0 ){
           // flat to negative (record peak)
-          if(ampData[i]>noise_level){
+          if(ampData[i-1]>noise_level){
               if(prev_grad == 1){
                 realPeaks++;
               }
@@ -677,7 +681,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
           grad = 0;
         }else if(firstDiffs[i] < 0){
           // positive to negative (record peak)
-          if(ampData[i]>noise_level){
+          if(ampData[i-1]>noise_level){
               realPeaks++;
               //record the peak
               peak_guesses_loc.push_back(float(i-1));
@@ -697,40 +701,6 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         }
       }
     }
-    /*for(int i = 0; i<(int)ampData.size()-1; i++){
-        // were we sloping up before?
-        if (grad == 1){
-            // sloping down
-            if(ampData[i+1] < ampData[i]){
-                if(ampData[i]>noise_level){
-                 
-                    //handle long flat peaks
-                    int j = i-1;
-                    for( j = i-1; 
-                        ampData[j] == ampData[i] ;
-                        j--);
-                    // there is no body to the above for loop -- just looking
-                    // for the stopping point
-                    float lenOfFlat = i -j -1.;
-                    //this is truncating, we need
-                    //to fix this
-                    float loc = i - lenOfFlat/2.;
-                    //record the peak
-                    peak_guesses_loc.push_back(loc);
-                    peak_guesses_amp.push_back(ampData[i]);
-                 }
-                //now we are sloping down
-                grad = -1;
-            } 
-                //Peak location
-            // previously decreasing
-        }else if(grad == -1){
-                if(ampData[i+1] > ampData[i]){
-                    //sloping up
-                    grad = 1;
-                }
-        }
-    }*/
 
     //Figure out the size of ampData
     size_t n = ampData.size();
@@ -761,6 +731,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 double diff1 = idxData[j]-peak_guesses_loc[i];
                 double ydiva = (double)ampData[j]/peak_guesses_amp[i];
                 guess_lo = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
+                spdlog::trace("Found a guess for FWHM lo{}",guess_lo);
                 break;
             }
         }
@@ -774,9 +745,9 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             if(ampData[j] < half_ampData_guess){
                 idx_hi = j;
                 double diff1 = idxData[j]-peak_guesses_loc[i];
-                double ydiva = 
-                    (double)ampData[j]/peak_guesses_amp[i];
+                double ydiva = (double)ampData[j]/peak_guesses_amp[i];
                 guess_hi = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
+                spdlog::trace("Found a guess for FWHM hi{}",guess_hi);
                     break;
             }
         }
@@ -786,12 +757,12 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
           guess = (guess_lo+guess_hi)*.5;
         }else if(guess_lo > 0){
           guess = guess_lo;
-        }else if(guess_hi >0){
+        }else if(guess_hi > 0){
           guess = guess_hi;
         }else{
-            spdlog::warn(
-                    "Guess for peak width less than zero, reverting to default"
-                    );
+            spdlog::warn( "Guess for peak width less than zero, "
+                          " reverting to default lo:{} hi{}",
+                          guess_lo, guess_hi);
 
             guess = guess_lessthan_0_default;
         }
@@ -800,7 +771,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             spdlog::debug(
                 "Guess for peak {}: amp {}; time: {}; width: {}",
                 i, peak_guesses_amp[i], peak_guesses_loc[i],
-                guess_lo);
+                guess);
         }
 
         if(guess > guess_upper_lim) {guess = guess_upper_lim_default;}
@@ -812,7 +783,9 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         peak->location = peak_guesses_loc[i];
         peak->fwhm = guess;
         results->push_back(peak);
-    }}
+    }}else{
+      results->clear();
+    }
     if (results->size() != 0){
         results->back()->is_final_peak=true;
     }

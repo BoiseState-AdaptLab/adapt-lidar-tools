@@ -54,8 +54,6 @@ void CmdLine::setUsageMessage()
     buffer << "Options:  " << std::endl;
     buffer << "       -f  <path to pls file>"
         << "  :Generates a Geotif file" << std::endl;
-    buffer << "       -d"
-        << "  :Disables gaussian fitter, using first diff method instead" << std::endl;
     buffer << "       -h [adv]"
         << "  :Prints this help message, the argument 'adv' will display the "
         << "advanced command line options" << std::endl << std::endl;
@@ -112,9 +110,11 @@ void CmdLine::setUsageMessage()
 
     std::stringstream advBuffer;
     advBuffer << "\nAdvanced Options:" << std::endl << std::endl;
+    advBuffer << "       -d"
+        << "  :Disables gaussian fitter, using first differencing method instead" << std::endl;
     advBuffer << "       -n  <level>"
         << "  :Sets the noise level. Defaults to 6.\n";
-    advBuffer << "       -v <verbosity level>"
+    advBuffer << "       -v  <verbosity level>"
         << "  :Sets the level of verbosity for the logger to use" << std::endl;
     advBuffer << "           Options are 'trace', 'debug', 'info', 'warn', 'error'"
         << ", and 'critical'" << std::endl;
@@ -223,8 +223,10 @@ bool CmdLine::parse_args(int argc,char *argv[]){
 
     // getopt_long stores the option index here.
     int option_index = 0;
-    //Tacks the last option used
+    // Tracks the last option used
     char lastOpt = ' ';
+    // Tracks if we used -h or --help
+    bool wantsHelp = false;
     /* Using getopt_long to get the arguments with an option.
      * ":h:ds:" indicate that option 'd' is without arguments while
      * option 'h' and 's' require arguments
@@ -235,6 +237,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
             fArg = optarg;
             setInputFileName(fArg);
         } else if (optionChar == 'h') { //Show help information
+            wantsHelp = true;
             printUsageMessage = true;
         } else if (optionChar == 'd') { //Sets analysis method
             useGaussianFitting = false;
@@ -375,8 +378,8 @@ bool CmdLine::parse_args(int argc,char *argv[]){
         printUsageMessage = true;
     }
 
-    //Print messages
-    if (!quiet){
+    //Print messages only if we didn't use -h or --help
+    if (!(quiet || wantsHelp)){
         for (auto it = msgs.begin(); it != msgs.end(); ++it){
             std::string line(it->length(), '-');
             std::cout << "\n" << *it << "\n" << line << std::endl;

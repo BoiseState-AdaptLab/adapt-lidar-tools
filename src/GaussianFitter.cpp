@@ -74,31 +74,59 @@ struct data
     double *t;
     double *y;
     size_t n;
+    double *peak_locations;
 };
 
 
+/* model function: a * exp( -1/2 * [ (t - b) / c ]^2 ) */
+double
+gaussian(const double a, const double b, const double c, const double t)
+{
+  const double z = (t - b) / c;
+  return (a * exp(-0.5 * z * z));
+}
 /**
  * model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
  * @param x
  * @param t
  * @return
  */
-double gaussianSum(const gsl_vector * x,const double t)
-{
-T: 
+double gaussianSum(const gsl_vector * x,double* locs,const double t) {
+
     int i = 0;
     double value = 0.;
-    double neg4ln2 = -4.*log(2.);
-    for(i=0;i<(x->size/3);i++){
-        double a = gsl_vector_get(x,3*i+0);
-        double b = gsl_vector_get(x,3*i+1);
-        double w = gsl_vector_get(x,3*i+2);
-        const double z = (t - b) / w;
-        value += (a * exp(neg4ln2 * z * z));
+    for(i=0;i<(x->size/2);i++){
+        double a = gsl_vector_get(x,2*i+0);
+        double b = locs[i];
+        double c = gsl_vector_get(x,2*i+1);
+        value += gaussian(a,b,c,t);
     }
     return value;
 }
 
+int
+func_f (const gsl_vector * x, void *params, gsl_vector * f)
+{
+  struct data *d = (struct data *) params;
+
+  size_t i;
+  for (i = 0; i < d->n; ++i) {
+
+    double ti = d->t[i];
+    double yi = d->y[i];
+    double y = 0.;
+      for(int j = 0; j<(x->size/2);j++){
+        double a = gsl_vector_get(x, 2*j+0);
+        double b = d->peak_locations[j];
+        double c = gsl_vector_get(x, 2*j+1);
+
+        y += gaussian(a, b, c, ti);
+      }
+      gsl_vector_set(f, i, yi - y);
+    }
+
+  return GSL_SUCCESS;
+}
 
 /**
  *
@@ -106,7 +134,6 @@ T:
  * @param params
  * @param f
  * @return
- */
 int func_f (const gsl_vector * x, void *params, gsl_vector * f)
 {
     struct data *d = (struct data *) params;
@@ -125,6 +152,7 @@ int func_f (const gsl_vector * x, void *params, gsl_vector * f)
     return GSL_SUCCESS;
 }
 
+ */
 
 /**
  *
@@ -139,47 +167,29 @@ int func_f (const gsl_vector * x, void *params, gsl_vector * f)
  * J_{i,j} = \frac{\partial f_i(x)}{\partial x_j}
  * @return
  */
-int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
-    struct data *d = (struct data *) params;
+int
+func_df (const gsl_vector * x, void *params, gsl_matrix * J)
+{
+  struct data *d = (struct data *) params;
 
-    int npeaks = x->size/3;
-    int j;
-    size_t i;
+  size_t i;
+  for (i = 0; i < d->n; ++i){
+    double ti = d->t[i];
+    for(int j = 0; j<(x->size/2);j++){
+      double a = gsl_vector_get(x, 2*j+0);
+      double b = d->peak_locations[j];
+      double c = gsl_vector_get(x, 2*j+1);
 
-    double neg4ln2 = -4.*log(2.);
-    double eightln2 = 8.*log(2.);
-    // for each value of time
-    for (i = 0; i < d->n; ++i){
-        double a_sum = 0;
-        double b_sum = 0;
-        double w_sum = 0;
-        // this is the actual time value (x in the comments above)
-        double ti = d->t[i];
-        // calculate the derivatives
-        for(j=0;j<npeaks;j++){
-            double a = gsl_vector_get(x, j*3+0);
-            double b = gsl_vector_get(x, j*3+1);
-            double w = gsl_vector_get(x, j*3+2);
+      double zi = (ti - b) / c;
+      double ei = exp(-0.5 * zi * zi);
 
-            double zi = (ti - b) / w;
-            double ei = exp(neg4ln2 * zi *zi);
-
-            a_sum = ei;
-            b_sum = a*ei*eightln2*(ti-b)*(1/(w*w));
-            w_sum = a*ei*eightln2*(ti-b)*(ti-b)*(1/(w*w*w));
-
-            // first derivative wrt a
-            gsl_matrix_set(J, i, 3*j+0, a_sum);
-
-            // first derivative wrt b
-            gsl_matrix_set(J, i, 3*j+1, b_sum);
-
-            // first derivative wrt w
-            gsl_matrix_set(J, i, 3*j+2, w_sum);
-        }
+      gsl_matrix_set(J, i, 2*j+0, -ei);
+      //gsl_matrix_set(J, i, 3*j+1, -(a / c) * ei * zi);
+      gsl_matrix_set(J, i, 2*j+1, -(a / c) * ei * zi * zi);
     }
+  }
 
-    return GSL_SUCCESS;
+  return GSL_SUCCESS;
 }
 
 
@@ -191,46 +201,45 @@ int func_df (const gsl_vector * x, void *params, gsl_matrix * J){
  * @param fvv
  * @return
  */
-int func_fvv (const gsl_vector * x, const gsl_vector * v,
-                    void *params, gsl_vector * fvv)
+int
+func_fvv (const gsl_vector * x, const gsl_vector * v,
+          void *params, gsl_vector * fvv)
 {
-    struct data *d = (struct data *) params;
-    size_t i;
+  struct data *d = (struct data *) params;
 
-    int npeaks = x->size/3;
-    int j;
-    for (i = 0; i < d->n; ++i){
-        double sum = 0;
-        double ti = d->t[i];
+  size_t i;
+  for (i = 0; i < d->n; ++i) {
 
-        for(j=0;j<npeaks;j++){
-            double a = gsl_vector_get(x,3*j+ 0);
-            double b = gsl_vector_get(x,3*j+ 1);
-            double c = gsl_vector_get(x,3*j+ 2);
-            double va = gsl_vector_get(v,3*j+ 0);
-            double vb = gsl_vector_get(v,3*j+ 1);
-            double vc = gsl_vector_get(v,3*j+ 2);
+    double ti = d->t[i];
+    double sum=0;
+    for(int j = 0; j<(x->size/3);j++){
+      double a = gsl_vector_get(x, 3*j+0);
+      double b = gsl_vector_get(x, 3*j+1);
+      double c = gsl_vector_get(x, 3*j+2);
+      double va = gsl_vector_get(v, 3*j+0);
+      double vb = gsl_vector_get(v, 3*j+1);
+      double vc = gsl_vector_get(v, 3*j+2);
 
-            double zi = (ti - b) / c;
-            double ei = exp(-0.5 * zi * zi);
-            double Dab = -zi * ei / c;
-            double Dac = -zi * zi * ei / c;
-            double Dbb = a * ei / (c * c) * (1.0 - zi*zi);
-            double Dbc = a * zi * ei / (c * c) * (2.0 - zi*zi);
-            double Dcc = a * zi * zi * ei / (c * c) * (3.0 - zi*zi);
+      double zi = (ti - b) / c;
+      double ei = exp(-0.5 * zi * zi);
+      double Dab = -zi * ei / c;
+      double Dac = -zi * zi * ei / c;
+      double Dbb = a * ei / (c * c) * (1.0 - zi*zi);
+      double Dbc = a * zi * ei / (c * c) * (2.0 - zi*zi);
+      double Dcc = a * zi * zi * ei / (c * c) * (3.0 - zi*zi);
 
-            sum += 2.0 * va * vb * Dab +
-                        2.0 * va * vc * Dac +
-                                    vb * vb * Dbb +
-                        2.0 * vb * vc * Dbc +
-                                    vc * vc * Dcc;
-            }
-            gsl_vector_set(fvv, i, sum);
-        }
+      sum += 2.0 * va * vb * Dab +
+            2.0 * va * vc * Dac +
+                  vb * vb * Dbb +
+            2.0 * vb * vc * Dbc +
+                  vc * vc * Dcc;
+    }
 
-    return GSL_SUCCESS;
+    gsl_vector_set(fvv, i, sum);
+  }
+
+  return GSL_SUCCESS;
 }
-
 
 /**
  *
@@ -250,16 +259,16 @@ void callback(const size_t iter, void *params,
     gsl_multifit_nlinear_rcond(&rcond, w);
 
     if (*((bool*) params)) { //solve system passes log_diagnostics over params.
-        size_t npeaks = x->size/3;
+        size_t npeaks = x->size/2;
         spdlog::trace("iter {}:",iter);
         size_t j;
         for(j=0; j<npeaks; j++){
             spdlog::trace(
-                "peak {}: amp = {:#.6g}, t = {:#.6g}, width = {:#.6g}",
+                "peak {}: amp = {:#.6g},  width = {:#.6g}",
                 j,
-                gsl_vector_get(x,3*j+ 0),
-                gsl_vector_get(x,3*j+ 1),
-                gsl_vector_get(x,3*j+ 2));
+                gsl_vector_get(x,2*j+ 0),
+                //gsl_vector_get(x,3*j+ 1),
+                gsl_vector_get(x,2*j+ 1));
         }
         spdlog::trace(
             "Also, |a|/|v| = {:#.6g} cond(J) = {:#.6g}, |f(x)| = {:#.6g}",
@@ -300,9 +309,9 @@ int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
                  const size_t max_iter) {
     const gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust;
 
-    const double xtol = tolerance_scales ? max / x_tolerance : x_tolerance;
-    const double gtol = tolerance_scales ? max / g_tolerance : g_tolerance;
-    const double ftol = tolerance_scales ? max / f_tolerance : f_tolerance;
+  const double xtol = 1e-8;
+  const double gtol = 1e-8;
+  const double ftol = 1e-8;
 
     const size_t n = fdf->n;
     const size_t p = fdf->p;
@@ -326,40 +335,16 @@ int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
 
     /* iterate until convergence */
     status = gsl_multifit_nlinear_driver(max_iter, xtol, gtol, ftol,
-                                         callback, (void*) &log_diagnostics
-                                         , &info, work);
-    if (status) {
-        // std::cerr << "There was an error: " << gsl_strerror (status) 
-        // << "\n" << std::endl;
-    }
+                                         callback, (void*) &log_diagnostics,
+                                         &info, work);
 
     /* store final cost */
     gsl_blas_ddot(f, f, &chisq);
-
     /* store cond(J(x)) */
     gsl_multifit_nlinear_rcond(&rcond, work);
-
     gsl_vector_memcpy(x, y);
-
-
-    // PRINT SUMMARY FOR TESTING PUPOSES
-    // fprintf(stderr, "NITER                   = %zu\n", 
-    //     gsl_multifit_nlinear_niter(work));
-    // fprintf(stderr, "NFEV                    = %zu\n", fdf->nevalf);
-    // fprintf(stderr, "NJEV                    = %zu\n", fdf->nevaldf);
-    // fprintf(stderr, "NAEV                    = %zu\n", fdf->nevalfvv);
-    // fprintf(stderr, "initial cost    = %.12e\n", chisq0);
-    // fprintf(stderr, "final cost      = %.12e\n", chisq);
-    // int i;
-    // for(i=0;i<p/3;i++){
-    //   fprintf(stderr, "final x               = (%.12e, %.12e, %12e)\n",
-    //               gsl_vector_get(x,i*3+0), gsl_vector_get(x,i*3+1),
-    //                   gsl_vector_get(x,i*3+2));
-    //   fprintf(stderr, "final cond(J) = %.12e\n", 1.0 / rcond);
-    // }
-
-
     gsl_multifit_nlinear_free(work);
+
     if(status){
         return 1;
     }
@@ -396,6 +381,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     //get guessed peaks and figure out how many peaks there are
     size_t peakCount = guess_peaks(results, ampData, idxData);
+    smoothing_expt(&ampData);
 
     spdlog::trace("Peak Count = {}", peakCount);
 
@@ -406,7 +392,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
 
-    size_t p = peakCount*3;
+    size_t p = peakCount*2;
 
     //allocate space for fitting
     const gsl_rng_type * T = gsl_rng_default;
@@ -425,6 +411,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fit_data.t = (double*)malloc(n * sizeof(double));
     fit_data.y = (double*)malloc(n * sizeof(double));
     fit_data.n = n;
+    fit_data.peak_locations = (double*)malloc(peakCount * sizeof(double));
+    for(i=0; i < peakCount; i++){
+      fit_data.peak_locations[i] = (*results)[i]->location;
+    }
 
     //copy the data to a format
     for(i=0;i<ampData.size();i++){
@@ -434,7 +424,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     //define function to be minimized
     fdf.f = func_f;
-    fdf.df = NULL;
+    fdf.df = func_df;
     //fdf.fvv = func_fvv;
     fdf.fvv = NULL;
     fdf.n = n;
@@ -444,9 +434,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //this is a guess starting point
     int j;
     for(i=0; i< peakCount; i++){
-        gsl_vector_set(x, i*3+0, (*results)[i]->amp);
-        gsl_vector_set(x, i*3+1, (*results)[i]->location);
-        gsl_vector_set(x, i*3+2, (*results)[i]->fwhm);
+        gsl_vector_set(x, i*2+0, (*results)[i]->amp);
+        gsl_vector_set(x, i*2+1, (*results)[i]->fwhm/(2*log(2)));
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -455,7 +444,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     for (int i = 0; i < n; ++i){
         double ti = fit_data.t[i];
         // double yi = fit_data.y[i];
-        function << gaussianSum(x, ti) << " ";
+        function << gaussian((*results)[0]->amp,
+                            (*results)[0]->location,
+                            (*results)[0]->fwhm/2.35482,ti) << " ";
     }
     spdlog::trace("Model Data: {}", function.str());
 
@@ -475,10 +466,13 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         int i=0;
         for(auto iter = results->begin(); iter != results->end(); ++iter) {
             Peak *peak = *iter;
-            peak->amp = gsl_vector_get(x,3*i+ 0);
-            peak->location = gsl_vector_get(x,3*i+ 1);
-            double w = gsl_vector_get(x,3*i+ 2);
-            peak->fwhm = w;
+            peak->amp = gsl_vector_get(x,2*i+ 0) ;
+            //peak->location = 
+            double w = gsl_vector_get(x,2*i+ 1);
+            peak->fwhm = w*2*log(2);
+            if(peak->fwhm < 0 ){ 
+              peak->fwhm = peak->fwhm*(-1.);
+            }
             
             //calculate triggering location
             peak->triggering_location = ceil(peak->location -
@@ -503,7 +497,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 spdlog::trace("Results invalid: amp too large");
                 results->clear();
                 break;
-            }else if(peak->amp < amp_lower_bound){
+            }else if(peak->amp < (noise_level/2.)){
                 spdlog::trace("Results invalid: amp too small");
                 results->clear();
                 break;
@@ -538,7 +532,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         std::ostringstream model;       
         for (int i = 0; i < n; ++i){
             double ti = fit_data.t[i];
-            model << gaussianSum(x, ti) << " ";
+            model << gaussianSum(x,fit_data.peak_locations, ti) << " ";
         }
         spdlog::trace("Model Data: {}", model.str());
     }else{
@@ -552,7 +546,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             double ti = fit_data.t[i];
             time << ti << " ";
             data << fit_data.y[i] << " ";
-            model << gaussianSum(x, ti) << " ";
+            model << gaussianSum(x,fit_data.peak_locations, ti) << " ";
         }
         spdlog::trace("Time Data: {}",time.str());
         spdlog::trace("Amp Data: {}",data.str());
@@ -800,6 +794,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
  */
 void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
 
+    for(int i=0; i<waveArray->size();i++){
+       (*waveArray)[i] = (*waveArray)[i]-1;
+       if((*waveArray)[i] < 0){(*waveArray)[i] = 0;}
+    }
     for(int i=2; i<waveArray->size()-1;i++){
         if(waveArray->at(i) < 7){
             int temp = (waveArray->at(i-2) + waveArray->at(i-1) +

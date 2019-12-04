@@ -451,10 +451,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     spdlog::trace("Model Data: {}", function.str());
 
 
-    fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
-    fdf_params.scale = gsl_multifit_nlinear_scale_more;
-    fdf_params.solver = gsl_multifit_nlinear_solver_svd;
-    fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
+    //fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
+    //fdf_params.scale = gsl_multifit_nlinear_scale_more;
+    //fdf_params.solver = gsl_multifit_nlinear_solver_svd;
+    //fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
 
     if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){

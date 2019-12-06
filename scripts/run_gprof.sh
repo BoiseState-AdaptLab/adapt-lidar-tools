@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Submit this script with: sbatch thefilename
+#Submit this script from root with: sbatch scripts/run_gprof.sh
 
 #SBATCH --time=1:00:00   # walltime
 #SBATCH --ntasks=1   # number of processes (i.e. tasks)
@@ -19,3 +19,4 @@ make PROFILER_BUILD=1 geotiff-driver
 bin/geotiff-driver -f etc/Nayani_clipped_test.pls -w 13,11,14 -a 4,8,17 -e 1,2,3
 gprof bin/geotiff-driver | deps/gprof2dot/gprof2dot.py -s -w | dot -Tpng -o prof.png
 mv *.tif gmon.out bin
+

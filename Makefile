@@ -227,20 +227,6 @@ $(BIN)/csv-driver: $(OBJ)/pls_to_csv.o $(OBJ)/csv_CmdLine.o \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
 
-# Builds the fitting information tool
-fitting-info: $(BIN)/fitting-info
-
-$(BIN)/fitting-info: $(OBJ)/fitting_info.o $(OBJ)/FlightLineData.o \
-                     $(OBJ)/PulseData.o $(OBJ)/Peak.o \
-                     $(OBJ)/GaussianFitter.o $(OBJ)/WaveGPSInformation.o \
-                     $(OBJ)/FittingInfoDriver.o
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
-		-lgslcblas
-
-$(OBJ)/fitting_info.o: $(SRC)/fitting_info.cpp
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
-
 # A phony target is one that is not really the name of a file; rather it 
 # is just a name for a recipe to be executed when you make an explicit request. 
 # There are two reasons to use a phony target: to avoid a conflict with a file 

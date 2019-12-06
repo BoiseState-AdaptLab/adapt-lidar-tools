@@ -305,8 +305,34 @@ TEST_F(CmdLineTest, invalidNonProductOption){
     ASSERT_TRUE(cmd.printUsageMessage);
 }
 
-//Tests that verbosity is set to the correct value by the -v option
+//Tests for a float argument that is out of range.
+TEST_F(CmdLineTest, floatOutOfRangeTest){
+    optind = 0;
+    numberOfArgs = 7;
+    strncpy(commonArgSpace[5],"-m",3);
+    strncpy(commonArgSpace[6],"1.0e+39",8); // To large for floating point.
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
 
+    cmd.printUsageMessage = false;
+    // Do the same for the calibration constant option to make sure it works too
+    optind = 0;
+    numberOfArgs = 8;
+    strncpy(commonArgSpace[5],"-b",3);
+    strncpy(commonArgSpace[6],"1,2",4);
+    strncpy(commonArgSpace[7],"1.0e+309",8); // This one is a double, not a fl.
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+
+    cmd.printUsageMessage = false;
+    //And do the same for all as well
+    optind = 0;
+    numberOfArgs = 8;
+    strncpy(commonArgSpace[5],"bruh",3);
+    strncpy(commonArgSpace[6],"1.0e+309",8);
+    ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
+    ASSERT_TRUE(cmd.printUsageMessage);
+}
 /****************************************************************************
  *
  * Long Option Tests

@@ -26,6 +26,7 @@ private:
 
     // helpful stuff
     std::string usageMessage;
+    std::string advUsageMessage;
     std::string exeName;
 
     // If peakFlag == true, use first difference to find peaks
@@ -56,12 +57,17 @@ public:
     // For conveying verbosity to main function in a readable way
     std::string verb = "";
 
+    // Decides the multiple by which maximum amplitude is decided in
+    // guess peaks. GaussianFitter will default to a value if this is
+    // not determined.
+    float max_amp_multiplier;
+
     CmdLine();
 
 
     bool parse_args(int argc, char *argv[]);
     void setUsageMessage();
-    std::string getUsageMessage();
+    std::string getUsageMessage(bool adv);
     void check_input_file_exists();
     void setInputFileName(char *args);
     void setInputFileName(std::string filename);

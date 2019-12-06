@@ -21,9 +21,9 @@
 #define MAX_ITER 200
 
 #define TOL_SCALES true
-#define X_TOL 100.
-#define G_TOL 100.
-#define F_TOL 100.
+#define X_TOL .01
+#define G_TOL .01
+#define F_TOL .01
 
 #define GUESS_LT0_DEFAULT 4
 #define GUESS_UPPER_LIM 20

@@ -4,6 +4,10 @@
 #include "LidarDriver.hpp"
 #include "spdlog/spdlog.h"
 
+LidarDriver::LidarDriver() {
+	mutex = PTHREAD_MUTEX_INITIALIZER;
+}
+
 /**
  * setup the gdal dataset (file) with metadata
  * @param tiff_driver pointer to the GTiff driver
@@ -212,13 +216,18 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
     spdlog::info("Finding peaks with {}", fit_type);
 
     //parse each pulse
-    while (raw_data.hasNextPulse()) {
-        peaks.clear();
+    while (true) {
+	peaks.clear();
 
-        // gets the raw data from the file
-        raw_data.getNextPulse(&pd);
+	pthread_mutex_lock(&mutex);
+	if (!raw_data.hasNextPulse()) {
+		pthread_mutex_unlock(&mutex);
+		break;
+	}
+	raw_data.getNextPulse(&pd);
+	pthread_mutex_unlock(&mutex);
 
-        // Skip all the empty returning waveforms
+        //Skip all the empty returning waveforms
         if (pd.returningIdx.size == 0){
             if (log_diagnostics) {
                 spdlog::trace("pulse idx was empty, skipping");
@@ -251,7 +260,9 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
             // for each peak we will call to_string and append them together
             std::string *str = new std::string;
             this->peaks_to_string(*str, cmdLine, peaks);
+	    pthread_mutex_lock(&mutex);
             strings.push_back(str);
+	    pthread_mutex_unlock(&mutex);
         } catch (const char *msg) {
             spdlog::error("{}", msg);
         }

@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 
+#define MAX_BUFFER_SIZE 240
+
 struct vector {
     int *buffer;
     size_t size;
@@ -22,7 +24,6 @@ void push(struct vector* v, int element);
 class PulseData{
 
 private:
-  const int MAX_BUFFER_SIZE = 240;
 public:
   struct vector outgoingIdx;
   struct vector outgoingWave;
@@ -30,6 +31,7 @@ public:
   struct vector returningWave;
   long pulse_returning_start_time;
   PulseData();
+  ~PulseData();
   void displayPulseData(std::ostream *outStream);
   void setOutgoing(struct vector *idxArray,
                    struct vector *waveArray);

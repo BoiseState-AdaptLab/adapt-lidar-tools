@@ -16,18 +16,17 @@ void resize(struct vector* v, size_t newCapacity) {
         newBuffer[i] = v->buffer[i];
     }
 
-    delete v->buffer;
+    delete[] v->buffer;
     v->buffer = newBuffer;
 }
 
 void push(struct vector* v, int element) {
     if (v->size >= v->capacity) {
         //do something
-        std::cout << "can't insert" << std::endl;
+        std::cout << "Cannot insert element" << std::endl;
     } else {
- 
-    v->buffer[v->size] = element;
-    v->size++;
+         v->buffer[v->size] = element;
+         v->size++;
     }
 }
 
@@ -36,23 +35,42 @@ PulseData::PulseData(){
 
   outgoingIdx.size = 0;
   outgoingIdx.capacity = MAX_BUFFER_SIZE;
-  outgoingIdx.buffer = new int[outgoingIdx.capacity];
+  outgoingIdx.buffer = new int[MAX_BUFFER_SIZE];
 
   outgoingWave.size = 0;
   outgoingWave.capacity = MAX_BUFFER_SIZE;
-  outgoingWave.buffer = new int[outgoingWave.capacity];
+  outgoingWave.buffer = new int[MAX_BUFFER_SIZE];
 
   returningIdx.size = 0;
   returningIdx.capacity = MAX_BUFFER_SIZE;
-  returningIdx.buffer = new int[returningIdx.capacity];
+  returningIdx.buffer = new int[MAX_BUFFER_SIZE];
 
   returningWave.size = 0;
   returningWave.capacity = MAX_BUFFER_SIZE;
-  returningWave.buffer = new int[returningWave.capacity];
+  returningWave.buffer = new int[MAX_BUFFER_SIZE];
 
   pulse_returning_start_time = 0;
 }
 
+// Deconstructor
+PulseData::~PulseData(){
+  outgoingIdx.size = 0;
+  outgoingIdx.capacity = 0;
+  delete[] outgoingIdx.buffer;
+
+  outgoingWave.size = 0;
+  outgoingWave.capacity = 0;
+  delete[] outgoingWave.buffer;
+
+  returningIdx.size = 0;
+  returningIdx.capacity = 0;
+  delete[] returningIdx.buffer;
+
+  returningWave.size = 0;
+  returningWave.capacity = 0;
+  delete[] returningWave.buffer;
+
+}
 /**
  *
  * @param idxArray

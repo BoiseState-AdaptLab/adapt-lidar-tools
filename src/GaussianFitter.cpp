@@ -95,7 +95,8 @@ double gaussianSum(const gsl_vector * x,double* locs,const double t) {
 
     int i = 0;
     double value = 0.;
-    for(i=0;i<(x->size/2);i++){
+    int n = x->size/2;
+    for(i=0;i<n;i++){
         double a = gsl_vector_get(x,2*i+0);
         double b = locs[i];
         double c = gsl_vector_get(x,2*i+1);
@@ -362,8 +363,8 @@ int GaussianFitter::solve_system(gsl_vector *x, gsl_multifit_nlinear_fdf *fdf,
  * @return count of found peaks
  */
 int GaussianFitter::find_peaks(std::vector<Peak*>* results,
-                               std::vector<int> ampData,
-                               std::vector<int> idxData,
+                               struct vector ampData,
+                               struct vector idxData,
                                const size_t max_iter) {
     spdlog::trace("--NEW WAVEFORM--");
 
@@ -377,7 +378,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     equations.clear();
 
     //figure out how many items there are in the ampData
-    size_t n = ampData.size();
+    size_t n = ampData.size;
 
     //get guessed peaks and figure out how many peaks there are
     size_t peakCount = guess_peaks(results, ampData, idxData);
@@ -417,9 +418,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
     //copy the data to a format
-    for(i=0;i<ampData.size();i++){
-        fit_data.t[i] = (double)idxData[i];
-        fit_data.y[i] = (double)ampData[i];
+    for(i=0;i<n;i++){
+        fit_data.t[i] = (double)idxData.buffer[i];
+        fit_data.y[i] = (double)ampData.buffer[i];
     }
 
     //define function to be minimized
@@ -461,16 +462,16 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         incr_pass();
 
         // save value for later
-        double neg4ln2 = -4.*log(2.); 
+        double neg4ln2 = -4.*log(2.);
         //this loop is going through every peak
         int i=0;
         for(auto iter = results->begin(); iter != results->end(); ++iter) {
             Peak *peak = *iter;
             peak->amp = gsl_vector_get(x,2*i+ 0) ;
-            //peak->location = 
+            //peak->location =
             double w = gsl_vector_get(x,2*i+ 1);
             peak->fwhm = w*2*log(2);
-            if(peak->fwhm < 0 ){ 
+            if(peak->fwhm < 0 ){
               peak->fwhm = peak->fwhm*(-1.);
             }
             
@@ -569,18 +570,22 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
  * @param ampData
  * @return
  */
-std::vector<int> GaussianFitter::calculateFirstDifferences(
-    std::vector<int> ampData){
+struct vector GaussianFitter::calculateFirstDifferences(
+    struct vector ampData){
     int first, second, fDiff, count = 0;
-    std::vector<int> firstDifference;
+    int n = (int)ampData.size-2;
+    struct vector firstDifference;
+    firstDifference.buffer = new int[n];
+    firstDifference.size = 0;
+    firstDifference.capacity = n;
 
-    for(int i = 0; i< (int)ampData.size()-2; i++){
-        first = ampData[i+1];
-        second = ampData[i+2];
+    for(int i = 0; i< n; i++){
+        first = ampData.buffer[i+1];
+        second = ampData.buffer[i+2];
 
         fDiff = second - first;
 
-        firstDifference.push_back(fDiff);
+        push(&firstDifference, fDiff);
         count++;
 
         //TODO: why 59?
@@ -603,8 +608,8 @@ std::vector<int> GaussianFitter::calculateFirstDifferences(
  * @return number of peaks found
  */
 int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
-                                std::vector<int> ampData,
-                                std::vector<int> idxData) {
+                                struct vector ampData,
+                                struct vector idxData) {
     //std::vector<int> data = calculateFirstDifferences(ampData);
     //Empty our results vector just to be sure
     //We need to start this function with a clear vector.
@@ -616,11 +621,11 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     std::vector<float> peak_guesses_amp;
     int prev_grad = -1;
     int grad = -1;
-    int firstDiffs[(int)ampData.size()];
-    int secondDiffs[(int)ampData.size()];
-    firstDiffs[1] = ampData[1] - ampData[0];
-    for(int i = 2; i<(int)ampData.size(); i++){
-      firstDiffs[i] = ampData[i] - ampData[i-1];
+    int firstDiffs[(int)ampData.size];
+    int secondDiffs[(int)ampData.size];
+    firstDiffs[1] = ampData.buffer[1] - ampData.buffer[0];
+    for(int i = 2; i<(int)ampData.size; i++){
+      firstDiffs[i] = ampData.buffer[i] - ampData.buffer[i-1];
       secondDiffs[i] = firstDiffs[i] - firstDiffs[i-1];
     }
     // for the most part any time we get to a flat portion
@@ -628,14 +633,15 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     // The exception is when the data never has a real peak.
     // We need to ignore those waveforms
     int realPeaks = 0;
-    for(int i = 2; i<(int)ampData.size(); i++){
+    int n = (int)ampData.size;
+    for(int i = 2; i<n; i++){
       if(grad == 0){
         if(firstDiffs[i] > 0){
           // flat to positive (record peak if not a trough)
-          if(ampData[i-1]>noise_level && prev_grad == 1){
+          if(ampData.buffer[i-1]>noise_level && prev_grad == 1){
               //handle  flat peaks
               int j = i-2;
-              for( ; ampData[j] == ampData[i-1] ; j--);
+              for( ; ampData.buffer[j] == ampData.buffer[i-1] ; j--);
               // there is no body to the above for loop -- just looking
               // for the stopping point
               float lenOfFlat = i-1 -j -1.;
@@ -644,18 +650,18 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
               float loc = i-1 - lenOfFlat/2.;
               //record the peak
               peak_guesses_loc.push_back(loc);
-              peak_guesses_amp.push_back(ampData[i-1]);
+              peak_guesses_amp.push_back(ampData.buffer[i-1]);
           }
           grad = 1;
         }else if(firstDiffs[i] < 0 ){
           // flat to negative (record peak)
-          if(ampData[i-1]>noise_level){
+          if(ampData.buffer[i-1]>noise_level){
               if(prev_grad == 1){
                 realPeaks++;
               }
               //handle  flat peaks
               int j = i-2;
-              for( ; ampData[j] == ampData[i-1] ; j--);
+              for( ; ampData.buffer[j] == ampData.buffer[i-1] ; j--);
               // there is no body to the above for loop -- just looking
               // for the stopping point
               float lenOfFlat = i-1 -j -1.;
@@ -664,7 +670,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
               float loc = i-1 - lenOfFlat/2.;
               //record the peak
               peak_guesses_loc.push_back(loc);
-              peak_guesses_amp.push_back(ampData[i-1]);
+              peak_guesses_amp.push_back(ampData.buffer[i-1]);
           }
           grad = -1;
         }
@@ -675,11 +681,11 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
           grad = 0;
         }else if(firstDiffs[i] < 0){
           // positive to negative (record peak)
-          if(ampData[i-1]>noise_level){
+          if(ampData.buffer[i-1]>noise_level){
               realPeaks++;
               //record the peak
               peak_guesses_loc.push_back(float(i-1));
-              peak_guesses_amp.push_back(ampData[i-1]);
+              peak_guesses_amp.push_back(ampData.buffer[i-1]);
           }
           grad = -1;
         }
@@ -688,16 +694,13 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         prev_grad = -1;
         if(firstDiffs[i] == 0 ){
           // down to flat
-          grad = 0; 
+          grad = 0;
         }else if(firstDiffs[i] > 0){
           // down to up
           grad = 1;
         }
       }
     }
-
-    //Figure out the size of ampData
-    size_t n = ampData.size();
 
     //Figure out how many peaks there are
     size_t peakCount = peak_guesses_loc.size();
@@ -714,16 +717,16 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         float half_ampData_guess = peak_guesses_amp[i]/2.;
         int idx_lo=0,idx_hi=0;
         // look low
-        int prev = ampData[(int)peak_guesses_loc[i]];
+        int prev = ampData.buffer[(int)peak_guesses_loc[i]];
         for(j=(int)peak_guesses_loc[i];j>0;j--){
-            if(ampData[j] > prev){
+            if(ampData.buffer[j] > prev){
                 break;
             }
-            prev = ampData[j];
-            if(ampData[j] < half_ampData_guess){
+            prev = ampData.buffer[j];
+            if(prev < half_ampData_guess){
                 idx_lo = j;
-                double diff1 = idxData[j]-peak_guesses_loc[i];
-                double ydiva = (double)ampData[j]/peak_guesses_amp[i];
+                double diff1 = idxData.buffer[j]-peak_guesses_loc[i];
+                double ydiva = (double)ampData.buffer[j]/peak_guesses_amp[i];
                 guess_lo = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
                 spdlog::trace("Found a guess for FWHM lo{}",guess_lo);
                 break;
@@ -732,14 +735,14 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
         // look high
         prev = peak_guesses_amp[i];
         for(j=(int)peak_guesses_loc[i]+1;j<n;j++){
-            if(ampData[j] > prev){
+            if(ampData.buffer[j] > prev){
                 break;
             }
-            prev = ampData[j];
-            if(ampData[j] < half_ampData_guess){
+                prev = ampData.buffer[j];
+                if(ampData.buffer[j] < half_ampData_guess){
                 idx_hi = j;
-                double diff1 = idxData[j]-peak_guesses_loc[i];
-                double ydiva = (double)ampData[j]/peak_guesses_amp[i];
+                double diff1 = idxData.buffer[j]-peak_guesses_loc[i];
+                double ydiva = (double)ampData.buffer[j]/peak_guesses_amp[i];
                 guess_hi = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
                 spdlog::trace("Found a guess for FWHM hi{}",guess_hi);
                     break;
@@ -792,19 +795,18 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
  * Experiment with smoothing
  * @param waveArray
  */
-void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
-
-    for(int i=0; i<waveArray->size();i++){
-       (*waveArray)[i] = (*waveArray)[i]-1;
-       if((*waveArray)[i] < 0){(*waveArray)[i] = 0;}
+void GaussianFitter::smoothing_expt(struct vector *waveArray){
+    for(int i=0; i<waveArray->size;i++){
+       waveArray->buffer[i] = waveArray->buffer[i]-1;
+       if(waveArray->buffer[i] < 0){waveArray->buffer[i] = 0;}
     }
-    for(int i=2; i<waveArray->size()-1;i++){
-        if(waveArray->at(i) < 7){
-            int temp = (waveArray->at(i-2) + waveArray->at(i-1) +
-                                    waveArray->at(i)+waveArray->at(i+1))/4;
+    for(int i=2; i<waveArray->size-1;i++){
+        if(waveArray->buffer[i] < 7){
+            int temp = (waveArray->buffer[i-2] + waveArray->buffer[i-1] +
+                                    waveArray->buffer[i]+waveArray->buffer[i+1])/4;
 
-            if(abs(temp-waveArray->at(i))<2){
-                waveArray->at(i) = temp;
+            if(abs(temp-waveArray->buffer[i])<2){
+                waveArray->buffer[i] = temp;
             }
         }
     }

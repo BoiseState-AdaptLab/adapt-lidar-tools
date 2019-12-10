@@ -22,7 +22,10 @@ const double NO_DATA = -99999;
 const double MAX_ELEV = 99999.99;
 
 class LidarDriver {
+    private:
+	pthread_mutex_t mutex;
     public:
+	LidarDriver();
 
         void calc_product_size(FlightLineData &data, int num_products);
 
@@ -80,5 +83,10 @@ class LidarDriver {
 
 };
 
-
+struct thread_args {
+	LidarDriver *threadDriver;
+	FlightLineData *raw_data;
+	std::vector<std::string*> strings;
+	csv_CmdLine cmdLine;
+};
 #endif //LIDARDRIVER_LIDARDRIVER_HPP

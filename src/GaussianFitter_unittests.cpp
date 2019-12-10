@@ -717,16 +717,20 @@ TEST_F(GaussianFitterTest, problem_waveform_1_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, amp, idx);
 
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(189, peaks.at(0)->amp);
     EXPECT_EQ(20, peaks.at(0)->location);
     //EXPECT_NEAR(6.2, peaks.at(0)->fwhm, 1);
 
-    EXPECT_EQ(12, peaks.at(1)->amp);
-    EXPECT_EQ(32, peaks.at(1)->location);
-    //EXPECT_NEAR(5, peaks.at(1)->fwhm, 1);
+    EXPECT_EQ(11, peaks.at(1)->amp);
+    EXPECT_EQ(30.5, peaks.at(1)->location);
+    //EXPECT_NEAR(6.2, peaks.at(1)->fwhm, 1);
+
+    EXPECT_EQ(12, peaks.at(2)->amp);
+    EXPECT_EQ(32, peaks.at(2)->location);
+    //EXPECT_NEAR(5, peaks.at(2)->fwhm, 1);
   
-    EXPECT_EQ(2, count);
+    EXPECT_EQ(3, count);
 }
 
 //2
@@ -779,16 +783,20 @@ TEST_F(GaussianFitterTest, problem_waveform_3_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, amp, idx);
 
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(182, peaks.at(0)->amp);
     EXPECT_EQ(20, peaks.at(0)->location);
     //EXPECT_NEAR(5.6, peaks.at(0)->fwhm, 1);
 
-    EXPECT_EQ(12, peaks.at(1)->amp);
-    EXPECT_EQ(33, peaks.at(1)->location);
-    //EXPECT_NEAR(6, peaks.at(1)->fwhm, 1);
+    EXPECT_EQ(11, peaks.at(1)->amp);
+    EXPECT_EQ(31.5, peaks.at(1)->location);
+    //EXPECT_NEAR(5.6, peaks.at(1)->fwhm, 1);
 
-    EXPECT_EQ(2, count);
+    EXPECT_EQ(12, peaks.at(2)->amp);
+    EXPECT_EQ(33, peaks.at(2)->location);
+    //EXPECT_NEAR(6, peaks.at(2)->fwhm, 1);
+
+    EXPECT_EQ(3, count);
     
 }
              
@@ -815,7 +823,7 @@ TEST_F(GaussianFitterTest, problem_waveform_4_guess){
     EXPECT_EQ(205, peaks.at(0)->amp);
     EXPECT_EQ(20, peaks.at(0)->location);
     //EXPECT_NEAR(5.8, peaks.at(0)->fwhm, 1);
-
+    
     EXPECT_EQ(12, peaks.at(1)->amp);
     EXPECT_EQ(28, peaks.at(1)->location);
     //EXPECT_NEAR(14, peaks.at(1)->fwhm, 1);
@@ -906,7 +914,7 @@ TEST_F(GaussianFitterTest, problem_waveform_7_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, amp, idx);
 
-    EXPECT_EQ(2,peaks.size());
+    EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(189, peaks.at(0)->amp);
     EXPECT_EQ(21, peaks.at(0)->location);
     //EXPECT_NEAR(7.9, peaks.at(0)->fwhm, 1);
@@ -915,7 +923,11 @@ TEST_F(GaussianFitterTest, problem_waveform_7_guess){
     EXPECT_EQ(31, peaks.at(1)->location);
     //EXPECT_NEAR(17, peaks.at(1)->fwhm, 1);
 
-    EXPECT_EQ(2, count);
+    EXPECT_EQ(10, peaks.at(2)->amp);
+    EXPECT_EQ(33.5, peaks.at(2)->location);
+    //EXPECT_NEAR(17, peaks.at(2)->fwhm, 1);
+
+    EXPECT_EQ(3, count);
 }
    
 //8
@@ -1056,13 +1068,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, amp, idx);
 
-    ASSERT_EQ(1,peaks.size());
+    ASSERT_EQ(0,peaks.size());
 
-    EXPECT_NEAR(57, peaks.at(0)->amp, 1);
-    EXPECT_EQ(9, peaks.at(0)->location);
+   // EXPECT_NEAR(57, peaks.at(0)->amp, 1);
+   // EXPECT_EQ(9, peaks.at(0)->location);
     //EXPECT_NEAR(7, peaks.at(0)->fwhm, 1);
 
-    EXPECT_EQ(1, count);
+    EXPECT_EQ(0, count);
 }
 
 //slope up, no peaks waveform
@@ -1153,11 +1165,11 @@ TEST_F(GaussianFitterTest, Split_find){
 
     ASSERT_EQ(2, count);
     ASSERT_EQ(2,peaks.size());
-    EXPECT_EQ(200,peaks.at(0)->amp);
+    EXPECT_NEAR(200,peaks.at(0)->amp, .05*200);
     EXPECT_NEAR(18.5, peaks.at(0)->location, .25);
     //EXPECT_NEAR(10.5, peaks.at(0)->fwhm, 1);
 
-    EXPECT_EQ(43 ,peaks.at(1)->amp);
+    EXPECT_NEAR(43 ,peaks.at(1)->amp, .05*43);
     EXPECT_NEAR(30.5, peaks.at(1)->location,.25);
     //EXPECT_NEAR(4, peaks.at(1)->fwhm, 1);
 
@@ -1183,7 +1195,7 @@ TEST_F(GaussianFitterTest, Split2_find){
     ASSERT_EQ(1, count);
     ASSERT_EQ(1,peaks.size());
 
-    EXPECT_EQ(34 ,peaks.at(0)->amp);
+    EXPECT_NEAR(34 ,peaks.at(0)->amp, 3);
     EXPECT_EQ(3, peaks.at(0)->location);
     //EXPECT_NEAR(6, peaks.at(0)->fwhm, 1);
 
@@ -1207,15 +1219,15 @@ TEST_F(GaussianFitterTest, NayaniClipped1_find){
 
     ASSERT_EQ(3, count);
     ASSERT_EQ(3,peaks.size());
-    EXPECT_EQ(200,peaks.at(0)->amp);
+    EXPECT_NEAR(200,peaks.at(0)->amp, .05*200);
     EXPECT_NEAR(18.5, peaks.at(0)->location, .25);
     //EXPECT_NEAR(10.5, peaks.at(0)->fwhm, 1);
 
-    EXPECT_EQ(43 ,peaks.at(1)->amp);
+    EXPECT_NEAR(43 ,peaks.at(1)->amp, .1*43);
     EXPECT_NEAR(30.5, peaks.at(1)->location,.25);
     //EXPECT_NEAR(4, peaks.at(1)->fwhm, 1);
 
-    EXPECT_EQ(34 ,peaks.at(2)->amp);
+    EXPECT_NEAR(34 ,peaks.at(2)->amp,.1*34);
     EXPECT_EQ(38, peaks.at(2)->location);
     //EXPECT_NEAR(6, peaks.at(2)->fwhm, 1);
 
@@ -1394,10 +1406,10 @@ TEST_F(GaussianFitterTest, NayaniClipped6_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(4,peaks.size());
-    EXPECT_EQ(11,peaks.at(0)->amp);
-    EXPECT_EQ(193,peaks.at(1)->amp);
-    EXPECT_EQ(151,peaks.at(2)->amp);
-    EXPECT_EQ(12, peaks.at(3)->amp);
+    EXPECT_NEAR(11,peaks.at(0)->amp, .1*11);
+    EXPECT_NEAR(193,peaks.at(1)->amp, .05*193);
+    EXPECT_NEAR(151,peaks.at(2)->amp, .05*151);
+    EXPECT_NEAR(12, peaks.at(3)->amp, .1*12);
     EXPECT_EQ(13, peaks.at(0)->location);
     EXPECT_NEAR(24.5, peaks.at(1)->location,.25);
     EXPECT_EQ(31, peaks.at(2)->location);
@@ -1433,14 +1445,14 @@ TEST_F(GaussianFitterTest, NayaniClipped7_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(3,peaks.size());
-    EXPECT_EQ(98,peaks.at(0)->amp);
-    EXPECT_EQ(168,peaks.at(1)->amp);
+    EXPECT_NEAR(98,peaks.at(0)->amp, .05*98);
+    EXPECT_NEAR(168,peaks.at(1)->amp, .05*168);
     EXPECT_EQ(18, peaks.at(0)->location);
     EXPECT_EQ(31, peaks.at(1)->location);
     //EXPECT_NEAR(5.2, peaks.at(0)->fwhm, 1);
     //EXPECT_NEAR(10, peaks.at(1)->fwhm, 1);
 
-    EXPECT_EQ(13,peaks.at(2)->amp);
+    EXPECT_NEAR(13,peaks.at(2)->amp, .1*13);
     EXPECT_NEAR(40.5, peaks.at(2)->location,.25);
     //EXPECT_NEAR(11, peaks.at(2)->fwhm, 2);
 
@@ -1469,9 +1481,9 @@ TEST_F(GaussianFitterTest, NayaniClipped8_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(3,peaks.size());
-    EXPECT_EQ(26,peaks.at(0)->amp);
-    EXPECT_EQ(221,peaks.at(1)->amp);
-    EXPECT_EQ(21,peaks.at(2)->amp);
+    EXPECT_NEAR(26,peaks.at(0)->amp, .1*26);
+    EXPECT_NEAR(221,peaks.at(1)->amp, .05*221);
+    EXPECT_NEAR(21,peaks.at(2)->amp, .1*21);
     EXPECT_NEAR(15.5,peaks.at(0)->location,0.25);
     EXPECT_EQ(28,peaks.at(1)->location);
     EXPECT_EQ(38,peaks.at(2)->location);
@@ -1504,8 +1516,8 @@ TEST_F(GaussianFitterTest, max_iter_1_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
-    EXPECT_EQ(150,peaks.at(0)->amp);
-    EXPECT_EQ(25,peaks.at(1)->amp);
+    EXPECT_NEAR(150,peaks.at(0)->amp, .05*150);
+    EXPECT_NEAR(25,peaks.at(1)->amp, .1*25);
     EXPECT_EQ(18, peaks.at(0)->location);
     EXPECT_EQ(58, peaks.at(1)->location);
     //EXPECT_NEAR(5.3, peaks.at(0)->fwhm, 1);
@@ -1539,8 +1551,8 @@ TEST_F(GaussianFitterTest, max_iter_2_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
-    EXPECT_EQ(139,peaks.at(0)->amp);
-    EXPECT_EQ(26,peaks.at(1)->amp);
+    EXPECT_NEAR(139,peaks.at(0)->amp, .05*139);
+    EXPECT_NEAR(26,peaks.at(1)->amp, .1*26);
     EXPECT_EQ(16, peaks.at(0)->location);
     EXPECT_EQ(58, peaks.at(1)->location);
     //EXPECT_NEAR(5, peaks.at(0)->fwhm, 1);
@@ -1572,9 +1584,9 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(3,peaks.size());
-    EXPECT_EQ(164,peaks.at(0)->amp);
-    EXPECT_EQ(11,peaks.at(1)->amp);
-    EXPECT_EQ(33,peaks.at(2)->amp);
+    EXPECT_NEAR(164,peaks.at(0)->amp, .05*164);
+    EXPECT_NEAR(11,peaks.at(1)->amp, .1*11);
+    EXPECT_NEAR(33,peaks.at(2)->amp, .1*33);
     EXPECT_EQ(18,peaks.at(0)->location);
     EXPECT_EQ(29,peaks.at(1)->location);
     EXPECT_EQ(57,peaks.at(2)->location);
@@ -1609,9 +1621,9 @@ TEST_F(GaussianFitterTest, max_iter_4_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(3,peaks.size());
-    EXPECT_EQ(88,peaks.at(0)->amp);
-    EXPECT_EQ(34,peaks.at(1)->amp);
-    EXPECT_EQ(20,peaks.at(2)->amp);
+    EXPECT_NEAR(88,peaks.at(0)->amp, .05*88);
+    EXPECT_NEAR(34,peaks.at(1)->amp, .1*34);
+    EXPECT_NEAR(20,peaks.at(2)->amp, .1*20);
     EXPECT_EQ(18,peaks.at(0)->location);
     EXPECT_EQ(31,peaks.at(1)->location);
     EXPECT_EQ(51,peaks.at(2)->location);
@@ -1650,13 +1662,13 @@ TEST_F(GaussianFitterTest, max_iter_5_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(7,peaks.size());
-    EXPECT_EQ(88,peaks.at(0)->amp);
-    EXPECT_EQ(34,peaks.at(1)->amp);
-    EXPECT_EQ(20,peaks.at(2)->amp);
-    EXPECT_EQ(25,peaks.at(3)->amp);
-    EXPECT_EQ(13,peaks.at(4)->amp);
-    EXPECT_EQ(132,peaks.at(5)->amp);
-    EXPECT_EQ(22,peaks.at(6)->amp);
+    EXPECT_NEAR(88,peaks.at(0)->amp, .1*88);
+    EXPECT_NEAR(34,peaks.at(1)->amp, .1*34);
+    EXPECT_NEAR(20,peaks.at(2)->amp, .1*20);
+    EXPECT_NEAR(25,peaks.at(3)->amp, .1*25);
+    EXPECT_NEAR(13,peaks.at(4)->amp, .1*13);
+    EXPECT_NEAR(132,peaks.at(5)->amp, .05*132);
+    EXPECT_NEAR(22,peaks.at(6)->amp, .1*22);
     EXPECT_EQ(18,peaks.at(0)->location);
     EXPECT_EQ(31,peaks.at(1)->location);
     EXPECT_EQ(51,peaks.at(2)->location);
@@ -1697,8 +1709,8 @@ TEST_F(GaussianFitterTest, trig_loc_1_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_EQ(183,peaks.at(0)->amp);
-    EXPECT_EQ(172,peaks.at(1)->amp);
+    EXPECT_NEAR(183,peaks.at(0)->amp, .05*183);
+    EXPECT_NEAR(172,peaks.at(1)->amp, .05*172);
     EXPECT_EQ(19,peaks.at(0)->location);
     EXPECT_EQ(22,peaks.at(1)->location);
     //EXPECT_NEAR(9.8, peaks.at(0)->fwhm, 1);
@@ -1729,8 +1741,8 @@ TEST_F(GaussianFitterTest, trig_loc_2_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_EQ(143, peaks.at(0)->amp);
-    EXPECT_EQ(135, peaks.at(1)->amp);
+    EXPECT_NEAR(143, peaks.at(0)->amp, .05*143);
+    EXPECT_NEAR(135, peaks.at(1)->amp, .05*135);
     EXPECT_EQ(18, peaks.at(0)->location);
     EXPECT_EQ(24, peaks.at(1)->location);
     //EXPECT_NEAR(5.2, peaks.at(0)->fwhm, 1);
@@ -1757,8 +1769,8 @@ TEST_F(GaussianFitterTest, num_iterations_10_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2, peaks.size());
-    EXPECT_EQ(37, peaks.at(0)->amp);
-    EXPECT_EQ(190, peaks.at(1)->amp);
+    EXPECT_NEAR(37, peaks.at(0)->amp, .1*37);
+    EXPECT_NEAR(190, peaks.at(1)->amp, .05*190);
     EXPECT_EQ(2, peaks.at(0)->location);
     EXPECT_EQ(9, peaks.at(1)->location);
     //EXPECT_NEAR(5.5, peaks.at(0)->fwhm,1);
@@ -1787,8 +1799,8 @@ TEST_F(GaussianFitterTest, problem_waveform_1_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_EQ(189, peaks.at(0)->amp);
-    EXPECT_EQ(12, peaks.at(1)->amp);
+    EXPECT_NEAR(189, peaks.at(0)->amp, .05*189);
+    EXPECT_NEAR(12, peaks.at(1)->amp, .1*12);
     EXPECT_EQ(20, peaks.at(0)->location);
     EXPECT_EQ(32, peaks.at(1)->location);
     //EXPECT_NEAR(6.2, peaks.at(0)->fwhm, 1);
@@ -1818,8 +1830,8 @@ TEST_F(GaussianFitterTest, problem_waveform_2_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_EQ(198, peaks.at(0)->amp);
-    EXPECT_EQ(13, peaks.at(1)->amp);
+    EXPECT_NEAR(198, peaks.at(0)->amp, .05*198);
+    EXPECT_NEAR(13, peaks.at(1)->amp, .1*13);
     EXPECT_EQ(20, peaks.at(0)->location);
     EXPECT_EQ(32, peaks.at(1)->location);
     //EXPECT_NEAR(6.2, peaks.at(0)->fwhm, 1);
@@ -1849,8 +1861,8 @@ TEST_F(GaussianFitterTest, problem_waveform_3_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_EQ(182, peaks.at(0)->amp);
-    EXPECT_EQ(12, peaks.at(1)->amp);
+    EXPECT_NEAR(182, peaks.at(0)->amp, .05*182);
+    EXPECT_NEAR(12, peaks.at(1)->amp, .1*12);
     EXPECT_EQ(20, peaks.at(0)->location);
     EXPECT_EQ(33, peaks.at(1)->location);
     //EXPECT_NEAR(5.6, peaks.at(0)->fwhm, 1);
@@ -1881,8 +1893,8 @@ TEST_F(GaussianFitterTest, problem_waveform_4_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_EQ(205, peaks.at(0)->amp);
-    EXPECT_EQ(13, peaks.at(1)->amp);
+    EXPECT_NEAR(205, peaks.at(0)->amp, .05*205);
+    EXPECT_NEAR(13, peaks.at(1)->amp, .1*13);
     EXPECT_EQ(20, peaks.at(0)->location);
     EXPECT_EQ(31, peaks.at(1)->location);
     //EXPECT_NEAR(5.8, peaks.at(0)->fwhm, 1);
@@ -1912,8 +1924,8 @@ TEST_F(GaussianFitterTest, problem_waveform_5_find){
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(19.5, peaks.at(0)->location,.25);
-    EXPECT_EQ(186, peaks.at(0)->amp);
-    EXPECT_EQ(14, peaks.at(1)->amp);
+    EXPECT_NEAR(186, peaks.at(0)->amp, .05*186);
+    EXPECT_NEAR(14, peaks.at(1)->amp, .1*14);
     EXPECT_EQ(30, peaks.at(1)->location);
     //EXPECT_NEAR(5.7, peaks.at(0)->fwhm, 1);
     //EXPECT_NEAR(8, peaks.at(1)->fwhm, 1);
@@ -1942,8 +1954,8 @@ TEST_F(GaussianFitterTest, problem_waveform_6_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_EQ(181, peaks.at(0)->amp);
-    EXPECT_EQ(12, peaks.at(1)->amp);
+    EXPECT_NEAR(181, peaks.at(0)->amp, .05*181);
+    EXPECT_NEAR(12, peaks.at(1)->amp, .1*12);
     EXPECT_EQ(18, peaks.at(0)->location);
     EXPECT_NEAR(29.5, peaks.at(1)->location,.25);
     //EXPECT_NEAR(5.5, peaks.at(0)->fwhm, 1);
@@ -1972,7 +1984,7 @@ TEST_F(GaussianFitterTest, problem_waveform_7_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(1,peaks.size());
-    EXPECT_EQ(189, peaks.at(0)->amp);
+    EXPECT_NEAR(189, peaks.at(0)->amp, .05*189);
     EXPECT_EQ(21, peaks.at(0)->location);
     //EXPECT_NEAR(7.9, peaks.at(0)->fwhm, 1);
 
@@ -1999,8 +2011,8 @@ TEST_F(GaussianFitterTest, problem_waveform_8_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_NEAR(191, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(174, peaks.at(1)->amp, 1);
+    EXPECT_NEAR(191, peaks.at(0)->amp, .05*191);
+    EXPECT_NEAR(174, peaks.at(1)->amp, .05*174);
     EXPECT_EQ(19, peaks.at(0)->location);
     EXPECT_EQ(21, peaks.at(1)->location);
     //EXPECT_NEAR(4.8, peaks.at(0)->fwhm, 1);
@@ -2029,8 +2041,8 @@ TEST_F(GaussianFitterTest, problem_waveform_9_find){
     int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
-    EXPECT_NEAR(183, peaks.at(0)->amp, 1);
-    EXPECT_NEAR(13, peaks.at(1)->amp, 1);
+    EXPECT_NEAR(183, peaks.at(0)->amp, .05*183);
+    EXPECT_NEAR(13, peaks.at(1)->amp, .1*13);
     EXPECT_EQ(19, peaks.at(0)->location);
     EXPECT_NEAR(28.5, peaks.at(1)->location,.25);
     //EXPECT_NEAR(6.8, peaks.at(0)->fwhm, 1);

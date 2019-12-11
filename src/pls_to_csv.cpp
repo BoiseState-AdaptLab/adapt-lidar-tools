@@ -11,6 +11,8 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include "spdlog/spdlog.h"
 
+void* threaded_fit_data_csv(void* args);
+
 typedef std::chrono::high_resolution_clock Clock;
 
 
@@ -20,13 +22,14 @@ int main (int argc, char *argv[]) {
     // Setting up logger
     spdlog::set_pattern("[%^%=8l%$] %v");
         // Sets new pattern for timestamp
-
+    int numThreads; 		// Number of threads to run fit_data_csv
     TxtWaveReader rawData0;     // Wave inputs from txt file
     FlightLineData rawData1;    // Wave inputs from pls file
     LidarDriver driver;         // Driver object with tools
     csv_CmdLine cmdLineArgs;    // Command line options
     CsvWriter writer;           // Writes CSV file
     writer.setLines(new std::vector<std::string*>); //Data stored here
+    numThreads = 1;
 
     // Parse and validate the command line args
     if(!cmdLineArgs.parse_args(argc,argv)){
@@ -59,8 +62,20 @@ int main (int argc, char *argv[]) {
         if (rawData1.setFlightLineData(cmdLineArgs.getInputFileName(true))) {
             return 1;
         }
+	if(numThreads <= 1) {
+	    driver.fit_data_csv(rawData1, *writer.getLines(), cmdLineArgs);
+	} else {
+	    pthread_t t_ids[numThreads];
+	    struct thread_args args[numThreads];
+	    for (int i=0; i < numThreads; i++) {
+	        args[i] = thread_args{&driver, &rawData1, *writer.getLines(), cmdLineArgs};
+	        pthread_create(&t_ids[i], NULL, threaded_fit_data_csv, (void *)&args[i]);
+	    }
 
-        driver.fit_data_csv(rawData1, *writer.getLines(), cmdLineArgs);
+            for (int i=0; i < numThreads; i++) {
+		pthread_join(t_ids[i], NULL);
+            }
+	}
     }
 
     // Write data to file
@@ -82,4 +97,14 @@ int main (int argc, char *argv[]) {
     spdlog::info("All done!\nTime elapsed: {} seconds", diff);
 
     return 0;
+}
+
+void* threaded_fit_data_csv(void* args) {
+	thread_args *t_args = (thread_args *)args;
+	LidarDriver *driver = t_args->threadDriver;
+	FlightLineData *raw_data = t_args->raw_data;
+	std::vector<std::string*> strings = t_args->strings;
+	csv_CmdLine cmdLine = t_args->cmdLine;
+	driver->fit_data_csv(*raw_data, strings, cmdLine);
+	return 0;
 }

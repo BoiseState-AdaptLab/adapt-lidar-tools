@@ -6,6 +6,7 @@
 #define GAUSIANFITTING_HPP_
 
 #include "Peak.hpp"
+#include "PulseData.hpp"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
@@ -34,13 +35,13 @@
 class GaussianFitter{
 
     public:
-        int find_peaks(std::vector<Peak*>* results,std::vector<int> ampData,
-                std::vector<int> idxData, const size_t max_iter);
+        int find_peaks(std::vector<Peak*>* results, struct vector ampData,
+                struct vector idxData, const size_t max_iter);
         int noise_level;
         int guess_peaks(std::vector<Peak*>* results, 
-                std::vector<int> ampData, 
-                std::vector<int> idxData);
-        void smoothing_expt(std::vector<int> *waveArray);
+                struct vector ampData, 
+                struct vector idxData);
+        void smoothing_expt(struct vector *waveArray);
         GaussianFitter();
         std::string get_equation(int idx);
         int get_fail();
@@ -79,7 +80,7 @@ class GaussianFitter{
                 gsl_multifit_nlinear_parameters *params, int max,
                 const size_t max_iter);
 
-        std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
+        struct vector calculateFirstDifferences(struct vector ampData);
         void incr_fail();
         void incr_pass();
         void incr_total();

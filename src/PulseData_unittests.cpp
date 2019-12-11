@@ -24,30 +24,21 @@ TEST_F(PulseDataTest, testSetterGetter){
 	PulseData pulseData;
 	std::string realStream;
 	std::string streamData;
+	
+	//memory cleaned up in deconstructor of pulseData
+	int* indexArrayOut = new int[3] {0, 1, 2};
+	int* waveArrayOut = new int[3] {34, 45, 67};
+	int* indexArrayIn = new int[3] {0, 1, 2};
+	int* waveArrayIn = new int[3] {76, 65, 43};
 
-	std::vector<int> indexArrayOut;
-	std::vector<int> waveArrayOut;
-	std::vector<int> indexArrayIn;
-	std::vector<int> waveArrayIn;
+	size_t size = 3;
+	struct vector idxOut = {indexArrayOut, size, size};
+	struct vector waveOut = {waveArrayOut, size, size};
+	struct vector idxIn = {indexArrayIn, size, size};
+	struct vector waveIn = {waveArrayIn, size, size};
 
-	indexArrayOut.push_back(0);
-	indexArrayOut.push_back(1);
-	indexArrayOut.push_back(2);
-
-	waveArrayOut.push_back(34);
-	waveArrayOut.push_back(45);
-	waveArrayOut.push_back(67);
-
-	indexArrayIn.push_back(0);
-	indexArrayIn.push_back(1);
-	indexArrayIn.push_back(2);
-
-	waveArrayIn.push_back(76);
-	waveArrayIn.push_back(65);
-	waveArrayIn.push_back(43);
-
-	pulseData.setOutgoing(&indexArrayOut, &waveArrayOut);
-	pulseData.setReturning(&indexArrayIn, &waveArrayIn);
+	pulseData.setOutgoing(&idxOut, &waveOut);
+	pulseData.setReturning(&idxIn, &waveIn);
 
 	std::ostringstream stream;
 	pulseData.displayPulseData(&stream);

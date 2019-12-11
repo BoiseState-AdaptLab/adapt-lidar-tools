@@ -31,7 +31,7 @@ class GaussianFitterTest: public testing::Test{
 
         static void SetUpTestSuite(){
             // Setting up logger
-            spdlog::set_level(spdlog::level::debug);
+            spdlog::set_level(spdlog::level::info);
             spdlog::set_pattern("[%^%=8l%$] %v");
             // Sets new pattern for timestamp
 

@@ -50,7 +50,7 @@ int main (int argc, char *argv[]) {
 
     // Initialize data input per CmdLine specification
     if (is_txt) {
-        spdlog::info("txt file recognized");
+        spdlog::debug("txt file recognized");
         if (rawData0.open_file(fname.c_str())) {
             spdlog::critical("Opening txt file '{}' failed", fname);
             return 1;

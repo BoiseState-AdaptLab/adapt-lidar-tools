@@ -474,7 +474,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
     float avg = 0 ;
     float dev = 0;
 
-    spdlog::error("Entering write image loop. In {} : {}", __FILE__, __LINE__);
+    spdlog::debug("Entering write image loop. In {} : {}", __FILE__, __LINE__);
 
 
 
@@ -521,7 +521,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
             }
         }
 
-        spdlog::error("In writeImage loop. Writing band: {}, {}. In {} : {}", x, y,
+        spdlog::trace("In writeImage loop. Writing band: {}, {}. In {} : {}", x, y,
                        __FILE__, __LINE__);
 
         //add the pixel values to the raster, one column at a time

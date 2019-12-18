@@ -69,14 +69,14 @@ bool TxtWaveReader::get_vector (std::vector<int>& vect) {
 
     // Makes sure an error has not occured during the last read.
     if (txtFile.bad() || txtFile.fail()) {
-        spdlog::debug("{}: bad read on line {}", C_NAME, line_count);
+        spdlog::error("{}: bad read on line {}", C_NAME, line_count);
         return true;
     }
 
     // Makes sure it is a sequence of digits 0-9 and space.
     bool valid = is_line_valid();
     if (!valid) {
-        spdlog::debug("{}: bad format read at line {}", C_NAME,
+        spdlog::error("{}: bad format read at line {}", C_NAME,
                 line_count);
         return true;
     }

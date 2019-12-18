@@ -55,7 +55,7 @@ void LidarDriver::calc_product_size(FlightLineData &data, int num_products){
         //Use dimensional analysis to cancel out all units except for bytes
         bytes = bytes_per_val * vals_per_product * num_products / prefix_conversion;
 
-        spdlog::error("Values per product: {}", vals_per_product);
+        spdlog::trace("Values per product: {}", vals_per_product);
         spdlog::trace("Bytes per value (float): {}", bytes_per_val);
         spdlog::trace("Conversion to {}. Divide by {}", units.at(i), prefix_conversion);
         spdlog::trace("Total bytes needed: {}", bytes);

@@ -44,6 +44,8 @@ class GaussianFitter{
         void smoothing_expt(struct vector *waveArray);
         GaussianFitter();
         std::string get_equation(int idx);
+        int greatest_change(struct vector &data, int idx, int amp, bool left);
+        float get_fwhm(int a, float t, int ai, float ti);
         int get_fail();
         int get_pass();
         int get_total();
@@ -56,6 +58,10 @@ class GaussianFitter{
         int fail;
         int pass;
         int total;
+
+
+        float SQRT_LN2 = sqrt(log(2)); // Used to calculate the FWHM from two data points
+        float C_TO_FWHM = 2 * sqrt(2 * log(2)); // Converts the c value into the FWHM for a gaussian curve
 
         // *** Fitter parameters (that were magic numbers once) ***
 

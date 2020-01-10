@@ -436,7 +436,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     int j;
     for(i=0; i< peakCount; i++){
         gsl_vector_set(x, i*2+0, (*results)[i]->amp);
-        gsl_vector_set(x, i*2+1, (*results)[i]->fwhm/(2*log(2)));
+        gsl_vector_set(x, i*2+1, (*results)[i]->fwhm/C_TO_FWHM);
     }
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
@@ -447,7 +447,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         // double yi = fit_data.y[i];
         function << gaussian((*results)[0]->amp,
                             (*results)[0]->location,
-                            (*results)[0]->fwhm/2.35482,ti) << " ";
+                            (*results)[0]->fwhm/C_TO_FWHM,ti) << " ";
     }
     spdlog::trace("Model Data: {}", function.str());
 
@@ -467,27 +467,33 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         int i=0;
         for(auto iter = results->begin(); iter != results->end(); ++iter) {
             Peak *peak = *iter;
-            peak->amp = gsl_vector_get(x,2*i+ 0) ;
+
+            std::stringstream before;
+            before << "Before Fitting: y=" << peak->amp << "*e^(-.5*((t - "
+                << peak->location << ") / " << peak->fwhm/C_TO_FWHM << ") ^ 2)";
+            spdlog::debug(before.str());
+
+            peak->amp = gsl_vector_get(x,2*i+ 0);
             //peak->location =
-            double w = gsl_vector_get(x,2*i+ 1);
-            peak->fwhm = w*2*log(2);
+            double c = gsl_vector_get(x,2*i+ 1);
+            peak->fwhm = c * C_TO_FWHM;
             if(peak->fwhm < 0 ){
               peak->fwhm = peak->fwhm*(-1.);
             }
+
+            std::stringstream after;
+            after << "After Fitting: y=" << peak->amp << "*e^(-.5*((t - "
+                << peak->location << ") / " << c << ") ^ 2)";
+            spdlog::debug(after.str());
             
             //calculate triggering location
             peak->triggering_location = ceil(peak->location -
-                sqrt((log(noise_level/peak->amp)*w*w)/neg4ln2));
+                sqrt((log(noise_level/peak->amp)*c*c)/neg4ln2));
             // TODO: fix to use correct function
             peak->triggering_amp = peak->amp * exp(neg4ln2 *
                 (peak->triggering_location-peak->location)*
                 (peak->triggering_location-peak->location)*
-                (1/(w*w)));
-
-            std::stringstream ss;
-            ss << "y = " << peak->amp << "*e^(-4ln2*((t-" << peak->location <<
-                ")/" << w << ")^2)";
-            equations.push_back(ss.str());
+                (1/(c*c)));
 
             //calculate rise time
             peak->rise_time = peak->location - peak->triggering_location;
@@ -597,6 +603,32 @@ struct vector GaussianFitter::calculateFirstDifferences(
     return firstDifference;
 }
 
+/*
+ * @param data - Amplitude data for this waveform
+ * @param idx - Index to start at
+ * @param left - Direction to iterate through data, iterates to the left if true,
+ *               false otherwise
+ * @return index of the point of greatest change on the curve
+ */
+int GaussianFitter::greatest_change(struct vector &data, int idx, int max_amp, bool left) {
+    if (max_amp <= noise_level * 2) {return idx + (left ? -1 : 1);}
+    float lb = max_amp / 2;
+    while (idx > 0 and idx < (int)data.size - 1) {
+        int last_idx = idx + (left ? 1 : -1);
+        int next_idx = idx + (left ? -1 : 1);
+        int last_val = data.buffer[last_idx];
+        int val = data.buffer[idx];
+        int next_val = data.buffer[next_idx];
+        // Stop looping if we hit the noise level, we start going up,
+        // or we go below half the max amplitude
+        if (next_val <= noise_level or next_val > val or next_val < lb) {
+            return idx;
+        }
+        idx += left ? -1 : 1;
+    }
+    return idx;
+}
+
 
 /**
  * Estimate of peaks to be supplied to the gaussian fitter based on
@@ -617,172 +649,66 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //are pointing to space used in LidarVolume
     results->clear(); 
 
-    std::vector<float> peak_guesses_loc; //Store peaks x-values here
-    std::vector<float> peak_guesses_amp;
-    int prev_grad = -1;
-    int grad = -1;
-    int firstDiffs[(int)ampData.size];
-    int secondDiffs[(int)ampData.size];
-    firstDiffs[1] = ampData.buffer[1] - ampData.buffer[0];
-    for(int i = 2; i<(int)ampData.size; i++){
-      firstDiffs[i] = ampData.buffer[i] - ampData.buffer[i-1];
-      secondDiffs[i] = firstDiffs[i] - firstDiffs[i-1];
-    }
-    // for the most part any time we get to a flat portion
-    // we will be counting that as a peak.
-    // The exception is when the data never has a real peak.
-    // We need to ignore those waveforms
-    int realPeaks = 0;
-    int n = (int)ampData.size;
-    for(int i = 2; i<n; i++){
-      if(grad == 0){
-        if(firstDiffs[i] > 0){
-          // flat to positive (record peak if not a trough)
-          if(ampData.buffer[i-1]>noise_level && prev_grad == 1){
-              //handle  flat peaks
-              int j = i-2;
-              for( ; ampData.buffer[j] == ampData.buffer[i-1] ; j--);
-              // there is no body to the above for loop -- just looking
-              // for the stopping point
-              float lenOfFlat = i-1 -j -1.;
-              //this is truncating, we need
-              //to fix this
-              float loc = i-1 - lenOfFlat/2.;
-              //record the peak
-              peak_guesses_loc.push_back(loc);
-              peak_guesses_amp.push_back(ampData.buffer[i-1]);
-          }
-          grad = 1;
-        }else if(firstDiffs[i] < 0 ){
-          // flat to negative (record peak)
-          if(ampData.buffer[i-1]>noise_level){
-              if(prev_grad == 1){
-                realPeaks++;
-              }
-              //handle  flat peaks
-              int j = i-2;
-              for( ; ampData.buffer[j] == ampData.buffer[i-1] ; j--);
-              // there is no body to the above for loop -- just looking
-              // for the stopping point
-              float lenOfFlat = i-1 -j -1.;
-              //this is truncating, we need
-              //to fix this
-              float loc = i-1 - lenOfFlat/2.;
-              //record the peak
-              peak_guesses_loc.push_back(loc);
-              peak_guesses_amp.push_back(ampData.buffer[i-1]);
-          }
-          grad = -1;
+    std::vector<float> peak_guesses_idx; // Peak idices
+    std::vector<float> peak_guesses_loc; // Peak t-values
+    std::vector<float> peak_guesses_amp; // Peak a-values
+    // Loop through the data
+    for (int i = 1; i < (int)ampData.size - 1; i ++) {
+        int a1 = ampData.buffer[i - 1];
+        int a2 = ampData.buffer[i];
+        int a3 = ampData.buffer[i + 1];
+        // Peak amplitude must be greater than 10
+        if (a2 >= 10) {
+            // We were going up before and are now going down
+            if (a2 - a1 > 0 && a3 - a2 < 0) {
+                // Record amplitude and time value in a new Peak object
+                Peak* peak = new Peak();
+                peak->amp = a2;
+                int t2 = idxData.buffer[i];
+                peak->location = t2;
+                // Calculate FWHM - averaged from the point to the left and right
+                int idx = greatest_change(ampData, i - 1, a2, true);
+                float fwhm = get_fwhm(a2,t2,ampData.buffer[idx],idxData.buffer[idx]);
+                idx = greatest_change(ampData, i + 1, a2, false);
+                fwhm += get_fwhm(a2,t2,ampData.buffer[idx],idxData.buffer[idx]);
+                peak->fwhm = fwhm / 2.;
+                results->push_back(peak);
+            } else if (a3 == a2) {
+                // Store data point before the flat section
+                int before = i - 1;
+                // When this loop ends, i will point to the last data point 
+                // or the point right after the flat section
+                while (i < (int)ampData.size - 1 && a2 == a3){
+                    i ++;
+                    a3 = ampData.buffer[i + 1];
+                }
+                // Make sure the flat section did end and it isn't a trough
+                if (a2 != a3 and (a2 > a1 or a2 > a3)){
+                    // Get the center of the flat section
+                    float t2 = (idxData.buffer[before+1] + idxData.buffer[i]) / 2.;
+                    // Record amplitude and time value in a new Peak object
+                    Peak* peak = new Peak();
+                    peak->amp = a2;
+                    peak->location = t2;
+                    // Calculate FWHM
+                    float fwhm;
+                    if (a2 > a1) {
+                        int idx = greatest_change(ampData, before, a2, true);
+                        fwhm = get_fwhm(a2,t2,ampData.buffer[idx], idxData.buffer[idx]);
+                    }
+                    if (a2 > a3) {
+                        int idx = greatest_change(ampData, i, a2, false);
+                        fwhm += get_fwhm(a2,t2,ampData.buffer[idx], idxData.buffer[idx]);
+                        // Check if we are taking the average of two points or not
+                        if (a2 > a1) {fwhm /= 2;}
+                    }
+                    peak->fwhm = fwhm;
+                    results->push_back(peak);
+                }
+            }
         }
-
-      }else if(grad == 1){
-        prev_grad = 1;
-        if(firstDiffs[i] == 0 ){
-          grad = 0;
-        }else if(firstDiffs[i] < 0){
-          // positive to negative (record peak)
-          if(ampData.buffer[i-1]>noise_level){
-              realPeaks++;
-              //record the peak
-              peak_guesses_loc.push_back(float(i-1));
-              peak_guesses_amp.push_back(ampData.buffer[i-1]);
-          }
-          grad = -1;
-        }
-
-      }else{ // gradient is -1
-        prev_grad = -1;
-        if(firstDiffs[i] == 0 ){
-          // down to flat
-          grad = 0;
-        }else if(firstDiffs[i] > 0){
-          // down to up
-          grad = 1;
-        }
-      }
     }
 
-    //Figure out how many peaks there are
-    size_t peakCount = peak_guesses_loc.size();
-
-    // make a guess for the fwhm value
-    float neg4ln2 = -4.*log(2);
-    int j;
-    int peaks_found=0;
-    if(realPeaks > 0){
-    for(int i=0; i< peakCount; i++){
-        // Create a better guess by using a better width
-        float guess_lo = -1; // "guess" represents our guess of the width value.
-        float guess_hi = -1; // "guess" represents our guess of the width value.
-        float half_ampData_guess = peak_guesses_amp[i]/2.;
-        int idx_lo=0,idx_hi=0;
-        // look low
-        int prev = ampData.buffer[(int)peak_guesses_loc[i]];
-        for(j=(int)peak_guesses_loc[i];j>0;j--){
-            if(ampData.buffer[j] > prev){
-                break;
-            }
-            prev = ampData.buffer[j];
-            if(prev < half_ampData_guess){
-                idx_lo = j;
-                double diff1 = idxData.buffer[j]-peak_guesses_loc[i];
-                double ydiva = (double)ampData.buffer[j]/peak_guesses_amp[i];
-                guess_lo = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
-                spdlog::trace("Found a guess for FWHM lo{}",guess_lo);
-                break;
-            }
-        }
-        // look high
-        prev = peak_guesses_amp[i];
-        for(j=(int)peak_guesses_loc[i]+1;j<n;j++){
-            if(ampData.buffer[j] > prev){
-                break;
-            }
-                prev = ampData.buffer[j];
-                if(ampData.buffer[j] < half_ampData_guess){
-                idx_hi = j;
-                double diff1 = idxData.buffer[j]-peak_guesses_loc[i];
-                double ydiva = (double)ampData.buffer[j]/peak_guesses_amp[i];
-                guess_hi = sqrt(neg4ln2*diff1*diff1*(1./(log(ydiva))));
-                spdlog::trace("Found a guess for FWHM hi{}",guess_hi);
-                    break;
-            }
-        }
-
-        double guess;
-        if(guess_lo > 0 && guess_hi > 0){
-          guess = (guess_lo+guess_hi)*.5;
-        }else if(guess_lo > 0){
-          guess = guess_lo;
-        }else if(guess_hi > 0){
-          guess = guess_hi;
-        }else{
-            spdlog::warn( "Guess for peak width less than zero, "
-                          " reverting to default lo:{} hi{}",
-                          guess_lo, guess_hi);
-
-            guess = guess_lessthan_0_default;
-        }
-
-        if (log_diagnostics) {
-            spdlog::debug(
-                "Guess for peak {}: amp {}; time: {}; width: {}",
-                i, peak_guesses_amp[i], peak_guesses_loc[i],
-                guess);
-        }
-
-        if(guess > guess_upper_lim) {guess = guess_upper_lim_default;}
-        peaks_found++;
-
-        //Create a peak
-        Peak* peak = new Peak();
-        peak->amp = peak_guesses_amp[i];
-        peak->location = peak_guesses_loc[i];
-        peak->fwhm = guess;
-        results->push_back(peak);
-    }}else{
-      results->clear();
-    }
     if (results->size() != 0){
         results->back()->is_final_peak=true;
     }
@@ -810,6 +736,20 @@ void GaussianFitter::smoothing_expt(struct vector *waveArray){
             }
         }
     }
+}
+
+
+/**
+ * Calculate that FWHM given the peak and a data point of the gaussia curve
+ * @param a, t - The amplitdue and time location of the peak
+ * @param ai, ti - A data point on the gaussian curve of the above peak
+ * @return fwhm - FWHM for that gaussian curve
+ */
+float GaussianFitter::get_fwhm(int a, float t, int ai, float ti){
+    float w = 2 * (t - ti);
+    if (w < 0) {w *= -1.;}
+    float sqrt_lnN = sqrt(log((float)a / ai));
+    return w * SQRT_LN2 / sqrt_lnN;
 }
 
 /*

@@ -31,7 +31,7 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
-    // Set verbosiy
+    // Set verbosity
     if (cmdLineArgs.verb == "trace") {
         spdlog::set_level(spdlog::level::trace);
     } else if (cmdLineArgs.verb == "debug") {

@@ -4,6 +4,10 @@
 #include "LidarDriver.hpp"
 #include "spdlog/spdlog.h"
 
+LidarDriver::LidarDriver() {
+	mutex = PTHREAD_MUTEX_INITIALIZER;
+}
+
 /**
  * setup the gdal dataset (file) with metadata
  * @param tiff_driver pointer to the GTiff driver
@@ -51,7 +55,7 @@ void LidarDriver::calc_product_size(FlightLineData &data, int num_products){
         //Use dimensional analysis to cancel out all units except for bytes
         bytes = bytes_per_val * vals_per_product * num_products / prefix_conversion;
 
-        spdlog::error("Values per product: {}", vals_per_product);
+        spdlog::trace("Values per product: {}", vals_per_product);
         spdlog::trace("Bytes per value (float): {}", bytes_per_val);
         spdlog::trace("Conversion to {}. Divide by {}", units.at(i), prefix_conversion);
         spdlog::trace("Total bytes needed: {}", bytes);
@@ -130,7 +134,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         }*/
        
         //Skip all the empty returning waveforms
-        if (pd.returningIdx.empty()){
+        if (pd.returningIdx.size == 0){
             continue;
         }
         try {
@@ -176,12 +180,12 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     spdlog::debug("Fail: {}", fitter.get_fail());
 }
 
-void log_raw_data(std::vector<int> idx, std::vector<int> wave) {
+void log_raw_data(struct vector idx, struct vector wave) {
     //Print raw wave
     std::stringstream idxstr;
     std::stringstream wavestr;
-    std::copy(idx.begin(), idx.end(), std::ostream_iterator<int>(idxstr, " "));
-    std::copy(wave.begin(), wave.end(),
+    std::copy(idx.buffer, idx.buffer + idx.size, std::ostream_iterator<int>(idxstr, " "));
+    std::copy(wave.buffer, wave.buffer + wave.size,
             std::ostream_iterator<int>(wavestr, " "));
     spdlog::trace("raw pulse idx: {}; raw pulse wave: {}", idxstr.str(),
             wavestr.str());
@@ -212,14 +216,19 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
     spdlog::info("Finding peaks with {}", fit_type);
 
     //parse each pulse
-    while (raw_data.hasNextPulse()) {
-        peaks.clear();
+    while (true) {
+	peaks.clear();
 
-        // gets the raw data from the file
-        raw_data.getNextPulse(&pd);
+	pthread_mutex_lock(&mutex);
+	if (!raw_data.hasNextPulse()) {
+		pthread_mutex_unlock(&mutex);
+		break;
+	}
+	raw_data.getNextPulse(&pd);
+	pthread_mutex_unlock(&mutex);
 
-        // Skip all the empty returning waveforms
-        if (pd.returningIdx.empty()){
+        //Skip all the empty returning waveforms
+        if (pd.returningIdx.size == 0){
             if (log_diagnostics) {
                 spdlog::trace("pulse idx was empty, skipping");
             }
@@ -251,7 +260,9 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
             // for each peak we will call to_string and append them together
             std::string *str = new std::string;
             this->peaks_to_string(*str, cmdLine, peaks);
+	    pthread_mutex_lock(&mutex);
             strings.push_back(str);
+	    pthread_mutex_unlock(&mutex);
         } catch (const char *msg) {
             spdlog::error("{}", msg);
         }
@@ -296,22 +307,31 @@ void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
             continue;
         }
 
+        struct vector idx;
+        idx.buffer = raw_data.idx.data();
+        idx.size = raw_data.idx.size();
+        idx.capacity = raw_data.idx.capacity();
+        struct vector wave;
+        wave.buffer = raw_data.wave.data();
+        wave.size = raw_data.wave.size();
+        wave.capacity = raw_data.wave.capacity();
         // Log data
         if (log_diagnostics) {
-            log_raw_data(raw_data.idx, raw_data.wave);
+            log_raw_data(idx, wave);
         }
 
         try {
+
             // Smooth the data and test result
-            fitter.smoothing_expt(&raw_data.idx);
+            fitter.smoothing_expt(&idx);
 
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
-                fitter.find_peaks(&peaks, raw_data.wave,
-                                     raw_data.idx, 200);
+                fitter.find_peaks(&peaks, wave,
+                                     idx, 200);
             } else {
-                fitter.guess_peaks(&peaks, raw_data.wave,
-                                     raw_data.idx);
+                fitter.guess_peaks(&peaks, wave,
+                                     idx);
             }
 
             // xyz calc isn't available for TxtWaveReader
@@ -391,7 +411,7 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                             WaveGPSInformation &gps_info){
     // Backscatter coefficient
     if (cmdLine.calcBackscatter){
-        if (pulse.outgoingIdx.size() == 0){
+        if (pulse.outgoingIdx.size == 0){
             return;
         }
         //Go through fitting process with emitted waveform
@@ -454,7 +474,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
     float avg = 0 ;
     float dev = 0;
 
-    spdlog::error("Entering write image loop. In {} : {}", __FILE__, __LINE__);
+    spdlog::debug("Entering write image loop. In {} : {}", __FILE__, __LINE__);
 
 
 
@@ -501,7 +521,7 @@ void LidarDriver::produce_product(LidarVolume &fitted_data,
             }
         }
 
-        spdlog::error("In writeImage loop. Writing band: {}, {}. In {} : {}", x, y,
+        spdlog::trace("In writeImage loop. Writing band: {}, {}. In {} : {}", x, y,
                        __FILE__, __LINE__);
 
         //add the pixel values to the raster, one column at a time

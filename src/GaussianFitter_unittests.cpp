@@ -31,7 +31,7 @@ class GaussianFitterTest: public testing::Test{
 
         static void SetUpTestSuite(){
             // Setting up logger
-            spdlog::set_level(spdlog::level::debug);
+            spdlog::set_level(spdlog::level::info);
             spdlog::set_pattern("[%^%=8l%$] %v");
             // Sets new pattern for timestamp
 
@@ -79,12 +79,15 @@ TEST_F(GaussianFitterTest, NayaniClipped1_guess){
         "8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
     parseWave(input, idxData, ampData);
+
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(3,peaks.size());
     EXPECT_EQ(200,peaks.at(0)->amp);
@@ -113,11 +116,13 @@ TEST_F(GaussianFitterTest, NayaniClipped2_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_EQ(235,peaks.at(0)->amp);
@@ -140,12 +145,14 @@ TEST_F(GaussianFitterTest, gaussianFitter_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     //the noise level for this waveform is 21.6
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_EQ(240,peaks.at(0)->amp);
@@ -169,11 +176,13 @@ TEST_F(GaussianFitterTest, NayaniClipped3_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(238,peaks.at(0)->amp);
@@ -199,11 +208,13 @@ TEST_F(GaussianFitterTest, NayaniClipped4_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_EQ(240,peaks.at(0)->amp);
@@ -229,11 +240,13 @@ TEST_F(GaussianFitterTest, NayaniClipped5_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(150,peaks.at(0)->amp);
@@ -257,12 +270,14 @@ TEST_F(GaussianFitterTest, NayaniClipped6_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     //the noise level for this waveform is 17.4
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(5,peaks.size());
     EXPECT_EQ(11,peaks.at(0)->amp);
@@ -298,11 +313,13 @@ TEST_F(GaussianFitterTest, NayaniClipped7_guess){
     parseWave(input, idxData, ampData);
 
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.noise_level = 9;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(3,peaks.size());
     EXPECT_EQ(98,peaks.at(0)->amp);
@@ -335,12 +352,14 @@ TEST_F(GaussianFitterTest, NayaniClipped8_guess){
     parseWave(input, idxData, ampData);
 
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     //the noise level for this waveform is 19.9
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(3,peaks.size());
     EXPECT_EQ(26,peaks.at(0)->amp);
@@ -377,11 +396,13 @@ TEST_F(GaussianFitterTest, max_iter_1_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_EQ(150,peaks.at(0)->amp);
@@ -409,11 +430,13 @@ TEST_F(GaussianFitterTest, max_iter_2_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(139,peaks.at(0)->amp);
@@ -443,12 +466,14 @@ TEST_F(GaussianFitterTest, max_iter_3_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
-    fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
+    fitter.guess_peaks(&peaks, amp, idx);
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(164,peaks.at(0)->amp);
     EXPECT_EQ(11,peaks.at(1)->amp);
@@ -478,11 +503,13 @@ TEST_F(GaussianFitterTest, max_iter_4_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(4,peaks.size());
     EXPECT_EQ(88,peaks.at(0)->amp);
@@ -515,11 +542,13 @@ TEST_F(GaussianFitterTest, max_iter_5_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(9,peaks.size());
     EXPECT_EQ(88,peaks.at(0)->amp);
@@ -575,11 +604,13 @@ TEST_F(GaussianFitterTest, trig_loc_1_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(183,peaks.at(0)->amp);
@@ -612,11 +643,13 @@ TEST_F(GaussianFitterTest, trig_loc_2_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(143, peaks.at(0)->amp);
@@ -645,10 +678,12 @@ TEST_F(GaussianFitterTest, num_iterations_10_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(2, peaks.size());
     EXPECT_EQ(37, peaks.at(0)->amp);
@@ -675,10 +710,12 @@ TEST_F(GaussianFitterTest, problem_waveform_1_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(189, peaks.at(0)->amp);
@@ -708,10 +745,12 @@ TEST_F(GaussianFitterTest, problem_waveform_2_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(198, peaks.at(0)->amp);
@@ -737,10 +776,12 @@ TEST_F(GaussianFitterTest, problem_waveform_3_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(182, peaks.at(0)->amp);
@@ -771,10 +812,12 @@ TEST_F(GaussianFitterTest, problem_waveform_4_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(205, peaks.at(0)->amp);
@@ -803,10 +846,12 @@ TEST_F(GaussianFitterTest, problem_waveform_5_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(186, peaks.at(0)->amp);
@@ -831,10 +876,12 @@ TEST_F(GaussianFitterTest, problem_waveform_6_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_EQ(181, peaks.at(0)->amp);
@@ -860,10 +907,12 @@ TEST_F(GaussianFitterTest, problem_waveform_7_guess){
    
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_EQ(189, peaks.at(0)->amp);
@@ -893,10 +942,12 @@ TEST_F(GaussianFitterTest, problem_waveform_8_guess){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(3, peaks.size());
     EXPECT_NEAR(191, peaks.at(0)->amp, 1);
@@ -925,10 +976,12 @@ TEST_F(GaussianFitterTest, problem_waveform_9_guess){
 
     parseWave(input, idxData, ampData); 
    
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(183, peaks.at(0)->amp, 1);
@@ -952,10 +1005,12 @@ TEST_F(GaussianFitterTest, problem_waveform_10_guess){
 
     parseWave(input, idxData, ampData); 
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(184, peaks.at(0)->amp, 1);
@@ -981,10 +1036,12 @@ TEST_F(GaussianFitterTest, FlatFreeTest1_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(68, peaks.at(0)->amp, 1);
@@ -1004,10 +1061,12 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     ASSERT_EQ(0,peaks.size());
 
@@ -1028,10 +1087,12 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(0,peaks.size());
     EXPECT_EQ(0, count);
@@ -1047,10 +1108,12 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
     EXPECT_EQ(0,peaks.size());
    // EXPECT_NEAR(68, peaks.at(0)->amp, 1);
    // EXPECT_EQ(8, peaks.at(0)->location);
@@ -1068,10 +1131,12 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_guess){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.guess_peaks(&peaks, ampData, idxData);
+    int count = fitter.guess_peaks(&peaks, amp, idx);
 
     EXPECT_EQ(0,peaks.size());
     EXPECT_EQ(0,count);
@@ -1145,11 +1210,13 @@ TEST_F(GaussianFitterTest, Split_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2, count);
     ASSERT_EQ(2,peaks.size());
@@ -1172,11 +1239,13 @@ TEST_F(GaussianFitterTest, Split2_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(1, count);
     ASSERT_EQ(1,peaks.size());
@@ -1195,11 +1264,13 @@ TEST_F(GaussianFitterTest, NayaniClipped1_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(3, count);
     ASSERT_EQ(3,peaks.size());
@@ -1226,11 +1297,13 @@ TEST_F(GaussianFitterTest, NayaniClipped2_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2, count);
     ASSERT_EQ(2,peaks.size());
@@ -1252,11 +1325,13 @@ TEST_F(GaussianFitterTest, gaussianFitter_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(240,peaks.at(0)->amp,.05*240);
@@ -1280,12 +1355,14 @@ TEST_F(GaussianFitterTest, NayaniClipped3_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2, count);
     ASSERT_EQ(2,peaks.size());
@@ -1311,12 +1388,14 @@ TEST_F(GaussianFitterTest, NayaniClipped4_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(240,peaks.at(0)->amp,.05*240);
@@ -1342,12 +1421,14 @@ TEST_F(GaussianFitterTest, NayaniClipped5_find){
     parseWave(input, idxData, ampData);
 
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,count);
     ASSERT_EQ(2,peaks.size());
@@ -1369,13 +1450,15 @@ TEST_F(GaussianFitterTest, NayaniClipped6_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     //the noise level for this waveform is 17.4
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(4,peaks.size());
     EXPECT_NEAR(11,peaks.at(0)->amp, .1*11);
@@ -1407,12 +1490,14 @@ TEST_F(GaussianFitterTest, NayaniClipped7_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
     fitter.noise_level = 9;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(3,peaks.size());
     EXPECT_NEAR(98,peaks.at(0)->amp, .05*98);
@@ -1441,12 +1526,14 @@ TEST_F(GaussianFitterTest, NayaniClipped8_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(3,peaks.size());
     EXPECT_NEAR(26,peaks.at(0)->amp, .1*26);
@@ -1474,12 +1561,14 @@ TEST_F(GaussianFitterTest, max_iter_1_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(150,peaks.at(0)->amp, .05*150);
@@ -1507,12 +1596,14 @@ TEST_F(GaussianFitterTest, max_iter_2_find){
     parseWave(input, idxData, ampData);
 
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(139,peaks.at(0)->amp, .05*139);
@@ -1538,12 +1629,14 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_NEAR(164,peaks.at(0)->amp, .05*164);
@@ -1573,12 +1666,14 @@ TEST_F(GaussianFitterTest, max_iter_4_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(3,peaks.size());
     EXPECT_NEAR(88,peaks.at(0)->amp, .05*88);
@@ -1612,12 +1707,14 @@ TEST_F(GaussianFitterTest, max_iter_5_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(7,peaks.size());
     EXPECT_NEAR(88,peaks.at(0)->amp, .1*88);
@@ -1657,12 +1754,14 @@ TEST_F(GaussianFitterTest, trig_loc_1_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(183,peaks.at(0)->amp, .05*183);
@@ -1687,12 +1786,14 @@ TEST_F(GaussianFitterTest, trig_loc_2_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(143, peaks.at(0)->amp, .05*143);
@@ -1714,11 +1815,13 @@ TEST_F(GaussianFitterTest, num_iterations_10_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2, peaks.size());
     EXPECT_NEAR(37, peaks.at(0)->amp, .1*37);
@@ -1742,11 +1845,13 @@ TEST_F(GaussianFitterTest, problem_waveform_1_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(189, peaks.at(0)->amp, .05*189);
@@ -1771,11 +1876,13 @@ TEST_F(GaussianFitterTest, problem_waveform_2_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(198, peaks.at(0)->amp, .05*198);
@@ -1800,11 +1907,13 @@ TEST_F(GaussianFitterTest, problem_waveform_3_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(182, peaks.at(0)->amp, .05*182);
@@ -1830,11 +1939,13 @@ TEST_F(GaussianFitterTest, problem_waveform_4_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(205, peaks.at(0)->amp, .05*205);
@@ -1858,11 +1969,13 @@ TEST_F(GaussianFitterTest, problem_waveform_5_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(19.5, peaks.at(0)->location,.25);
@@ -1887,11 +2000,13 @@ TEST_F(GaussianFitterTest, problem_waveform_6_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(181, peaks.at(0)->amp, .05*181);
@@ -1915,11 +2030,13 @@ TEST_F(GaussianFitterTest, problem_waveform_7_find){
    
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(189, peaks.at(0)->amp, .05*189);
@@ -1940,11 +2057,13 @@ TEST_F(GaussianFitterTest, problem_waveform_8_find){
 
     parseWave(input, idxData, ampData);
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(191, peaks.at(0)->amp, .05*191);
@@ -1968,11 +2087,13 @@ TEST_F(GaussianFitterTest, problem_waveform_9_find){
 
     parseWave(input, idxData, ampData); 
    
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(2,peaks.size());
     EXPECT_NEAR(183, peaks.at(0)->amp, .05*183);
@@ -1994,11 +2115,13 @@ TEST_F(GaussianFitterTest, problem_waveform_10_find){
 
     parseWave(input, idxData, ampData); 
     
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(2,peaks.size());
     EXPECT_NEAR(184, peaks.at(0)->amp, 1);
@@ -2023,11 +2146,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest1_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(1,peaks.size());
     EXPECT_NEAR(68, peaks.at(0)->amp, 1);
@@ -2047,11 +2172,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     ASSERT_EQ(0,peaks.size());
     EXPECT_EQ(0, count);
@@ -2068,11 +2195,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
     EXPECT_EQ(0,peaks.size());
     EXPECT_EQ(0,count);
     //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
@@ -2089,11 +2218,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
     EXPECT_EQ(0,peaks.size());
     EXPECT_EQ(0,count);
    // EXPECT_NEAR(68, peaks.at(0)->amp, 1);
@@ -2111,11 +2242,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_find){
 
     parseWave(input, idxData, ampData);
 
+    struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
-    fitter.smoothing_expt(&ampData);
-    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+    fitter.smoothing_expt(&amp);
+    int count = fitter.find_peaks(&peaks,amp,idx, 200);
 
     EXPECT_EQ(0,peaks.size());
     EXPECT_EQ(0,count);

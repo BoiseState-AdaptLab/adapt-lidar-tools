@@ -6,6 +6,7 @@
 #define GAUSIANFITTING_HPP_
 
 #include "Peak.hpp"
+#include "PulseData.hpp"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
@@ -34,15 +35,17 @@
 class GaussianFitter{
 
     public:
-        int find_peaks(std::vector<Peak*>* results,std::vector<int> ampData,
-                std::vector<int> idxData, const size_t max_iter);
+        int find_peaks(std::vector<Peak*>* results, struct vector ampData,
+                struct vector idxData, const size_t max_iter);
         int noise_level;
         int guess_peaks(std::vector<Peak*>* results, 
-                std::vector<int> ampData, 
-                std::vector<int> idxData);
-        void smoothing_expt(std::vector<int> *waveArray);
+                struct vector ampData, 
+                struct vector idxData);
+        void smoothing_expt(struct vector *waveArray);
         GaussianFitter();
         std::string get_equation(int idx);
+        int greatest_change(struct vector &data, int idx, int amp, bool left);
+        float get_fwhm(int a, float t, int ai, float ti);
         int get_fail();
         int get_pass();
         int get_total();
@@ -55,6 +58,10 @@ class GaussianFitter{
         int fail;
         int pass;
         int total;
+
+
+        float SQRT_LN2 = sqrt(log(2)); // Used to calculate the FWHM from two data points
+        float C_TO_FWHM = 2 * sqrt(2 * log(2)); // Converts the c value into the FWHM for a gaussian curve
 
         // *** Fitter parameters (that were magic numbers once) ***
 
@@ -79,7 +86,7 @@ class GaussianFitter{
                 gsl_multifit_nlinear_parameters *params, int max,
                 const size_t max_iter);
 
-        std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
+        struct vector calculateFirstDifferences(struct vector ampData);
         void incr_fail();
         void incr_pass();
         void incr_total();

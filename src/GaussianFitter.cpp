@@ -46,7 +46,6 @@ int GaussianFitter::get_total(){
 }
 
 
-
 void GaussianFitter::incr_pass(){
     pass++;
 }
@@ -76,8 +75,6 @@ struct data
     double *y;
     size_t n;
     double *peak_locations;
-    // I added this variable
-    double *peak_amplitude;
 };
 
 
@@ -88,23 +85,20 @@ gaussian(const double a, const double b, const double c, const double t)
   const double z = (t - b) / c;
   return (a * exp(-0.5 * z * z));
 }
-
-
 /**
  * model function: a * exp( -1/2 * [ (t - b) / c ]^2 )
  * @param x
  * @param t
  * @return
  */
-double gaussianSum(const gsl_vector *x,double* amp,double* locs,const double t) {
+double gaussianSum(const gsl_vector * x,double* locs,const double t) {
 
     int i = 0;
     double value = 0.;
-
     for(i=0;i<(x->size/2);i++){
-        double a = amp[i];
+        double a = gsl_vector_get(x,2*i+0);
         double b = locs[i];
-        double c = gsl_vector_get(x,i);
+        double c = gsl_vector_get(x,2*i+1);
         value += gaussian(a,b,c,t);
     }
     return value;
@@ -122,9 +116,9 @@ func_f (const gsl_vector * x, void *params, gsl_vector * f)
     double yi = d->y[i];
     double y = 0.;
       for(int j = 0; j<(x->size/2);j++){
-        double a = d->peak_amplitude[j];
+        double a = gsl_vector_get(x, 2*j+0);
         double b = d->peak_locations[j];
-        double c = gsl_vector_get(x, j);
+        double c = gsl_vector_get(x, 2*j+1);
 
         y += gaussian(a, b, c, ti);
       }
@@ -182,9 +176,9 @@ func_df (const gsl_vector * x, void *params, gsl_matrix * J)
   for (i = 0; i < d->n; ++i){
     double ti = d->t[i];
     for(int j = 0; j<(x->size/2);j++){
-      double a = d->peak_amplitude[j];
+      double a = gsl_vector_get(x, 2*j+0);
       double b = d->peak_locations[j];
-      double c = gsl_vector_get(x, j);
+      double c = gsl_vector_get(x, 2*j+1);
 
       double zi = (ti - b) / c;
       double ei = exp(-0.5 * zi * zi);
@@ -418,12 +412,9 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fit_data.y = (double*)malloc(n * sizeof(double));
     fit_data.n = n;
     fit_data.peak_locations = (double*)malloc(peakCount * sizeof(double));
-    fit_data.peak_amplitude = (double*)malloc(n * sizeof(double));
     for(i=0; i < peakCount; i++){
       fit_data.peak_locations[i] = (*results)[i]->location;
-      fit_data.peak_amplitude[i] = (*results)[i]->amp;
     }
-    
 
     //copy the data to a format
     for(i=0;i<ampData.size();i++){
@@ -541,7 +532,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         std::ostringstream model;       
         for (int i = 0; i < n; ++i){
             double ti = fit_data.t[i];
-            model << gaussianSum(x,fit_data.peak_amplitude, fit_data.peak_locations, ti) << " ";
+            model << gaussianSum(x,fit_data.peak_locations, ti) << " ";
         }
         spdlog::trace("Model Data: {}", model.str());
     }else{
@@ -555,7 +546,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             double ti = fit_data.t[i];
             time << ti << " ";
             data << fit_data.y[i] << " ";
-            model << gaussianSum(x,fit_data.peak_amplitude, fit_data.peak_locations, ti) << " ";
+            model << gaussianSum(x,fit_data.peak_locations, ti) << " ";
         }
         spdlog::trace("Time Data: {}",time.str());
         spdlog::trace("Amp Data: {}",data.str());

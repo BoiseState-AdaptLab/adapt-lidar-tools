@@ -5,6 +5,7 @@
 */
 
 #include "Peak.hpp"
+#include <cmath>
 #include "gtest/gtest.h"
 
 class PeakTest : public testing::Test{

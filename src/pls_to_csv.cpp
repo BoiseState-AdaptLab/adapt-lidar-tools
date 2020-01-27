@@ -14,7 +14,7 @@ typedef std::chrono::high_resolution_clock Clock;
 
 std::string getPeaksProperty(const std::vector<Peak*>& peaks, int productID);
 
-bool write_to_csv(std::string filename, std::vector<std::string> lines) {
+bool writeLinesToFile(std::string filename, std::vector<std::string> lines) {
     std::ofstream file (filename);
     if (file.is_open()) {
         for(const auto& line: lines){
@@ -65,11 +65,10 @@ int main (int argc, char *argv[]) {
     for(int product : cmdLineArgs.selected_products){
         std::string property = getPeaksProperty(peaks, product);
         std::string fileName = cmdLineArgs.get_output_filename(product);
-        write_to_csv(fileName, {property});
+        if(!writeLinesToFile(fileName, {property})){
+            spdlog::error("Failed to write to file {}", fileName);
+        }
     }
-    
-    // Write data to file
-   // writer.write_to_csv(cmdLineArgs.get_output_filename(1));
 
     // Free memory
     rawData.closeFlightLineData();
@@ -93,7 +92,9 @@ std::string getPeaksProperty(const std::vector<Peak*>& peaks, int productID){
         results+=temp;
         results+=",";           
     }
-
+    
+    //this statement deletes the extra comma
+    //at the end of the file
     if(results.length() > 0){
         results.erase(results.end() -1);
     }

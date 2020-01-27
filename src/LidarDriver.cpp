@@ -259,11 +259,11 @@ std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLi
 
             // for each peak we will call to_string and append them together
 	    pthread_mutex_lock(&mutex);
+        results.insert(results.end(), peaks.begin(), peaks.end());
 	    pthread_mutex_unlock(&mutex);
         } catch (const char *msg) {
             spdlog::error("{}", msg);
         }
-        results.insert(results.end(), peaks.begin(), peaks.end());
     }
   return results; 
 }

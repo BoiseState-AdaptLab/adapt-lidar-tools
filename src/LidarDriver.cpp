@@ -198,13 +198,13 @@ void log_raw_data(struct vector idx, struct vector wave) {
  * @param strings a place where peak to_string calls will be stored
  * @param csv_CmdLine object that knows what data we want from peaks
  */
-void LidarDriver::fit_data_csv(FlightLineData &raw_data,
-        std::vector<std::string*> &strings, csv_CmdLine &cmdLine) 
+std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLine &cmdLine) 
 {
     PulseData pd;
     std::ostringstream stream;
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
+    std::vector<Peak*> results;
 
     bool log_diagnostics = cmdLine.log_diagnostics;
 
@@ -258,20 +258,14 @@ void LidarDriver::fit_data_csv(FlightLineData &raw_data,
             raw_data.calc_xyz_activation(&peaks);
 
             // for each peak we will call to_string and append them together
-            std::string *str = new std::string;
-            this->peaks_to_string(*str, cmdLine, peaks);
 	    pthread_mutex_lock(&mutex);
-            strings.push_back(str);
 	    pthread_mutex_unlock(&mutex);
         } catch (const char *msg) {
             spdlog::error("{}", msg);
         }
-
-        // make sure that we have an empty vector and string
-        for (auto i = peaks.begin(); i != peaks.end(); ++i) {
-            delete (*i);
-        }
+        results.insert(results.end(), peaks.begin(), peaks.end());
     }
+  return results; 
 }
 
 /**

@@ -1,20 +1,32 @@
 // File name: PlsToCsv.cpp
-// Created on: March 2019
-// Author: Ravi, Ahmad, Spencer
+// Created on: Jan 2020
+// Author: Jared White, Floriana Ciaglia, Nick Prussen
 
-#include "TxtWaveReader.hpp"
 #include "LidarDriver.hpp"
-#include "CsvWriter.hpp"
 #include <chrono>
 
 // Activity level must be included before spdlog
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include "spdlog/spdlog.h"
 
-void* threaded_fit_data_csv(void* args);
 
 typedef std::chrono::high_resolution_clock Clock;
 
+std::string getPeaksProperty(const std::vector<Peak*>& peaks, int productID);
+
+bool write_to_csv(std::string filename, std::vector<std::string> lines) {
+    std::ofstream file (filename);
+    if (file.is_open()) {
+        for(const auto& line: lines){
+            file << line;
+            file << '\n';
+        }
+    } else {
+        //File could not be opened
+        return false;
+    }
+    return true;
+}
 
 // Csv-maker driver
 int main (int argc, char *argv[]) {
@@ -22,21 +34,15 @@ int main (int argc, char *argv[]) {
     // Setting up logger
     spdlog::set_pattern("[%^%=8l%$] %v");
         // Sets new pattern for timestamp
-    int numThreads; 		// Number of threads to run fit_data_csv
-    TxtWaveReader rawData0;     // Wave inputs from txt file
-    FlightLineData rawData1;    // Wave inputs from pls file
+    FlightLineData rawData;    // Wave inputs from pls file
     LidarDriver driver;         // Driver object with tools
     csv_CmdLine cmdLineArgs;    // Command line options
-    CsvWriter writer;           // Writes CSV file
-    writer.setLines(new std::vector<std::string*>); //Data stored here
-    numThreads = 1;
 
     // Parse and validate the command line args
     if(!cmdLineArgs.parse_args(argc,argv)){
         return 1;
     }
 
-    bool is_txt = cmdLineArgs.is_txt;
     std::string fname = cmdLineArgs.getInputFileName(true);
 
     // Collect start time
@@ -49,44 +55,24 @@ int main (int argc, char *argv[]) {
     spdlog::info("Processing {}", fname);
 
     // Initialize data input per CmdLine specification
-    if (is_txt) {
-        spdlog::debug("txt file recognized");
-        if (rawData0.open_file(fname.c_str())) {
-            spdlog::critical("Opening txt file '{}' failed", fname);
-            return 1;
-        }
-
-        driver.fit_data_csv(rawData0, *writer.getLines(), cmdLineArgs);
-    } else {
-        // ingest the raw flight data into an object
-        if (rawData1.setFlightLineData(cmdLineArgs.getInputFileName(true))) {
-            return 1;
-        }
-	if(numThreads <= 1) {
-	    driver.fit_data_csv(rawData1, *writer.getLines(), cmdLineArgs);
-	} else {
-	    pthread_t t_ids[numThreads];
-	    struct thread_args args[numThreads];
-	    for (int i=0; i < numThreads; i++) {
-	        args[i] = thread_args{&driver, &rawData1, *writer.getLines(), cmdLineArgs};
-	        pthread_create(&t_ids[i], NULL, threaded_fit_data_csv, (void *)&args[i]);
-	    }
-
-            for (int i=0; i < numThreads; i++) {
-		pthread_join(t_ids[i], NULL);
-            }
-	}
+    
+    // ingest the raw flight data into an object
+    if (rawData.setFlightLineData(cmdLineArgs.getInputFileName(true))) {
+        return 1;
     }
 
+    auto peaks = driver.fit_data_csv(rawData, cmdLineArgs);
+    for(int product : cmdLineArgs.selected_products){
+        std::string property = getPeaksProperty(peaks, product);
+        std::string fileName = cmdLineArgs.get_output_filename(product);
+        write_to_csv(fileName, {property});
+    }
+    
     // Write data to file
-    writer.write_to_csv(cmdLineArgs.get_output_filename(1));
+   // writer.write_to_csv(cmdLineArgs.get_output_filename(1));
 
     // Free memory
-    if (!is_txt) {
-        rawData1.closeFlightLineData();
-    }
-
-    writer.freeLines();
+    rawData.closeFlightLineData();
 
     // Get end time
     Clock::time_point t2 = Clock::now();
@@ -99,12 +85,18 @@ int main (int argc, char *argv[]) {
     return 0;
 }
 
-void* threaded_fit_data_csv(void* args) {
-	thread_args *t_args = (thread_args *)args;
-	LidarDriver *driver = t_args->threadDriver;
-	FlightLineData *raw_data = t_args->raw_data;
-	std::vector<std::string*> strings = t_args->strings;
-	csv_CmdLine cmdLine = t_args->cmdLine;
-	driver->fit_data_csv(*raw_data, strings, cmdLine);
-	return 0;
+std::string getPeaksProperty(const std::vector<Peak*>& peaks, int productID){
+    std::string results;
+    for(const auto& peak: peaks){
+        std::string temp;
+        peak->to_string(temp,{productID});
+        results+=temp;
+        results+=",";           
+    }
+
+    if(results.length() > 0){
+        results.erase(results.end() -1);
+    }
+
+    return results;
 }

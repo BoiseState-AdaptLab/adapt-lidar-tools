@@ -225,7 +225,7 @@ $(BIN)/csv-driver: $(OBJ)/pls_to_csv.o $(OBJ)/csv_CmdLine.o \
                    $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
 				   $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o \
 				   $(OBJ)/PulseData.o $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
-				   $(OBJ)/CsvWriter.o $(OBJ)/TxtWaveReader.o
+				   $(OBJ)/TxtWaveReader.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas

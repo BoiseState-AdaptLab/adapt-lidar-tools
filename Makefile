@@ -114,7 +114,6 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 # depending on whether it defines its own main() function.
 
 $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
-                                 $(OBJ)/PulseData.o \
                                  $(OBJ)/GaussianFitter_unittests.o \
 				 $(LIB)/gtest_main.a $(OBJ)/Peak.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
@@ -123,15 +122,13 @@ $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
 $(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
                                  $(OBJ)/FlightLineData.o $(OBJ)/PulseData.o \
                                  $(OBJ)/WaveGPSInformation.o \
-                                 $(OBJ)/PulseData.o \
-				 $(LIB)/gtest_main.a \
+                                 $(LIB)/gtest_main.a \
                                  $(OBJ)/WaveGPSInformation.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
 
 $(BIN)/LidarVolume_unittests: $(OBJ)/LidarVolume_unittests.o \
                               $(OBJ)/LidarVolume.o $(OBJ)/FlightLineData.o \
-                              $(OBJ)/PulseData.o \
                               $(OBJ)/Peak.o \
                               $(OBJ)/WaveGPSInformation.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \

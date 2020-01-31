@@ -134,7 +134,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         }*/
        
         //Skip all the empty returning waveforms
-        if (pd.returningIdx.size == 0){
+        if (pd.returningIdx.empty()){
             continue;
         }
         try {
@@ -180,12 +180,12 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
     spdlog::debug("Fail: {}", fitter.get_fail());
 }
 
-void log_raw_data(struct vector idx, struct vector wave) {
+void log_raw_data(std::vector<int> idx, std::vector<int> wave) {
     //Print raw wave
     std::stringstream idxstr;
     std::stringstream wavestr;
-    std::copy(idx.buffer, idx.buffer + idx.size, std::ostream_iterator<int>(idxstr, " "));
-    std::copy(wave.buffer, wave.buffer + wave.size,
+    std::copy(idx.begin(), idx.end(), std::ostream_iterator<int>(idxstr, " "));
+    std::copy(wave.begin(), wave.end(),
             std::ostream_iterator<int>(wavestr, " "));
     spdlog::trace("raw pulse idx: {}; raw pulse wave: {}", idxstr.str(),
             wavestr.str());
@@ -217,18 +217,18 @@ std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLi
 
     //parse each pulse
     while (true) {
-	peaks.clear();
+        peaks.clear();
 
-	pthread_mutex_lock(&mutex);
-	if (!raw_data.hasNextPulse()) {
-		pthread_mutex_unlock(&mutex);
-		break;
-	}
-	raw_data.getNextPulse(&pd);
-	pthread_mutex_unlock(&mutex);
+        pthread_mutex_lock(&mutex);
+        if (!raw_data.hasNextPulse()) {
+            pthread_mutex_unlock(&mutex);
+            break;
+        }
+        raw_data.getNextPulse(&pd);
+        pthread_mutex_unlock(&mutex);
 
         //Skip all the empty returning waveforms
-        if (pd.returningIdx.size == 0){
+        if (pd.returningIdx.empty()){
             if (log_diagnostics) {
                 spdlog::trace("pulse idx was empty, skipping");
             }
@@ -247,10 +247,10 @@ std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLi
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
                 fitter.find_peaks(&peaks, pd.returningWave,
-                                     pd.returningIdx, 200);
+                        pd.returningIdx, 200);
             } else {
                 fitter.guess_peaks(&peaks, pd.returningWave,
-                                     pd.returningIdx);
+                        pd.returningIdx);
             }
 
             // for each peak - find the activation point
@@ -301,31 +301,22 @@ void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
             continue;
         }
 
-        struct vector idx;
-        idx.buffer = raw_data.idx.data();
-        idx.size = raw_data.idx.size();
-        idx.capacity = raw_data.idx.capacity();
-        struct vector wave;
-        wave.buffer = raw_data.wave.data();
-        wave.size = raw_data.wave.size();
-        wave.capacity = raw_data.wave.capacity();
         // Log data
         if (log_diagnostics) {
-            log_raw_data(idx, wave);
+            log_raw_data(raw_data.idx, raw_data.wave);
         }
 
         try {
-
             // Smooth the data and test result
-            fitter.smoothing_expt(&idx);
+            fitter.smoothing_expt(&raw_data.idx);
 
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
-                fitter.find_peaks(&peaks, wave,
-                                     idx, 200);
+                fitter.find_peaks(&peaks, raw_data.wave,
+                                     raw_data.idx, 200);
             } else {
-                fitter.guess_peaks(&peaks, wave,
-                                     idx);
+                fitter.guess_peaks(&peaks, raw_data.wave,
+                                     raw_data.idx);
             }
 
             // xyz calc isn't available for TxtWaveReader
@@ -405,7 +396,7 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                             WaveGPSInformation &gps_info){
     // Backscatter coefficient
     if (cmdLine.calcBackscatter){
-        if (pulse.outgoingIdx.size == 0){
+        if (pulse.outgoingIdx.empty()){
             return;
         }
         //Go through fitting process with emitted waveform

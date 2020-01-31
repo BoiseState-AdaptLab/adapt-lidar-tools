@@ -10,33 +10,22 @@
 #include <iostream>
 #include <vector>
 
-#define MAX_BUFFER_SIZE 240
-
-struct vector {
-    int *buffer;
-    size_t size;
-    size_t capacity;
-};
-
-void resize(struct vector* v, size_t newCapacity);
-void push(struct vector* v, int element);
-
 class PulseData{
 
 private:
+
 public:
-  struct vector outgoingIdx;
-  struct vector outgoingWave;
-  struct vector returningIdx;
-  struct vector returningWave;
+  std::vector<int> outgoingIdx;
+  std::vector<int> outgoingWave;
+  std::vector<int> returningIdx;
+  std::vector<int> returningWave;
   long pulse_returning_start_time;
   PulseData();
-  ~PulseData();
   void displayPulseData(std::ostream *outStream);
-  void setOutgoing(struct vector *idxArray,
-                   struct vector *waveArray);
-  void setReturning(struct vector *idxArray,
-                    struct vector *waveArray);
+  void setOutgoing(std::vector<int> *idxArray,
+                   std::vector<int> *waveArray);
+  void setReturning(std::vector<int> *idxArray,
+                    std::vector<int> *waveArray);
 };
 
 #endif /* PULSEDATA_HPP_ */

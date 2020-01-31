@@ -218,10 +218,10 @@ bool FlightLineData::hasNextPulse(){
 void FlightLineData::getNextPulse(PulseData *pd){
 
     // Clear vectors since we're storing a single pulse at a time
-    pd->outgoingIdx.size = 0;
-    pd->outgoingWave.size = 0;
-    pd->returningIdx.size = 0;
-    pd->returningWave.size = 0;
+    pd->outgoingIdx.clear();
+    pd->outgoingWave.clear();
+    pd->returningIdx.clear();
+    pd->returningWave.clear();
 
     if(!next_pulse_exists){
         spdlog::critical("CRITICAL ERROR! Cannot be here if there isn't a next "
@@ -245,12 +245,6 @@ void FlightLineData::getNextPulse(PulseData *pd){
         spdlog::critical("The first sampling must be an outgoing wave!");
         return;
     }
-    if (sampling->size() > pd->outgoingIdx.capacity) {
-        resize(&pd->returningIdx, sampling->size());
-    }
-    if (sampling->size() > pd->outgoingWave.capacity) {
-        resize(&pd->returningWave, sampling->size());
-    }
 
     //FOR TESTING PURPOSES
     // std::cout << "Starting outgoing" << std::endl; 
@@ -270,9 +264,10 @@ void FlightLineData::getNextPulse(PulseData *pd){
                 sampling->get_duration_from_anchor_for_segment();
         }
         for(int k = 0; k < sampling->get_number_of_samples(); k++){
-            push(&pd->outgoingIdx, pulse_outgoing_segment_time 
-                                       - pulse_outgoing_start_time);
-            push(&pd->outgoingWave, sampling->get_sample(k));
+            pd->outgoingIdx.push_back(pulse_outgoing_segment_time -
+                    pulse_outgoing_start_time);
+            int temp_amp = sampling->get_sample(k);
+            pd->outgoingWave.push_back(temp_amp);
             pulse_outgoing_segment_time++;
         }
     }
@@ -286,15 +281,9 @@ void FlightLineData::getNextPulse(PulseData *pd){
             spdlog::critical("The second sampling must be a returning wave!");
 
             // Clearing outgoing idx so no bad data is returned.
-            pd->outgoingIdx.size = 0;
-            pd->outgoingWave.size = 0;
+            pd->outgoingIdx.clear();
+            pd->outgoingWave.clear();
             return;
-        }
-        if (sampling->size() > pd->returningIdx.capacity) {
-            resize(&pd->returningIdx, sampling->size());
-        }
-        if (sampling->size() > pd->returningWave.capacity) {
-            resize(&pd->returningWave, sampling->size());
         }
         //Populate returing wave data
         for(int j = 0; j < sampling->get_number_of_segments(); j++ ){
@@ -312,9 +301,9 @@ void FlightLineData::getNextPulse(PulseData *pd){
                     sampling->get_duration_from_anchor_for_segment();
             }
             for(int k = 0; k < sampling->get_number_of_samples(); k++){
-                push(&pd->returningIdx, pulse_returning_segment_time -
+                pd->returningIdx.push_back(pulse_returning_segment_time -
                         pulse_returning_start_time);
-                push(&pd->returningWave, sampling->get_sample(k));
+                pd->returningWave.push_back(sampling->get_sample(k));
                 pulse_returning_segment_time++;
             }
 

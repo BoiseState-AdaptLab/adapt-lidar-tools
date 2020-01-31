@@ -719,6 +719,10 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
  * @param waveArray
  */
 void GaussianFitter::smoothing_expt(std::vector<int> *waveArray){
+    for(std::size_t i=0; i < waveArray->size(); ++i){
+        waveArray->at(i) = std::max(waveArray->at(i)-1, 0);
+    }
+
     int n = waveArray->size()-1;
     for(int i=2; i<n;i++){
         if(waveArray->at(i) < 7){

@@ -200,15 +200,16 @@ void log_raw_data(std::vector<int> idx, std::vector<int> wave) {
  */
 std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLine &cmdLine) 
 {
-    PulseData pd;
-    std::ostringstream stream;
+    PulseData pulseData;
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
-    std::vector<Peak*> results;
+    //Possible pointless variable TODO
+    //std::vector<Peak*> results;
 
     bool log_diagnostics = cmdLine.log_diagnostics;
-
-    if (log_diagnostics) fitter.setDiagnostics(true);
+    if (log_diagnostics){
+        fitter.setDiagnostics(true);
+    }
 
     //message the user
     std::string fit_type=cmdLine.useGaussianFitting?"gaussian fitting":
@@ -216,19 +217,13 @@ std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLi
     spdlog::info("Finding peaks with {}", fit_type);
 
     //parse each pulse
-    while (true) {
+    while (raw_data.hasNextPulse()) {
         peaks.clear();
 
-        pthread_mutex_lock(&mutex);
-        if (!raw_data.hasNextPulse()) {
-            pthread_mutex_unlock(&mutex);
-            break;
-        }
-        raw_data.getNextPulse(&pd);
-        pthread_mutex_unlock(&mutex);
+        raw_data.getNextPulse(&pulseData);
 
         //Skip all the empty returning waveforms
-        if (pd.returningIdx.empty()){
+        if (pulseData.returningIdx.empty()){
             if (log_diagnostics) {
                 spdlog::trace("pulse idx was empty, skipping");
             }
@@ -237,20 +232,20 @@ std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLi
 
         // Log data
         if (log_diagnostics) {
-            log_raw_data(pd.returningIdx, pd.returningWave);
+            log_raw_data(pulseData.returningIdx, pulseData.returningWave);
         }
 
         try {
             // Smooth the data and test result
-            fitter.smoothing_expt(&pd.returningWave);
+            fitter.smoothing_expt(&pulseData.returningWave);
 
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
-                fitter.find_peaks(&peaks, pd.returningWave,
-                        pd.returningIdx, 200);
+                fitter.find_peaks(&peaks, pulseData.returningWave,
+                        pulseData.returningIdx, 200);
             } else {
-                fitter.guess_peaks(&peaks, pd.returningWave,
-                        pd.returningIdx);
+                fitter.guess_peaks(&peaks, pulseData.returningWave,
+                        pulseData.returningIdx);
             }
 
             // for each peak - find the activation point
@@ -258,14 +253,12 @@ std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLi
             raw_data.calc_xyz_activation(&peaks);
 
             // for each peak we will call to_string and append them together
-	    pthread_mutex_lock(&mutex);
-        results.insert(results.end(), peaks.begin(), peaks.end());
-	    pthread_mutex_unlock(&mutex);
+            //results.insert(results.end(), peaks.begin(), peaks.end());
         } catch (const char *msg) {
             spdlog::error("{}", msg);
         }
     }
-  return results; 
+  return peaks; 
 }
 
 /**
@@ -274,7 +267,7 @@ std::vector<Peak*> LidarDriver::fit_data_csv(FlightLineData &raw_data, csv_CmdLi
  * @param strings a place where peak to_string calls will be stored
  * @param csv_CmdLine object that knows what data we want from peaks
  */
-void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
+/*void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
         std::vector<std::string*> &strings, csv_CmdLine &cmdLine) 
 {
     std::ostringstream stream;
@@ -335,6 +328,7 @@ void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
         }
     }
 }
+*/
 
 /**
  * Takes a vector of peaks from a single waveform and concats them together
@@ -342,7 +336,7 @@ void LidarDriver::fit_data_csv(TxtWaveReader &raw_data,
  * @param cmdLine csv_CmdLine object
  * @param peaks vector of peaks to process
  */
-void LidarDriver::peaks_to_string(std::string &str, csv_CmdLine &cmdLine,
+/*void LidarDriver::peaks_to_string(std::string &str, csv_CmdLine &cmdLine,
                                   std::vector<Peak*> &peaks) {
     size_t n = 1;
     std::vector<int> prods = cmdLine.selected_products;
@@ -356,6 +350,7 @@ void LidarDriver::peaks_to_string(std::string &str, csv_CmdLine &cmdLine,
         n++;
     }
 }
+*/
 
 /**
  * setup the bounding and allocate memory for the LidarVolume

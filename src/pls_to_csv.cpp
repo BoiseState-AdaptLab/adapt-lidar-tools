@@ -17,7 +17,7 @@ std::string getPeaksProperty(const std::vector<Peak*>& peaks, int productID);
 bool writeLinesToFile(std::string filename, std::vector<std::string> lines) {
     std::ofstream file (filename);
     if (file.is_open()) {
-        for(const auto& line: lines){
+        for(std::string line: lines){
             file << line;
             file << '\n';
         }
@@ -43,7 +43,7 @@ int main (int argc, char *argv[]) {
         return 1;
     }
 
-    std::string fname = cmdLineArgs.getInputFileName(true);
+    std::string plsFileName = cmdLineArgs.getInputFileName(true);
 
     // Collect start time
     Clock::time_point t1 = Clock::now();
@@ -52,16 +52,16 @@ int main (int argc, char *argv[]) {
         spdlog::info("Diagnostics enabled for this run");
     }
 
-    spdlog::info("Processing {}", fname);
+    spdlog::info("Processing {}", plsFileName);
 
     // Initialize data input per CmdLine specification
     
     // ingest the raw flight data into an object
-    if (rawData.setFlightLineData(cmdLineArgs.getInputFileName(true))) {
+    if (rawData.setFlightLineData(plsFileName)) {
         return 1;
     }
 
-    auto peaks = driver.fit_data_csv(rawData, cmdLineArgs);
+    std::vector<Peak*> peaks = driver.fit_data_csv(rawData, cmdLineArgs);
     for(int product : cmdLineArgs.selected_products){
         std::string property = getPeaksProperty(peaks, product);
         std::string fileName = cmdLineArgs.get_output_filename(product);

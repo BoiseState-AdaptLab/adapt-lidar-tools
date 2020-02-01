@@ -1132,6 +1132,38 @@ TEST_F(GaussianFitterTest,problem_waveform_12_guess){
     EXPECT_EQ(2, count);
 
 }
+
+//Test Split3_find_guess
+TEST_F(GaussianFitterTest, Split3_find_guess){
+    
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "0 0	0 0 0 0	0 0 8 34 87 154	211 239	239 199	144 86 41 17 11	12 13 14 14 13 12 9 7 7	7 7 6 5	4 3 3 2 2 3 5 3	3 2 1 1	0 0 0 0	0 1 3 2	1";
+
+    parseWave(input, idxData, ampData);
+    
+    GaussianFitter fitter;
+    fitter.noise_level = 9;
+    std::vector<Peak*> peaks;
+    int count = fitter.guess_peaks(&peaks,ampData,idxData);
+
+    EXPECT_EQ(2,peaks.size());
+    EXPECT_NEAR(239, peaks.at(0)->amp, .05*239);
+    EXPECT_NEAR(14, peaks.at(1)->amp, .05*14);
+    EXPECT_EQ(13.5, peaks.at(0)->location);
+    EXPECT_EQ(23.5, peaks.at(1)->location);
+    //EXPECT_NEAR(4.8, peaks.at(0)->fwhm, 1);
+    //EXPECT_NEAR(4.4, peaks.at(1)->fwhm, 1);
+ 
+    std::cout << "peak 1: " << peaks.at(0)->amp << std::endl;
+    std::cout << "peak 2: " << peaks.at(1)->amp << std::endl;
+   
+
+    EXPECT_EQ(2, count);
+
+}
+
         //////////////////////////
         // TESTING find_peaks() //
         //////////////////////////
@@ -1186,6 +1218,39 @@ TEST_F(GaussianFitterTest, Split2_find){
     //EXPECT_NEAR(6, peaks.at(0)->fwhm, 1);
 
 }
+
+
+TEST_F(GaussianFitterTest, Split3_find){
+    
+    std::vector<int> idxData;
+    std::vector<int> ampData;
+
+    char input[] = "37 38 41 52 57 63 68 69 69 54 51 45 32 32 45 48 52 64 75 90 90 82 72 61 53 45 21 10 4 2 2 2 1 1 1 1";
+
+    parseWave(input, idxData, ampData);
+
+    //struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
+    //struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
+    // now that we have the input vectors call the gaussianFitter
+    GaussianFitter fitter;
+    fitter.noise_level = 9;
+    std::vector<Peak*> peaks;
+
+    int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+
+    ASSERT_EQ(2, count);
+    ASSERT_EQ(2,peaks.size());
+
+    EXPECT_NEAR(69 ,peaks.at(0)->amp, 0.5*69);
+    EXPECT_NEAR(7.5 ,peaks.at(0)->location, .25);
+
+    EXPECT_NEAR(90 ,peaks.at(1)->amp, 0.5*90);
+    EXPECT_NEAR(19.5 ,peaks.at(1)->location, .25);
+
+    //EXPECT_EQ(3, peaks.at(0)->location);
+    //EXPECT_NEAR(6, peaks.at(0)->fwhm, 1);
+}
+
 TEST_F(GaussianFitterTest, NayaniClipped1_find){
     
     std::vector<int> idxData;

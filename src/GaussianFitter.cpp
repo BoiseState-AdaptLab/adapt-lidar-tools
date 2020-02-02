@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "spdlog/spdlog.h"
+#include "Fitter.hpp"
 
 GaussianFitter::GaussianFitter(){
     fail = 0;
@@ -433,11 +434,18 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fdf.params = &fit_data;
 
     //this is a guess starting point
+    std::vector<Fitter::Gaussian> guesses;
     int j;
     for(i=0; i< peakCount; i++){
-        gsl_vector_set(x, i*2+0, (*results)[i]->amp);
-        gsl_vector_set(x, i*2+1, (*results)[i]->fwhm/C_TO_FWHM);
+        double a = (*results)[i]->amp;
+        double b = (*results)[i]->location;
+        double c = (*results)[i]->fwhm/C_TO_FWHM;
+        gsl_vector_set(x, i*2+0, a);
+        gsl_vector_set(x, i*2+1, c);
+        guesses.emplace_back(a,b,c);
     }
+
+
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
     spdlog::trace("Gaussian sum based on guesses - before solve system:");
@@ -458,7 +466,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
 
-    if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
+    //if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
+    std::vector<double> dAmpData(ampData.begin(), ampData.end());
+    std::vector<double> dIdxData(idxData.begin(), idxData.end());
+    if(Fitter::fitGaussians(dIdxData, dAmpData, guesses)){
         incr_pass();
 
         // save value for later
@@ -473,9 +484,15 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 << peak->location << ") / " << peak->fwhm/C_TO_FWHM << ") ^ 2)";
             spdlog::debug(before.str());
 
-            peak->amp = gsl_vector_get(x,2*i+ 0);
+            double a = guesses.at(i).a;
+            double b = guesses.at(i).b;
+            double c = guesses.at(i).c;
+            peak->amp = a;
+            peak->location = b;
+
+            //peak->amp = gsl_vector_get(x,2*i+ 0);
             //peak->location =
-            double c = gsl_vector_get(x,2*i+ 1);
+            //double c = gsl_vector_get(x,2*i+ 1);
             peak->fwhm = c * C_TO_FWHM;
             if(peak->fwhm < 0 ){
               peak->fwhm = peak->fwhm*(-1.);

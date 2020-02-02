@@ -59,6 +59,7 @@ int func_f(const gsl_vector* x, void* params, gsl_vector* f){
 
     const Pulse& data = *reinterpret_cast<const Pulse*>(params);
 
+
     for(std::size_t i = 0; i < data.indexData.size(); ++i){
         double t = data.indexData[i];
         double y = data.amplitudeData[i];
@@ -69,6 +70,10 @@ int func_f(const gsl_vector* x, void* params, gsl_vector* f){
             double c = gsl_vector_get(x, j*3+2);
 
             y-=gaussianFunc(a,b,c,t);
+
+            if(a < 5 || b < 0 || c < 1){    //@@TODO define reasonable lower bounds. Could pass through params
+                y+=1000;    //Penalty to act as a contraint.
+            }
         }
 
         gsl_vector_set(f, i, y);
@@ -141,7 +146,7 @@ bool solveSystem(gsl_multifit_nlinear_workspace* workspace, gsl_vector* results)
     const gsl_vector* params = gsl_multifit_nlinear_position(workspace);
     assert(params && params->size == results->size);
 
-    const size_t maxIter = 100;
+    const size_t maxIter = 150;
     const double xTol = 1.0e-2; //GSL recommends the power be the number of decimal places you want the accuracy to be
     const double gTol = 1.0e-8; //std::pow(GSL_DBL_EPSILON, 1/3); //Recommended to be this in docs @@TODO
     const double fTol = 1.0e-8; //@@TODO no idea what a good metric for this is
@@ -156,6 +161,7 @@ bool solveSystem(gsl_multifit_nlinear_workspace* workspace, gsl_vector* results)
     if(result != GSL_SUCCESS){
         spdlog::error("Fitting failed with error \"{}\"", gsl_strerror(result));
         spdlog::error("Last guesses: {}", gaussianToString(*params));
+        //@@TODO print initial guess also. When in production, should also print waveform
         return false;
     }
 
@@ -202,20 +208,26 @@ gsl_multifit_nlinear_workspace* setupWorkspace(const Pulse& data, const gsl_vect
 
 //See Fitter.hpp for docs @@TODO misc note: noise_level never did anything regarding the fitter itself
 bool fitGaussians(const std::vector<double>& indexData, const std::vector<double>& amplitudeData, std::vector<Gaussian>& guesses){
+    //@@TODO REMOVE
+    auto level = spdlog::default_logger()->level();
+    spdlog::set_level(spdlog::level::trace);
     //@@TODO: prefix logs with function name?
     if(indexData.size() != amplitudeData.size()){
         spdlog::critical("Index data and amplitude data have mismatched sizes! ({}) and ({})", indexData.size(), amplitudeData.size());
+        spdlog::set_level(level);
         return false;
     }
 
     if(indexData.empty()){
         assert(guesses.empty());
         spdlog::error("No waveform data");
+        spdlog::set_level(level);
         return false;
     }
 
     if(guesses.empty()){
         spdlog::info("No peaks to fit");    //@@TODO level, this may be common
+        spdlog::set_level(level);
         return false;
     }
 
@@ -256,14 +268,14 @@ bool fitGaussians(const std::vector<double>& indexData, const std::vector<double
     bool result = solveSystem(workspace.get(), params.get());
 
     //Copy back to return the results
-    guesses.clear();
     for(std::size_t i = 0; i < guesses.size(); ++i){
         double a = gsl_vector_get(params.get(), i*3);
         double b = gsl_vector_get(params.get(), i*3+1);
         double c = gsl_vector_get(params.get(), i*3+2);
-        guesses.emplace_back(a,b,c);
+        guesses.at(i) = {a,b,c};
     }
 
+    spdlog::set_level(level);
     return result; //Someone else can check and see if the peaks make sense (i.e. check negative amplitude)
 }
 

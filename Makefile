@@ -115,6 +115,7 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 
 $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
                                  $(OBJ)/GaussianFitter_unittests.o \
+                                 $(OBJ)/Fitter.o \
 				 $(LIB)/gtest_main.a $(OBJ)/Peak.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
 		$(PULSE_DIR)/lib -lpulsewaves -lm -lgsl -lgslcblas -lgdal
@@ -206,7 +207,7 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
                        $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
-                       $(OBJ)/TxtWaveReader.o
+                       $(OBJ)/TxtWaveReader.o $(OBJ)/Fitter.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas

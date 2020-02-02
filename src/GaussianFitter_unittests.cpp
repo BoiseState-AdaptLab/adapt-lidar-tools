@@ -42,20 +42,20 @@ class GaussianFitterTest: public testing::Test{
         }
         
         int parseWave(char *input, 
-                      std::vector<int> &idxData, std::vector<int> &ampData){
-        
-        char* ptr;
-        ptr = strtok (input," ");
-        int i=0;
-        while (ptr != NULL){
-            int y0 = atoi(ptr);
-            ampData.push_back(y0);
-            idxData.push_back(i);
-            i++;
-            ptr = strtok (NULL," ");
-         }
-         return 0;
-       }
+                std::vector<int> &idxData, std::vector<int> &ampData){
+
+            char* ptr;
+            ptr = strtok (input," \t");
+            int i=0;
+            while (ptr != NULL){
+                int y0 = atoi(ptr);
+                ampData.push_back(y0);
+                idxData.push_back(i);
+                i++;
+                ptr = strtok (NULL," \t");
+            }
+            return 0;
+        }
 };
 
 /****************************************************************************

@@ -518,19 +518,19 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             // if any of these are true then the peaks and the whole wave
             // are invalid -- this should be logged
             if(peak->amp >= 300 ){
-                spdlog::trace("Results invalid: amp too large");
+                spdlog::error("Results invalid: amp too large");
                 results->clear();
                 break;
             }else if(peak->amp < (noise_level/2.)){
-                spdlog::trace("Results invalid: amp too small");
+                spdlog::error("Results invalid: amp too small");
                 results->clear();
                 break;
             }else if(peak->triggering_location > n){
-                spdlog::trace("Results invalid: triggering location > n");
+                spdlog::error("Results invalid: triggering location > n");
                 results->clear();
                 break;
             }else if(peak->triggering_location <0) {
-                spdlog::trace("Results invalid: triggering location <n");
+                spdlog::error("Results invalid: triggering location <n");
                 results->clear();
                 break;
             } else{

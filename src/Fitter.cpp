@@ -214,20 +214,20 @@ bool fitGaussians(const std::vector<double>& indexData, const std::vector<double
     //@@TODO: prefix logs with function name?
     if(indexData.size() != amplitudeData.size()){
         spdlog::critical("Index data and amplitude data have mismatched sizes! ({}) and ({})", indexData.size(), amplitudeData.size());
-        spdlog::set_level(level);
+        spdlog::set_level(level);       //@@TODO REMOVE
         return false;
     }
 
     if(indexData.empty()){
         assert(guesses.empty());
         spdlog::error("No waveform data");
-        spdlog::set_level(level);
+        spdlog::set_level(level);       //@@TODO REMOVE
         return false;
     }
 
     if(guesses.empty()){
         spdlog::info("No peaks to fit");    //@@TODO level, this may be common
-        spdlog::set_level(level);
+        spdlog::set_level(level);       //@@TODO REMOVE
         return false;
     }
 
@@ -275,7 +275,7 @@ bool fitGaussians(const std::vector<double>& indexData, const std::vector<double
         guesses.at(i) = {a,b,c};
     }
 
-    spdlog::set_level(level);
+    spdlog::set_level(level);   //@@TODO remove
     return result; //Someone else can check and see if the peaks make sense (i.e. check negative amplitude)
 }
 

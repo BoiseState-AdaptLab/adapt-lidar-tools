@@ -688,7 +688,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                     peak->amp = a2;
                     peak->location = t2;
                     // Calculate FWHM
-                    float fwhm;     //@@TODO: This is unitalized if the below if statement is false.
+                    float fwhm =0.;
                     if (a2 > a1) {
                         int idx = greatest_change(ampData, before, a2, true);
                         fwhm = get_fwhm(a2,t2,ampData[idx], idxData[idx]);

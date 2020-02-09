@@ -32,13 +32,6 @@ class LidarDriver {
         void fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
                 CmdLine &cmdLine);
 
-        std::vector<Peak*> fit_data_csv(FlightLineData &raw_data,
-                          csv_CmdLine &cmdLine);
-
-        void fit_data_csv(TxtWaveReader &raw_data,
-                          std::vector<std::string*> &strings,
-                          csv_CmdLine &cmdLine);
-
         void peaks_to_string(std::string &str, csv_CmdLine &cmdLine,
                              std::vector<Peak*> &peaks);
 

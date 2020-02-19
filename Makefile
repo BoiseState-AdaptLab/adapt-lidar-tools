@@ -218,9 +218,9 @@ $(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
 
 csv-driver: $(BIN)/csv-driver
 
-$(BIN)/csv-driver: $(OBJ)/pls_to_csv.o $(OBJ)/csv_CmdLine.o \
+$(BIN)/csv-driver: $(OBJ)/PlsToCsvHelper.o $(OBJ)/csv_CmdLine.o \
                    $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
-				   $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o \
+				   $(OBJ)/PlsToCsvDriver.o $(OBJ)/WaveGPSInformation.o \
 				   $(OBJ)/PulseData.o $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
 				   $(OBJ)/TxtWaveReader.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \

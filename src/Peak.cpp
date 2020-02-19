@@ -90,7 +90,7 @@ void Peak::calcBackscatter(double emitted_amp, double emitted_fwhm,
  * @param str String result will be held here
  * @param varlist list of ints describing the peak data to be written
  */
-void Peak::to_string(std::string& str, std::vector<int> varlist) {
+void Peak::to_string(std::string& str, std::vector<int> varlist) const{
     size_t i = 1;
 
     //Populate string with specified values

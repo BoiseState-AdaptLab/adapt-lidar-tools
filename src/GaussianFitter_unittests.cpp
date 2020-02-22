@@ -9,6 +9,7 @@
 #include "gtest/gtest.h"
 #include "Peak.hpp"
 #include <fstream>
+#include <numeric>
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
@@ -40,22 +41,6 @@ class GaussianFitterTest: public testing::Test{
         virtual void SetUp(){
             fitter.noise_level = 9;
         }
-        
-        int parseWave(char *input, 
-                std::vector<int> &idxData, std::vector<int> &ampData){
-
-            char* ptr;
-            ptr = strtok (input," \t");
-            int i=0;
-            while (ptr != NULL){
-                int y0 = atoi(ptr);
-                ampData.push_back(y0);
-                idxData.push_back(i);
-                i++;
-                ptr = strtok (NULL," \t");
-            }
-            return 0;
-        }
 };
 
 /****************************************************************************
@@ -71,15 +56,14 @@ class GaussianFitterTest: public testing::Test{
 TEST_F(GaussianFitterTest, NayaniClipped1_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 "
-        "179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 "
-        "8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
+    std::vector<int> ampData{
+2,2,1,1,0,1,1,2,2,2,2,6,14,36,74,121,162,190,200,200,192,179,160,139,120,99,79,63,50,46,43,43,40,35,31,28,29,33,34,31,24,17,11,8,7,6,5,6,5,4,4,5,5,6,5,5,2,1,1,1
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -106,12 +90,13 @@ TEST_F(GaussianFitterTest, NayaniClipped1_guess){
 TEST_F(GaussianFitterTest, NayaniClipped2_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 3 2 2 3 2 2 1 1 1 2 7 22 58 114 174 216 235 235 221 195 155 110 67 39 24 18 16 15 15 15 14 11 10 9 8 7 6 5 5 4 3 3 4 5 4 4 3 3 1 2 1 2 3 3 4 4 5 4 2";
+    std::vector<int> ampData{
+2,3,2,2,3,2,2,1,1,1,2,7,22,58,114,174,216,235,235,221,195,155,110,67,39,24,18,16,15,15,15,14,11,10,9,8,7,6,5,5,4,3,3,4,5,4,4,3,3,1,2,1,2,3,3,4,4,5,4,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -119,7 +104,7 @@ TEST_F(GaussianFitterTest, NayaniClipped2_guess){
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
-    ASSERT_EQ(2,peaks.size()); 
+    ASSERT_EQ(2,peaks.size());
     EXPECT_EQ(235,peaks.at(0)->amp);
     EXPECT_NEAR(17.5, peaks.at(0)->location,1);
     EXPECT_NEAR(7.8, peaks.at(0)->fwhm, 1.5);//Nayani's fwhm = 4.29
@@ -127,18 +112,19 @@ TEST_F(GaussianFitterTest, NayaniClipped2_guess){
     EXPECT_EQ(29, peaks.at(1)->location);
     EXPECT_EQ(15,peaks.at(1)->amp);
     EXPECT_NEAR(14, peaks.at(1)->fwhm, 1.5);//Nayani's fwhm = 9.26
-    
+
     EXPECT_EQ(2, count);
 }
 
 TEST_F(GaussianFitterTest, gaussianFitter_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
-    char input[] = "2 2 2 1 1 1 1 1 1 0 0 1 9 35 88 155 212 240 237 200 145 87 42 18 12 13 14 15 15 14 13 10 8 8 8 8 7 6 6 4 4 4 3 4 5 6 4 4 3 2 2 1 1 0 1 2 3 4 4 2";
+    std::vector<int> ampData{
+2,2,2,1,1,1,1,1,1,0,0,1,9,35,88,155,212,240,237,200,145,87,42,18,12,13,14,15,15,14,13,10,8,8,8,8,7,6,6,4,4,4,3,4,5,6,4,4,3,2,2,1,1,0,1,2,3,4,4,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     //the noise level for this waveform is 21.6
     // now that we have the input vectors call the gaussianFitter
@@ -162,12 +148,13 @@ TEST_F(GaussianFitterTest, gaussianFitter_guess){
 TEST_F(GaussianFitterTest, NayaniClipped3_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 3 4 3 3 2 1 1 0 1 1 1 1 1 6 29 79 147 207 238 235 198 141 86 43 20 11 11 13 15 15 15 13 11 8 5 5 4 6 6 7 7 5 4 4 3 4 4 5 4 3 3 2 1 1 3 3 3 2 3";
+    std::vector<int> ampData{
+1,3,4,3,3,2,1,1,0,1,1,1,1,1,6,29,79,147,207,238,235,198,141,86,43,20,11,11,13,15,15,15,13,11,8,5,5,4,6,6,7,7,5,4,4,3,4,4,5,4,3,3,2,1,1,3,3,3,2,3
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -190,14 +177,13 @@ TEST_F(GaussianFitterTest, NayaniClipped3_guess){
 TEST_F(GaussianFitterTest, NayaniClipped4_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 2 3 2 2 2 2 1 0 1 1 2 2 4 16 49 105 170 217 239 240 223 "
-        "195 155 110 68 40 25 20 16 16 15 12 10 7 7 7 7 6 5 4 4 3 2 2 3 5 4 4 "
-        "3 2 3 4 4 3 3 2 2 2 2";
+    std::vector<int> ampData{
+2,2,3,2,2,2,2,1,0,1,1,2,2,4,16,49,105,170,217,239,240,223,195,155,110,68,40,25,20,16,16,15,12,10,7,7,7,7,6,5,4,4,3,2,2,3,5,4,4,3,2,3,4,4,3,3,2,2,2,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -209,7 +195,7 @@ TEST_F(GaussianFitterTest, NayaniClipped4_guess){
     EXPECT_EQ(240,peaks.at(0)->amp);
     EXPECT_EQ(20, peaks.at(0)->location);
     EXPECT_NEAR(7.4, peaks.at(0)->fwhm, 1.5);//Nayani's fwhm = 4.14
-   
+
     EXPECT_EQ(16,peaks.at(1)->amp);
     EXPECT_NEAR(29.5, peaks.at(1)->location,.25);
     EXPECT_NEAR(8, peaks.at(1)->fwhm, 1.5);//Nayani's fwhm = 8.69
@@ -220,14 +206,13 @@ TEST_F(GaussianFitterTest, NayaniClipped4_guess){
 TEST_F(GaussianFitterTest, NayaniClipped5_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1 1 1 0 1 3 2 3 4 5 7 16 38 72 109 136 150 150 140 118 "
-        "87 56 32 23 30 53 82 111 133 145 146 135 121 106 96 87 71 52 35 23 19 "
-        "16 14 10 8 8 7 6 6 4 4 4 5 5 6 5 4 3 1";
+    std::vector<int> ampData{
+1,1,1,1,0,1,3,2,3,4,5,7,16,38,72,109,136,150,150,140,118,87,56,32,23,30,53,82,111,133,145,146,135,121,106,96,87,71,52,35,23,19,16,14,10,8,8,7,6,6,4,4,4,5,5,6,5,4,3,1
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -243,20 +228,21 @@ TEST_F(GaussianFitterTest, NayaniClipped5_guess){
     EXPECT_EQ(146,peaks.at(1)->amp);
     EXPECT_EQ(31, peaks.at(1)->location);
     EXPECT_NEAR(10.2, peaks.at(1)->fwhm, 1.5);
- 
-    EXPECT_EQ(2, count);   
+
+    EXPECT_EQ(2, count);
 }
 
 TEST_F(GaussianFitterTest, NayaniClipped6_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1 1 1 2 3 2 2 2 3 5 8 10 11 10 8 7 9 14 28 51 88 131 171 193 193 173 140 117 117 135 151 148 122 88 58 37 23 16 12 11 12 12 12 10 10 10 10 10 8 6 5 5 4 4 3 3 4 3 2";
+    std::vector<int> ampData{
+1,1,1,1,2,3,2,2,2,3,5,8,10,11,10,8,7,9,14,28,51,88,131,171,193,193,173,140,117,117,135,151,148,122,88,58,37,23,16,12,11,12,12,12,10,10,10,10,10,8,6,5,5,4,4,3,3,4,3,2
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     //the noise level for this waveform is 17.4
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -290,12 +276,13 @@ TEST_F(GaussianFitterTest, NayaniClipped6_guess){
 TEST_F(GaussianFitterTest, NayaniClipped7_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 1 0 0 1 2 1 2 1 1 1 2 8 19 39 65 87 98 97 89 82 76 79 93 114 130 137 141 152 165 168 153 119 77 46 26 19 15 13 13 13 13 11 10 8 6 6 5 4 4 3 2 2 2 2 3 4 4 4";
+    std::vector<int> ampData{
+1,0,1,0,0,1,2,1,2,1,1,1,2,8,19,39,65,87,98,97,89,82,76,79,93,114,130,137,141,152,165,168,153,119,77,46,26,19,15,13,13,13,13,11,10,8,6,6,5,4,4,3,2,2,2,2,3,4,4,4
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
 
     // now that we have the input vectors call the gaussianFitter
@@ -316,7 +303,7 @@ TEST_F(GaussianFitterTest, NayaniClipped7_guess){
     EXPECT_EQ(13,peaks.at(2)->amp);
     EXPECT_NEAR(40.5, peaks.at(2)->location,.25);
     EXPECT_NEAR(11, peaks.at(2)->fwhm, 1.5);//Nayani's fwhm = 6.37
-  
+
     EXPECT_EQ(3, count);
 
 }
@@ -325,14 +312,13 @@ TEST_F(GaussianFitterTest, NayaniClipped7_guess){
 TEST_F(GaussianFitterTest, NayaniClipped8_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "4 3 2 2 1 1 1 1 1 3 3 6 11 17 23 26 26 25 27 42 76 124 170 "
-        "200 211 213 215 219 221 209 178 133 90 60 42 30 23 20 21 20 19 16 13 "
-        "11 9 6 5 4 3 3 3 3 4 6 6 6 4 3 1 2";
+    std::vector<int> ampData{
+4,3,2,2,1,1,1,1,1,3,3,6,11,17,23,26,26,25,27,42,76,124,170,200,211,213,215,219,221,209,178,133,90,60,42,30,23,20,21,20,19,16,13,11,9,6,5,4,3,3,3,3,4,6,6,6,4,3,1,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
 
     //the noise level for this waveform is 19.9
@@ -368,14 +354,13 @@ TEST_F(GaussianFitterTest, NayaniClipped8_guess){
 TEST_F(GaussianFitterTest, max_iter_1_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 2 2 2 2 3 2 3 3 2 2 3 4 5 15 39 80 124 150 147 119 80 46 "
-        "23 10 6 4 5 7 9 8 6 5 4 2 2 2 2 3 4 4 4 3 2 1 3 4 4 3 3 2 2 3 3 5 10 "
-        "18 23 25 23";
+    std::vector<int> ampData{
+1,2,2,2,2,3,2,3,3,2,2,3,4,5,15,39,80,124,150,147,119,80,46,23,10,6,4,5,7,9,8,6,5,4,2,2,2,2,3,4,4,4,3,2,1,3,4,4,3,3,2,2,3,3,5,10,18,23,25,23
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -400,14 +385,13 @@ TEST_F(GaussianFitterTest, max_iter_1_guess){
 TEST_F(GaussianFitterTest, max_iter_2_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "3 3 2 2 2 2 3 2 4 4 4 6 18 47 89 125 139 124 89 53 25 9 3 "
-        "2 3 6 8 10 9 7 5 4 3 3 1 1 2 3 3 4 4 3 2 2 2 2 2 3 2 2 3 2 2 3 4 8 16 "
-        "23 26 25";
+    std::vector<int> ampData{
+3,3,2,2,2,2,3,2,4,4,4,6,18,47,89,125,139,124,89,53,25,9,3,2,3,6,8,10,9,7,5,4,3,3,1,1,2,3,3,4,4,3,2,2,2,2,2,3,2,2,3,2,2,3,4,8,16,23,26,25
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -427,21 +411,20 @@ TEST_F(GaussianFitterTest, max_iter_2_guess){
     EXPECT_EQ(26,peaks.at(2)->amp);
     EXPECT_EQ(58, peaks.at(2)->location);
     EXPECT_NEAR(4.6, peaks.at(2)->fwhm, 1.5);
-    
+
     EXPECT_EQ(3, count);
 }
 //Exceeding max no of iterations
 TEST_F(GaussianFitterTest, max_iter_3_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "3 2 2 1 1 2 3 4 4 4 4 3 5 12 35 77 127 161 164 136 93 53 "
-        "25 11 6 4 6 8 10 11 10 8 7 5 4 3 2 2 3 3 3 5 5 4 4 2 2 2 1 2 2 3 4 8 "
-        "15 24 32 33 27 19";
+    std::vector<int> ampData{
+3,2,2,1,1,2,3,4,4,4,4,3,5,12,35,77,127,161,164,136,93,53,25,11,6,4,6,8,10,11,10,8,7,5,4,3,2,2,3,3,3,5,5,4,4,2,2,2,1,2,2,3,4,8,15,24,32,33,27,19
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -456,9 +439,9 @@ TEST_F(GaussianFitterTest, max_iter_3_guess){
     EXPECT_EQ(18,peaks.at(0)->location);
     EXPECT_EQ(29,peaks.at(1)->location);
     EXPECT_EQ(57,peaks.at(2)->location);
-    EXPECT_NEAR(5.1, peaks.at(0)->fwhm, 1.5); 
-    EXPECT_NEAR(8, peaks.at(1)->fwhm, 1.5); 
-    EXPECT_NEAR(5.8, peaks.at(2)->fwhm, 1.5); 
+    EXPECT_NEAR(5.1, peaks.at(0)->fwhm, 1.5);
+    EXPECT_NEAR(8, peaks.at(1)->fwhm, 1.5);
+    EXPECT_NEAR(5.8, peaks.at(2)->fwhm, 1.5);
 
     EXPECT_EQ(3,count);
 }
@@ -467,16 +450,13 @@ TEST_F(GaussianFitterTest, max_iter_3_guess){
 TEST_F(GaussianFitterTest, max_iter_4_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 3 2 2 1 1 1 1 1 2 2 6 8 17 29 48 68 81 88 87 86 86 84 73 "
-        "57 40 30 28 29 31 32 34 33 32 28 25 22 19 16 13 12 10 8 8 8 8 9 9 11 "
-        "15 19 20 18 14 9 6 6 4 4 5 3 4 4 3 4 5 4 4 5 4 3 2 2 1 1 3 3 3 3 3 4 "
-        "5 5 5 3 3 2 2 1 1 1 2 2 1 1 1 3 2 3 2 2 2 2 3 2 2 2 1 2 4 4 4 4 2 1 1 "
-        "2 3 4 4";
+    std::vector<int> ampData{
+2,3,2,2,1,1,1,1,1,2,2,6,8,17,29,48,68,81,88,87,86,86,84,73,57,40,30,28,29,31,32,34,33,32,28,25,22,19,16,13,12,10,8,8,8,8,9,9,11,15,19,20,18,14,9,6,6,4,4,5,3,4,4,3,4,5,4,4,5,4,3,2,2,1,1,3,3,3,3,3,4,5,5,5,3,3,2,2,1,1,1,2,2,1,1,1,3,2,3,2,2,2,2,3,2,2,2,1,2,4,4,4,4,2,1,1,2,3,4,4
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -500,7 +480,7 @@ TEST_F(GaussianFitterTest, max_iter_4_guess){
     EXPECT_EQ(20,peaks.at(3)->amp);
     EXPECT_EQ(51,peaks.at(3)->location);
     EXPECT_NEAR(6.3, peaks.at(3)->fwhm, 1.5);
- 
+
     EXPECT_EQ(4,count);
 }
 
@@ -508,12 +488,13 @@ TEST_F(GaussianFitterTest, max_iter_4_guess){
 TEST_F(GaussianFitterTest, max_iter_5_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 3 2 2 1 1 1 1 1 2 2 6 8 17 29 48 68 81 88 87 86 86 84 73 57 40 30 28 29 31 32 34 33 32 28 25 22 19 16 13 12 10 8 9 8 8 9 9 11 15 19 20 18 14 9 6 6 4 4 5 3 4 4 3 4 5 4 4 5 4 3 2 2 1 1 3 3 3 3 3 4 5 5 5 3 3 2 2 1 1 1 2 2 1 1 1 3 2 3 2 2 2 2 3 2 2 2 1 2 4 4 4 4 2 1 1 2 3 4 4 2 1 2 2 3 4 4 4 3 2 3 5 7 13 20 24 25 21 14 9 8 10 12 13 12 8 5 4 3 3 3 4 8 21 46 81 114 132 130 110 82 55 34 21 13 10 9 11 11 11 12 14 17 21 22 21 15 10 6 3 2 3 3 4 3 4 4 4 4 3 2 1 1 2 2 3 4 3 3 3 2 2 1 2 2 3 3 4 4 4 3 2 1 2 2 4 4 2 1 2 2 1 1 1 2 2 2 2 1 2 3 4 4 5 5 4 4 2 2 2";
+    std::vector<int> ampData{
+2,3,2,2,1,1,1,1,1,2,2,6,8,17,29,48,68,81,88,87,86,86,84,73,57,40,30,28,29,31,32,34,33,32,28,25,22,19,16,13,12,10,8,9,8,8,9,9,11,15,19,20,18,14,9,6,6,4,4,5,3,4,4,3,4,5,4,4,5,4,3,2,2,1,1,3,3,3,3,3,4,5,5,5,3,3,2,2,1,1,1,2,2,1,1,1,3,2,3,2,2,2,2,3,2,2,2,1,2,4,4,4,4,2,1,1,2,3,4,4,2,1,2,2,3,4,4,4,3,2,3,5,7,13,20,24,25,21,14,9,8,10,12,13,12,8,5,4,3,3,3,4,8,21,46,81,114,132,130,110,82,55,34,21,13,10,9,11,11,11,12,14,17,21,22,21,15,10,6,3,2,3,3,4,3,4,4,4,4,3,2,1,1,2,2,3,4,3,3,3,2,2,1,2,2,3,3,4,4,4,3,2,1,2,2,4,4,2,1,2,2,1,1,1,2,2,2,2,1,2,3,4,4,5,5,4,4,2,2,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -553,7 +534,7 @@ TEST_F(GaussianFitterTest, max_iter_5_guess){
     EXPECT_EQ(11,peaks.at(7)->amp);
     EXPECT_EQ(168,peaks.at(7)->location);
     EXPECT_NEAR(7.9, peaks.at(7)->fwhm, 1.5);
-    
+
     EXPECT_EQ(22,peaks.at(8)->amp);
     EXPECT_EQ(174,peaks.at(8)->location);
     EXPECT_NEAR(7.9, peaks.at(7)->fwhm, 1);
@@ -566,14 +547,13 @@ TEST_F(GaussianFitterTest, max_iter_5_guess){
 TEST_F(GaussianFitterTest, trig_loc_1_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1 0 2 2 3 2 2 1 2 2 1 2 6 22 55 101 148 175 183 176 171 "
-        "172 167 146 112 73 45 30 21 17 14 14 13 12 10 7 6 6 6 5 4 4 5 4 4 3 3 "
-        "2 3 2 3 2 1 1 2 2 3 4 2";
+    std::vector<int> ampData{
+1,1,0,2,2,3,2,2,1,2,2,1,2,6,22,55,101,148,175,183,176,171,172,167,146,112,73,45,30,21,17,14,14,13,12,10,7,6,6,6,5,4,4,5,4,4,3,3,2,3,2,3,2,1,1,2,2,3,4,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -603,14 +583,13 @@ TEST_F(GaussianFitterTest, trig_loc_1_guess){
 TEST_F(GaussianFitterTest, trig_loc_2_guess){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 0 1 1 1 1 2 2 2 3 4 5 13 28 56 91 124 143 141 125 112 "
-        "114 127 135 127 102 74 49 31 19 14 10 10 10 10 8 6 5 4 4 4 4 4 4 4 3 "
-        "3 3 4 3 3 2 2 1 0 0 1 2 1";
+    std::vector<int> ampData{
+1,0,0,1,1,1,1,2,2,2,3,4,5,13,28,56,91,124,143,141,125,112,114,127,135,127,102,74,49,31,19,14,10,10,10,10,8,6,5,4,4,4,4,4,4,4,3,3,3,4,3,3,2,2,1,0,0,1,2,1
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -626,7 +605,7 @@ TEST_F(GaussianFitterTest, trig_loc_2_guess){
     EXPECT_EQ(135, peaks.at(1)->amp);
     EXPECT_EQ(24, peaks.at(1)->location);
     EXPECT_NEAR(6.4, peaks.at(1)->fwhm, 1.5);
-   
+
     EXPECT_EQ(10, peaks.at(2)->amp);
     EXPECT_NEAR(33.5, peaks.at(2)->location, 1);
     EXPECT_NEAR(9, peaks.at(2)->fwhm, 1.5);
@@ -637,13 +616,14 @@ TEST_F(GaussianFitterTest, trig_loc_2_guess){
 //Test gaussian fitting iterations
 //Using file 140823_152425_1.pls
 TEST_F(GaussianFitterTest, num_iterations_10_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
-    
-    char input[] = "26 36 37 30 21 22 47 96 153 190 186 147 94 49 21 7 3 4 4 3 3 2 1 0 0 0 0 0";
 
-    parseWave(input, idxData, ampData);
+
+    std::vector<int> ampData{
+26,36,37,30,21,22,47,96,153,190,186,147,94,49,21,7,3,4,4,3,3,2,1,0,0,0,0,0
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -666,15 +646,14 @@ TEST_F(GaussianFitterTest, num_iterations_10_guess){
 //1
 TEST_F(GaussianFitterTest, problem_waveform_1_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 1 1 1 1 1 3 2 2 1 1 1 2 5 11 26 57 102 148 181 189 "
-        "173 138 96 59 32 17 11 10 10 11 11 12 9 7 5 4 3 "
-        "3 3 2 2 2 2 2 3 3 2 2 2 2 2 2 4 3 3 2 2 2 2";
+    std::vector<int> ampData{
+2,1,1,1,1,1,3,2,2,1,1,1,2,5,11,26,57,102,148,181,189,173,138,96,59,32,17,11,10,10,11,11,12,9,7,5,4,3,3,3,2,2,2,2,2,3,3,2,2,2,2,2,2,4,3,3,2,2,2,2
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -692,22 +671,21 @@ TEST_F(GaussianFitterTest, problem_waveform_1_guess){
     EXPECT_EQ(12, peaks.at(2)->amp);
     EXPECT_EQ(32, peaks.at(2)->location);
     EXPECT_NEAR(5, peaks.at(2)->fwhm, 1.5);
-  
+
     EXPECT_EQ(3, count);
 }
 
 //2
 TEST_F(GaussianFitterTest, problem_waveform_2_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "3 3 2 2 2 2 2 2 2 2 1 1 1 2 6 16 42 83 132 176 198 197 "
-        "170 124 77 41 20 12 10 10 11 12 13 12 9 6 6 6 5 "
-        "5 4 3 2 2 2 2 3 3 3 3 2 2 2 2 2 2 3 5 4 4";
+    std::vector<int> ampData{
+3,3,2,2,2,2,2,2,2,2,1,1,1,2,6,16,42,83,132,176,198,197,170,124,77,41,20,12,10,10,11,12,13,12,9,6,6,6,5,5,4,3,2,2,2,2,3,3,3,3,2,2,2,2,2,2,3,5,4,4
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -723,20 +701,19 @@ TEST_F(GaussianFitterTest, problem_waveform_2_guess){
     EXPECT_NEAR(5.4, peaks.at(1)->fwhm, 1.5);
 
     EXPECT_EQ(2, count);
-     
-}             
+
+}
 //3
 TEST_F(GaussianFitterTest, problem_waveform_3_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 2 2 2 2 2 2 2 1 1 1 1 1 2 6 16 38 74 120 161 182 174 "
-        "138 94 54 28 14 10 7 9 10 11 11 12 9 7 6 6 6 5 "
-        "5 4 4 3 2 2 2 1 1 1 1 1 1 3 2 2 1 1 2 4";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+2,2,2,2,2,2,2,2,1,1,1,1,1,2,6,16,38,74,120,161,182,174,138,94,54,28,14,10,7,9,10,11,11,12,9,7,6,6,6,5,5,4,4,3,2,2,2,1,1,1,1,1,1,3,2,2,1,1,2,4
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -756,21 +733,20 @@ TEST_F(GaussianFitterTest, problem_waveform_3_guess){
     EXPECT_NEAR(6, peaks.at(2)->fwhm, 1.5);
 
     EXPECT_EQ(3, count);
-    
+
 }
-             
+
 //4
 TEST_F(GaussianFitterTest, problem_waveform_4_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 1 1 1 2 2 2 1 1 0 1 1 1 1 3 10 33 77 134 183 205 "
-        "194 159 110 66 34 18 12 12 12 11 13 12 10 7 7 6 5 5 4 "
-        "4 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 3";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+2,1,1,1,2,2,2,1,1,0,1,1,1,1,3,10,33,77,134,183,205,194,159,110,66,34,18,12,12,12,11,13,12,10,7,7,6,5,5,4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,3
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -780,7 +756,7 @@ TEST_F(GaussianFitterTest, problem_waveform_4_guess){
     EXPECT_EQ(205, peaks.at(0)->amp);
     EXPECT_EQ(20, peaks.at(0)->location);
     EXPECT_NEAR(5.8, peaks.at(0)->fwhm, 1.5);
-    
+
     EXPECT_EQ(12, peaks.at(1)->amp);
     EXPECT_EQ(28, peaks.at(1)->location);
     EXPECT_NEAR(14, peaks.at(1)->fwhm, 1.5);
@@ -790,19 +766,18 @@ TEST_F(GaussianFitterTest, problem_waveform_4_guess){
     EXPECT_NEAR(9, peaks.at(2)->fwhm, 1.5);
     EXPECT_EQ(3, count);
 }
-             
+
 //5
 TEST_F(GaussianFitterTest, problem_waveform_5_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "4 3 3 2 2 2 2 1 1 1 1 2 6 9 16 32 65 111 158 186 186 "
-        "158 115 71 39 20 11 10 11 13 14 12 11 8 7 6 5 5 "
-        "4 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 3";
+    std::vector<int> ampData{
+4,3,3,2,2,2,2,1,1,1,1,2,6,9,16,32,65,111,158,186,186,158,115,71,39,20,11,10,11,13,14,12,11,8,7,6,5,5,4,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,3
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -818,19 +793,18 @@ TEST_F(GaussianFitterTest, problem_waveform_5_guess){
     EXPECT_NEAR(8, peaks.at(1)->fwhm, 1.5);
 
     EXPECT_EQ(2, count);
-}             
+}
 //6
 TEST_F(GaussianFitterTest, problem_waveform_6_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = " 3 2 1 1 1 1 1 1 1 1 2 2 4 10 26 61 110 157 181 "
-        "172 136 90 49 23 9 5 7 9 11 12 12 10 8 6 5 4 3 3 3 3 3 "
-        "3 3 2 2 2 2 2 2 2 2 1 1 2 2 3 5 10 19";
+    std::vector<int> ampData{
+3,2,1,1,1,1,1,1,1,1,2,2,4,10,26,61,110,157,181,172,136,90,49,23,9,5,7,9,11,12,12,10,8,6,5,4,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,1,1,2,2,3,5,10,19
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -847,19 +821,18 @@ TEST_F(GaussianFitterTest, problem_waveform_6_guess){
 
     EXPECT_EQ(2, count);
 }
-             
+
 //7
 TEST_F(GaussianFitterTest, problem_waveform_7_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 0 0 2 0 1 1 1 1 1 1 1 2 4 10 25 56 98 141 174 "
-        "189 186 164 126 83 47 25 16 13 11 11 11 10 10 8 7 6 6 "
-        "6 5 5 4 4 3 3 2 2 3 3 3 5 3 3 2 2 2 2 2 2";
-   
-    parseWave(input, idxData, ampData);
-    
+
+    std::vector<int> ampData{
+1,0,0,0,2,0,1,1,1,1,1,1,1,2,4,10,25,56,98,141,174,189,186,164,126,83,47,25,16,13,11,11,11,10,10,8,7,6,6,6,5,5,4,4,3,3,2,2,3,3,3,5,3,3,2,2,2,2,2,2
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -880,19 +853,18 @@ TEST_F(GaussianFitterTest, problem_waveform_7_guess){
 
     EXPECT_EQ(3, count);
 }
-   
+
 //8
 TEST_F(GaussianFitterTest, problem_waveform_8_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 0 1 3 2 2 2 2 2 1 1 2 5 11 30 67 117 163 191 "
-        "95 174 137 92 53 27 16 12 11 11 11 11 11 10 6 6 4 3 2 2 2 "
-        "2 2 3 3 2 2 2 2 3 3 3 3 3 2 2 2 2 2 3";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+1,0,0,1,3,2,2,2,2,2,1,1,2,5,11,30,67,117,163,191,95,174,137,92,53,27,16,12,11,11,11,11,11,10,6,6,4,3,2,2,2,2,2,3,3,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -914,17 +886,18 @@ TEST_F(GaussianFitterTest, problem_waveform_8_guess){
     EXPECT_EQ(3, count);
 
 }
-             
+
 //9
 TEST_F(GaussianFitterTest, problem_waveform_9_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 1 1 1 1 3 1 1 1 1 2 2 4 8 22 53 97 141 172 183 172 147 113 77 46 26 15 12 13 13 12 11 9 8 7 6 5 5 4 4 3 3 2 2 1 1 0 0 0 0 1 3 2 2 2 2 2 2 2 3";
 
-    parseWave(input, idxData, ampData); 
-   
+    std::vector<int> ampData{
+2,1,1,1,1,3,1,1,1,1,2,2,4,8,22,53,97,141,172,183,172,147,113,77,46,26,15,12,13,13,12,11,9,8,7,6,5,5,4,4,3,3,2,2,1,1,0,0,0,0,1,3,2,2,2,2,2,2,2,3
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -941,17 +914,18 @@ TEST_F(GaussianFitterTest, problem_waveform_9_guess){
 
     EXPECT_EQ(2, count);
 }
-             
+
 //10
 TEST_F(GaussianFitterTest, problem_waveform_10_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "20 13 8 5 5 4 3 5 9 26 62 112 157 184 180 149 106 64 33 16 8 8 9 11 12 12 9 8 6 5 5 4 4 3 3 3 3 3 3 3 3 3 2 2 4 2 2 2 4 3 3 2 1 1 1 1 3 2 2 2";
+    std::vector<int> ampData{
+20,13,8,5,5,4,3,5,9,26,62,112,157,184,180,149,106,64,33,16,8,8,9,11,12,12,9,8,6,5,5,4,4,3,3,3,3,3,3,3,3,3,2,2,4,2,2,2,4,3,3,2,1,1,1,1,3,2,2,2
+    };
 
-    parseWave(input, idxData, ampData); 
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -974,12 +948,13 @@ TEST_F(GaussianFitterTest, problem_waveform_10_guess){
 //convex, one peak waveform
 TEST_F(GaussianFitterTest, FlatFreeTest1_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "9 11 12 13 15 22 34 68 54 42 27 21 17 15 13 12";
+    std::vector<int> ampData{
+9,11,12,13,15,22,34,68,54,42,27,21,17,15,13,12
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -997,12 +972,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest1_guess){
 //concave, no peaks waveform
 TEST_F(GaussianFitterTest, FlatFreeTest2_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "87 73 56 41 18 15 26 41 57 57 57 78 81 89 97";
+    std::vector<int> ampData{
+87,73,56,41,18,15,26,41,57,57,57,78,81,89,97
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -1021,12 +997,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_guess){
 //slope up, no peaks waveform
 TEST_F(GaussianFitterTest, FlatFreeTest3_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "14 18 21 26 35 44 52 64 73 82 86 91 103";
+    std::vector<int> ampData{
+14,18,21,26,35,44,52,64,73,82,86,91,103
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -1040,12 +1017,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_guess){
 //slope down, no peaks waveform
 TEST_F(GaussianFitterTest, FlatFreeTest4_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "123	109 93 82 71 64 51 42 33 20 12";
+    std::vector<int> ampData{
+123,109,93,82,71,64,51,42,33,20,12
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -1061,12 +1039,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_guess){
 //flat areas waveform
 TEST_F(GaussianFitterTest, FlatFreeTest6_guess){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "13 17 17 17 23 32 32 32 32 67 67 67 73 73 89";
+    std::vector<int> ampData{
+13,17,17,17,23,32,32,32,32,67,67,67,73,73,89
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -1078,14 +1057,15 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_guess){
 }
 
 TEST_F(GaussianFitterTest,problem_waveform_11_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1	0 0 0 0	0 0 0 0	0 0 8 34 87 154	211 239	236 199	144 86 41 17 11	12 13 14 14 13 12 9 7 7	7 7 6 5	4 3 3 2 2 3 5 3	3 2 1 1	0 0 0 0	0 1 3 2	1";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+1,1,0,0,0,0,0,0,0,0,0,0,8,34,87,154,211,239,236,199,144,86,41,17,11,12,13,14,14,13,12,9,7,7,7,7,6,5,4,3,3,2,2,3,5,3,3,2,1,1,0,0,0,0,0,1,3,2,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1098,24 +1078,25 @@ TEST_F(GaussianFitterTest,problem_waveform_11_guess){
     EXPECT_EQ(27.5, peaks.at(1)->location);
     EXPECT_NEAR(4.8, peaks.at(0)->fwhm, 1.5);
     EXPECT_NEAR(4.4, peaks.at(1)->fwhm, 1.5);
- 
+
     //std::cout << "peak 1: " << peaks.at(0)->amp << std::endl;
     //std::cout << "peak 2: " << peaks.at(1)->amp << std::endl;
-   
+
 
     EXPECT_EQ(2, count);
 
 }
-             
-TEST_F(GaussianFitterTest,problem_waveform_12_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "0 1	1 1 1 0	0 0 2 1	1 2 4 18 57 120	185 227	237 213	163 105	57 25 12 9 11 14 16 16 15 12 9 6 6 5 5 4 4 4 4 4 4 4 4 4 4 3 3 2 1 1 0 0 0 0 0 0 0 1"; 
- 
-    parseWave(input, idxData, ampData);
-    
+TEST_F(GaussianFitterTest,problem_waveform_12_guess){
+
+
+    std::vector<int> ampData{
+0,1,1,1,1,0,0,0,2,1,1,2,4,18,57,120,185,227,237,213,163,105,57,25,12,9,11,14,16,16,15,12,9,6,6,5,5,4,4,4,4,4,4,4,4,4,4,3,3,2,1,1,0,0,0,0,0,0,0,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1135,14 +1116,15 @@ TEST_F(GaussianFitterTest,problem_waveform_12_guess){
 
 //Test Split3_find_guess
 TEST_F(GaussianFitterTest, Split3_find_guess){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "0 0	0 0 0 0	0 0 8 34 87 154	211 239	239 199	144 86 41 17 11	12 13 14 14 13 12 9 7 7	7 7 6 5	4 3 3 2 2 3 5 3	3 2 1 1	0 0 0 0	0 1 3 2	1";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+0,0,0,0,0,0,0,0,8,34,87,154,211,239,239,199,144,86,41,17,11,12,13,14,14,13,12,9,7,7,7,7,6,5,4,3,3,2,2,3,5,3,3,2,1,1,0,0,0,0,0,1,3,2,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1155,10 +1137,10 @@ TEST_F(GaussianFitterTest, Split3_find_guess){
     EXPECT_EQ(23.5, peaks.at(1)->location);
     EXPECT_NEAR(4.8, peaks.at(0)->fwhm, 1.5);
     EXPECT_NEAR(4.4, peaks.at(1)->fwhm, 1.5);
- 
+
     std::cout << "peak 1: " << peaks.at(0)->amp << std::endl;
     std::cout << "peak 2: " << peaks.at(1)->amp << std::endl;
-   
+
 
     EXPECT_EQ(2, count);
 
@@ -1169,13 +1151,14 @@ TEST_F(GaussianFitterTest, Split3_find_guess){
         //////////////////////////
 
 TEST_F(GaussianFitterTest, Split_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 ";
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> ampData{
+2,2,1,1,0,1,1,2,2,2,2,6,14,36,74,121,162,190,200,200,192,179,160,139,120,99,79,63,50,46,43,43,40,35,31,28,
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1196,13 +1179,14 @@ TEST_F(GaussianFitterTest, Split_find){
 
 }
 TEST_F(GaussianFitterTest, Split2_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> ampData{
+28,29,33,34,31,24,17,11,8,7,6,5,6,5,4,4,5,5,6,5,5,2,1,1,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1221,13 +1205,14 @@ TEST_F(GaussianFitterTest, Split2_find){
 
 
 TEST_F(GaussianFitterTest, Split3_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "37 38 41 52 57 63 68 69 69 54 51 45 32 32 45 48 52 64 75 90 90 82 72 61 53 45 21 10 4 2 2 2 1 1 1 1";
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> ampData{
+37,38,41,52,57,63,68,69,69,54,51,45,32,32,45,48,52,64,75,90,90,82,72,61,53,45,21,10,4,2,2,2,1,1,1,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     //struct vector idx = {idxData.data(), idxData.size(), idxData.capacity()};
     //struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
@@ -1252,13 +1237,14 @@ TEST_F(GaussianFitterTest, Split3_find){
 }
 
 TEST_F(GaussianFitterTest, NayaniClipped1_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 2 1 1 0 1 1 2 2 2 2 6 14 36 74 121 162 190 200 200 192 179 160 139 120 99 79 63 50 46 43 43 40 35 31 28 29 33 34 31 24 17 11 8 7 6 5 6 5 4 4 5 5 6 5 5 2 1 1 1";
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> ampData{
+2,2,1,1,0,1,1,2,2,2,2,6,14,36,74,121,162,190,200,200,192,179,160,139,120,99,79,63,50,46,43,43,40,35,31,28,29,33,34,31,24,17,11,8,7,6,5,6,5,4,4,5,5,6,5,5,2,1,1,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1284,12 +1270,13 @@ TEST_F(GaussianFitterTest, NayaniClipped1_find){
 
 TEST_F(GaussianFitterTest, NayaniClipped2_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 3 2 2 3 2 2 1 1 1 2 7 22 58 114 174 216 235 235 221 195 155 110 67 39 24 18 16 15 15 15 14 11 10 9 8 7 6 5 5 4 3 3 4 5 4 4 3 3 1 2 1 2 3 3 4 4 5 4 2";
+    std::vector<int> ampData{
+2,3,2,2,3,2,2,1,1,1,2,7,22,58,114,174,216,235,235,221,195,155,110,67,39,24,18,16,15,15,15,14,11,10,9,8,7,6,5,5,4,3,3,4,5,4,4,3,3,1,2,1,2,3,3,4,4,5,4,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -1311,11 +1298,12 @@ TEST_F(GaussianFitterTest, NayaniClipped2_find){
 
 TEST_F(GaussianFitterTest, gaussianFitter_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
-    char input[] = "2 2 2 1 1 1 1 1 1 0 0 1 9 35 88 155 212 240 237 200 145 87 42 18 12 13 14 15 15 14 13 10 8 8 8 8 7 6 6 4 4 4 3 4 5 6 4 4 3 2 2 1 1 0 1 2 3 4 4 2";
+    std::vector<int> ampData{
+2,2,2,1,1,1,1,1,1,0,0,1,9,35,88,155,212,240,237,200,145,87,42,18,12,13,14,15,15,14,13,10,8,8,8,8,7,6,6,4,4,4,3,4,5,6,4,4,3,2,2,1,1,0,1,2,3,4,4,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -1329,8 +1317,8 @@ TEST_F(GaussianFitterTest, gaussianFitter_find){
     EXPECT_EQ(17, peaks.at(0)->location);
     EXPECT_NEAR(27.5, peaks.at(1)->location,.25);
     ////EXPECT_NEAR(6, peaks.at(0)->fwhm,1);
-    ////EXPECT_NEAR(17 , peaks.at(1)->fwhm,2);    
-  
+    ////EXPECT_NEAR(17 , peaks.at(1)->fwhm,2);
+
     EXPECT_EQ(2, count);
 }
 
@@ -1338,12 +1326,13 @@ TEST_F(GaussianFitterTest, gaussianFitter_find){
 TEST_F(GaussianFitterTest, NayaniClipped3_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 3 4 3 3 2 1 1 0 1 1 1 1 1 6 29 79 147 207 238 235 198 141 86 43 20 11 11 13 15 15 15 13 11 8 5 5 4 6 6 7 7 5 4 4 3 4 4 5 4 3 3 2 1 1 3 3 3 2 3";
+    std::vector<int> ampData{
+1,3,4,3,3,2,1,1,0,1,1,1,1,1,6,29,79,147,207,238,235,198,141,86,43,20,11,11,13,15,15,15,13,11,8,5,5,4,6,6,7,7,5,4,4,3,4,4,5,4,3,3,2,1,1,3,3,3,2,3
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1367,14 +1356,13 @@ TEST_F(GaussianFitterTest, NayaniClipped3_find){
 TEST_F(GaussianFitterTest, NayaniClipped4_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 2 3 2 2 2 2 1 0 1 1 2 2 4 16 49 105 170 217 239 240 223 "
-        "195 155 110 68 40 25 20 16 16 15 12 10 7 7 7 7 6 5 4 4 3 2 2 3 5 4 4 "
-        "3 2 3 4 4 3 3 2 2 2 2";
+    std::vector<int> ampData{
+2,2,3,2,2,2,2,1,0,1,1,2,2,4,16,49,105,170,217,239,240,223,195,155,110,68,40,25,20,16,16,15,12,10,7,7,7,7,6,5,4,4,3,2,2,3,5,4,4,3,2,3,4,4,3,3,2,2,2,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1397,14 +1385,13 @@ TEST_F(GaussianFitterTest, NayaniClipped4_find){
 TEST_F(GaussianFitterTest, NayaniClipped5_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1 1 1 0 1 3 2 3 4 5 7 16 38 72 109 136 150 150 140 118 "
-        "87 56 32 23 30 53 82 111 133 145 146 135 121 106 96 87 71 52 35 23 19 "
-        "16 14 10 8 8 7 6 6 4 4 4 5 5 6 5 4 3 1";
+    std::vector<int> ampData{
+1,1,1,1,0,1,3,2,3,4,5,7,16,38,72,109,136,150,150,140,118,87,56,32,23,30,53,82,111,133,145,146,135,121,106,96,87,71,52,35,23,19,16,14,10,8,8,7,6,6,4,4,4,5,5,6,5,4,3,1
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
 
     // now that we have the input vectors call the gaussianFitter
@@ -1427,13 +1414,14 @@ TEST_F(GaussianFitterTest, NayaniClipped5_find){
 TEST_F(GaussianFitterTest, NayaniClipped6_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1 1 1 2 3 2 2 2 3 5 8 10 11 10 8 7 9 14 28 51 88 131 171 193 193 173 140 117 117 135 151 148 122 88 58 37 23 16 12 11 12 12 12 10 10 10 10 10 8 6 5 5 4 4 3 3 4 3 2";
+    std::vector<int> ampData{
+1,1,1,1,2,3,2,2,2,3,5,8,10,11,10,8,7,9,14,28,51,88,131,171,193,193,173,140,117,117,135,151,148,122,88,58,37,23,16,12,11,12,12,12,10,10,10,10,10,8,6,5,5,4,4,3,3,4,3,2
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     //the noise level for this waveform is 17.4
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1463,14 +1451,13 @@ TEST_F(GaussianFitterTest, NayaniClipped6_find){
 TEST_F(GaussianFitterTest, NayaniClipped7_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 1 0 0 1 2 1 2 1 1 1 2 8 19 39 65 87 98 97 89 82 76 79 "
-        "93 114 130 137 141 152 165 168 153 119 77 46 26 19 15 13 13 13 13 11 "
-        "10 8 6 6 5 4 4 3 2 2 2 2 3 4 4 4";
+    std::vector<int> ampData{
+1,0,1,0,0,1,2,1,2,1,1,1,2,8,19,39,65,87,98,97,89,82,76,79,93,114,130,137,141,152,165,168,153,119,77,46,26,19,15,13,13,13,13,11,10,8,6,6,5,4,4,3,2,2,2,2,3,4,4,4
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1492,19 +1479,18 @@ TEST_F(GaussianFitterTest, NayaniClipped7_find){
     //EXPECT_NEAR(11, peaks.at(2)->fwhm, 2);
 
     EXPECT_EQ(3, count);
-} 
- 
+}
+
 TEST_F(GaussianFitterTest, NayaniClipped8_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "4 3 2 2 1 1 1 1 1 3 3 6 11 17 23 26 26 25 27 42 76 124 170 "
-        "200 211 213 215 219 221 209 178 133 90 60 42 30 23 20 21 20 19 16 13 "
-        "11 9 6 5 4 3 3 3 3 4 6 6 6 4 3 1 2";
+    std::vector<int> ampData{
+4,3,2,2,1,1,1,1,1,3,3,6,11,17,23,26,26,25,27,42,76,124,170,200,211,213,215,219,221,209,178,133,90,60,42,30,23,20,21,20,19,16,13,11,9,6,5,4,3,3,3,3,4,6,6,6,4,3,1,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1530,14 +1516,13 @@ TEST_F(GaussianFitterTest, NayaniClipped8_find){
 TEST_F(GaussianFitterTest, max_iter_1_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 2 2 2 2 3 2 3 3 2 2 3 4 5 15 39 80 124 150 147 119 80 46 "
-        "23 10 6 4 5 7 9 8 6 5 4 2 2 2 2 3 4 4 4 3 2 1 3 4 4 3 3 2 2 3 3 5 10 "
-        "18 23 25 23";
+    std::vector<int> ampData{
+1,2,2,2,2,3,2,3,3,2,2,3,4,5,15,39,80,124,150,147,119,80,46,23,10,6,4,5,7,9,8,6,5,4,2,2,2,2,3,4,4,4,3,2,1,3,4,4,3,3,2,2,3,3,5,10,18,23,25,23
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1562,14 +1547,13 @@ TEST_F(GaussianFitterTest, max_iter_1_find){
 TEST_F(GaussianFitterTest, max_iter_2_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "3 3 2 2 2 2 3 2 4 4 4 6 18 47 89 125 139 124 89 53 25 9 3 "
-        "2 3 6 8 10 9 7 5 4 3 3 1 1 2 3 3 4 4 3 2 2 2 2 2 3 2 2 3 2 2 3 4 8 16 "
-        "23 26 25";
+    std::vector<int> ampData{
+3,3,2,2,2,2,3,2,4,4,4,6,18,47,89,125,139,124,89,53,25,9,3,2,3,6,8,10,9,7,5,4,3,3,1,1,2,3,3,4,4,3,2,2,2,2,2,3,2,2,3,2,2,3,4,8,16,23,26,25
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
 
     // now that we have the input vectors call the gaussianFitter
@@ -1594,14 +1578,13 @@ TEST_F(GaussianFitterTest, max_iter_2_find){
 TEST_F(GaussianFitterTest, max_iter_3_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "3 2 2 1 1 2 3 4 4 4 4 3 5 12 35 77 127 161 164 136 93 53 "
-        "25 11 6 4 6 8 10 11 10 8 7 5 4 3 2 2 3 3 3 5 5 4 4 2 2 2 1 2 2 3 4 8 "
-        "15 24 32 33 27 19";
+    std::vector<int> ampData{
+3,2,2,1,1,2,3,4,4,4,4,3,5,12,35,77,127,161,164,136,93,53,25,11,6,4,6,8,10,11,10,8,7,5,4,3,2,2,3,3,3,5,5,4,4,2,2,2,1,2,2,3,4,8,15,24,32,33,27,19
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1617,9 +1600,9 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
     EXPECT_EQ(18,peaks.at(0)->location);
     EXPECT_EQ(29,peaks.at(1)->location);
     EXPECT_EQ(57,peaks.at(2)->location);
-    //EXPECT_NEAR(5.1, peaks.at(0)->fwhm, 1); 
-    //EXPECT_NEAR(8, peaks.at(1)->fwhm, 1); 
-    //EXPECT_NEAR(5.8, peaks.at(2)->fwhm, 1); 
+    //EXPECT_NEAR(5.1, peaks.at(0)->fwhm, 1);
+    //EXPECT_NEAR(8, peaks.at(1)->fwhm, 1);
+    //EXPECT_NEAR(5.8, peaks.at(2)->fwhm, 1);
 
     EXPECT_EQ(3,count);
 }
@@ -1627,16 +1610,13 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
 TEST_F(GaussianFitterTest, max_iter_4_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 3 2 2 1 1 1 1 1 2 2 6 8 17 29 48 68 81 88 87 86 86 84 73 "
-        "57 40 30 28 29 31 32 34 33 32 28 25 22 19 16 13 12 10 8 8 8 8 9 9 11 "
-        "15 19 20 18 14 9 6 6 4 4 5 3 4 4 3 4 5 4 4 5 4 3 2 2 1 1 3 3 3 3 3 4 "
-        "5 5 5 3 3 2 2 1 1 1 2 2 1 1 1 3 2 3 2 2 2 2 3 2 2 2 1 2 4 4 4 4 2 1 1 "
-        "2 3 4 4";
+    std::vector<int> ampData{
+2,3,2,2,1,1,1,1,1,2,2,6,8,17,29,48,68,81,88,87,86,86,84,73,57,40,30,28,29,31,32,34,33,32,28,25,22,19,16,13,12,10,8,8,8,8,9,9,11,15,19,20,18,14,9,6,6,4,4,5,3,4,4,3,4,5,4,4,5,4,3,2,2,1,1,3,3,3,3,3,4,5,5,5,3,3,2,2,1,1,1,2,2,1,1,1,3,2,3,2,2,2,2,3,2,2,2,1,2,4,4,4,4,2,1,1,2,3,4,4
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1662,20 +1642,13 @@ TEST_F(GaussianFitterTest, max_iter_4_find){
 TEST_F(GaussianFitterTest, max_iter_5_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 3 2 2 1 1 1 1 1 2 2 6 8 17 29 48 68 81 88 87 86 86 84 73 "
-        "57 40 30 28 29 31 32 34 33 32 28 25 22 19 16 13 12 10 8 9 8 8 9 9 11 "
-        "15 19 20 18 14 9 6 6 4 4 5 3 4 4 3 4 5 4 4 5 4 3 2 2 1 1 3 3 3 3 3 4 "
-        "5 5 5 3 3 2 2 1 1 1 2 2 1 1 1 3 2 3 2 2 2 2 3 2 2 2 1 2 4 4 4 4 2 1 1 "
-        "2 3 4 4 2 1 2 2 3 4 4 4 3 2 3 5 7 13 20 24 25 21 14 9 8 10 12 13 12 8 "
-        "5 4 3 3 3 4 8 21 46 81 114 132 130 110 82 55 34 21 13 10 9 11 11 11 "
-        "12 14 17 21 22 21 15 10 6 3 2 3 3 4 3 4 4 4 4 3 2 1 1 2 2 3 4 3 3 3 2 "
-        "2 1 2 2 3 3 4 4 4 3 2 1 2 2 4 4 2 1 2 2 1 1 1 2 2 2 2 1 2 3 4 4 5 5 4 "
-        "4 2 2 2";
+    std::vector<int> ampData{
+2,3,2,2,1,1,1,1,1,2,2,6,8,17,29,48,68,81,88,87,86,86,84,73,57,40,30,28,29,31,32,34,33,32,28,25,22,19,16,13,12,10,8,9,8,8,9,9,11,15,19,20,18,14,9,6,6,4,4,5,3,4,4,3,4,5,4,4,5,4,3,2,2,1,1,3,3,3,3,3,4,5,5,5,3,3,2,2,1,1,1,2,2,1,1,1,3,2,3,2,2,2,2,3,2,2,2,1,2,4,4,4,4,2,1,1,2,3,4,4,2,1,2,2,3,4,4,4,3,2,3,5,7,13,20,24,25,21,14,9,8,10,12,13,12,8,5,4,3,3,3,4,8,21,46,81,114,132,130,110,82,55,34,21,13,10,9,11,11,11,12,14,17,21,22,21,15,10,6,3,2,3,3,4,3,4,4,4,4,3,2,1,1,2,2,3,4,3,3,3,2,2,1,2,2,3,3,4,4,4,3,2,1,2,2,4,4,2,1,2,2,1,1,1,2,2,2,2,1,2,3,4,4,5,5,4,4,2,2,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1713,14 +1686,13 @@ TEST_F(GaussianFitterTest, max_iter_5_find){
 TEST_F(GaussianFitterTest, trig_loc_1_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1 0 2 2 3 2 2 1 2 2 1 2 6 22 55 101 148 175 183 176 171 "
-        "172 167 146 112 73 45 30 21 17 14 14 13 12 10 7 6 6 6 5 4 4 5 4 4 3 3 "
-        "2 3 2 3 2 1 1 2 2 3 4 2";
+    std::vector<int> ampData{
+1,1,0,2,2,3,2,2,1,2,2,1,2,6,22,55,101,148,175,183,176,171,172,167,146,112,73,45,30,21,17,14,14,13,12,10,7,6,6,6,5,4,4,5,4,4,3,3,2,3,2,3,2,1,1,2,2,3,4,2
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1743,14 +1715,13 @@ TEST_F(GaussianFitterTest, trig_loc_1_find){
 TEST_F(GaussianFitterTest, trig_loc_2_find){
 
     // create a vector of integers
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 0 1 1 1 1 2 2 2 3 4 5 13 28 56 91 124 143 141 125 112 "
-        "114 127 135 127 102 74 49 31 19 14 10 10 10 10 8 6 5 4 4 4 4 4 4 4 3 "
-        "3 3 4 3 3 2 2 1 0 0 1 2 1";
+    std::vector<int> ampData{
+1,0,0,1,1,1,1,2,2,2,3,4,5,13,28,56,91,124,143,141,125,112,114,127,135,127,102,74,49,31,19,14,10,10,10,10,8,6,5,4,4,4,4,4,4,4,3,3,3,4,3,3,2,2,1,0,0,1,2,1
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
@@ -1766,18 +1737,19 @@ TEST_F(GaussianFitterTest, trig_loc_2_find){
     EXPECT_EQ(24, peaks.at(1)->location);
     //EXPECT_NEAR(5.2, peaks.at(0)->fwhm, 1);
     //EXPECT_NEAR(6.4, peaks.at(1)->fwhm, 1);
-   
+
     EXPECT_EQ(2,count);
 }
 
 TEST_F(GaussianFitterTest, num_iterations_10_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
-    
-    char input[] = "26 36 37 30 21 22 47 96 153 190 186 147 94 49 21 7 3 4 4 3 3 2 1 0 0 0 0 0";
 
-    parseWave(input, idxData, ampData);
+
+    std::vector<int> ampData{
+26,36,37,30,21,22,47,96,153,190,186,147,94,49,21,7,3,4,4,3,3,2,1,0,0,0,0,0
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -1798,15 +1770,14 @@ TEST_F(GaussianFitterTest, num_iterations_10_find){
 
 TEST_F(GaussianFitterTest, problem_waveform_1_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 1 1 1 1 1 3 2 2 1 1 1 2 5 11 26 57 102 148 181 189 "
-        "173 138 96 59 32 17 11 10 10 11 11 12 9 7 5 4 3 "
-        "3 3 2 2 2 2 2 3 3 2 2 2 2 2 2 4 3 3 2 2 2 2";
+    std::vector<int> ampData{
+2,1,1,1,1,1,3,2,2,1,1,1,2,5,11,26,57,102,148,181,189,173,138,96,59,32,17,11,10,10,11,11,12,9,7,5,4,3,3,3,2,2,2,2,2,3,3,2,2,2,2,2,2,4,3,3,2,2,2,2
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1820,22 +1791,21 @@ TEST_F(GaussianFitterTest, problem_waveform_1_find){
     EXPECT_EQ(32, peaks.at(1)->location);
     //EXPECT_NEAR(6.2, peaks.at(0)->fwhm, 1);
     //EXPECT_NEAR(5, peaks.at(1)->fwhm, 1);
-  
+
     EXPECT_EQ(2, count);
 }
 
 //2
 TEST_F(GaussianFitterTest, problem_waveform_2_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "3 3 2 2 2 2 2 2 2 2 1 1 1 2 6 16 42 83 132 176 198 197 "
-        "170 124 77 41 20 12 10 10 11 12 13 12 9 6 6 6 5 "
-        "5 4 3 2 2 2 2 3 3 3 3 2 2 2 2 2 2 3 5 4 4";
+    std::vector<int> ampData{
+3,3,2,2,2,2,2,2,2,2,1,1,1,2,6,16,42,83,132,176,198,197,170,124,77,41,20,12,10,10,11,12,13,12,9,6,6,6,5,5,4,3,2,2,2,2,3,3,3,3,2,2,2,2,2,2,3,5,4,4
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1851,20 +1821,19 @@ TEST_F(GaussianFitterTest, problem_waveform_2_find){
     //EXPECT_NEAR(5.4, peaks.at(1)->fwhm, 1);
 
     EXPECT_EQ(2, count);
-     
+
 }
-             
+
 TEST_F(GaussianFitterTest, problem_waveform_3_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 2 2 2 2 2 2 2 1 1 1 1 1 2 6 16 38 74 120 161 182 174 "
-        "138 94 54 28 14 10 7 9 10 11 11 12 9 7 6 6 6 5 "
-        "5 4 4 3 2 2 2 1 1 1 1 1 1 3 2 2 1 1 2 4";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+2,2,2,2,2,2,2,2,1,1,1,1,1,2,6,16,38,74,120,161,182,174,138,94,54,28,14,10,7,9,10,11,11,12,9,7,6,6,6,5,5,4,4,3,2,2,2,1,1,1,1,1,1,3,2,2,1,1,2,4
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1880,21 +1849,20 @@ TEST_F(GaussianFitterTest, problem_waveform_3_find){
     //EXPECT_NEAR(6, peaks.at(1)->fwhm, 1);
 
     EXPECT_EQ(2, count);
-    
+
 }
-             
+
 //4
 TEST_F(GaussianFitterTest, problem_waveform_4_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 1 1 1 2 2 2 1 1 0 1 1 1 1 3 10 33 77 134 183 205 "
-        "194 159 110 66 34 18 12 12 12 11 13 12 10 7 7 6 5 5 4 "
-        "4 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 3";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+2,1,1,1,2,2,2,1,1,0,1,1,1,1,3,10,33,77,134,183,205,194,159,110,66,34,18,12,12,12,11,13,12,10,7,7,6,5,5,4,4,3,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,3
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1914,15 +1882,14 @@ TEST_F(GaussianFitterTest, problem_waveform_4_find){
 
 TEST_F(GaussianFitterTest, problem_waveform_5_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "4 3 3 2 2 2 2 1 1 1 1 2 6 9 16 32 65 111 158 186 186 "
-        "158 115 71 39 20 11 10 11 13 14 12 11 8 7 6 5 5 "
-        "4 3 3 3 3 3 2 2 2 2 2 2 2 2 2 2 2 1 1 1 1 3";
+    std::vector<int> ampData{
+4,3,3,2,2,2,2,1,1,1,1,2,6,9,16,32,65,111,158,186,186,158,115,71,39,20,11,10,11,13,14,12,11,8,7,6,5,5,4,3,3,3,3,3,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,3
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1939,19 +1906,18 @@ TEST_F(GaussianFitterTest, problem_waveform_5_find){
 
     EXPECT_EQ(2, count);
 }
-             
+
 //6
 TEST_F(GaussianFitterTest, problem_waveform_6_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = " 3 2 1 1 1 1 1 1 1 1 2 2 4 10 26 61 110 157 181 "
-        "172 136 90 49 23 9 5 7 9 11 12 12 10 8 6 5 4 3 3 3 3 3 "
-        "3 3 2 2 2 2 2 2 2 2 1 1 2 2 3 5 10 19";
+    std::vector<int> ampData{
+3,2,1,1,1,1,1,1,1,1,2,2,4,10,26,61,110,157,181,172,136,90,49,23,9,5,7,9,11,12,12,10,8,6,5,4,3,3,3,3,3,3,3,2,2,2,2,2,2,2,2,1,1,2,2,3,5,10,19
+    };
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1970,16 +1936,15 @@ TEST_F(GaussianFitterTest, problem_waveform_6_find){
 }
 
 TEST_F(GaussianFitterTest, problem_waveform_7_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 0 0 2 0 1 1 1 1 1 1 1 2 4 10 25 56 98 141 174 "
-        "189 186 164 126 83 47 25 16 13 11 11 11 10 10 8 7 6 6 "
-        "6 5 5 4 4 3 3 2 2 3 3 3 5 3 3 2 2 2 2 2 2";
-   
-    parseWave(input, idxData, ampData);
-    
+
+    std::vector<int> ampData{
+1,0,0,0,2,0,1,1,1,1,1,1,1,2,4,10,25,56,98,141,174,189,186,164,126,83,47,25,16,13,11,11,11,10,10,8,7,6,6,6,5,5,4,4,3,3,2,2,3,3,3,5,3,3,2,2,2,2,2,2
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -1995,16 +1960,15 @@ TEST_F(GaussianFitterTest, problem_waveform_7_find){
 }
 
 TEST_F(GaussianFitterTest, problem_waveform_8_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 0 0 1 3 2 2 2 2 2 1 1 2 5 11 30 67 117 163 191 "
-        "95 174 137 92 53 27 16 12 11 11 11 11 11 10 6 6 4 3 2 2 2 "
-        "2 2 3 3 2 2 2 2 3 3 3 3 3 2 2 2 2 2 3";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+1,0,0,1,3,2,2,2,2,2,1,1,2,5,11,30,67,117,163,191,95,174,137,92,53,27,16,12,11,11,11,11,11,10,6,6,4,3,2,2,2,2,2,3,3,2,2,2,2,3,3,3,3,3,2,2,2,2,2,3
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -2022,17 +1986,18 @@ TEST_F(GaussianFitterTest, problem_waveform_8_find){
     EXPECT_EQ(2, count);
 
 }
-             
+
 //9
 TEST_F(GaussianFitterTest, problem_waveform_9_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "2 1 1 1 1 3 1 1 1 1 2 2 4 8 22 53 97 141 172 183 172 147 113 77 46 26 15 12 13 13 12 11 9 8 7 6 5 5 4 4 3 3 2 2 1 1 0 0 0 0 1 3 2 2 2 2 2 2 2 3";
 
-    parseWave(input, idxData, ampData); 
-   
+    std::vector<int> ampData{
+2,1,1,1,1,3,1,1,1,1,2,2,4,8,22,53,97,141,172,183,172,147,113,77,46,26,15,12,13,13,12,11,9,8,7,6,5,5,4,4,3,3,2,2,1,1,0,0,0,0,1,3,2,2,2,2,2,2,2,3
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -2052,13 +2017,14 @@ TEST_F(GaussianFitterTest, problem_waveform_9_find){
 
 TEST_F(GaussianFitterTest, problem_waveform_10_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "20 13 8 5 5 4 3 5 9 26 62 112 157 184 180 149 106 64 33 16 8 8 9 11 12 12 9 8 6 5 5 4 4 3 3 3 3 3 3 3 3 3 2 2 4 2 2 2 4 3 3 2 1 1 1 1 3 2 2 2";
+    std::vector<int> ampData{
+20,13,8,5,5,4,3,5,9,26,62,112,157,184,180,149,106,64,33,16,8,8,9,11,12,12,9,8,6,5,5,4,4,3,3,3,3,3,3,3,3,3,2,2,4,2,2,2,4,3,3,2,1,1,1,1,3,2,2,2
+    };
 
-    parseWave(input, idxData, ampData); 
-    
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -2081,12 +2047,13 @@ TEST_F(GaussianFitterTest, problem_waveform_10_find){
 //convex, one peak waveform
 TEST_F(GaussianFitterTest, FlatFreeTest1_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "9 11 12 13 15 22 34 68 54 42 27 21 17 15 13 12";
+    std::vector<int> ampData{
+9,11,12,13,15,22,34,68,54,42,27,21,17,15,13,12
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -2105,12 +2072,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest1_find){
 //concave, no peaks waveform
 TEST_F(GaussianFitterTest, FlatFreeTest2_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "87 73 56 41 18 15 26 41 57 57 57 78 81 89 97";
+    std::vector<int> ampData{
+87,73,56,41,18,15,26,41,57,57,57,78,81,89,97
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -2126,12 +2094,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_find){
 //slope up, no peaks waveform
 TEST_F(GaussianFitterTest, FlatFreeTest3_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "14 18 21 26 35 44 52 64 73 82 86 91 103";
+    std::vector<int> ampData{
+14,18,21,26,35,44,52,64,73,82,86,91,103
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -2147,12 +2116,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_find){
 //slope down, no peaks waveform
 TEST_F(GaussianFitterTest, FlatFreeTest4_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "123	109 93 82 71 64 51 42 33 20 12";
+    std::vector<int> ampData{
+123,109,93,82,71,64,51,42,33,20,12
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -2169,12 +2139,13 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_find){
 //flat areas waveform
 TEST_F(GaussianFitterTest, FlatFreeTest6_find){
 
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "13 17 17 17 23 32 32 32 32 67 67 67 73 73 89";
+    std::vector<int> ampData{
+13,17,17,17,23,32,32,32,32,67,67,67,73,73,89
+    };
 
-    parseWave(input, idxData, ampData);
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
     fitter.noise_level = 9;
@@ -2190,14 +2161,15 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_find){
 
 
 TEST_F(GaussianFitterTest,problem_waveform_11_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "1 1	0 0 0 0	0 0 0 0	0 0 8 34 87 154	211 239	236 199	144 86 41 17 11	12 13 14 14 13 12 9 7 7	7 7 6 5	4 3 3 2 2 3 5 3	3 2 1 1	0 0 0 0	0 1 3 2	1";
 
-    parseWave(input, idxData, ampData);
-    
+    std::vector<int> ampData{
+1,1,0,0,0,0,0,0,0,0,0,0,8,34,87,154,211,239,236,199,144,86,41,17,11,12,13,14,14,13,12,9,7,7,7,7,6,5,4,3,3,2,2,3,5,3,3,2,1,1,0,0,0,0,0,1,3,2,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -2215,16 +2187,17 @@ TEST_F(GaussianFitterTest,problem_waveform_11_find){
     EXPECT_EQ(2, count);
 
 }
-             
-TEST_F(GaussianFitterTest,problem_waveform_12_find){
-    
-    std::vector<int> idxData;
-    std::vector<int> ampData;
 
-    char input[] = "0 1	1 1 1 0	0 0 2 1	1 2 4 18 57 120	185 227	237 213	163 105	57 25 12 9 11 14 16 16 15 12 9 6 6 5 5 4 4 4 4 4 4 4 4 4 4 3 3 2 1 1 0 0 0 0 0 0 0 1"; 
- 
-    parseWave(input, idxData, ampData);
-    
+TEST_F(GaussianFitterTest,problem_waveform_12_find){
+
+
+    std::vector<int> ampData{
+0,1,1,1,1,0,0,0,2,1,1,2,4,18,57,120,185,227,237,213,163,105,57,25,12,9,11,14,16,16,15,12,9,6,6,5,5,4,4,4,4,4,4,4,4,4,4,3,3,2,1,1,0,0,0,0,0,0,0,1
+    };
+
+    std::vector<int> idxData(ampData.size(), 0);
+    std::iota(idxData.begin(), idxData.end(), 0);
+
     GaussianFitter fitter;
     fitter.noise_level = 9;
     std::vector<Peak*> peaks;
@@ -2242,6 +2215,6 @@ TEST_F(GaussianFitterTest,problem_waveform_12_find){
     EXPECT_EQ(2, count);
 
 }
-             
+
         //////////////////////////
         //////////////////////////

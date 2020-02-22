@@ -115,6 +115,7 @@ $(LIB)/gtest_main.a : $(OBJ)/gtest-all.o $(OBJ)/gtest_main.o
 
 $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
                                  $(OBJ)/GaussianFitter_unittests.o \
+                                 $(OBJ)/Fitter.o \
 				 $(LIB)/gtest_main.a $(OBJ)/Peak.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L\
 		$(PULSE_DIR)/lib -lpulsewaves -lm -lgsl -lgslcblas -lgdal
@@ -139,7 +140,7 @@ $(BIN)/LidarDriver_unittests: $(OBJ)/LidarDriver_unittests.o \
                               $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
                               $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
                               $(OBJ)/PulseData.o $(OBJ)/TxtWaveReader.o\
-                              $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o\
+                              $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o $(OBJ)/Fitter.o \
                               $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lgsl -lgslcblas
@@ -178,6 +179,10 @@ $(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
 	$(CXX) $(PFLAG) -Ideps -std=c++11 -g -fpermissive -c -o $@ $^ -lm \
 		-lgsl -lgslcblas
 
+$(OBJ)/Fitter.o: $(SRC)/Fitter.cpp
+	$(CXX) $(PFLAG) $(CXXFLAGS) -Ideps -c -o $@ $^ -lm \
+		-lgsl -lgslcblas
+
 $(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
 	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
@@ -206,7 +211,7 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
                        $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
-                       $(OBJ)/TxtWaveReader.o
+                       $(OBJ)/TxtWaveReader.o $(OBJ)/Fitter.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
 		-lgslcblas
@@ -221,7 +226,7 @@ csv-driver: $(BIN)/csv-driver
 $(BIN)/csv-driver: $(OBJ)/PlsToCsvHelper.o $(OBJ)/csv_CmdLine.o \
                    $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
 				   $(OBJ)/PlsToCsvDriver.o $(OBJ)/WaveGPSInformation.o \
-				   $(OBJ)/PulseData.o $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
+				   $(OBJ)/PulseData.o $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o $(OBJ)/Fitter.o \
 				   $(OBJ)/TxtWaveReader.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \

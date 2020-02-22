@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include "spdlog/spdlog.h"
+#include "Fitter.hpp"
 
 GaussianFitter::GaussianFitter(){
     fail = 0;
@@ -366,6 +367,67 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                                std::vector<int> ampData,
                                std::vector<int> idxData,
                                const size_t max_iter) {
+    assert(results);
+    results->clear();
+
+    if(ampData.empty()){
+        return 0;
+    }
+
+    smoothing_expt(&ampData);
+    std::vector<Fitter::Gaussian> guesses;
+    Fitter::guessGaussians(ampData, noise_level, guesses);
+
+    if(guesses.empty()){
+        return 0;
+    }
+
+    bool result = Fitter::fitGaussians(idxData, ampData, guesses);
+
+    if(!result){
+        spdlog::error("Failed to fit waveform");
+        return 0;   //@@TODO
+    }
+
+    //Fill in properties
+    bool valid = true;
+    for(const Fitter::Gaussian& peak : guesses){
+        if(peak.a > 500 || peak.a < noise_level/2){ //@@TODO reasonable upper bound
+            spdlog::error("Amplitude OOB: {}", peak.a);
+            valid = false;
+        }
+
+        if(peak.b < 0 || peak.b > idxData.size()){  //@@TODO determine good bounds
+            spdlog::error("Location OOB: {}", peak.b);
+            valid = false;
+        }
+
+        if(peak.c <= 0.1){  //@@TODO determine good bounds
+            spdlog::error("Width OOB: {}", peak.c);
+            valid = false;
+        }
+
+        Peak* peakPtr = new Peak();
+        peakPtr->amp = peak.a;
+        peakPtr->location = peak.b;
+        peakPtr->fwhm = peak.c * C_TO_FWHM;
+        //@@TODO calculate other properties
+
+        results->push_back(peakPtr);
+    }
+
+    if(!valid){
+        for(Peak* ptr : *results){
+            delete(ptr);
+        }
+        return 0;
+    }
+
+    return guesses.size();
+}
+/*
+
+
     spdlog::trace("--NEW WAVEFORM--");
 
     incr_total();
@@ -433,11 +495,18 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     fdf.params = &fit_data;
 
     //this is a guess starting point
+    std::vector<Fitter::Gaussian> guesses;
     int j;
     for(i=0; i< peakCount; i++){
-        gsl_vector_set(x, i*2+0, (*results)[i]->amp);
-        gsl_vector_set(x, i*2+1, (*results)[i]->fwhm/C_TO_FWHM);
+        double a = (*results)[i]->amp;
+        double b = (*results)[i]->location;
+        double c = (*results)[i]->fwhm/C_TO_FWHM;
+        gsl_vector_set(x, i*2+0, a);
+        gsl_vector_set(x, i*2+1, c);
+        guesses.emplace_back(a,b,c);
     }
+
+
 
     // PRINT DATA AND MODEL FOR TESTING PURPOSES
     spdlog::trace("Gaussian sum based on guesses - before solve system:");
@@ -458,7 +527,8 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     //fdf_params.fdtype = GSL_MULTIFIT_NLINEAR_CTRDIFF;
 
 
-    if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
+    //if(!solve_system(x, &fdf, &fdf_params, max, max_iter)){
+    if(Fitter::fitGaussians(idxData, ampData, guesses)){
         incr_pass();
 
         // save value for later
@@ -473,9 +543,15 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
                 << peak->location << ") / " << peak->fwhm/C_TO_FWHM << ") ^ 2)";
             spdlog::debug(before.str());
 
-            peak->amp = gsl_vector_get(x,2*i+ 0);
+            double a = guesses.at(i).a;
+            double b = guesses.at(i).b;
+            double c = guesses.at(i).c;
+            peak->amp = a;
+            peak->location = b;
+
+            //peak->amp = gsl_vector_get(x,2*i+ 0);
             //peak->location =
-            double c = gsl_vector_get(x,2*i+ 1);
+            //double c = gsl_vector_get(x,2*i+ 1);
             peak->fwhm = c * C_TO_FWHM;
             if(peak->fwhm < 0 ){
               peak->fwhm = peak->fwhm*(-1.);
@@ -485,7 +561,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             after << "After Fitting: y=" << peak->amp << "*e^(-.5*((t - "
                 << peak->location << ") / " << c << ") ^ 2)";
             spdlog::debug(after.str());
-            
+
             //calculate triggering location
             peak->triggering_location = ceil(peak->location -
                 sqrt((log(noise_level/peak->amp)*c*c)/neg4ln2));
@@ -501,19 +577,19 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             // if any of these are true then the peaks and the whole wave
             // are invalid -- this should be logged
             if(peak->amp >= 300 ){
-                spdlog::trace("Results invalid: amp too large");
+                spdlog::error("Results invalid: amp too large");
                 results->clear();
                 break;
             }else if(peak->amp < (noise_level/2.)){
-                spdlog::trace("Results invalid: amp too small");
+                spdlog::error("Results invalid: amp too small");
                 results->clear();
                 break;
             }else if(peak->triggering_location > n){
-                spdlog::trace("Results invalid: triggering location > n");
+                spdlog::error("Results invalid: triggering location > n");
                 results->clear();
                 break;
             }else if(peak->triggering_location <0) {
-                spdlog::trace("Results invalid: triggering location <n");
+                spdlog::error("Results invalid: triggering location <n");
                 results->clear();
                 break;
             } else{
@@ -536,7 +612,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         // PRINT DATA AND MODEL FOR TESTING PURPOSES
         spdlog::trace("Gaussian sum in solve system succeeded:");
         // TODO: this should be wrapped in an ifdef
-        std::ostringstream model;       
+        std::ostringstream model;
         for (int i = 0; i < n; ++i){
             double ti = fit_data.t[i];
             model << gaussianSum(x,fit_data.peak_locations, ti) << " ";
@@ -545,7 +621,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }else{
 
         incr_fail();
-       
+
         // PRINT DATA AND MODEL FOR TESTING PURPOSES
         spdlog::trace("Gaussian sum in solve system failed:");
         std::ostringstream time, data, model;
@@ -569,6 +645,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     return results->size();
 }
+*/
 
 
 /**
@@ -644,7 +721,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
     //We need to start this function with a clear vector.
     //We can't call destructors because we don't know if the pointers
     //are pointing to space used in LidarVolume
-    results->clear(); 
+    results->clear();
 
     std::vector<float> peak_guesses_idx; // Peak idices
     std::vector<float> peak_guesses_loc; // Peak t-values
@@ -673,7 +750,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
             } else if (a3 == a2) {
                 // Store data point before the flat section
                 int before = i - 1;
-                // When this loop ends, i will point to the last data point 
+                // When this loop ends, i will point to the last data point
                 // or the point right after the flat section
                 while (i < (int)ampData.size() - 1 && a2 == a3){
                     i ++;

@@ -210,6 +210,7 @@ gsl_multifit_nlinear_workspace* setupWorkspace(const Pulse& data, const gsl_vect
 //See Fitter.hpp for docs @@TODO misc note: noise_level never did anything regarding the fitter itself
 bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, std::vector<Gaussian>& guesses){
     //@@TODO: prefix logs with function name?
+    //@@TODO this should probably be an assert
     if(indexData.size() != amplitudeData.size()){
         spdlog::critical("Index data and amplitude data have mismatched sizes! ({}) and ({})", indexData.size(), amplitudeData.size());
         return false;
@@ -275,8 +276,16 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
 
 //@@TODO Do we need to support index data that is not of the form {0,1,...,n-1}?
 //See Fitter.hpp for docs
-void guessGaussians(const std::vector<int>& amplitudeData, int noiseLevel, std::vector<Gaussian>& guesses){
+void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, std::vector<Gaussian>& guesses){
     guesses.clear();
+
+    //@@TODO this should probably be an assert
+    if(indexData.size() != amplitudeData.size()){
+        spdlog::critical("Index data and amplitude data have mismatched sizes! ({}) and ({})", indexData.size(), amplitudeData.size());
+        return;
+    }
+
+    //@@TODO should this be an assert? If not, do we want to return an error?
     if(amplitudeData.empty()){
         spdlog::error("No amplitude data");
         return;
@@ -302,9 +311,9 @@ void guessGaussians(const std::vector<int>& amplitudeData, int noiseLevel, std::
 
         }else if(secondDeriv < 0){  //Currently tracking a peak
             trackingPeak = true;
-            if(secondDeriv < min2ndDiff.first){ //New minimium
+            if(secondDeriv < min2ndDiff.first){     //New minimium
                 min2ndDiff.first = secondDeriv;
-                min2ndDiff.second = i;
+                min2ndDiff.second = indexData[i];   //In case our data isn't 0 to indexData.size()-1
             }
         }
     }

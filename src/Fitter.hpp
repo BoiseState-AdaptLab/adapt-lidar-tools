@@ -33,11 +33,12 @@ namespace Fitter{
     /**
      * Guesses gaussians using second central finite differencing.
      *
-     * @param amplitudeData The amplitude data of the wave.
+     * @param indexData     The indicies of the amplitude data. Must be the same length as amplitudeData.
+     * @param amplitudeData The amplitude data of the wave. Must be the same length as indexData.
      * @param noiseLevel    Only count the peak if it's amplitude is above this number
      * @param guesses       Output vector to put guesses into. Empty if no guesses found
      */
-    void guessGaussians(const std::vector<int>& amplitudeData, int noiseLevel, std::vector<Gaussian>& guesses);
+    void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, std::vector<Gaussian>& guesses);
 
 } // namespace Fitter
 #endif  //ADAPTLIDAR_FITTER_HPP

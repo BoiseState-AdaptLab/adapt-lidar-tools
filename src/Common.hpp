@@ -10,6 +10,27 @@
 #include "Peak.hpp"
 #include "TaskThread.hpp"
 
+/** ===== TYPE REQUIREMENTS =====
+ * An object P of type PulseProducer must:
+ *      Be a class/struct
+ *      Must have public member functions with these signatures:
+ *          bool done() const
+ *              Returns true if there are more waves to process.
+ *          void producePulse(std::vector<int>& indexData, std::vector<int>& amplitudeData);
+ *              Populates indexData and amplitudeData with the next pulse information.
+ *
+ * An object C of type PeakConsumer must:
+ *      Be a class/struct
+ *      Must have public member functions with these signatures:
+ *          void consumePeaks(const std::vector<Peak>& peaks);
+ *              Writes the peak to wherever applicable. Note that after the function returns, there are no guarantees on peaks
+ *          void postProcess();
+ *              Signifies that all peaks have been fed to the consumer via consumePeaks. The destructor will likely be called next.
+ *              Use this to do any final analysis/processing.
+ *
+ * Note that technically these could be one class, but it more flexible if they remain separate.
+ */
+
 namespace Common{
 
 constexpr double cToFWHM = 2.354820045030949382023138652919399275494771378771641077045; //Multiplying c by this yields the FWHM
@@ -70,7 +91,7 @@ void processData(PulseProducer& producer, PeakConsumer& consumer, const Options&
         for(int i = 0; i < options.numThreads && pulses > 0; ++i){
             for(int j = 0; j < options.wavesPerThread && pulses > 0; ++j, --pulses){
                 futures[i][j].wait();   //Wait for taskthread to process it.
-                consumer.consumePeak(peaks[i][j], options); //@@TODO if the task threw an exception, peaks[i][j] will probably be whatever was in there last time.
+                consumer.consumePeaks(peaks[i][j]); //@@TODO if the task threw an exception, peaks[i][j] will probably be whatever was in there last time.
             }
         }
     }
@@ -86,7 +107,7 @@ void processData_Single(PulseProducer& producer, PeakConsumer& consumer, const O
     while(!producer.done()){
         producer.producePulse(indexData, amplitudeData);
         fitWaveform(indexData, amplitudeData, options.noiseLevel, options.nlsFitting, peaks);
-        consumer.consumePeak(peaks, options);
+        consumer.consumePeaks(peaks);
     }
 }
 

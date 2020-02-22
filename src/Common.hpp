@@ -1,9 +1,8 @@
 #ifndef ADAPTLIDARTOOLS_COMMON_HPP
 #define ADAPTLIDARTOOLS_COMMON_HPP
 
-#include <future>
 #include <functional>
-#include <thread>
+#include <future>
 #include <vector>
 
 #include "spdlog/spdlog.h"
@@ -18,21 +17,20 @@ constexpr double cToFWHM = 2.354820045030949382023138652919399275494771378771641
 struct Options{
     int noiseLevel=9;
     bool nlsFitting = true;
-    int numThreads = 1; //@@TODO opinion on signed v unsigned
+    int numThreads = 4; //@@TODO opinion on signed v unsigned
     int wavesPerThread = 10;
 };
 
-/** Fits a varying number of waveforms. Waveforms are identified by their id, which is the first member of the results pair.
- * @param indicies      Index data of each waveform. One vector per waveform. Must have the same length as amplitudes.
- * @param amplitudes    Amplitude data of each waveform. One vector per waveform. Must have the same length as indicies.
- * @param noiseLevel    A peak must be at least this tall to be identified.
- * @param nlsFitting    Use NLS fitting in addition to the second differencing. Slower, but much more accurate.
- * @param results       Output vector to put peaks into
- * @@TODO This probably too abstract for any meaningful error message. It is better for the functions that we call to log the errors themselves, and for the vector to just be empty for that waveform.
+/* Fits a single waveform to a sum of Gaussians.
+ * @param indexData     The index data of the wave
+ * @param amplitudeData The amplitude data of the wave, will be smoothed
+ * @param noiseLevel    Cutoff value for peaks. Any peaks with amplitudes lower than this will not be processed.
+ * @param useNLSFitting Use Nonlinear-least-squares fitting in addition to second differencing. Recommended.
+ * @param results       Output vector for the fitted peaks
  */
-void fitWaveforms(const std::vector<std::vector<int>>& indices, std::vector<std::vector<int>>& amplitudes, int noiseLevel, bool nlsFitting, std::vector<std::vector<Peak>>& results);
+void fitWaveform(const std::vector<int>& indexData, std::vector<int>& amplitudeData, int noiseLevel, bool useNLSFitting, std::vector<Peak>& results);
 
-/** Fits all pulses produced by producer, and feeds them into consumer. 
+/** Fits all pulses produced by producer, and feeds them into consumer.
  * @param producer      The PulseProducer. See top of file for more info on type requirements.
  * @param consumer      The PeakConsumer. See top of file for more info on type requirements.
  * @param options       Options for the process, such as noise level, etc.
@@ -42,53 +40,55 @@ void processData(PulseProducer& producer, PeakConsumer& consumer, const Options&
     //Thread pool to run our tasks in
     std::vector<TaskThread<void>> threadPool(options.numThreads);
 
-    //This is simply the function signature of fitWaveforms
+    //  |Thread     |Per Thread
     std::vector<std::vector<std::future<void>>> futures;
 
-    //Thead    Waves       Data
-    std::vector<std::vector<std::vector<int>>> indices(options.numThreads, std::vector<std::vector<int>>(options.wavesPerThread));
+    //  |Thead      |Waves      |Data
+    std::vector<std::vector<std::vector<int>>> indices   (options.numThreads, std::vector<std::vector<int>>(options.wavesPerThread));
     std::vector<std::vector<std::vector<int>>> amplitudes(options.numThreads, std::vector<std::vector<int>>(options.wavesPerThread));
-
-    std::vector<std::vector<std::vector<Peak>>> peaks(options.numThreads);
-
+    std::vector<std::vector<std::vector<Peak>>> peaks    (options.numThreads);
 
     while(!producer.done()){
+        int pulses = 0; //This keeps track of how many pulses we actually receive, in case producer.done() == true halfway through
         futures.clear();
-        for(int i = 0; i < options.numThreads; ++i){
-            for(int j = 0; j < options.wavesPerThread; ++j){
-                producer.producePulse(indices[i][j], amplitudes[i][j]);
-            }
+        for(int i = 0; i < options.numThreads && !producer.done(); ++i){
+            for(int j = 0; j < options.wavesPerThread && !producer.done(); ++j, ++pulses){
+                producer.producePulse(indices[i][j], amplitudes[i][j]); //Fill with pulse data
 
-            std::packaged_task<void()> task(std::bind(fitWaveforms, indices[i], amplitudes[i], options.noiseLevel, options.nlsFitting, peaks[i]));
-            futures.emplace_back(task.get_future());
-            threadPool[i].queueTask(std::move(task));
-            //@@TODO is may be desireable to calculate stats in a threaded fashion as well
+                //Create task to process waveform
+                std::packaged_task<void()> task(std::bind(fitWaveform, indices[i][j], amplitudes[i][j], options.noiseLevel, options.nlsFitting, peaks[i][j]));
+
+                //Get a future (allows us to wait for it to be done later)
+                futures[i].emplace_back(task.get_future());
+
+                //@@TODO is may be desireable to calculate stats in a threaded fashion as well
+                //Move it into one of the taskthreads to start processing it
+                threadPool[i].queueTask(std::move(task));
+            }
         }
 
-        for(int i = 0; i < options.numThreads; ++i){
-            for(int j = 0; j < options.wavesPerThread; ++j){
-                futures[i][j].wait();
-                consumer.consumePeak(peaks[i][j], options);
+        for(int i = 0; i < options.numThreads && pulses > 0; ++i){
+            for(int j = 0; j < options.wavesPerThread && pulses > 0; ++j, --pulses){
+                futures[i][j].wait();   //Wait for taskthread to process it.
+                consumer.consumePeak(peaks[i][j], options); //@@TODO if the task threw an exception, peaks[i][j] will probably be whatever was in there last time.
             }
         }
     }
 }
-
 
 //Single threaded version
 template<typename PulseProducer, typename PeakConsumer>
 void processData_Single(PulseProducer& producer, PeakConsumer& consumer, const Options& options){
     std::vector<int> indexData;
-    std::vector<std::vector<int>> amplitudeData(1); //Extra std::vector is since we pass them by non-const ref
-    std::vector<std::vector<Peak>> peaks(1);
+    std::vector<int> amplitudeData;
+    std::vector<Peak> peaks;
 
     while(!producer.done()){
-        producer.producePulse(indexData, amplitudeData.front(), options.noiseLevel, options.nlsFitting, peaks.front());
-        fitWaveforms({indexData}, amplitudeData, options.noiseLevel, options.nlsFitting, peaks);
-        consumer.consumePeak(peaks.front(), options);
+        producer.producePulse(indexData, amplitudeData);
+        fitWaveform(indexData, amplitudeData, options.noiseLevel, options.nlsFitting, peaks);
+        consumer.consumePeak(peaks, options);
     }
 }
-
 
 }   // namespace Common
 

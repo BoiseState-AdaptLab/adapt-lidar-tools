@@ -27,21 +27,21 @@ std::vector<Peak*> PlsToCsvHelper::fit_data_csv(FlightLineData &raw_data, csv_Cm
         raw_data.getNextPulse(&pulseData);
 
         //Skip all the empty returning waveforms
-        if (pulseData.returningIdx.empty()){
+        if (pulseData.returningIndex.empty()){
             continue;
         }
 
         try {
             // Smooth the data and test result
-            fitter.smoothing_expt(&pulseData.returningWave);
+            fitter.smoothing_expt(&pulseData.returningAmplitude);
 
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
-                fitter.find_peaks(&peaks, pulseData.returningWave,
-                        pulseData.returningIdx, 200);
+                fitter.find_peaks(&peaks, pulseData.returningAmplitude,
+                        pulseData.returningIndex, 200);
             } else {
-                fitter.guess_peaks(&peaks, pulseData.returningWave,
-                        pulseData.returningIdx);
+                fitter.guess_peaks(&peaks, pulseData.returningAmplitude,
+                        pulseData.returningIndex);
             }
 
             // for each peak - find the activation point

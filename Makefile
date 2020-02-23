@@ -77,7 +77,7 @@ endif
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
 TESTS = $(BIN)/CmdLine_unittests $(BIN)/FlightLineData_unittests \
-		$(BIN)/WaveGPSInformation_unittests $(BIN)/PulseData_unittests \
+		$(BIN)/WaveGPSInformation_unittests \
 		$(BIN)/LidarVolume_unittests $(BIN)/GaussianFitter_unittests \
 		$(BIN)/LidarDriver_unittests $(BIN)/Peak_unittests \
 		$(BIN)/csv_CmdLine_unittests $(BIN)/TxtWaveReader_unittests
@@ -121,7 +121,7 @@ $(BIN)/GaussianFitter_unittests: $(OBJ)/GaussianFitter.o \
 		$(PULSE_DIR)/lib -lpulsewaves -lm -lgsl -lgslcblas -lgdal
 
 $(BIN)/FlightLineData_unittests: $(OBJ)/FlightLineData_unittests.o \
-                                 $(OBJ)/FlightLineData.o $(OBJ)/PulseData.o \
+                                 $(OBJ)/FlightLineData.o \
                                  $(OBJ)/WaveGPSInformation.o \
                                  $(LIB)/gtest_main.a \
                                  $(OBJ)/WaveGPSInformation.o
@@ -139,7 +139,7 @@ $(BIN)/LidarDriver_unittests: $(OBJ)/LidarDriver_unittests.o \
                               $(OBJ)/CmdLine.o \
                               $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
                               $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
-                              $(OBJ)/PulseData.o $(OBJ)/TxtWaveReader.o\
+                              $(OBJ)/TxtWaveReader.o\
                               $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o $(OBJ)/Fitter.o \
                               $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
@@ -147,7 +147,7 @@ $(BIN)/LidarDriver_unittests: $(OBJ)/LidarDriver_unittests.o \
 
 $(BIN)/TxtWaveReader_unittests: $(OBJ)/TxtWaveReader_unittests.o \
                                 $(OBJ)/TxtWaveReader.o \
-                                $(OBJ)/PulseData.o $(LIB)/gtest_main.a
+                                $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
 
@@ -167,9 +167,6 @@ $(OBJ)/FlightLineData.o: $(SRC)/FlightLineData.cpp
 	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)//WaveGPSInformation.o: $(SRC)/WaveGPSInformation.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
-
-$(OBJ)/PulseData.o: $(SRC)/PulseData.cpp
 	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 $(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
@@ -196,7 +193,7 @@ $(OBJ)/%.o: $(SRC)/%.cpp
 # Builds the info tool
 pls-info: $(BIN)/pls-info
 
-$(BIN)/pls-info: $(OBJ)/GetPLSDetails.o $(OBJ)/PulseData.o
+$(BIN)/pls-info: $(OBJ)/GetPLSDetails.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
 
@@ -209,7 +206,7 @@ geotiff-driver: $(BIN)/geotiff-driver
 $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
                        $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
-                       $(OBJ)/WaveGPSInformation.o $(OBJ)/PulseData.o \
+                       $(OBJ)/WaveGPSInformation.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
                        $(OBJ)/TxtWaveReader.o $(OBJ)/Fitter.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
@@ -226,7 +223,7 @@ csv-driver: $(BIN)/csv-driver
 $(BIN)/csv-driver: $(OBJ)/PlsToCsvHelper.o $(OBJ)/csv_CmdLine.o \
                    $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
 				   $(OBJ)/PlsToCsvDriver.o $(OBJ)/WaveGPSInformation.o \
-				   $(OBJ)/PulseData.o $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o $(OBJ)/Fitter.o \
+				   $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o $(OBJ)/Fitter.o \
 				   $(OBJ)/TxtWaveReader.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
@@ -245,7 +242,6 @@ test: $(TESTS)
 	-$(BIN)/CmdLine_unittests
 	-$(BIN)/WaveGPSInformation_unittests
 	-$(BIN)/LidarVolume_unittests
-	-$(BIN)/PulseData_unittests
 	-$(BIN)/GaussianFitter_unittests
 	-$(BIN)/LidarDriver_unittests
 	-$(BIN)/FlightLineData_unittests

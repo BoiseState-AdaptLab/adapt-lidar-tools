@@ -134,20 +134,20 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         }*/
        
         //Skip all the empty returning waveforms
-        if (pd.returningIdx.empty()){
+        if (pd.returningIndex.empty()){
             continue;
         }
         try {
             // Smooth the data and test result
-            fitter.smoothing_expt(&pd.returningWave);
+            fitter.smoothing_expt(&pd.returningAmplitude);
            
             // Check parameter for using gaussian fitting or first differencing
             if (cmdLine.useGaussianFitting) {
-                peak_count = fitter.find_peaks(&peaks, pd.returningWave,
-                                     pd.returningIdx, 200);
+                peak_count = fitter.find_peaks(&peaks, pd.returningAmplitude,
+                                     pd.returningIndex, 200);
             } else {
-                peak_count = fitter.guess_peaks(&peaks, pd.returningWave,
-                                     pd.returningIdx);
+                peak_count = fitter.guess_peaks(&peaks, pd.returningAmplitude,
+                                     pd.returningIndex);
             }
  
             // for each peak - find the activation point
@@ -252,20 +252,20 @@ void LidarDriver::peak_calculations(PulseData &pulse, std::vector<Peak*> &peaks,
                             WaveGPSInformation &gps_info){
     // Backscatter coefficient
     if (cmdLine.calcBackscatter){
-        if (pulse.outgoingIdx.empty()){
+        if (pulse.outgoingIndex.empty()){
             return;
         }
         //Go through fitting process with emitted waveform
-        fitter.smoothing_expt(&pulse.outgoingWave);
+        fitter.smoothing_expt(&pulse.outgoingAmplitude);
 
         std::vector<Peak*> emitted_peaks;
 
         if (cmdLine.useGaussianFitting){
-            fitter.find_peaks(&emitted_peaks, pulse.outgoingWave,
-                    pulse.outgoingIdx, 200);
+            fitter.find_peaks(&emitted_peaks, pulse.outgoingAmplitude,
+                    pulse.outgoingIndex, 200);
         } else {
-            fitter.guess_peaks(&emitted_peaks, pulse.outgoingWave,
-                    pulse.outgoingIdx);
+            fitter.guess_peaks(&emitted_peaks, pulse.outgoingAmplitude,
+                    pulse.outgoingIndex);
         }
 
         //For every returning wave peak, calculate the backscatter coefficient

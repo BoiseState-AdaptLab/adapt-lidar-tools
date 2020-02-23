@@ -205,7 +205,7 @@ void FlightLineData::FlightLineDataToCSV(){
 /**
  * True if there exists a next pulse, else false
  */
-bool FlightLineData::hasNextPulse(){
+bool FlightLineData::hasNextPulse() const{
     return next_pulse_exists;
 }
 
@@ -218,10 +218,10 @@ bool FlightLineData::hasNextPulse(){
 void FlightLineData::getNextPulse(PulseData *pd){
 
     // Clear vectors since we're storing a single pulse at a time
-    pd->outgoingIdx.clear();
-    pd->outgoingWave.clear();
-    pd->returningIdx.clear();
-    pd->returningWave.clear();
+    pd->outgoingIndex.clear();
+    pd->outgoingAmplitude.clear();
+    pd->returningIndex.clear();
+    pd->returningAmplitude.clear();
 
     if(!next_pulse_exists){
         spdlog::critical("CRITICAL ERROR! Cannot be here if there isn't a next "
@@ -264,10 +264,10 @@ void FlightLineData::getNextPulse(PulseData *pd){
                 sampling->get_duration_from_anchor_for_segment();
         }
         for(int k = 0; k < sampling->get_number_of_samples(); k++){
-            pd->outgoingIdx.push_back(pulse_outgoing_segment_time -
+            pd->outgoingIndex.push_back(pulse_outgoing_segment_time -
                     pulse_outgoing_start_time);
             int temp_amp = sampling->get_sample(k);
-            pd->outgoingWave.push_back(temp_amp);
+            pd->outgoingAmplitude.push_back(temp_amp);
             pulse_outgoing_segment_time++;
         }
     }
@@ -281,8 +281,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
             spdlog::critical("The second sampling must be a returning wave!");
 
             // Clearing outgoing idx so no bad data is returned.
-            pd->outgoingIdx.clear();
-            pd->outgoingWave.clear();
+            pd->outgoingIndex.clear();
+            pd->outgoingAmplitude.clear();
             return;
         }
         //Populate returing wave data
@@ -301,16 +301,16 @@ void FlightLineData::getNextPulse(PulseData *pd){
                     sampling->get_duration_from_anchor_for_segment();
             }
             for(int k = 0; k < sampling->get_number_of_samples(); k++){
-                pd->returningIdx.push_back(pulse_returning_segment_time -
+                pd->returningIndex.push_back(pulse_returning_segment_time -
                         pulse_returning_start_time);
-                pd->returningWave.push_back(sampling->get_sample(k));
+                pd->returningAmplitude.push_back(sampling->get_sample(k));
                 pulse_returning_segment_time++;
             }
 
             // FOR TESTING PURPOSES
             // std::cerr << std::endl << "DEBUG SAMPLES: ";
-            // for(int i=0; i< (int)pd->returningWave.size(); i++){
-            //   std::cerr<< pd->returningWave[i] << " ";
+            // for(int i=0; i< (int)pd->returningAmplitude.size(); i++){
+            //   std::cerr<< pd->returningAmplitude[i] << " ";
             // }
             // std::cerr << std::endl ;
         }

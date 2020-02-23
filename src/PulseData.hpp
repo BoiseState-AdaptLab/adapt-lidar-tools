@@ -1,32 +1,15 @@
-/*
- * File name: PulseData.hpp
- * Created on: 12-July-2017
- * Author: ravi
- */
+#ifndef ADAPTLIDARTOOLS_PULSEDATA_HPP
+#define ADAPTLIDARTOOLS_PULSEDATA_HPP
 
-#ifndef PULSEDATA_HPP_
-#define PULSEDATA_HPP_
-
-#include <iostream>
 #include <vector>
 
-class PulseData{
+struct PulseData{
+    std::vector<int> outgoingIndex;
+    std::vector<int> outgoingAmplitude;
 
-private:
-
-public:
-  std::vector<int> outgoingIdx;
-  std::vector<int> outgoingWave;
-  std::vector<int> returningIdx;
-  std::vector<int> returningWave;
-  long pulse_returning_start_time;
-  PulseData();
-  void displayPulseData(std::ostream *outStream);
-  void setOutgoing(std::vector<int> *idxArray,
-                   std::vector<int> *waveArray);
-  void setReturning(std::vector<int> *idxArray,
-                    std::vector<int> *waveArray);
+    std::vector<int> returningIndex;
+    std::vector<int> returningAmplitude;
 };
 
-#endif /* PULSEDATA_HPP_ */
+#endif // ADAPTLIDARTOOLS_PULSEDATA_HPP
 

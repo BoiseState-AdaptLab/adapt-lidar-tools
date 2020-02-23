@@ -67,7 +67,7 @@ class FlightLineData{
         FlightLineData();
         int setFlightLineData(std::string fileName);
         void FlightLineDataToCSV();
-        bool hasNextPulse();
+        bool hasNextPulse() const;
         void getNextPulse(PulseData* pd);;
         int calc_xyz_activation(std::vector<Peak*> *peaks);
         void closeFlightLineData(void);

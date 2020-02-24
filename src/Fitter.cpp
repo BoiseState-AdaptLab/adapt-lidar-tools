@@ -298,8 +298,8 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         int secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i] + amplitudeData[i-1];
 
         if(secondDeriv >= 0 && trackingPeak){   //Finished tracking a peak, add it to guesses
-            int b = min2ndDiff.second;
-            int a = amplitudeData[b];
+            int b = indexData[min2ndDiff.second];   //Allow for segmented waves
+            int a = amplitudeData[min2ndDiff.second];
 
             if(a > noiseLevel){        //Only add if greater than noise. @@TODO should be greater eq?
                 spdlog::trace("Found peak at {}", b);
@@ -313,7 +313,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
             trackingPeak = true;
             if(secondDeriv < min2ndDiff.first){     //New minimium
                 min2ndDiff.first = secondDeriv;
-                min2ndDiff.second = indexData[i];   //In case our data isn't 0 to indexData.size()-1
+                min2ndDiff.second = i;
             }
         }
     }

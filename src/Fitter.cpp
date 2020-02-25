@@ -274,7 +274,6 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
     return result; //Someone else can check and see if the peaks make sense (i.e. check negative amplitude)
 }
 
-//@@TODO Do we need to support index data that is not of the form {0,1,...,n-1}?
 //See Fitter.hpp for docs
 void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, std::vector<Gaussian>& guesses){
     guesses.clear();
@@ -291,31 +290,51 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         return;
     }
 
-    std::pair<int, int> min2ndDiff = {0, -1};       //2nd Diff value, index of it
+    auto addPeak = [&](int a, int b){
+        if(a > noiseLevel){        //Only add if greater than noise. @@TODO should be greater eq?
+            spdlog::trace("Found peak at {}", b);
+            guesses.emplace_back(a, b, 1);
+        }
+    };
+
+    int min2ndDiffVal = 0;
+    int min2ndDiffIdx = -1;
 
     bool trackingPeak = false;
     for(std::size_t i = 1; i < amplitudeData.size()-1; ++i){
         int secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i] + amplitudeData[i-1];
 
+        if(indexData[i] - indexData[i-1] != 1 || indexData[i+1] - indexData[i] != 1){   //Gap in the data (segmented wave)
+            secondDeriv = 0;
+        }
+
         if(secondDeriv >= 0 && trackingPeak){   //Finished tracking a peak, add it to guesses
-            int b = indexData[min2ndDiff.second];   //Allow for segmented waves
-            int a = amplitudeData[min2ndDiff.second];
-
-            if(a > noiseLevel){        //Only add if greater than noise. @@TODO should be greater eq?
-                spdlog::trace("Found peak at {}", b);
-                guesses.emplace_back(a, b, 1);
-            }
-
-            min2ndDiff.first = 0;
+            addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
+            min2ndDiffVal = 0;
             trackingPeak = false;
 
         }else if(secondDeriv < 0){  //Currently tracking a peak
             trackingPeak = true;
-            if(secondDeriv < min2ndDiff.first){     //New minimium
-                min2ndDiff.first = secondDeriv;
-                min2ndDiff.second = i;
+            if(secondDeriv < min2ndDiffVal || (secondDeriv == min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
+                min2ndDiffVal = secondDeriv;
+                min2ndDiffIdx = i;
             }
         }
+    }
+
+    if(trackingPeak){   //We were tracking a peak when we ran out of data
+        addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
+    }
+
+    std::vector<std::size_t> deleteList;
+    for(std::size_t i = 1; i < guesses.size(); ++i){
+        if(guesses[i].b - guesses[i-1].b < 4){//@@TODO threshold
+            deleteList.push_back(i);
+        }
+    }
+
+    for(auto iter = deleteList.rbegin(); iter != deleteList.rend(); ++iter){
+        guesses.erase(guesses.begin()+*iter);
     }
 }
 

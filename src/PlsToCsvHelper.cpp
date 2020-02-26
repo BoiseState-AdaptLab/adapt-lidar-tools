@@ -16,6 +16,7 @@ std::vector<Peak*> PlsToCsvHelper::fit_data_csv(FlightLineData &raw_data, csv_Cm
 {
     PulseData pulseData;
     GaussianFitter fitter;
+    fitter.noise_level = cmdLine.noise_level;
     std::vector<Peak*> peaks;
     std::vector<Peak*> results;
 

@@ -334,6 +334,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
     }
 
     for(auto iter = deleteList.rbegin(); iter != deleteList.rend(); ++iter){
+        spdlog::trace("Deleting peak at {}", *iter);
         guesses.erase(guesses.begin()+*iter);
     }
 }

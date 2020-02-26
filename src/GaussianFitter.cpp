@@ -397,10 +397,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
             valid = false;
         }
 
-        if(peak.b < 0 || peak.b > idxData.size()){  //@@TODO determine good bounds
-            spdlog::error("Location OOB: {}", peak.b);
-            valid = false;
-        }
+        //@@TODO contrain width?
 
         if(peak.c <= 0.1){  //@@TODO determine good bounds
             spdlog::error("Width OOB: {}", peak.c);
@@ -420,6 +417,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         for(Peak* ptr : *results){
             delete(ptr);
         }
+        results->clear();
         return 0;
     }
 

@@ -62,14 +62,12 @@ class FlightLineData{
         std::vector<int> returning_time;
         std::vector<int> returning_wave;
 
-        WaveGPSInformation current_wave_gps_info;
-
         FlightLineData();
         int setFlightLineData(std::string fileName);
         void FlightLineDataToCSV();
         bool hasNextPulse() const;
-        void getNextPulse(PulseData* pd);;
-        int calc_xyz_activation(std::vector<Peak*> *peaks);
+        void getNextPulse(PulseData& pd);;
+        int calc_xyz_activation(std::vector<Peak>& peaks, const PulseData& pd) const;
         void closeFlightLineData(void);
         int parse_for_UTM_value(std::string input);
         void tokenize_geoascii_params_to_vector(std::stringstream *geo_stream,

@@ -63,7 +63,7 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 #
 # -llib:      Search the library named 'lib' when linking
 CXXFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
-			-Ideps
+			-Ideps -D _GLIBCXX_DEBUG -D _GLIBCXX_DEBUG_PEDANTIC 
 CFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
 		  -Ideps
 

@@ -7,11 +7,14 @@
 #include "Peak.hpp"
 
 namespace Common{
-//See Common.hpp for docs
-void fitWaveform(const std::vector<int>& indexData, std::vector<int>& amplitudeData, int noiseLevel, bool useNLSFitting, std::vector<Peak>& results){
+
+void fitWaveform(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, bool useNLSFitting, std::vector<Peak>& results){
     assert(indexData.size() == amplitudeData.size());
-    assert(!indexData.empty());
-    //Fitter::smoothAmplitude(amplitudeData);   //@@TODO write our own, current one is weird
+    if(indexData.empty()){
+        spdlog::trace("No data");
+        return;
+    }
+
     std::vector<Fitter::Gaussian> guesses;
     Fitter::guessGaussians(indexData, amplitudeData, noiseLevel, guesses);
 
@@ -22,6 +25,7 @@ void fitWaveform(const std::vector<int>& indexData, std::vector<int>& amplitudeD
             spdlog::error("Failed to fit waveform");
         }
     }
+
     results.clear();
     for(const Fitter::Gaussian& gaussian : guesses){
         //@@TODO this is where we would fill in the additional peak params (trig loc, trig amp). We would also probably verify the results here?
@@ -32,5 +36,4 @@ void fitWaveform(const std::vector<int>& indexData, std::vector<int>& amplitudeD
         results.push_back(peak);
     }
 }
-
 }   // namespace Common

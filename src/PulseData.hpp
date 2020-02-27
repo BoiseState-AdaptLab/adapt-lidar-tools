@@ -3,12 +3,16 @@
 
 #include <vector>
 
+#include "WaveGPSInformation.hpp"
+
 struct PulseData{
     std::vector<int> outgoingIndex;
     std::vector<int> outgoingAmplitude;
 
     std::vector<int> returningIndex;
     std::vector<int> returningAmplitude;
+
+    WaveGPSInformation gpsInfo;
 };
 
 #endif // ADAPTLIDARTOOLS_PULSEDATA_HPP

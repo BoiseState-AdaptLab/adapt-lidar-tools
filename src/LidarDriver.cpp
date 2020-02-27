@@ -112,7 +112,7 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         peaks.clear();
 
         // gets the raw data from the file
-        raw_data.getNextPulse(&pd);
+        raw_data.getNextPulse(pd);
 
         //Check if the xyz of the last data point in the waveform is a new
         //max or min

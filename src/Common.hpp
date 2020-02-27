@@ -8,21 +8,22 @@
 #include "spdlog/spdlog.h"
 
 #include "Peak.hpp"
+#include "PulseData.hpp"
 #include "TaskThread.hpp"
 
 /** ===== TYPE REQUIREMENTS =====
  * An object P of type PulseProducer must:
  *      Be a class/struct
  *      Must have public member functions with these signatures:
- *          bool done() const
+ *          bool done() const;
  *              Returns true if there are more waves to process.
- *          void producePulse(std::vector<int>& indexData, std::vector<int>& amplitudeData);
- *              Populates indexData and amplitudeData with the next pulse information.
+ *          void producePulse(PulseData&);
+ *              Populates PulseData with the wave information.
  *
  * An object C of type PeakConsumer must:
  *      Be a class/struct
  *      Must have public member functions with these signatures:
- *          void consumePeaks(const std::vector<Peak>& peaks);
+ *          void consumePeaks(const std::vector<Peak>&, const PulseData&);
  *              Writes the peak to wherever applicable. Note that after the function returns, there are no guarantees on peaks
  *          void postProcess();
  *              Signifies that all peaks have been fed to the consumer via consumePeaks. The destructor will likely be called next.
@@ -42,6 +43,9 @@ struct Options{
     int wavesPerThread = 10;
 };
 
+//@@TODO docs
+void fitWaveform(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, bool useNLSFitting, std::vector<Peak>& results);
+
 /* Fits a single waveform to a sum of Gaussians.
  * @param indexData     The index data of the wave
  * @param amplitudeData The amplitude data of the wave, will be smoothed
@@ -49,38 +53,49 @@ struct Options{
  * @param useNLSFitting Use Nonlinear-least-squares fitting in addition to second differencing. Recommended.
  * @param results       Output vector for the fitted peaks
  */
-void fitWaveform(const std::vector<int>& indexData, std::vector<int>& amplitudeData, int noiseLevel, bool useNLSFitting, std::vector<Peak>& results);
+template <typename AnalyzeFunc>
+void processWaveform(PulseData& data, int noiseLevel, bool useNLSFitting, std::vector<Peak>& results, AnalyzeFunc& analyzeFunc){
+    //Fitter::smoothAmplitude(amplitudeData);   //@@TODO write our own, current one is weird
+    fitWaveform(data.returningIndex, data.returningAmplitude, noiseLevel, useNLSFitting, results);
+    analyzeFunc(results, data);
+}
 
 /** Fits all pulses produced by producer, and feeds them into consumer.
  * @param producer      The PulseProducer. See top of file for more info on type requirements.
  * @param consumer      The PeakConsumer. See top of file for more info on type requirements.
+ * @param analyzeFunc   The AnalyzeFunc function. See top of file for requirements.
  * @param options       Options for the process, such as noise level, etc.
  */
-template<typename PulseProducer, typename PeakConsumer>
-void processData(PulseProducer& producer, PeakConsumer& consumer, const Options& options){
+template<typename PulseProducer, typename PeakConsumer, typename AnalyzeFunc>
+void processData(PulseProducer& producer, PeakConsumer& consumer, AnalyzeFunc& analyzeFunc, const Options& options){
+    spdlog::trace("Starting data processing\n");
     //Thread pool to run our tasks in
     std::vector<TaskThread<void>> threadPool(options.numThreads);
 
-    //  |Thread     |Per Thread
-    std::vector<std::vector<std::future<void>>> futures;
+    std::vector<std::future<void>> futures;
 
-    //  |Thead      |Waves      |Data
-    std::vector<std::vector<std::vector<int>>> indices   (options.numThreads, std::vector<std::vector<int>>(options.wavesPerThread));
-    std::vector<std::vector<std::vector<int>>> amplitudes(options.numThreads, std::vector<std::vector<int>>(options.wavesPerThread));
-    std::vector<std::vector<std::vector<Peak>>> peaks    (options.numThreads);
+    std::vector<std::vector<Peak>> peaks(options.numThreads*options.wavesPerThread);
+
+    std::vector<PulseData> pulses(options.numThreads*options.wavesPerThread);
 
     while(!producer.done()){
-        int pulses = 0; //This keeps track of how many pulses we actually receive, in case producer.done() == true halfway through
         futures.clear();
+        int numPulses = 0; //This keeps track of how many pulses we actually receive, in case producer.done() == true halfway through
         for(int i = 0; i < options.numThreads && !producer.done(); ++i){
-            for(int j = 0; j < options.wavesPerThread && !producer.done(); ++j, ++pulses){
-                producer.producePulse(indices[i][j], amplitudes[i][j]); //Fill with pulse data
+            for(int j = 0; j < options.wavesPerThread && !producer.done(); ++j, ++numPulses){
+                producer.producePulse(pulses[numPulses]); //Fill with pulse data
+                if(pulses[numPulses].returningIndex.empty()){
+                    numPulses--;
+                    continue;
+                }
 
                 //Create task to process waveform
-                std::packaged_task<void()> task(std::bind(fitWaveform, indices[i][j], amplitudes[i][j], options.noiseLevel, options.nlsFitting, peaks[i][j]));
+                //We have to pass the postProcess function like this because it requires a reference to producer
+                std::packaged_task<void()> task
+                    (std::bind(processWaveform<AnalyzeFunc>, std::ref(pulses[numPulses]), options.noiseLevel, options.nlsFitting, std::ref(peaks[numPulses]), std::ref(analyzeFunc)));
 
                 //Get a future (allows us to wait for it to be done later)
-                futures[i].emplace_back(task.get_future());
+                futures.emplace_back(task.get_future());
 
                 //@@TODO is may be desireable to calculate stats in a threaded fashion as well
                 //Move it into one of the taskthreads to start processing it
@@ -88,27 +103,32 @@ void processData(PulseProducer& producer, PeakConsumer& consumer, const Options&
             }
         }
 
-        for(int i = 0; i < options.numThreads && pulses > 0; ++i){
-            for(int j = 0; j < options.wavesPerThread && pulses > 0; ++j, --pulses){
-                futures[i][j].wait();   //Wait for taskthread to process it.
-                consumer.consumePeaks(peaks[i][j]); //@@TODO if the task threw an exception, peaks[i][j] will probably be whatever was in there last time.
+        for(int i = 0, index=0; i < options.numThreads && numPulses > 0; ++i){
+            for(int j = 0; j < options.wavesPerThread && numPulses > 0; ++j, --numPulses, ++index){
+                futures[index].wait();   //Wait for taskthread to process it.
+                consumer.consumePeaks(peaks[index], pulses[index]); //@@TODO if the task threw an exception, peaks[i][j] will probably be whatever was in there last time.
             }
         }
     }
+
+    consumer.postProcess();
 }
 
 //Single threaded version
-template<typename PulseProducer, typename PeakConsumer>
-void processData_Single(PulseProducer& producer, PeakConsumer& consumer, const Options& options){
-    std::vector<int> indexData;
-    std::vector<int> amplitudeData;
+template<typename PulseProducer, typename PeakConsumer, typename AnalyzeFunc>
+void processData_Single(PulseProducer& producer, PeakConsumer& consumer, AnalyzeFunc& analyzeFunc, const Options& options){
+    PulseData data;
     std::vector<Peak> peaks;
 
     while(!producer.done()){
-        producer.producePulse(indexData, amplitudeData);
-        fitWaveform(indexData, amplitudeData, options.noiseLevel, options.nlsFitting, peaks);
-        consumer.consumePeaks(peaks);
+        producer.producePulse(data);
+
+        if(data.returningIndex.empty()) continue;
+
+        processWaveform<AnalyzeFunc>(data, options.noiseLevel, options.nlsFitting, peaks, analyzeFunc);
+        consumer.consumePeaks(peaks, data);
     }
+    consumer.postProcess();
 }
 
 }   // namespace Common

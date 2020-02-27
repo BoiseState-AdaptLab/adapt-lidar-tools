@@ -223,7 +223,7 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
     }
 
     if(guesses.empty()){
-        spdlog::info("No peaks to fit");    //@@TODO level, this may be common
+        spdlog::trace("No peaks to fit");
         return false;
     }
 

@@ -215,13 +215,13 @@ bool FlightLineData::hasNextPulse() const{
  * Read and populate a single pulse at a time
  * @param pd the pulse to read
  */
-void FlightLineData::getNextPulse(PulseData *pd){
+void FlightLineData::getNextPulse(PulseData& pd){
 
     // Clear vectors since we're storing a single pulse at a time
-    pd->outgoingIndex.clear();
-    pd->outgoingAmplitude.clear();
-    pd->returningIndex.clear();
-    pd->returningAmplitude.clear();
+    pd.outgoingIndex.clear();
+    pd.outgoingAmplitude.clear();
+    pd.returningIndex.clear();
+    pd.returningAmplitude.clear();
 
     if(!next_pulse_exists){
         spdlog::critical("CRITICAL ERROR! Cannot be here if there isn't a next "
@@ -229,7 +229,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
 
         return; // Returning empty pd
     }
-    current_wave_gps_info.populateGPS(pReader);
+
+    pd.gpsInfo.populateGPS(pReader);
 
     double pulse_outgoing_start_time;
     double pulse_outgoing_segment_time;
@@ -264,10 +265,10 @@ void FlightLineData::getNextPulse(PulseData *pd){
                 sampling->get_duration_from_anchor_for_segment();
         }
         for(int k = 0; k < sampling->get_number_of_samples(); k++){
-            pd->outgoingIndex.push_back(pulse_outgoing_segment_time -
+            pd.outgoingIndex.push_back(pulse_outgoing_segment_time -
                     pulse_outgoing_start_time);
             int temp_amp = sampling->get_sample(k);
-            pd->outgoingAmplitude.push_back(temp_amp);
+            pd.outgoingAmplitude.push_back(temp_amp);
             pulse_outgoing_segment_time++;
         }
     }
@@ -281,8 +282,8 @@ void FlightLineData::getNextPulse(PulseData *pd){
             spdlog::critical("The second sampling must be a returning wave!");
 
             // Clearing outgoing idx so no bad data is returned.
-            pd->outgoingIndex.clear();
-            pd->outgoingAmplitude.clear();
+            pd.outgoingIndex.clear();
+            pd.outgoingAmplitude.clear();
             return;
         }
         //Populate returing wave data
@@ -301,16 +302,16 @@ void FlightLineData::getNextPulse(PulseData *pd){
                     sampling->get_duration_from_anchor_for_segment();
             }
             for(int k = 0; k < sampling->get_number_of_samples(); k++){
-                pd->returningIndex.push_back(pulse_returning_segment_time -
-                        pulse_returning_start_time);
-                pd->returningAmplitude.push_back(sampling->get_sample(k));
+                pd.returningIndex.push_back(pulse_returning_segment_time -
+                       pulse_returning_start_time);
+                pd.returningAmplitude.push_back(sampling->get_sample(k));
                 pulse_returning_segment_time++;
             }
 
             // FOR TESTING PURPOSES
             // std::cerr << std::endl << "DEBUG SAMPLES: ";
-            // for(int i=0; i< (int)pd->returningAmplitude.size(); i++){
-            //   std::cerr<< pd->returningAmplitude[i] << " ";
+            // for(int i=0; i< (int)pd.returningAmplitude.size(); i++){
+            //   std::cerr<< pd.returningAmplitude[i] << " ";
             // }
             // std::cerr << std::endl ;
         }
@@ -337,53 +338,43 @@ void FlightLineData::getNextPulse(PulseData *pd){
  * @param peaks pointer to the peaks to calculate activations for
  * @return the number of peaks left after calculation
  */
-int FlightLineData::calc_xyz_activation(std::vector<Peak*> *peaks){
-    int i = 1;
-    std::vector<Peak*>::iterator it;
-    // for each of the incoming peaks
-    for(it = peaks->begin(); it != peaks->end();){
-        // if the amplitude of the peak is too small just ignore the whole
-        // thing
-        if((*it)->amp <= (*it)->triggering_amp){
-            free(*it);
-            it = peaks->erase(it);
-            continue;
+int FlightLineData::calc_xyz_activation(std::vector<Peak>& peaks, const PulseData& pd) const{
+    for(auto iter = peaks.begin(); iter != peaks.end(); ++iter){
+        if(iter->amp <= iter->triggering_amp){
+            iter = peaks.erase(iter);
         }
+    }
+
+    int i = 1;
+    for(Peak& peak : peaks){
         // check to see that each of the gps locations is within our
         // bounding box -- this is for x and y only. 
         // We do not care about the z_activation
-        (*it)->x_activation =
-            (*it)->triggering_location * current_wave_gps_info.dx +
-            current_wave_gps_info.x_first;
-        if((*it)->x_activation < bb_x_min || (*it)->x_activation > bb_x_max+1){
+        peak.x_activation =  peak.triggering_location * pd.gpsInfo.dx + pd.gpsInfo.x_first;
+
+        if(peak.x_activation < bb_x_min || peak.x_activation > bb_x_max+1){
             spdlog::error("\nx activation: {} not in range: {} - {}", 
-                         (*it)->x_activation, bb_x_min, bb_x_max);
-              
+                         peak.x_activation, bb_x_min, bb_x_max);
         }
 
-        (*it)->y_activation =
-            (*it)->triggering_location * current_wave_gps_info.dy +
-            current_wave_gps_info.y_first;
-        if((*it)->y_activation < bb_y_min || (*it)->y_activation > bb_y_max+1){
+        peak.y_activation = peak.triggering_location * pd.gpsInfo.dy + pd.gpsInfo.y_first;
+
+        if(peak.y_activation < bb_y_min || peak.y_activation > bb_y_max+1){
             spdlog::error("\ny activation: {} not in range: {} - {}",
-                         (*it)->y_activation, bb_y_min, bb_y_max);
-               
+                         peak.y_activation, bb_y_min, bb_y_max);
         }
 
-        (*it)->z_activation =
-            (*it)->triggering_location * current_wave_gps_info.dz +
-            current_wave_gps_info.z_first;
+        peak.z_activation = peak.triggering_location * pd.gpsInfo.dz + pd.gpsInfo.z_first;
         
         //mark the position in case any peaks were filtered
-        (*it)->position_in_wave = i;
+        peak.position_in_wave = i;
         i++;
-        it++;
     }
     //make sure that if our final peak got filtered out, we mark the new one
-    if(peaks->size() > 0) {
-        peaks->back()->is_final_peak=true;
+    if(!peaks.empty()){
+        peaks.back().is_final_peak=true;
     }
-    return peaks->size();
+    return peaks.size();
 }
 
 /**

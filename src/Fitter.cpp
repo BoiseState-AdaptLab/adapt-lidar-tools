@@ -227,21 +227,6 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         return false;
     }
 
-    //Write waveform if trace logging
-    if(spdlog::default_logger()->level() == spdlog::level::trace){
-        std::string tmp;
-        for(auto val : indexData){
-            tmp+=std::to_string(val)+" ";
-        }
-        spdlog::trace("Index Data:\n{}", tmp);
-
-        tmp.clear();
-        for(auto val : amplitudeData){
-            tmp+=std::to_string(val)+" ";
-        }
-
-        spdlog::trace("Amplitude Data:\n{}", tmp);
-    }
 
     //Create workspace and params
     std::unique_ptr<gsl_vector, decltype(&gsl_vector_free)> params
@@ -269,6 +254,22 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         double b = gsl_vector_get(params.get(), i*3+1);
         double c = gsl_vector_get(params.get(), i*3+2);
         guesses.at(i) = {a,b,c};
+    }
+
+    //Write waveform if trace logging
+    if(!result && spdlog::default_logger()->level() >= spdlog::level::err){
+        std::string tmp;
+        for(auto val : indexData){
+            tmp+=std::to_string(val)+" ";
+        }
+        spdlog::error("Index Data:\n{}", tmp);
+
+        tmp.clear();
+        for(auto val : amplitudeData){
+            tmp+=std::to_string(val)+" ";
+        }
+
+        spdlog::error("Amplitude Data:\n{}", tmp);
     }
 
     return result; //Someone else can check and see if the peaks make sense (i.e. check negative amplitude)

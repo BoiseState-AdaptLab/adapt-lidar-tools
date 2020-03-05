@@ -11,9 +11,6 @@
 #include "Fitter.hpp"
 
 GaussianFitter::GaussianFitter(){
-    fail = 0;
-    pass = 0;
-    total = 0;
 
     //Set instance variables to default values, as defined in header.
     tolerance_scales = TOL_SCALES;
@@ -374,6 +371,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
         return 0;
     }
 
+    if(idxData.size() < 60){
+        small++;
+    }
+
     smoothing_expt(&ampData);
     std::vector<Fitter::Gaussian> guesses;
     Fitter::guessGaussians(idxData, ampData, noise_level, guesses);
@@ -383,8 +384,10 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
     bool result = Fitter::fitGaussians(idxData, ampData, guesses);
+    total++;
 
     if(!result){
+        fail++;
         spdlog::error("Failed to fit waveform");
         return 0;   //@@TODO
     }
@@ -414,12 +417,16 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
     }
 
     if(!valid){
+        fail++;
         for(Peak* ptr : *results){
             delete(ptr);
         }
         results->clear();
         return 0;
+    }else{
+        pass++;
     }
+
 
     return guesses.size();
 }

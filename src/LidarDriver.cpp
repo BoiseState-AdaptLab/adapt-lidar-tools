@@ -175,9 +175,10 @@ void LidarDriver::fit_data(FlightLineData &raw_data, LidarVolume &fitted_data,
         bb_y_min << "-" << bb_y_max << " X " << bb_z_min << "-" << bb_z_max <<
         std::endl;*/
 
-    spdlog::debug("Total: {}", fitter.get_total());
-    spdlog::debug("Pass: {}", fitter.get_pass());
-    spdlog::debug("Fail: {}", fitter.get_fail());
+    spdlog::info("Total: {}", fitter.total);
+    spdlog::info("Pass: {}", fitter.pass);
+    spdlog::info("Fail: {}", fitter.fail);
+    spdlog::info("Short: {}", fitter.small);
 }
 
 void log_raw_data(std::vector<int> idx, std::vector<int> wave) {

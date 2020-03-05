@@ -54,9 +54,10 @@ class GaussianFitter{
         std::vector<std::string> equations; //Fitted equations
 
         int max; //The max peak amplitude of each set of returning waves
-        int fail;
-        int pass;
-        int total;
+        int fail=0;
+        int pass=0;
+        int total=0;
+        int small=0;
 
 
         float SQRT_LN2 = sqrt(log(2)); // Used to calculate the FWHM from two data points

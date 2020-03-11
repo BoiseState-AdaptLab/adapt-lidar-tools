@@ -228,20 +228,20 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
     }
 
     //Write waveform if trace logging		
-￼    if(spdlog::default_logger()->level() == spdlog::level::trace){		
-￼        std::string tmp;		
-￼        for(auto val : indexData){		
-￼            tmp+=std::to_string(val)+" ";		
-￼        }		
-￼        spdlog::trace("Index Data:\n{}", tmp);		
-￼
-￼        tmp.clear();		
-￼        for(auto val : amplitudeData){		
-￼            tmp+=std::to_string(val)+" ";		
-￼        }		
-￼
-￼        spdlog::trace("Amplitude Data:\n{}", tmp);		
-￼    }
+    if(spdlog::default_logger()->level() == spdlog::level::trace){		
+        std::string tmp;		
+        for(auto val : indexData){		
+            tmp+=std::to_string(val)+" ";		
+        }		
+        spdlog::trace("Index Data:\n{}", tmp);		
+
+        tmp.clear();		
+        for(auto val : amplitudeData){		
+            tmp+=std::to_string(val)+" ";		
+        }		
+
+        spdlog::trace("Amplitude Data:\n{}", tmp);		
+    }
 
     //Create workspace and params
     std::unique_ptr<gsl_vector, decltype(&gsl_vector_free)> params

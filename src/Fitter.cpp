@@ -227,6 +227,21 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         return false;
     }
 
+    //Write waveform if trace logging		
+￼    if(spdlog::default_logger()->level() == spdlog::level::trace){		
+￼        std::string tmp;		
+￼        for(auto val : indexData){		
+￼            tmp+=std::to_string(val)+" ";		
+￼        }		
+￼        spdlog::trace("Index Data:\n{}", tmp);		
+￼
+￼        tmp.clear();		
+￼        for(auto val : amplitudeData){		
+￼            tmp+=std::to_string(val)+" ";		
+￼        }		
+￼
+￼        spdlog::trace("Amplitude Data:\n{}", tmp);		
+￼    }
 
     //Create workspace and params
     std::unique_ptr<gsl_vector, decltype(&gsl_vector_free)> params
@@ -256,8 +271,8 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         guesses.at(i) = {a,b,c};
     }
 
-    //Write waveform if trace logging
-    if(!result && spdlog::default_logger()->level() >= spdlog::level::err){
+    //If failed, log waveform
+    if(!result && spdlog::default_logger()->level() <= spdlog::level::err){
         std::string tmp;
         for(auto val : indexData){
             tmp+=std::to_string(val)+" ";

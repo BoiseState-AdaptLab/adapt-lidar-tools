@@ -339,4 +339,47 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
     }
 }
 
+//See Fitter.hpp for docs
+void reduceNoise(std::vector<int>& amplitudeData, int noiseLevel, double aggression){
+    //Given a range [first, last), returns the first sub-range [start, end), such that all values in that subrange are less than the noise level
+    //Note: This is a lambda. See here for details: https://en.cppreference.com/w/cpp/language/lambda
+    auto findNoiseRegion = [noiseLevel](std::vector<int>::iterator first, std::vector<int>::iterator last){
+        auto start = std::find_if(first, last, [noiseLevel](int i){return i <= noiseLevel;});   //Find first point less than or eq noise level
+        auto end =   std::find_if(start, last, [noiseLevel](int i){return i >  noiseLevel;});   //Find a point past it that is greater than the noise level
+        return std::make_pair(start, end);
+    };
+
+    //For all noise regions in the data
+    for(auto noiseRegion = findNoiseRegion(amplitudeData.begin(), amplitudeData.end());   //Find the first noise region
+            noiseRegion.first != amplitudeData.end();                            //We found a region
+            noiseRegion = findNoiseRegion(noiseRegion.second, amplitudeData.end())){  //Find next region
+
+        //For each data point in the range [region.first, region.second) (each data point in the noise region)
+        for(auto data = noiseRegion.first; data != noiseRegion.second; ++data){
+            const double value = *data;
+            const double newValue = value * (value/(aggression*noiseLevel));
+            *data = static_cast<int>(std::round(newValue));
+        }
+    }
+}
+
+//See Fitter.hpp for docs @@TODO: May act weird with segmented waves that don't end nicely
+void smoothData(std::vector<int>& amplitudeData){
+    auto maxElement = std::max_element(amplitudeData.begin(), amplitudeData.end());
+    if(maxElement == amplitudeData.end() || *maxElement == 0){ //Empty or zero
+        return;
+    }
+
+    const int max = *maxElement;
+    int prevValue = amplitudeData.front();
+    for(std::size_t i = 1; i < amplitudeData.size()-1; ++i){
+        const double delta = amplitudeData[i] - (prevValue+amplitudeData[i]+amplitudeData[i+1])/3.0;
+        prevValue = amplitudeData[i];
+
+        const double diff = amplitudeData[i]-max;
+        const double scaleFactor = std::pow(diff/max, 2);
+        amplitudeData[i] -= delta*scaleFactor;
+    }
+}
+
 };  // namespace Fitter

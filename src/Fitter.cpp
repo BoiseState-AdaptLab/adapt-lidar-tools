@@ -1,12 +1,12 @@
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_multifit_nlinear.h>
-#include <gsl/gsl_vector.h>
-
 #include <algorithm>
 #include <cassert>
 #include <memory>
 #include <utility>
 #include <vector>
+
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_multifit_nlinear.h>
+#include <gsl/gsl_vector.h>
 
 #include "spdlog/spdlog.h"
 
@@ -17,9 +17,10 @@ namespace Fitter{
 //Small wrapper used to pass variables through the void* params pointer that GSL gives us.
 struct Pulse{
     Pulse() = delete;   //It doesn't make sense to make an empty one of these, since it is a group of aliases
-    Pulse(const std::vector<int>& idxData, const std::vector<int>& ampData) : indexData(idxData), amplitudeData(ampData){};
+    Pulse(const std::vector<int>& idxData, const std::vector<int>& ampData, int minPeak) : indexData(idxData), amplitudeData(ampData), minPeak(minPeak){};
     const std::vector<int>& indexData;
     const std::vector<int>& amplitudeData;
+    const int minPeak;
 };
 
 //https://en.wikipedia.org/wiki/Gaussian_function
@@ -45,7 +46,6 @@ std::string gaussianToString(const gsl_vector& x){
     return result;
 }
 
-//@@TODO name
 /**
  * Given the parameters x (which is a list of {a,b,c} tuples), put the error into the vector f.
  * @param x         The current parameters. Is some amount of {a,b,c} tuples.
@@ -53,7 +53,7 @@ std::string gaussianToString(const gsl_vector& x){
  * @param f         Output vector to store error in.
  * @return          Always GSL_SUCCESS
  */
-int func_f(const gsl_vector* x, void* params, gsl_vector* f){
+int gaussianSumResidual(const gsl_vector* x, void* params, gsl_vector* f){
     assert(x);
     assert(params);
     assert(f);
@@ -72,8 +72,9 @@ int func_f(const gsl_vector* x, void* params, gsl_vector* f){
 
             y-=gaussianFunc(a,b,c,t);
 
-            if(a < 5 || b < 0 || c < 1){    //@@TODO define reasonable lower bounds. Could pass through params
-                y+=1000;    //Penalty to act as a contraint.
+            //This is how we constrain the fitting to some boundaries. If the Gaussian exceeds these boundaries, we add a large error (1000)
+            if(a < data.minPeak || b < 0 || b > data.indexData.back() || c < 1){    //@@TODO did we want minPeak or noise_level?
+                y+=1000;    //Penalty to act as a constraint.
             }
         }
 
@@ -83,15 +84,14 @@ int func_f(const gsl_vector* x, void* params, gsl_vector* f){
     return GSL_SUCCESS;
 }
 
-//@@TODO name
 /**
- * Computes the jacobian of the gaussian sum equation.
+ * Computes the Jacobian of the Gaussian sum equation.
  * @param x         Gaussian parameters
  * @param params    Used to recover the idx and amp data
- * @param J         Output matrix for the jacobian
+ * @param J         Output matrix for the Jacobian
  * @return          Always GSL_SUCCESS
  */
-int func_df(const gsl_vector* x, void* params, gsl_matrix* J){
+int gaussianSumResidualDerivative(const gsl_vector* x, void* params, gsl_matrix* J){
     assert(x);
     assert(params);
     assert(J);
@@ -149,7 +149,7 @@ bool solveSystem(gsl_multifit_nlinear_workspace* workspace, gsl_vector* results)
 
     const size_t maxIter = 150;
     const double xTol = 1.0e-2; //GSL recommends the power be the number of decimal places you want the accuracy to be
-    const double gTol = 1.0e-8; //std::pow(GSL_DBL_EPSILON, 1/3); //Recommended to be this in docs @@TODO
+    const double gTol = 1.0e-8; //std::pow(GSL_DBL_EPSILON, 1./3); //Recommended to be this in docs @@TODO
     const double fTol = 1.0e-8; //@@TODO no idea what a good metric for this is
 
     spdlog::debug("Starting fitting with guesses {}", gaussianToString(*params));
@@ -162,7 +162,6 @@ bool solveSystem(gsl_multifit_nlinear_workspace* workspace, gsl_vector* results)
     if(result != GSL_SUCCESS){
         spdlog::error("Fitting failed with error \"{}\"", gsl_strerror(result));
         spdlog::error("Last guesses: {}", gaussianToString(*params));
-        //@@TODO print initial guess also. When in production, should also print waveform?
         return false;
     }
 
@@ -191,8 +190,8 @@ gsl_multifit_nlinear_workspace* setupWorkspace(const Pulse& data, const gsl_vect
 
     params = gsl_multifit_nlinear_default_parameters();
 
-    system.f    = func_f;
-    system.df   = func_df;
+    system.f    = gaussianSumResidual;
+    system.df   = gaussianSumResidualDerivative;
     system.fvv  = nullptr;
     params.trs  = gsl_multifit_nlinear_trs_lmaccel;
 
@@ -207,18 +206,15 @@ gsl_multifit_nlinear_workspace* setupWorkspace(const Pulse& data, const gsl_vect
     return workspace;
 }
 
-//See Fitter.hpp for docs @@TODO misc note: noise_level never did anything regarding the fitter itself
-bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, std::vector<Gaussian>& guesses){
-    //@@TODO: prefix logs with function name?
-    //@@TODO this should probably be an assert
+//See Fitter.hpp for docs
+bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int minPeakAmp, std::vector<Gaussian>& guesses){
     if(indexData.size() != amplitudeData.size()){
         spdlog::critical("Index data and amplitude data have mismatched sizes! ({}) and ({})", indexData.size(), amplitudeData.size());
         return false;
     }
 
     if(indexData.empty()){
-        assert(guesses.empty());
-        spdlog::error("No waveform data");
+        spdlog::trace("No waveform data");
         return false;
     }
 
@@ -227,20 +223,20 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         return false;
     }
 
+    //Lambda for printing out a vector https://en.cppreference.com/w/cpp/language/lambda
+    auto printVec = [](const std::vector<int>& vec){
+        std::string tmp;
+        for(const int& i : vec){
+            tmp+=std::to_string(i)+" ";
+        }
+        return tmp;
+    };
+
+
     //Write waveform if trace logging
     if(spdlog::default_logger()->level() == spdlog::level::trace){
-        std::string tmp;
-        for(auto val : indexData){
-            tmp+=std::to_string(val)+" ";
-        }
-        spdlog::trace("Index Data:\n{}", tmp);
-
-        tmp.clear();
-        for(auto val : amplitudeData){
-            tmp+=std::to_string(val)+" ";
-        }
-
-        spdlog::trace("Amplitude Data:\n{}", tmp);
+        spdlog::trace("Index Data:\n{}", printVec(indexData));
+        spdlog::trace("Amplitude Data:\n{}", printVec(amplitudeData));
     }
 
     //Create workspace and params
@@ -255,13 +251,19 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         gsl_vector_set(params.get(), i*3+2, guesses[i].c);
     }
 
-    const Pulse data{indexData, amplitudeData};  //For passing through void*
+    const Pulse data{indexData, amplitudeData, minPeakAmp};  //For passing through void*
     gsl_multifit_nlinear_fdf system;
     gsl_multifit_nlinear_parameters fdf_params;;
     std::unique_ptr<gsl_multifit_nlinear_workspace, decltype(&gsl_multifit_nlinear_free)> workspace
         (setupWorkspace(data, params.get(), system, fdf_params), &gsl_multifit_nlinear_free);
 
     bool result = solveSystem(workspace.get(), params.get());
+
+    if(!result){    //Fitting failed, dump waveform
+        spdlog::error("Fitting failed. Waveform:");
+        spdlog::error("Index Data:\t\t{}", printVec(indexData));
+        spdlog::error("Amplitude Data:\t{}", printVec(amplitudeData));
+    }
 
     //Copy back to return the results
     for(std::size_t i = 0; i < guesses.size(); ++i){
@@ -275,32 +277,23 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
 }
 
 //See Fitter.hpp for docs
-void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, std::vector<Gaussian>& guesses){
+void estimateGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int minPeakAmp, std::vector<Gaussian>& guesses){
     guesses.clear();
 
-    //@@TODO this should probably be an assert
     if(indexData.size() != amplitudeData.size()){
         spdlog::critical("Index data and amplitude data have mismatched sizes! ({}) and ({})", indexData.size(), amplitudeData.size());
         return;
     }
 
-    //@@TODO should this be an assert? If not, do we want to return an error?
     if(amplitudeData.empty()){
-        spdlog::error("No amplitude data");
+        spdlog::trace("No amplitude data");
         return;
     }
 
-    auto addPeak = [&](int a, int b){
-        if(a > noiseLevel){        //Only add if greater than noise. @@TODO should be greater eq?
-            spdlog::trace("Found peak at {}", b);
-            guesses.emplace_back(a, b, 1);
-        }
-    };
-
     int min2ndDiffVal = 0;
     int min2ndDiffIdx = -1;
-
     bool trackingPeak = false;
+
     for(std::size_t i = 1; i < amplitudeData.size()-1; ++i){
         int secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i] + amplitudeData[i-1];
 
@@ -309,13 +302,19 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         }
 
         if(secondDeriv >= 0 && trackingPeak){   //Finished tracking a peak, add it to guesses
-            addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
+            int a = amplitudeData[min2ndDiffIdx];
+            int b = indexData[min2ndDiffIdx];
+
+            if(a > minPeakAmp){
+                spdlog::trace("Found peak with a of {} at {}", a, b);
+                guesses.emplace_back(a, b, 1);
+            }
+
             min2ndDiffVal = 0;
             trackingPeak = false;
-
         }else if(secondDeriv < 0){  //Currently tracking a peak
             trackingPeak = true;
-            if(secondDeriv < min2ndDiffVal || (secondDeriv == min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
+            if(secondDeriv < min2ndDiffVal || (secondDeriv == min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimum, or same min but larger amplitude
                 min2ndDiffVal = secondDeriv;
                 min2ndDiffIdx = i;
             }
@@ -323,12 +322,12 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
     }
 
     if(trackingPeak){   //We were tracking a peak when we ran out of data
-        addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
+        spdlog::critical("@@@@ Peak ended while rising");   //@@TODO Remove this eventually
     }
 
     std::vector<std::size_t> deleteList;
     for(std::size_t i = 1; i < guesses.size(); ++i){
-        if(guesses[i].b - guesses[i-1].b < 4){//@@TODO threshold
+        if(guesses[i].b - guesses[i-1].b < 4){ //@@TODO find a good threshold
             deleteList.push_back(i);
         }
     }
@@ -339,47 +338,4 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
     }
 }
 
-//See Fitter.hpp for docs
-void reduceNoise(std::vector<int>& amplitudeData, int noiseLevel, double aggression){
-    //Given a range [first, last), returns the first sub-range [start, end), such that all values in that subrange are less than the noise level
-    //Note: This is a lambda. See here for details: https://en.cppreference.com/w/cpp/language/lambda
-    auto findNoiseRegion = [noiseLevel](std::vector<int>::iterator first, std::vector<int>::iterator last){
-        auto start = std::find_if(first, last, [noiseLevel](int i){return i <= noiseLevel;});   //Find first point less than or eq noise level
-        auto end =   std::find_if(start, last, [noiseLevel](int i){return i >  noiseLevel;});   //Find a point past it that is greater than the noise level
-        return std::make_pair(start, end);
-    };
-
-    //For all noise regions in the data
-    for(auto noiseRegion = findNoiseRegion(amplitudeData.begin(), amplitudeData.end());   //Find the first noise region
-            noiseRegion.first != amplitudeData.end();                            //We found a region
-            noiseRegion = findNoiseRegion(noiseRegion.second, amplitudeData.end())){  //Find next region
-
-        //For each data point in the range [region.first, region.second) (each data point in the noise region)
-        for(auto data = noiseRegion.first; data != noiseRegion.second; ++data){
-            const double value = *data;
-            const double newValue = value * (value/(aggression*noiseLevel));
-            *data = static_cast<int>(std::round(newValue));
-        }
-    }
-}
-
-//See Fitter.hpp for docs @@TODO: May act weird with segmented waves that don't end nicely
-void smoothData(std::vector<int>& amplitudeData){
-    auto maxElement = std::max_element(amplitudeData.begin(), amplitudeData.end());
-    if(maxElement == amplitudeData.end() || *maxElement == 0){ //Empty or zero
-        return;
-    }
-
-    const int max = *maxElement;
-    int prevValue = amplitudeData.front();
-    for(std::size_t i = 1; i < amplitudeData.size()-1; ++i){
-        const double delta = amplitudeData[i] - (prevValue+amplitudeData[i]+amplitudeData[i+1])/3.0;
-        prevValue = amplitudeData[i];
-
-        const double diff = amplitudeData[i]-max;
-        const double scaleFactor = std::pow(diff/max, 2);
-        amplitudeData[i] -= delta*scaleFactor;
-    }
-}
-
-};  // namespace Fitter
+}  // namespace Fitter

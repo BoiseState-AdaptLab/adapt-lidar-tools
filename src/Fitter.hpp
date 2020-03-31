@@ -25,34 +25,21 @@ namespace Fitter{
      *
      * @param indexData     The indices of the amplitude data. Must be the same length as amplitudeData.
      * @param amplitudeData The amplitude data of the curve to fit. Must be the same length as indexData.
+     * @param minPeakAmp    The smallest height a peak is allowed to have by the fitter
      * @param guesses       A set of starting Gaussians to begin fitting from. The final fitting results will be placed in this vector, overwriting the original guesses
      * @return bool         True if fitter completed without issues. False if there is no waveform data, no peaks, or other error.
      */
-    bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, std::vector<Gaussian>& guesses);
+    bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int minPeakAmp, std::vector<Gaussian>& guesses);
 
     /**
      * Guesses gaussians using second central finite differencing.
      *
      * @param indexData     The indices of the amplitude data. Must be the same length as amplitudeData.
      * @param amplitudeData The amplitude data of the wave. Must be the same length as indexData.
-     * @param noiseLevel    Only count the peak if it's amplitude is above this number
+     * @param minPeakAmp    Only count the peak if it's amplitude is above this number
      * @param guesses       Output vector to put guesses into. Empty if no guesses found
      */
-    void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, std::vector<Gaussian>& guesses);
-
-    /**
-     * Reduces noise in the amplitudeData. It may be desirable to call this one with the standard noise level, and then again with a very small noise level, to effectively floor the small values.
-     * @param amplitudeData Data to reduce noise in
-     * @param noiseLevel    Cutoff value, values above this will not be reduced.
-     * @param aggression    How aggressively the noise is reduced. Higher values induce a larger change on the data.
-     */
-    void reduceNoise(std::vector<int>& amplitudeData, int noiseLevel, double aggression=1.);
-
-    /**
-     * Smooth the amplitudeData, affecting smaller values exponentially more (relative to the max)
-     * @param amplitudeData Data to be smoothed.
-     */
-    void smoothData(std::vector<int>& amplitudeData);
+    void estimateGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int minPeakAmp, std::vector<Gaussian>& guesses);
 
 } // namespace Fitter
 #endif  //ADAPTLIDAR_FITTER_HPP

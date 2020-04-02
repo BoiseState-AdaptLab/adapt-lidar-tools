@@ -2,8 +2,9 @@
 #define ADAPTLIDARTOOLS_LIDARVOLUMENEW
 
 #include <list>
-#include <unordered_map>
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "Peak.hpp"
 
@@ -27,7 +28,9 @@ private:
 
     bool indexValid(std::pair<int, int> index) const;
 
-    //[x][y]
-    std::unordered_map<int, std::unordered_map<int, std::list<Peak>>> volume_;
+    int resolveIndex(std::pair<int, int> index) const;
+
+    //[x][y] = (x*ySize + y)
+    std::vector<std::unique_ptr<std::list<Peak>>> volume_;
 };
 #endif // ADAPTLIDARTOOLS_LIDARVOLUMENEW

@@ -6,30 +6,53 @@
 
 #include "PulseWavesProducer.hpp"
 #include "GeoTIFFConsumer.hpp"
+#include "Fitter.hpp"
+#include "FlightLineData.hpp"
+#include "Peak.hpp"
 
 constexpr double NO_DATA = -99999;
 
 namespace GeoTIFF{
 
-    void peakCalculations(PulseData& pulse, std::vector<Peak>& peaks, int noiseLevel, bool useNLSFitting, bool calcBackscatter, double calibConstant){
-    if (calcBackscatter){
-        if (pulse.outgoingIndex.empty()){
-            return;
-        }
+bool peakCalculations(PulseData& pulse, std::vector<Peak>& peaks, const Common::Options& options){
+    int idx=1;
+    for(Peak& peak : peaks){
+        //Taken from GaussianFitter +567
+        constexpr double neg4ln2 = -2.77258872223978123766892848583270627230200053744102101648;
+        double c = peak.fwhm/Common::cToFWHM;
+        peak.triggering_location = std::ceil(peak.location -
+                std::sqrt((std::log(options.noiseLevel/peak.amp)*c*c)/neg4ln2));
+        //@@TODO: There was a comment here previously: "TODO: fix to use correct function"
+        peak.triggering_amp = peak.amp * std::exp(neg4ln2 * std::pow(peak.triggering_location-peak.location, 2) * (1/(c*c)));
+        peak.rise_time = peak.location - peak.triggering_location;
 
-        std::vector<Peak> results;
-        Common::fitWaveform(pulse.outgoingIndex, pulse.outgoingAmplitude, noiseLevel, useNLSFitting, results);
-        
+        //Activation stuff, from FlightLineData::calc_xyz_activation
+        //@@TODO the old version removed peaks that had a large triggering amp, and logged invalid activations
+        peak.x_activation = peak.triggering_location * pulse.gpsInfo.dx + pulse.gpsInfo.x_first;
+        peak.y_activation = peak.triggering_location * pulse.gpsInfo.dy + pulse.gpsInfo.y_first;
+        peak.z_activation = peak.triggering_location * pulse.gpsInfo.dz + pulse.gpsInfo.z_first;
+        peak.position_in_wave = idx++;
+    }
+
+    if(!peaks.empty()){
+        peaks.back().is_final_peak=true;
+    }
+
+    //Backscatter stuff, from LidarDriver::peak_calculations. Depends on activations
+    if (options.calcBackscatter && !pulse.outgoingIndex.empty()){
+        std::vector<Fitter::Gaussian> gaussians;
+        Common::fitWaveform(pulse.outgoingIndex, pulse.outgoingAmplitude, options, gaussians);
+
         //For every returning wave peak, calculate the backscatter coefficient
         for(Peak& peak : peaks){
-            if (results.empty()){
+            if (gaussians.empty()){
                 peak.backscatter_coefficient = NO_DATA;
             } else {
-                peak.calcBackscatter(results[0].amp,
-                        results.at(0).fwhm, calibConstant,
+                peak.calcBackscatter(gaussians.front().a,
+                        gaussians.front().c * Common::cToFWHM, options.calibrationConstant,
                         pulse.gpsInfo.x_anchor, pulse.gpsInfo.y_anchor, pulse.gpsInfo.z_anchor);
             }
-            if (peak.backscatter_coefficient == INFINITY){
+            if (peak.backscatter_coefficient == INFINITY){  //@@TODO is this special, or should we be using some of the proper functions like std::isfinite?
                 peak.backscatter_coefficient = NO_DATA;
             }
         }
@@ -39,11 +62,14 @@ namespace GeoTIFF{
     for(Peak& peak : peaks){
         peak.rise_time = peak.rise_time < 0 ? NO_DATA : peak.rise_time;
     }
-    }
+
+    return true;
+}
 
 int mainProxy(int argc, char* argv[]){
     //Old code
     spdlog::set_pattern("[%t][%^%=8l%$] %v");
+    spdlog::critical("sizeof(Peak) {}", sizeof(Peak));
 
     CmdLine cmdline;
     if(!cmdline.parse_args(argc, argv)){
@@ -67,24 +93,24 @@ int mainProxy(int argc, char* argv[]){
         spdlog::set_level(spdlog::level::critical);
     }
 
-    PulseWavesProducer producer(cmdline.getInputFileName(true));
-    GeoTIFFConsumer consumer;
+    const std::string filename(cmdline.getInputFileName(true));
+
+    PulseWavesProducer producer(filename);
+
+    FlightLineData flightData;
+    flightData.setFlightLineData(filename);
+    std::vector<PeakProducts::Product> products{{PeakProducts::Property::Elevation, PeakProducts::Statistic::Maximum, PeakProducts::Subset::All}};
+    GeoTIFFConsumer consumer(flightData.bb_x_min, flightData.bb_x_max, flightData.bb_y_min, flightData.bb_y_max, "TEST2_", flightData.geog_cs, flightData.utm, products);
     Common::Options options;
 
-    //@@TODO setup stuff
-
-    auto func = [&producer, &consumer, options](std::vector<Peak>& peaks, PulseData& data){
-        producer.postProcess(peaks, data);
-        peakCalculations(data, peaks, options.noiseLevel, options.nlsFitting, true, 45.0);  //@TODO
-        spdlog::trace("Called");
-    };
 
     options.numThreads=8;
-    options.wavesPerThread=20;
+    options.wavesPerThread=500;
 
-    Common::processData(producer, consumer, func, options);
+    Common::processData(producer, consumer, peakCalculations, options);
+    //Common::processData_Single(producer, consumer, peakCalculations, options);
 
-    spdlog::critical("Finished");
+    spdlog::info("Finished");
 
 
     return 0;

@@ -16,7 +16,6 @@ public:
 
     //PulseProducer requirements
     void producePulse(PulseData& data);
-    void postProcess(std::vector<Peak>& peaks, const PulseData& data) const;
     bool done() const;
 
     //Returns true if producer is ready to use

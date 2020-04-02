@@ -1,39 +1,40 @@
 #include <cassert>
+#include <vector>
 
 #include "spdlog/spdlog.h"
 
 #include "Common.hpp"
 #include "Fitter.hpp"
 #include "Peak.hpp"
+#include "PreProcess.hpp"
 
 namespace Common{
 
-void fitWaveform(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int noiseLevel, bool useNLSFitting, std::vector<Peak>& results){
+bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, const Options& options, std::vector<Fitter::Gaussian>& results){
+    results.clear();
     assert(indexData.size() == amplitudeData.size());
     if(indexData.empty()){
-        spdlog::trace("No data");
-        return;
+        spdlog::trace("[Common] No data");
+        return true;
     }
 
-    std::vector<Fitter::Gaussian> guesses;
-    Fitter::guessGaussians(indexData, amplitudeData, noiseLevel, guesses);
-
-    if(useNLSFitting){
-        bool result = Fitter::fitGaussians(indexData, amplitudeData, guesses);
-        if(!result){
-            //@@TODO dump the peaks?
-            spdlog::error("Failed to fit waveform");
-        }
+    if(options.reduceNoise){
+        PreProcess::reduceNoise(amplitudeData, options.noiseLevel);
+        PreProcess::reduceNoise(amplitudeData, options.noiseLevel/3, 2.0);
     }
 
-    results.clear();
-    for(const Fitter::Gaussian& gaussian : guesses){
-        //@@TODO this is where we would fill in the additional peak params (trig loc, trig amp). We would also probably verify the results here?
-        Peak peak;
-        peak.amp = gaussian.a;
-        peak.location = gaussian.b;
-        peak.fwhm = cToFWHM * gaussian.c;
-        results.push_back(peak);
+    if(options.smoothData){
+        PreProcess::smoothData(indexData, amplitudeData);
     }
+
+    //@@TODO Any scenarios in which the guesser fails?
+    Fitter::estimateGaussians(indexData, amplitudeData, options.minPeakAmp, results);
+
+    bool fitValid = true;
+    if(options.nlsFitting){
+        fitValid = Fitter::fitGaussians(indexData, amplitudeData, options.minPeakAmp, results);
+    }
+
+    return fitValid;
 }
 }   // namespace Common

@@ -38,21 +38,21 @@ void GeoTIFFConsumer::postProcess(){
         data.orient(coordSys_, utm_, volume_.xMin, volume_.yMax);
 
         //Loop through all peaks
-        for(int x = volume_.xMin; x < volume_.xMax; ++x){
+        for(int x = 0; x < volume_.xSize; ++x){
             //Clear previous values, and fill with no data value
             columnBuffer.clear();
             columnBuffer.resize(bufferSize, GDAL_NO_DATA);
 
-            for(int y = volume_.yMin; y < volume_.yMax; ++y){
+            for(int y = 0; y < volume_.ySize; ++y){
                 const std::list<Peak>* peaks = volume_.getPeaks(x, y);
                 if(peaks){  //Only update the buffer if we have peaks there
-                    columnBuffer[y - volume_.yMin] = PeakProducts::produceProduct(*peaks, product);
+                    columnBuffer[volume_.ySize-1-y] = PeakProducts::produceProduct(*peaks, product);    //The volume_.ySize-1 is because it is inverted otherwise
                 }
             }
 
-            bool success = data.writeColumn(columnBuffer, x - volume_.xMin);
+            bool success = data.writeColumn(columnBuffer, x);
             if(!success){
-                spdlog::error("[GeoTIFFConsumer] Failed to write column with offset of {} to file", x-volume_.xMin);
+                spdlog::error("[GeoTIFFConsumer] Failed to write column with offset of {} to file", x);
             }
         }
     }

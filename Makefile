@@ -23,6 +23,8 @@
 # Points to the root of Google Test, relative to where this file is.
 GTEST_DIR = deps/googletest/googletest
 
+SHELL=/bin/bash
+
 # Points to the root of Pulse Waves, relative to where this file is.
 PULSE_DIR = deps/PulseWaves
 
@@ -62,17 +64,19 @@ CPPFLAGS += -isystem $(GTEST_DIR)/include
 #             for heade# files during preprocessing
 #
 # -llib:      Search the library named 'lib' when linking
-CXXFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
-			-Ideps -D _GLIBCXX_DEBUG -D _GLIBCXX_DEBUG_PEDANTIC 
-CFLAGS += -std=c++11 -g -Wall -Wextra -pthread -I$(PULSE_DIR)/inc \
-		  -Ideps
 
-# If this is a profiler build, add -pg flag to all uses of CXX
+#-isystem prevents warnings from being generated
+INC = -isystem $(PULSE_DIR)/inc -isystem deps/ -isystem deps/spdlog/
+
+CXXFLAGS += -std=c++11 -Wall -Wextra -Wnon-virtual-dtor -pedantic -Wcast-align -Woverloaded-virtual -Wpedantic -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wnull-dereference -Wuseless-cast -Wdouble-promotion -Wformat=2 -g -Wno-float-conversion -O3 #-D _GLIBCXX_DEBUG -D _GLIBCXX_DEBUG_PEDANTIC
+
+# If this is a profiler build
 ifdef PROFILER_BUILD
-PFLAG += -pg
-else
-PFLAG =
+	CXXFLAGS += -pg
 endif
+
+#Libraries for linking
+LDFLAGS = -lpthread -L $(PULSE_DIR)/lib -lpulsewaves -lgdal -lcblas -lgsl -lm
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -155,40 +159,34 @@ $(BIN)/%_unittests: $(OBJ)/%_unittests.o $(OBJ)/%.o $(LIB)/gtest_main.a
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
 
-# Builds specific object files
-$(OBJ)/GaussianFitter_unittests.o: $(SRC)/GaussianFitter_unittests.cpp
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c \
-		-o $@ $^
 
 $(OBJ)/%_unittests.o: $(SRC)/%_unittests.cpp
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CXXFLAGS) $(INC) $(CPPFLAGS) -c -o $@ $^
 
-$(OBJ)/FlightLineData.o: $(SRC)/FlightLineData.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
+#Rule for files with a header file
+$(OBJ)/%.o: $(SRC)/%.cpp $(SRC)/%.hpp
+	$(CXX) $(CXXFLAGS) $(INC) $< -c -o $@
 
-$(OBJ)//WaveGPSInformation.o: $(SRC)/WaveGPSInformation.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
-
-$(OBJ)//LidarVolume.o: $(SRC)/LidarVolume.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -lgdal -L$(PULSE_DIR)/lib
-
-$(OBJ)/GaussianFitter.o: $(SRC)/GaussianFitter.cpp
-	$(CXX) $(PFLAG) -Ideps -std=c++11 -g -fpermissive -c -o $@ $^ -lm \
-		-lgsl -lgslcblas
-
-$(OBJ)/Fitter.o: $(SRC)/Fitter.cpp
-	$(CXX) $(PFLAG) $(CXXFLAGS) -Ideps -c -o $@ $^ -lm \
-		-lgsl -lgslcblas
-
-$(OBJ)/LidarDriver.o: $(SRC)/LidarDriver.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
-
-$(OBJ)/TxtWaveReader.o: $(SRC)/TxtWaveReader.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
-
-# Builds all object files
 $(OBJ)/%.o: $(SRC)/%.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS)
+	$(CXX) $(CXXFLAGS) $(INC) $^ -c -o $@
+
+$(BIN)/geotiff: $(OBJ)/GeoTIFFWrapper.o \
+				$(OBJ)/GeoTIFFDriver.o \
+				$(OBJ)/GeoTIFFConsumer.o \
+				$(OBJ)/GDALData.o \
+				$(OBJ)/FlightLineData.o \
+				$(OBJ)/CmdLine.o \
+				$(OBJ)/LidarVolumeNew.o \
+				$(OBJ)/Peak.o \
+				$(OBJ)/PulseWavesProducer.o \
+				$(OBJ)/WaveGPSInformation.o \
+				$(OBJ)/Fitter.o \
+				$(OBJ)/PreProcess.o \
+				$(OBJ)/PeakProducts.o \
+				$(OBJ)/Common.o
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
+
+
 
 # Builds the info tool
 pls-info: $(BIN)/pls-info
@@ -197,8 +195,6 @@ $(BIN)/pls-info: $(OBJ)/GetPLSDetails.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
 
-$(OBJ)/GetPLSDetails.o: $(SRC)/GetPLSDetails.cpp
-	$(CXX) $(PFLAG) -c -o $@ $^ $(CFLAGS) -L$(PULSE_DIR)/lib
 
 # Builds the main driver file 
 geotiff-driver: $(BIN)/geotiff-driver
@@ -209,12 +205,7 @@ $(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
                        $(OBJ)/WaveGPSInformation.o \
                        $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
                        $(OBJ)/TxtWaveReader.o $(OBJ)/Fitter.o
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
-		-lgslcblas
-
-$(OBJ)/pls_to_geotiff.o: $(SRC)/pls_to_geotiff.cpp
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $^
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 # Builds the csv driver file
 
@@ -225,9 +216,7 @@ $(BIN)/csv-driver: $(OBJ)/PlsToCsvHelper.o $(OBJ)/csv_CmdLine.o \
 				   $(OBJ)/PlsToCsvDriver.o $(OBJ)/WaveGPSInformation.o \
 				   $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o $(OBJ)/Fitter.o \
 				   $(OBJ)/TxtWaveReader.o
-	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
-		$(PULSE_DIR)/lib -lpulsewaves -lgdal -lm -lgsl \
-		-lgslcblas
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 # A phony target is one that is not really the name of a file; rather it 
 # is just a name for a recipe to be executed when you make an explicit request. 

@@ -20,10 +20,6 @@ void PulseWavesProducer::producePulse(PulseData& data){
     flightData.getNextPulse(data);
 }
 
-void PulseWavesProducer::postProcess(std::vector<Peak>& peaks, const PulseData& data) const{
-    flightData.calc_xyz_activation(peaks, data);
-}
-
 bool PulseWavesProducer::done() const{
     return !flightData.hasNextPulse();
 }

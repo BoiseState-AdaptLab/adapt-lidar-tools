@@ -27,7 +27,7 @@ void GeoTIFFConsumer::postProcess(){
     //@@TODO: I can make a version of this that calculates all products in one pass, but it would be significantly more complex and the code would be fairly complicated.
 
     std::vector<float> columnBuffer;
-    const int bufferSize = volume_.xSize;
+    const int bufferSize = volume_.ySize;
     columnBuffer.reserve(bufferSize);
 
     for(const PeakProducts::Product& product : products_){

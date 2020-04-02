@@ -6,7 +6,7 @@
 
 #include "PulseWavesProducer.hpp"
 #include "GeoTIFFConsumer.hpp"
-#include "Fitter.hpp"
+#include "GaussianFitter.hpp"
 #include "FlightLineData.hpp"
 #include "Peak.hpp"
 
@@ -40,7 +40,7 @@ bool peakCalculations(PulseData& pulse, std::vector<Peak>& peaks, const Common::
 
     //Backscatter stuff, from LidarDriver::peak_calculations. Depends on activations
     if (options.calcBackscatter && !pulse.outgoingIndex.empty()){
-        std::vector<Fitter::Gaussian> gaussians;
+        std::vector<GaussianFitter::Gaussian> gaussians;
         Common::fitWaveform(pulse.outgoingIndex, pulse.outgoingAmplitude, options, gaussians);
 
         //For every returning wave peak, calculate the backscatter coefficient
@@ -69,7 +69,6 @@ bool peakCalculations(PulseData& pulse, std::vector<Peak>& peaks, const Common::
 int mainProxy(int argc, char* argv[]){
     //Old code
     spdlog::set_pattern("[%t][%^%=8l%$] %v");
-    spdlog::critical("sizeof(Peak) {}", sizeof(Peak));
 
     CmdLine cmdline;
     if(!cmdline.parse_args(argc, argv)){

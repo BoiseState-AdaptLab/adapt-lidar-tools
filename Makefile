@@ -170,23 +170,22 @@ $(OBJ)/%.o: $(SRC)/%.cpp $(SRC)/%.hpp
 $(OBJ)/%.o: $(SRC)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INC) $^ -c -o $@
 
-$(BIN)/geotiff: $(OBJ)/GeoTIFFWrapper.o \
-				$(OBJ)/GeoTIFFDriver.o \
-				$(OBJ)/GeoTIFFConsumer.o \
-				$(OBJ)/GDALData.o \
-				$(OBJ)/FlightLineData.o \
-				$(OBJ)/CmdLine.o \
-				$(OBJ)/LidarVolumeNew.o \
-				$(OBJ)/Peak.o \
-				$(OBJ)/PulseWavesProducer.o \
-				$(OBJ)/WaveGPSInformation.o \
-				$(OBJ)/Fitter.o \
-				$(OBJ)/PreProcess.o \
-				$(OBJ)/PeakProducts.o \
-				$(OBJ)/Common.o
+$(BIN)/geotiff-driver: \
+		$(OBJ)/CmdLine.o \
+		$(OBJ)/Common.o \
+		$(OBJ)/FlightLineData.o \
+		$(OBJ)/GaussianFitter.o \
+		$(OBJ)/GDALData.o \
+		$(OBJ)/GeoTIFFConsumer.o \
+		$(OBJ)/GeoTIFFDriver.o \
+		$(OBJ)/GeoTIFFWrapper.o \
+		$(OBJ)/LidarVolume.o \
+		$(OBJ)/Peak.o \
+		$(OBJ)/PeakProducts.o \
+		$(OBJ)/PreProcess.o \
+		$(OBJ)/PulseWavesProducer.o \
+		$(OBJ)/WaveGPSInformation.o
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
-
-
 
 # Builds the info tool
 pls-info: $(BIN)/pls-info
@@ -194,18 +193,6 @@ pls-info: $(BIN)/pls-info
 $(BIN)/pls-info: $(OBJ)/GetPLSDetails.o
 	$(CXX) $(PFLAG) $(CPPFLAGS) $(CXXFLAGS) -g -lpthread $^ -o $@ -L \
 		$(PULSE_DIR)/lib -lpulsewaves
-
-
-# Builds the main driver file 
-geotiff-driver: $(BIN)/geotiff-driver
-
-$(BIN)/geotiff-driver: $(OBJ)/pls_to_geotiff.o $(OBJ)/CmdLine.o \
-                       $(OBJ)/FlightLineData.o $(OBJ)/LidarVolume.o \
-                       $(OBJ)/LidarDriver.o $(OBJ)/WaveGPSInformation.o\
-                       $(OBJ)/WaveGPSInformation.o \
-                       $(OBJ)/Peak.o $(OBJ)/GaussianFitter.o \
-                       $(OBJ)/TxtWaveReader.o $(OBJ)/Fitter.o
-	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 # Builds the csv driver file
 

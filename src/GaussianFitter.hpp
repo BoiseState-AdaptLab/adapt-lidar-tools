@@ -1,94 +1,45 @@
-//File name: GaussianFitting.hpp
-//Created on: 13-October-2017
-//Author: ravi
-
-#ifndef GAUSIANFITTING_HPP_
-#define GAUSIANFITTING_HPP_
-
-#include "Peak.hpp"
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_multifit_nlinear.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
-#include <gsl/gsl_errno.h>
+#ifndef ADAPTLIDAR_GAUSSIANFITTER_HPP
+#define ADAPTLIDAR_GAUSSIANFITTER_HPP
+#include <iostream>
 #include <vector>
-#include <sstream>
 
-// Compile-time defaults for fitter params
-#define MAX_ITER 200
+// Provides a method to fit a set of initial guesses to a curve. Curve should be compose of a sum of Gaussians.
+namespace GaussianFitter{
 
-#define TOL_SCALES true
-#define X_TOL .01
-#define G_TOL .01
-#define F_TOL .01
+    /**
+     * Compact representation of a Gaussian. Used because 95% of a Peak is irrelevant to the fitting
+     */
+    struct Gaussian{
+        Gaussian() = default;
+        Gaussian(double a, double b, double c) : a(a), b(b), c(c) {};   //Allow for {1,2,3} construction
+        double a=0;
+        double b=0;
+        double c=0;
+    };
 
-#define GUESS_LT0_DEFAULT 4
-#define GUESS_UPPER_LIM 20
-#define GUESS_UPPER_LIM_DEFAULT 10
+    /**
+     * Given reasonably accurate guesses, fits them to a curve denoted by {indexData_i, amplitudeData_i}.
+     * The equation is a sum of Gaussians, fitted using GSL's NLS fitter.
+     *
+     * It is better for the parameters of a guess to be too small than too large.
+     *
+     * @param indexData     The indices of the amplitude data. Must be the same length as amplitudeData.
+     * @param amplitudeData The amplitude data of the curve to fit. Must be the same length as indexData.
+     * @param minPeakAmp    The smallest height a peak is allowed to have by the fitter
+     * @param guesses       A set of starting Gaussians to begin fitting from. The final fitting results will be placed in this vector, overwriting the original guesses
+     * @return bool         True if fitter completed without issues. False if there is no waveform data, no peaks, or other error.
+     */
+    bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int minPeakAmp, std::vector<Gaussian>& guesses);
 
-#define MAX_AMP_MULTIPLIER 2.
-#define AMP_LOWER_BOUND 10
+    /**
+     * Guesses Gaussians using second central finite differencing.
+     *
+     * @param indexData     The indices of the amplitude data. Must be the same length as amplitudeData.
+     * @param amplitudeData The amplitude data of the wave. Must be the same length as indexData.
+     * @param minPeakAmp    Only count the peak if it's amplitude is above this number
+     * @param guesses       Output vector to put guesses into. Empty if no guesses found
+     */
+    void estimateGaussians(const std::vector<int>& indexData, const std::vector<int>& amplitudeData, int minPeakAmp, std::vector<Gaussian>& guesses);
 
-class GaussianFitter{
-
-    public:
-        int find_peaks(std::vector<Peak*>* results,std::vector<int> ampData,
-                std::vector<int> idxData, const size_t max_iter);
-        int noise_level;
-        int guess_peaks(std::vector<Peak*>* results, 
-                const std::vector<int>& ampData, 
-                const std::vector<int>& idxData);
-        void smoothing_expt(std::vector<int> *waveArray);
-        GaussianFitter();
-        std::string get_equation(int idx);
-        int greatest_change(const std::vector<int> &data, int idx, int amp, bool left);
-        float get_fwhm(int a, float t, int ai, float ti);
-        int get_fail();
-        int get_pass();
-        int get_total();
-
-        void setDiagnostics(bool newval);
-
-        std::vector<std::string> equations; //Fitted equations
-
-        int max; //The max peak amplitude of each set of returning waves
-        int fail;
-        int pass;
-        int total;
-
-
-        float SQRT_LN2 = sqrt(log(2)); // Used to calculate the FWHM from two data points
-        float C_TO_FWHM = 2 * sqrt(2 * log(2)); // Converts the c value into the FWHM for a gaussian curve
-
-        // *** Fitter parameters (that were magic numbers once) ***
-
-        bool tolerance_scales;
-        double x_tolerance;
-        double g_tolerance;
-        double f_tolerance;
-
-        int guess_lessthan_0_default; // If guess less than 0, it is set to this
-        int guess_upper_lim;          // If guess greater than this value...
-        int guess_upper_lim_default;  // It is set to this value
-
-        float max_amp_multiplier; // Val is multiplied by max data point in wave
-        float amp_lower_bound; // Val is unmodified (no multiplication)
-
-
-    private:
-        bool log_diagnostics;
-
-        int solve_system (gsl_vector *x,
-                gsl_multifit_nlinear_fdf *fdf,
-                gsl_multifit_nlinear_parameters *params, int max,
-                const size_t max_iter);
-
-        std::vector<int> calculateFirstDifferences(std::vector<int>ampData);
-        void incr_fail();
-        void incr_pass();
-        void incr_total();
-};
-
-#endif /* GAUSIANFITTING_HPP_ */
+} // namespace GaussianFitter
+#endif  //ADAPTLIDAR_GAUSSIANFITTER_HPP

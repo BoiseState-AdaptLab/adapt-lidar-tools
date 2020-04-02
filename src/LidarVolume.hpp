@@ -1,71 +1,36 @@
-// File name: LidarVolume.cpp
-// Created on: 08-November-2017
-// Author: ravi
+#ifndef ADAPTLIDARTOOLS_LIDARVOLUME
+#define ADAPTLIDARTOOLS_LIDARVOLUME
 
-#ifndef LIDARVOLUME_HPP_
-#define LIDARVOLUME_HPP_
+#include <list>
+#include <memory>
+#include <utility>
 #include <vector>
+
 #include "Peak.hpp"
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <malloc.h>
-#include <cstring>
-#include <string>
-#include "gdal.h"
-#include "gdal_priv.h"
-#include "ogr_spatialref.h"
-#include <iostream>
 
 class LidarVolume{
+public:
+    LidarVolume(double minX, double maxX, double minY, double maxY);
 
-    public:
-        //The min and max fields describing the bounding box(bb) that
-        //includes the first & last points of the sampled parts of the returning
-        //waveforms of all pulses.
-        double bb_x_min;
-        double bb_y_min;
-        double bb_z_min;
-        double bb_x_max;
-        double bb_y_max;
-        double bb_z_max;
+    bool insertPeak(const Peak& peak);
 
-        int bb_x_idx_min;
-        int bb_y_idx_min;
-        int bb_z_idx_min;
-        int bb_x_idx_max;
-        int bb_y_idx_max;
-        int bb_z_idx_max;
+    const std::list<Peak>* getPeaks(int x, int y) const;
 
-        double max_z;
-        double min_z;
+    const int xMin=0;
+    const int xMax=0;
+    const int yMin=0;
+    const int yMax=0;
 
-        //extent of x, y, and z as calculated from the pulse data (max - min)
-        int x_idx_extent;
-        int y_idx_extent;
+    const int xSize=0;
+    const int ySize=0;
+private:
+    std::pair<int, int> getIndex(const Peak& peak) const;
 
-        std::vector<Peak*>** volume;
+    bool indexValid(std::pair<int, int> index) const;
 
-        LidarVolume();
+    int resolveIndex(std::pair<int, int> index) const;
 
-        //Read and store the mins and maxes from the header, calculate and store
-        //the i, j,k values and the extents
-        void setBoundingBox(double ld_xMin, double ld_xMax, double ld_yMin,
-                double ld_yMax, double ld_zMin, double ld_zMax);
-        void insert_peak(Peak* peak);
-        void allocateMemory();
-        void deallocateMemory();
-        int position(int i, int j);
-        int gps_to_voxel_x(double x);
-        int gps_to_voxel_y(double y);
-
-        // This takes the float value 'val', converts it to red, green &
-        // blue values, then sets those values into the image memory buffer
-        // location pointed to by 'ptr'
-        void setRGB(unsigned char* r,unsigned char* g, unsigned char* b,
-                    float val);
+    //[x][y] = (x*ySize + y)
+    std::vector<std::unique_ptr<std::list<Peak>>> volume_;
 };
-
-
-#endif /* LIDARVOLUME_HPP_ */
-
+#endif // ADAPTLIDARTOOLS_LIDARVOLUME

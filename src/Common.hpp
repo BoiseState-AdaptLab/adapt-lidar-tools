@@ -10,7 +10,7 @@
 #include "Peak.hpp"
 #include "PulseData.hpp"
 #include "TaskThread.hpp"
-#include "Fitter.hpp"
+#include "GaussianFitter.hpp"
 
 /** ===== TYPE REQUIREMENTS =====
  * An object P of type PulseProducer must:
@@ -50,7 +50,7 @@ struct Options{
 };
 
 //@@TODO docs
-bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, const Options& options, std::vector<Fitter::Gaussian>& results);
+bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, const Options& options, std::vector<GaussianFitter::Gaussian>& results);
 
 /* Fits a single waveform to a sum of Gaussians.
  * @param indexData     The index data of the wave
@@ -62,12 +62,12 @@ bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, c
 template <typename PostFunc>
 bool processWaveform(PulseData& data, const Options& options, std::vector<Peak>& results, PostFunc& postFunc){
     results.clear();
-    std::vector<Fitter::Gaussian> gaussians;
+    std::vector<GaussianFitter::Gaussian> gaussians;
     bool result = fitWaveform(data.returningIndex, data.returningAmplitude, options, gaussians);
 
     if(!result) return false;
 
-    for(const Fitter::Gaussian& gaussian : gaussians){
+    for(const GaussianFitter::Gaussian& gaussian : gaussians){
         Peak peak;
         peak.amp = gaussian.a;
         peak.location = gaussian.b;

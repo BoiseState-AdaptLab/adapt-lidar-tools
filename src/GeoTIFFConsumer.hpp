@@ -4,7 +4,7 @@
 #include <tuple>
 #include <vector>
 
-#include "LidarVolumeNew.hpp"
+#include "LidarVolume.hpp"
 #include "Peak.hpp"
 #include "PeakProducts.hpp"
 #include "PulseData.hpp"
@@ -16,7 +16,7 @@ public:
     void postProcess();
 
 private:
-    LidarVolumeNew volume_;
+    LidarVolume volume_;
     std::string fileNamePrefix_;
     std::string coordSys_;
     int utm_=0;

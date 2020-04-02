@@ -4,13 +4,13 @@
 #include "spdlog/spdlog.h"
 
 #include "Common.hpp"
-#include "Fitter.hpp"
+#include "GaussianFitter.hpp"
 #include "Peak.hpp"
 #include "PreProcess.hpp"
 
 namespace Common{
 
-bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, const Options& options, std::vector<Fitter::Gaussian>& results){
+bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, const Options& options, std::vector<GaussianFitter::Gaussian>& results){
     results.clear();
     assert(indexData.size() == amplitudeData.size());
     if(indexData.empty()){
@@ -28,11 +28,11 @@ bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, c
     }
 
     //@@TODO Any scenarios in which the guesser fails?
-    Fitter::estimateGaussians(indexData, amplitudeData, options.minPeakAmp, results);
+    GaussianFitter::estimateGaussians(indexData, amplitudeData, options.minPeakAmp, results);
 
     bool fitValid = true;
     if(options.nlsFitting){
-        fitValid = Fitter::fitGaussians(indexData, amplitudeData, options.minPeakAmp, results);
+        fitValid = GaussianFitter::fitGaussians(indexData, amplitudeData, options.minPeakAmp, results);
     }
 
     return fitValid;

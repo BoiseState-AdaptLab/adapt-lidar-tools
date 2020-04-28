@@ -43,8 +43,8 @@ struct Options{
     bool nlsFitting = true;
     bool reduceNoise=true;
     bool smoothData=true;
-    bool calcBackscatter=false; //@@TODO default
-    double calibrationConstant=0.0; //@@TODO default
+    bool calcBackscatter=false;
+    double calibrationConstant=std::numeric_limits<double>::min();
     int numThreads = 8;
     int wavesPerThread = 50;
 };
@@ -77,7 +77,7 @@ bool processWaveform(PulseData& data, const Options& options, std::vector<Peak>&
 
     result = postFunc(data, results, options);   //@@TODO: Does it need to know about the noise and whatnot?
 
-    return true;
+    return result;
 }
 
 /** Fits all pulses produced by producer, and feeds them into consumer.
@@ -100,6 +100,7 @@ void processData(PulseProducer& producer, PeakConsumer& consumer, PostFunc& post
     int totalWaves=0;
     int emptyWaves=0;
     int failedWaves=0;
+    int totalPeaks=0;
 
     spdlog::info("[Common] Beginning waveform processing");
     while(!producer.done()){
@@ -132,6 +133,8 @@ void processData(PulseProducer& producer, PeakConsumer& consumer, PostFunc& post
                 bool valid = futures[index].get();   //Wait for taskthread to process it.
                 if(!valid){
                     failedWaves++;
+                }else{
+                    totalPeaks+=peaks[index].size();
                     consumer.consumePeaks(peaks[index], pulses[index]); //@@TODO if the task threw an exception, peaks[i][j] will probably be whatever was in there last time.
                 }
             }
@@ -146,6 +149,7 @@ void processData(PulseProducer& producer, PeakConsumer& consumer, PostFunc& post
     spdlog::info("[Common] \t{} Total Waves", totalWaves);
     spdlog::info("[Common] \t{} Empty Waves ({}% of total)", emptyWaves, (100.*emptyWaves)/totalWaves);
     spdlog::info("[Common] \t{} Failed waves ({}% of total)", failedWaves, (100.*failedWaves)/totalWaves);
+    spdlog::info("[Common] \t{} Total Peaks", totalPeaks);
 }
 
 //Single threaded version

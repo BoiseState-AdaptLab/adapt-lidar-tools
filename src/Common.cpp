@@ -31,7 +31,7 @@ bool fitWaveform(std::vector<int>& indexData, std::vector<int>& amplitudeData, c
     GaussianFitter::estimateGaussians(indexData, amplitudeData, options.minPeakAmp, results);
 
     bool fitValid = true;
-    if(options.nlsFitting){
+    if(options.nlsFitting && !results.empty()){
         fitValid = GaussianFitter::fitGaussians(indexData, amplitudeData, options.minPeakAmp, results);
     }
 

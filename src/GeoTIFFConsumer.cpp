@@ -2,12 +2,14 @@
 #include <string>
 #include <vector>
 
+#include <algorithm>
+
 #include <gdal.h>
 
 #include "spdlog/spdlog.h"
 
 #include "GeoTIFFConsumer.hpp"
-#include "GDALData.hpp"
+#include "GDALWriter.hpp"
 #include "PeakProducts.hpp"
 
 GeoTIFFConsumer::GeoTIFFConsumer(double minX, double maxX, double minY, double maxY, std::string fileNamePrefix, std::string coordSys, int utm, std::vector<PeakProducts::Product> products):
@@ -34,18 +36,25 @@ void GeoTIFFConsumer::postProcess(){
         std::string fileName = fileNamePrefix_ + "_" + PeakProducts::productString(product) + ".tif";
         std::string fileDesc = "desc";  //@@TODO get from somewhere
 
-        GDALData data(*tiffDriver, fileName, fileDesc, volume_.xSize, volume_.ySize);
+        GDALWriter data(*tiffDriver, fileName, fileDesc, volume_.xSize, volume_.ySize);
         data.orient(coordSys_, utm_, volume_.xMin, volume_.yMax);
+
+        int maxPeaks = 0;
+        int avgPeaks = 0;
+        int numWaves = 0;
 
         //Loop through all peaks
         for(int x = 0; x < volume_.xSize; ++x){
             //Clear previous values, and fill with no data value
             columnBuffer.clear();
-            columnBuffer.resize(bufferSize, GDAL_NO_DATA);
+            columnBuffer.resize(bufferSize, GDALWriter::GDAL_NO_DATA);
 
             for(int y = 0; y < volume_.ySize; ++y){
                 const std::list<Peak>* peaks = volume_.getPeaks(x, y);
                 if(peaks){  //Only update the buffer if we have peaks there
+                    maxPeaks = std::max(maxPeaks, static_cast<int>(peaks->size()));
+                    avgPeaks += peaks->size();
+                    numWaves++;
                     columnBuffer[volume_.ySize-1-y] = PeakProducts::produceProduct(*peaks, product);    //The volume_.ySize-1 is because it is inverted otherwise
                 }
             }
@@ -55,6 +64,9 @@ void GeoTIFFConsumer::postProcess(){
                 spdlog::error("[GeoTIFFConsumer] Failed to write column with offset of {} to file", x);
             }
         }
+
+        spdlog::critical("Max Peaks: {}", maxPeaks);
+        spdlog::critical("Average Peaks {}", static_cast<double>(avgPeaks)/numWaves);
     }
 }
 

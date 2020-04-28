@@ -1,11 +1,12 @@
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <functional>
 #include <iterator>
-#include <list>
 #include <numeric>
 #include <unordered_map>
 
+#include "GDALWriter.hpp"
 #include "Peak.hpp"
 #include "PeakProducts.hpp"
 
@@ -45,93 +46,120 @@ const std::unordered_map<Property, std::string> propertyStringMap{
     {Property::Backscatter, "Backscatter"}
 };
 
-double minimum(std::list<Peak>::const_iterator begin, std::list<Peak>::const_iterator end, Property property){
-    return propertyMap.at(property)(*std::min_element(begin, end,
-            [&](const Peak& lhs, const Peak& rhs){
-                return propertyMap.at(property)(lhs) < propertyMap.at(property)(rhs);
-            }));
+/**Computes the minimum value of a range of doubles.
+ * The result is undefined if std::distance(begin, end) == 0
+ * @param begin     Inclusive start of the range
+ * @param end       Exclusive end of the range
+ * @return          Minimum value
+ */
+double minimum(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end){
+    assert(std::distance(begin, end) != 0);
+    return *std::min_element(begin, end);
 }
 
-double maximum(std::list<Peak>::const_iterator begin, std::list<Peak>::const_iterator end, Property property){
-    return propertyMap.at(property)(*std::max_element(begin, end,
-            [&](const Peak& lhs, const Peak& rhs){
-                return propertyMap.at(property)(lhs) < propertyMap.at(property)(rhs);
-            }));
+/**Computes the maximum value of a range of doubles.
+ * The result is undefined if std::distance(begin, end) == 0
+ * @param begin     Inclusive start of the range
+ * @param end       Exclusive end of the range
+ * @return          Maximum value
+ */
+double maximum(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end){
+    assert(std::distance(begin, end) != 0);
+    return *std::max_element(begin, end);
 }
 
-double average(std::list<Peak>::const_iterator begin, std::list<Peak>::const_iterator end, Property property){
-    double sum = std::accumulate(begin, end, 0.0,
-            [&](double sum, const Peak& peak){
-                return sum + propertyMap.at(property)(peak);
-            });
+/**Computes the average of a range of doubles.
+ * The result is undefined if std::distance(begin, end) == 0
+ * @param begin     Inclusive start of the range
+ * @param end       Exclusive end of the range
+ * @return          Average
+ */
+double average(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end){
+    assert(std::distance(begin, end) != 0);
+    double sum = std::accumulate(begin, end, 0.0);
     return sum/std::distance(begin, end);
 }
 
-double standardDeviation(std::list<Peak>::const_iterator begin, std::list<Peak>::const_iterator end, Property property){
-    double mean = average(begin, end, property);
+/**Computes the standard deviation of a range of doubles.
+ * The result is undefined if std::distance(begin, end) == 0
+ * @param begin     Inclusive start of the range
+ * @param end       Exclusive end of the range
+ * @return          Standard Deviation
+ */
+double standardDeviation(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end){
+    assert(std::distance(begin, end) != 0);
+    double mean = average(begin, end);
     double value = std::accumulate(begin, end, 0.0,
-            [&](double sum, const Peak& peak){
-                return sum + std::pow(propertyMap.at(property)(peak)-mean, 2);
+            [&](double sum, double val){
+                return sum + std::pow(val-mean, 2);
             });
     return std::sqrt(value/std::distance(begin, end));
 }
 
-//Taken from https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm
-//power = 3 for skewness, 4 for kurtosis
-double skewtosis(std::list<Peak>::const_iterator begin, std::list<Peak>::const_iterator end, Property property, int power){
-    double mean = average(begin, end, property);
-    double stddev = standardDeviation(begin, end, property);
+/**Computes the skewness or kurtosis of a range of doubles.
+ * The result is undefined if std::distance(begin, end) == 0
+ * @param begin     Inclusive start of the range
+ * @param end       Exclusive end of the range
+ * @param power     3 for skewness, 4 for kurtosis
+ * @return          Standard Deviation
+ *
+ * Formulas come from https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm
+ * (This is also where the screenshot in the variable description file comes from)
+ */
+double skewtosis(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end, int power){
+    assert(std::distance(begin, end) != 0);
+    assert(power == 3 || power == 4);
+    double mean = average(begin, end);
+    double stddev = standardDeviation(begin, end);
     double val = std::accumulate(begin, end, 0.0,
-            [&](double sum, const Peak& peak){
-                return sum + std::pow(propertyMap.at(property)(peak) - mean, power);
+            [&](double sum, double val){
+                return sum + std::pow(val-mean, power);
             });
-    return (val/std::distance(begin, end)) * std::pow(stddev, power);
+    return (val/std::distance(begin, end)) / std::pow(stddev, power);
 }
 
 double produceProduct(const std::list<Peak>& peaks, Product product){
-    if(peaks.empty()) return 0.0; //@@TODO no data?
+    if(peaks.empty()) return GDALWriter::GDAL_NO_DATA;
 
-    //@@TODO: Check which functions need more than one data point
-    
     Property property   = std::get<0>(product);
     Statistic statistic = std::get<1>(product);
     Subset subset       = std::get<2>(product);
 
-    std::list<Peak>::const_iterator begin = peaks.begin();
-    std::list<Peak>::const_iterator end = peaks.end();
+    std::vector<double> values;
+    for(const Peak& peak : peaks){
+        switch(subset){
+            case Subset::All:
+                break;
+            case Subset::First:
+                if(peak.position_in_wave != 1) continue;
+                break;
+            case Subset::Last:
+                if(!peak.is_final_peak) continue;
+                break;
+            default:
+                assert(false);
+        }
 
-    switch(subset){
-        case Subset::All:
-            break;
-        case Subset::First:
-            end = begin;
-            ++end;
-            break;
-        case Subset::Last:
-            begin = end;
-            --begin;
-            break;
-        default:
-            return 0;
-            //@@TODO assert false
+        values.emplace_back(propertyMap.at(property)(peak));
     }
+
+    if(values.empty()) return GDALWriter::GDAL_NO_DATA;
 
     switch(statistic){
         case Statistic::Maximum:
-            return maximum(begin, end, property);
+            return maximum(values.begin(), values.end());
         case Statistic::Minimum:
-            return minimum(begin, end, property);
+            return minimum(values.begin(), values.end());
         case Statistic::Average:
-            return average(begin, end, property);
+            return average(values.begin(), values.end());
         case Statistic::StandardDeviation:
-            return standardDeviation(begin, end, property);
+            return standardDeviation(values.begin(), values.end());
         case Statistic::Skewness:
-            return skewtosis(begin, end, property, 3);
+            return skewtosis(values.begin(), values.end(), 3);
         case Statistic::Kurtosis:
-            return skewtosis(begin, end, property, 4);
+            return skewtosis(values.begin(), values.end(), 4);
         default:
-            //@@TODO assert(false);
-            return 0;
+            assert(false);
     }
 }
 

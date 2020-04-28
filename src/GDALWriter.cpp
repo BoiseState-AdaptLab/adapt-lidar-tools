@@ -7,16 +7,16 @@
 
 #include "spdlog/spdlog.h"
 
-#include "GDALData.hpp"
+#include "GDALWriter.hpp"
 
-GDALData::GDALData(GDALDriver& driver, const std::string& fileName, const std::string& fileDesc, int xSize, int ySize):
+GDALWriter::GDALWriter(GDALDriver& driver, const std::string& fileName, const std::string& fileDesc, int xSize, int ySize):
         data_{driver.Create(fileName.c_str(), xSize, ySize, 1, GDT_Float32, nullptr)}, xSize_{xSize}, ySize_{ySize}
 {
     data_->GetRasterBand(1)->SetNoDataValue(GDAL_NO_DATA);
     data_->GetRasterBand(1)->SetDescription(fileDesc.c_str());
 }
 
-void GDALData::orient(const std::string& coordSys, int utm, double xMin, double yMax){
+void GDALWriter::orient(const std::string& coordSys, int utm, double xMin, double yMax){
     std::array<double, 6> transform{xMin, 1, 0, yMax, 0, -1};
     data_->SetGeoTransform(transform.data());
 
@@ -30,7 +30,7 @@ void GDALData::orient(const std::string& coordSys, int utm, double xMin, double 
     CPLFree(wktStr);
 }
 
-bool GDALData::writeColumn(const std::vector<float>& column, int columnOffset){
+bool GDALWriter::writeColumn(const std::vector<float>& column, int columnOffset){
     if(static_cast<int>(column.size()) != ySize_){
         spdlog::critical("[GDAL] Tried to write column with invalid size");
         return false;

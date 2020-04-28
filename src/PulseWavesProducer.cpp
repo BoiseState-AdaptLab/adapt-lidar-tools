@@ -7,13 +7,16 @@ PulseWavesProducer::PulseWavesProducer(const std::string& fileName){
     bool failed = flightData.setFlightLineData(fileName);
     if(failed){
         spdlog::error("Bad file \"{}\"", fileName);
-        valid = false;
     }
 }
 
 PulseWavesProducer::~PulseWavesProducer(){
     flightData.closeFlightLineData();
-    //@@TODO
+    //@@TODO change flight line data to use destructor in the future.
+}
+
+const FlightLineData& PulseWavesProducer::getFlightLineData() const{
+    return flightData;
 }
 
 void PulseWavesProducer::producePulse(PulseData& data){
@@ -22,8 +25,4 @@ void PulseWavesProducer::producePulse(PulseData& data){
 
 bool PulseWavesProducer::done() const{
     return !flightData.hasNextPulse();
-}
-
-PulseWavesProducer::operator bool() const{
-    return valid;
 }

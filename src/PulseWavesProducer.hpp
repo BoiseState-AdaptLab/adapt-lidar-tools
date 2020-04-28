@@ -11,19 +11,28 @@
 
 class PulseWavesProducer{
 public:
+    /** Constructs a new pulsewaves producer.
+     * @param fileName      The .pls file to open.
+     */
     PulseWavesProducer(const std::string& fileName);
-    ~PulseWavesProducer();
 
-    //PulseProducer requirements
+    /** Destructor, closes FlightLineData.
+     */
+    ~PulseWavesProducer();
+    
+    /** Get a read-only reference to the FlightLineData object.
+     * @return  A read only ref to the underlying FlightLineData object.
+     */
+    const FlightLineData& getFlightLineData() const;
+
+
+
+
+    //PulseProducer requirements, see Common.hpp for docs
     void producePulse(PulseData& data);
     bool done() const;
-
-    //Returns true if producer is ready to use
-    operator bool() const;
-
 private:
     FlightLineData flightData;
-    bool valid = true;
 };
 
 #endif // ADAPTLIDARTOOLS_PULSEWAVESPRODUCER_HPP

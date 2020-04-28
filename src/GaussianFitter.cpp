@@ -322,7 +322,7 @@ void estimateGaussians(const std::vector<int>& indexData, const std::vector<int>
     }
 
     if(trackingPeak){   //We were tracking a peak when we ran out of data
-        spdlog::critical("@@@@ Peak ended while rising");   //@@TODO Remove this eventually
+        //spdlog::critical("@@@@ Peak ended while rising");   //@@TODO Remove this eventually
     }
 
     std::vector<std::size_t> deleteList;

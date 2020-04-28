@@ -9,10 +9,10 @@
 #include "Peak.hpp"
 
 LidarVolume::LidarVolume(double minX, double maxX, double minY, double maxY) :
-    xMin(static_cast<int>(std::round(minX))),   //@@TODO is rounding correct?
-    xMax(static_cast<int>(std::round(maxX))),
-    yMin(static_cast<int>(std::round(minY))),
-    yMax(static_cast<int>(std::round(maxY))),
+    xMin(static_cast<int>(std::floor(minX))),
+    xMax(static_cast<int>(std::ceil(maxX))),
+    yMin(static_cast<int>(std::floor(minY))),
+    yMax(static_cast<int>(std::ceil(maxY))),
     xSize(1+xMax-xMin),
     ySize(1+yMax-yMin)
 {
@@ -59,7 +59,6 @@ const std::list<Peak>* LidarVolume::getPeaks(int x, int y) const{
 }
 
 std::pair<int, int> LidarVolume::getIndex(const Peak& peak) const{
-    //@@TODO current version truncs. If we change this, change constructor
     //@@TODO do we want to check for NaN && infinity?
     int x = static_cast<int>(std::round(peak.x_activation)) - xMin;
     int y = static_cast<int>(std::round(peak.y_activation)) - yMin;

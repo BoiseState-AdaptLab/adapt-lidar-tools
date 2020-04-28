@@ -39,7 +39,7 @@ bool CmdLine::parseArguments(int argc, char* argv[]){
     //The second char ':' tell getopt to not print an error message when it encounters a missing argument. It also returns ':' instead of '?' to indicate this. 
     //a letter followed by a ':' means an argument is required. A letter followed by '::' means the argument is optional.
     //Please keep this in the same order as the array.
-    const std::string optionsString = ":f:he:a:w:r:b:ln:v:t:p:m:so";
+    const std::string optionsString = ":f:he:a:w:r:b:lc:n:v:t:p:m:so";
 
     //Please keep the order of the lambdas below in the same order as the array above
     //Maps an option character to a function to execute. The function returns true if the argument was successfully parsed, false if an error occurred. 
@@ -102,6 +102,23 @@ bool CmdLine::parseArguments(int argc, char* argv[]){
         fitterOptions.calcBackscatter = true;
 
         return true;
+    };
+
+    //Set calibration constant
+    
+    argumentMap['c'] = [&](std::string arg){
+        //@@TODO what are the restrictions on the backscatter coeff?
+        try{
+            double constant = std::stod(arg);
+            fitterOptions.calibrationConstant = constant;
+            return true;
+        }catch(const std::invalid_argument& e){
+            spdlog::critical("Unable to convert \"{}\" into double", arg);
+        }catch(const std::out_of_range& e){
+            spdlog::critical("Can't fit \"{}\" into type double", arg);
+        }
+
+        return false;
     };
 
     //Set noise level

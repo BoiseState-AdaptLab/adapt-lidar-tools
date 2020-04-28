@@ -26,8 +26,6 @@ void GeoTIFFConsumer::postProcess(){
         return;
     }
 
-    //@@TODO: I can make a version of this that calculates all products in one pass, but it would be significantly more complex and the code would be fairly complicated.
-
     std::vector<float> columnBuffer;
     const int bufferSize = volume_.ySize;
     columnBuffer.reserve(bufferSize);
@@ -64,9 +62,6 @@ void GeoTIFFConsumer::postProcess(){
                 spdlog::error("[GeoTIFFConsumer] Failed to write column with offset of {} to file", x);
             }
         }
-
-        spdlog::critical("Max Peaks: {}", maxPeaks);
-        spdlog::critical("Average Peaks {}", static_cast<double>(avgPeaks)/numWaves);
     }
 }
 

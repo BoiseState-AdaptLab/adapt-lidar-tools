@@ -85,7 +85,13 @@ int mainProxy(int argc, char* argv[]){
     const FlightLineData& dataRef = producer.getFlightLineData();
 
 
-    GeoTIFFConsumer consumer(dataRef.bb_x_min, dataRef.bb_x_max, dataRef.bb_y_min, dataRef.bb_y_max, cmdline.getTrimmedFileName(), dataRef.geog_cs, dataRef.utm, products);
+    std::string fileName = cmdline.getTrimmedFileName();
+    std::string::size_type lastSlash = fileName.find_last_of("/\\");
+    if(lastSlash != std::string::npos){ //@@TODO: This probably belongs somewhere else
+        fileName = fileName.substr(lastSlash+1);
+    }
+
+    GeoTIFFConsumer consumer(dataRef.bb_x_min, dataRef.bb_x_max, dataRef.bb_y_min, dataRef.bb_y_max, fileName, dataRef.geog_cs, dataRef.utm, products);
 
     Common::processData(producer, consumer, peakCalculations, options);
 

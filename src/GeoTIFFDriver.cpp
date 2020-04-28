@@ -1,5 +1,6 @@
 #include "spdlog/spdlog.h"
 
+//@@TODO sort
 #include "GeoTIFFDriver.hpp"
 #include "CmdLine.hpp"
 #include "Common.hpp"
@@ -67,47 +68,26 @@ bool peakCalculations(PulseData& pulse, std::vector<Peak>& peaks, const Common::
 }
 
 int mainProxy(int argc, char* argv[]){
-    //Old code
-    spdlog::set_pattern("[%t][%^%=8l%$] %v");
+    spdlog::set_pattern("[%t][%^%=8l%$] %v");   //@@TODO
 
     CmdLine cmdline;
-    if(!cmdline.parse_args(argc, argv)){
-        spdlog::error("Unable to parse command line options");
+    if(!cmdline.parseArguments(argc, argv)){
+        spdlog::error("Unable to parse command line options, or help requested");
         return 1;
     }
 
-    // Set verbosity
-    // why
-    if (cmdline.verb == "trace") {
-        spdlog::set_level(spdlog::level::trace);
-    } else if (cmdline.verb == "debug") {
-        spdlog::set_level(spdlog::level::debug);
-    } else if (cmdline.verb == "info") {
-        spdlog::set_level(spdlog::level::info);
-    } else if (cmdline.verb == "warn") {
-        spdlog::set_level(spdlog::level::warn);
-    } else if (cmdline.verb == "error") {
-        spdlog::set_level(spdlog::level::err);
-    } else if (cmdline.verb == "critical") {
-        spdlog::set_level(spdlog::level::critical);
-    }
 
-    const std::string filename(cmdline.getInputFileName(true));
+    std::vector<PeakProducts::Product> products = cmdline.products;
+    Common::Options options = cmdline.fitterOptions;
 
-    PulseWavesProducer producer(filename);
+    PulseWavesProducer producer(cmdline.getPLSFilename());
 
-    FlightLineData flightData;
-    flightData.setFlightLineData(filename);
-    std::vector<PeakProducts::Product> products{{PeakProducts::Property::Elevation, PeakProducts::Statistic::Maximum, PeakProducts::Subset::All}};
-    GeoTIFFConsumer consumer(flightData.bb_x_min, flightData.bb_x_max, flightData.bb_y_min, flightData.bb_y_max, "TEST2_", flightData.geog_cs, flightData.utm, products);
-    Common::Options options;
+    const FlightLineData& dataRef = producer.getFlightLineData();
 
 
-    options.numThreads=8;
-    options.wavesPerThread=500;
+    GeoTIFFConsumer consumer(dataRef.bb_x_min, dataRef.bb_x_max, dataRef.bb_y_min, dataRef.bb_y_max, cmdline.getTrimmedFileName(), dataRef.geog_cs, dataRef.utm, products);
 
     Common::processData(producer, consumer, peakCalculations, options);
-    //Common::processData_Single(producer, consumer, peakCalculations, options);
 
     spdlog::info("Finished");
 

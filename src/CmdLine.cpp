@@ -1,507 +1,447 @@
-// File name: CmdLine.cpp
-// Created on: 17-May-2017
-// Author: ravi
+#include <array>
+#include <cassert>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <unordered_map>
 
+#include <getopt.h>
+
+#include "spdlog/spdlog.h"
 
 #include "CmdLine.hpp"
-#include <math.h>
+#include "PeakProducts.hpp"
 
-using namespace std;
+bool CmdLine::parseArguments(int argc, char* argv[]){
+    //https://linux.die.net/man/3/getopt_long
+    constexpr std::array<struct option, 17> optionsArray{{
+        //{"Long Name", argType, return method, return val}
+        {"file",                required_argument, nullptr, 'f'},
+        {"help",                no_argument,       nullptr, 'h'},
+        {"elevation",           required_argument, nullptr, 'e'},
+        {"amplitude",           required_argument, nullptr, 'a'},
+        {"width",               required_argument, nullptr, 'w'},
+        {"rise-time",           required_argument, nullptr, 'r'},
+        {"backscatter",         required_argument, nullptr, 'b'},
+        {"all",                 no_argument,       nullptr, 'l'},
+        {"calibration",         required_argument, nullptr, 'c'},
+        {"noise-level",         required_argument, nullptr, 'n'},
+        {"verbosity",           required_argument, nullptr, 'v'},
+        {"number-threads",      required_argument, nullptr, 't'},
+        {"waves-per-thread",    required_argument, nullptr, 'p'},
+        {"min-peak-amp",        required_argument, nullptr, 'm'},
+        {"no-smoothing",        no_argument,       nullptr, 's'},
+        {"no-noise-reduction",  no_argument,       nullptr, 'o'},
+        {0,                     0,                 nullptr, 0}
+    }};
 
-//type is ((id - 1) % 6)
-const static std::string prod_calc[6] = {"max", "min", "mean", "stdev", "skew",
-    "kurt"};
-//data used is floor(((id -1) % 18) / 6)
-const static std::string prod_peaks[3] = {"first", "last", "all"};
-//variable is ((id - 1) / 18)
-const static std::string prod_vars[7] = {"elev", "amp", "width",
-    "riseTime", "backscatter", "heightAtEnergy", "energyAtHeight"};
+    //The first char '-' means @@TODO needed
+    //The second char ':' tell getopt to not print an error message when it encounters a missing argument. It also returns ':' instead of '?' to indicate this. 
+    //a letter followed by a ':' means an argument is required. A letter followed by '::' means the argument is optional.
+    //Please keep this in the same order as the array.
+    const std::string optionsString = ":f:he:a:w:r:b:ln:v:t:p:m:so";
 
-//Verbosities
-const static int num_verbs = 6;
-const static std::string verbs[num_verbs] = {"trace", "debug", "info", "warn",
-    "error", "critical"};
+    //Please keep the order of the lambdas below in the same order as the array above
+    //Maps an option character to a function to execute. The function returns true if the argument was successfully parsed, false if an error occurred. 
+    std::unordered_map<int, std::function<bool(std::string arg)>> argumentMap;
 
-const static std::vector<int> start = {0,18,36,54,72,90};//,96,102};
+    //-----Begin Argument Functions-----
 
-/****************************************************************************
- *
- * Begin CmdLine functions
- *
- ****************************************************************************/
-
-/**
- * Function that sets the command line arguments
- * @param args
- */
-void CmdLine::setInputFileName(char *args){
-    plsFileName = args;
-    check_input_file_exists();
-}
-
-
-/**
- * Function that prints(sets up) correct usage of this program
- */
-void CmdLine::setUsageMessage()
-{
-    std::stringstream buffer;
-    buffer << "\nUsage: " << std::endl;
-    buffer << "       path_to_executable -f <path to pls file> -product_type"
-        << " <list of products> [-product_type <list_of_products>]* [-d]"
-        << std::endl;
-    buffer << std::endl;
-    buffer << "Options:  " << std::endl;
-    buffer << "       -f  <path to pls file>"
-        << "  :Generates a Geotif file" << std::endl;
-    buffer << "       -h [adv]"
-        << "  :Prints this help message, the argument 'adv' will display the "
-        << "advanced command line options" << std::endl << std::endl;
-    buffer << "Product Type Options:" << std::endl;
-    buffer << "       -e  <list of products>"
-        << "  :Generates Elevation products" << std::endl;
-    buffer << "       -a  <list of products>"
-        << "  :Generates Amplitude products" << std::endl;
-    buffer << "       -w  <list of products>"
-        << "  :Generates Width products" << std::endl;
-    buffer << "       -r  <list of products>"
-        << "  :Generates Rise Time products" << std::endl;
-    buffer << "       -b  <list of products> <calibration constant>"
-        << "  :Generates Backscatter Coefficient products with the given"
-        << " calibration constant" << std::endl;
-    buffer << "           Scientific notation allowed for calibration constant"
-        << " (e.g. 0.78 = 7.8e-1 = 7.8E-1)"
-        << std::endl;
-    buffer << "       --all <calibration constant>"
-        << "  :Generates all products for every variable. calibration constant"
-        << " is used for backscatter coefficient calculations" << std::endl;
-    buffer << std::endl;
-    buffer << "Product Options and Numbers:" << std::endl << std::endl;
-    buffer << "| Calculation | Peaks Used  | Product Number |" << std::endl;
-    buffer << "|-------------|------------ |----------------|" << std::endl;
-    buffer << "| All Options | All Options | 0              |" << std::endl;
-    buffer << "| Max         | First       | 1              |" << std::endl;
-    buffer << "| Min         | First       | 2              |" << std::endl;
-    buffer << "| Mean        | First       | 3              |" << std::endl;
-    buffer << "| Std.Dev     | First       | 4              |" << std::endl;
-    buffer << "| Skewness    | First       | 5              |" << std::endl;
-    buffer << "| Kurtosis    | First       | 6              |" << std::endl;
-    buffer << "| Max         | Last        | 7              |" << std::endl;
-    buffer << "| Min         | Last        | 8              |" << std::endl;
-    buffer << "| Mean        | Last        | 9              |" << std::endl;
-    buffer << "| Std.Dev     | Last        | 10             |" << std::endl;
-    buffer << "| Skewness    | Last        | 11             |" << std::endl;
-    buffer << "| Kurtosis    | Last        | 12             |" << std::endl;
-    buffer << "| Max         | All         | 13             |" << std::endl;
-    buffer << "| Min         | All         | 14             |" << std::endl;
-    buffer << "| Mean        | All         | 15             |" << std::endl;
-    buffer << "| Std.Dev     | All         | 16             |" << std::endl;
-    buffer << "| Skewness    | All         | 17             |" << std::endl;
-    buffer << "| Kurtosis    | All         | 18             |" << std::endl;
-    buffer << std::endl;
-    buffer << "Valid ways to format the product list include:" << std::endl;
-    buffer << "                   -e 1,2,3           (no white-space)" << std::endl;
-    buffer << "                   -e 1 -e 3 -e 2     (broken into multiple arguments)" << std::endl;
-    buffer << "                   -e \" 1 , 2 , 3 \"   (white-space allowed inside quotes)" << std::endl;
-    buffer << "\nExample: " << std::endl;
-    buffer << "       bin/geotiff-driver -f ../etc/140823_183115_1_clipped_test.pls -e 1,2 -a 3,4,5 -w 14,9 -b 13,4 .768"
-        << std::endl;
-    usageMessage.append(buffer.str());
-
-    std::stringstream advBuffer;
-    advBuffer << "\nAdvanced Options:" << std::endl << std::endl;
-    advBuffer << "       -d"
-        << "  :Disables gaussian fitter, using first differencing method instead" << std::endl;
-    advBuffer << "       -n  <level>"
-        << "  :Sets the noise level. Defaults to 6.\n";
-    advBuffer << "       -v  <verbosity level>"
-        << "  :Sets the level of verbosity for the logger to use" << std::endl;
-    advBuffer << "           Options are 'trace', 'debug', 'info', 'warn', 'error'"
-        << ", and 'critical'" << std::endl;
-    advUsageMessage.append(advBuffer.str());
-}
-
-
-/**
- * Function that prints correct usage of this program
- * @return usage message
- */
-std::string CmdLine::getUsageMessage(bool adv){
-    if (adv) {
-        return advUsageMessage;
-    } else {
-        return usageMessage;
-    }
-}
-
-
-/**
- * Default constructor
- */
-CmdLine::CmdLine(){
-    quiet = false;
-    calibration_constant = 0;
-    printUsageMessage = false;
-    useGaussianFitting = true;
-    calcBackscatter = false;
-    exeName = "";
-    max_amp_multiplier = 0.0;
-    setUsageMessage();
-}
-
-
-/**
- * Function that returns the file name
- * @param pls true returns pls file name, false returns wvs file name
- * @return the name of the input file
- */
-std::string CmdLine::getInputFileName(bool pls){
-    return pls ? plsFileName : wvsFileName;
-}
-
-/**
- * Tries to match option given with verbosity flag to a known value,
- * and if so, sets verbosity instance variable to match it.
- * @param new_verb logger level inputted in the command line
- * @return true if valid leve, else false
- */
-bool CmdLine::set_verbosity (char* new_verb) {
-    for (int i = 0; i < num_verbs; i++) {
-        if (!std::strncmp (new_verb, verbs[i].c_str(), 9)) {
-            verb = new_verb;
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * Function that parses the command line arguments
- * @param argc count of arguments
- * @param argv array of arguments
- * @param quiet true prints all messages, false prints no messages
- *        used in cmd line unittests
- * @return true if all arguments were valid, false otherwise
- */
-bool CmdLine::parse_args(int argc,char *argv[]){
-    // Stores all messages to the user
-    std::vector<std::string> msgs;
-    // Determines which help statement to print
-    bool advHelp = false;
-    //Clear selected products
-    selected_products.clear();
-
-    char optionChar;  //Option character
-    char *fArg;       //Argument of the option character f
-    char *e_arg;      //Argument of the option character e
-
-    /* If the program is run without any command line arguments, display
-     * the correct program usage and quit.*/
-    if(argc < 2){
-        msgs.push_back("No command line arguments");
-        printUsageMessage = true;
-    }
-
-    exeName.append(argv[0]);
-
-    static struct option long_options[] =
-    {
-        {"file", required_argument, NULL, 'f'},
-        {"help", no_argument, NULL, 'h'},
-        {"noise_level", required_argument, NULL, 'n'},
-        {"firstdiff", no_argument, NULL, 'd'},
-        {"verbosity", required_argument, NULL, 'v'},
-        {"elevation", required_argument,NULL,'e'},
-        {"amplitude", required_argument,NULL,'a'},
-        {"width", required_argument,NULL,'w'},
-        {"risetime", required_argument,NULL,'r'},
-        {"backscatter", required_argument,NULL,'b'},
-        {"all", required_argument,NULL,'l'},
-        {"max_amp_multiplier", required_argument, NULL, 'm'},
-        {0, 0, 0, 0}
+    //Set filename
+    argumentMap['f'] = [&](std::string arg){
+        return setInputFile(arg);
     };
 
-    // getopt_long stores the option index here.
-    int option_index = 0;
-    // Tracks the last option used
-    char lastOpt = ' ';
-    // Tracks if we used -h or --help
-    bool wantsHelp = false;
-    /* Using getopt_long to get the arguments with an option.
-     * ":h:ds:" indicate that option 'd' is without arguments while
-     * option 'h' and 's' require arguments
-     */
-    while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:m:",
-                    long_options, &option_index))!= -1){
-        if (optionChar == 'f') { //Set the filename to parse
-            fArg = optarg;
-            setInputFileName(fArg);
-        } else if (optionChar == 'h') { //Show help information
-            wantsHelp = true;
-            printUsageMessage = true;
-        } else if (optionChar == 'd') { //Sets analysis method
-            useGaussianFitting = false;
-        }else if (optionChar == 'n'){
-            try{
-                noise_level = std::stoi(optarg);
-            }catch(const std::invalid_argument& e){
-                msgs.push_back("Cannot convert noise level to int. Error: " + std::string(e.what()));
-                printUsageMessage = true;
-            }catch(const std::out_of_range& e){
-                msgs.push_back("Cannot fit noise level in type int. Error: " + std::string(e.what()));
-                printUsageMessage = true;
-            }
-        } else if (optionChar == 'v') {
-            if (!set_verbosity(optarg)) {
-                msgs.push_back("Invalid logging level");
-                printUsageMessage = true;
-            }
-        } else if (optionChar == 'e' || optionChar == 'a' || optionChar == 'w'
-            || optionChar == 'r' || optionChar == 'b'){
-            //Sets which pruducts to create and for which variable
-            { // Without curly braces wrapping this case, there are compilation
-              //errors
-                e_arg = optarg;
-                std::stringstream ss(e_arg);
-                int var = optionChar == 'a' ? 1 : optionChar == 'w' ?
-                   2 : optionChar == 'r' ? 3 : optionChar == 'b' ? 4 : 0;
-                while(ss.good()) {
-                    string substr;
-                    getline(ss, substr, ',');
-                    try {
-                        //If the inputted product number is above 18, stop now
-                        int prod_num = stoi(substr.c_str());
-                        if (prod_num > 18 || prod_num < 0){
-                            msgs.push_back(string("Invalid product code: ")
-                                + substr);
-                            printUsageMessage = true;
-                        } else if (prod_num == 0){ //Add all 18 products
-                            for (int i = start[var]+1; i <= start[var+1]; i++){
-                                selected_products.push_back(i);
-                            }
-                        } else { //Just add the listed products
-                            selected_products.push_back(start[var] + prod_num);
-                        }
-                    } catch (std::invalid_argument e) {
-                        msgs.push_back(string("Product list could not be") + 
-                            string(" converted into integers"));
-                        printUsageMessage = true;
-                    } catch (std::out_of_range e) {
-                        msgs.push_back(string("Invalid product code: ")
-                            + substr);
-                        printUsageMessage = true;
-                    }
-                }
-                calcBackscatter = optionChar == 'b' ? true : calcBackscatter;
-            }
-        } else if (optionChar == 1 && lastOpt == 'b'
-                  && calibration_constant == 0){ //Set calibration coefficient
-            calibration_constant = std::atof(optarg);
-            if (fabs(calibration_constant) == HUGE_VALF) {
-                msgs.push_back("calibration_constant out of range");
-                printUsageMessage = true;
-            } else {
-                msgs.push_back(
-                        "Calibration constant for backscatter coefficient = "
-                    + std::to_string(calibration_constant));
-            }
-        } else if (optionChar == 'l'){ //Make all products
-            //Get the highest product number
-            for (int i = 1; i <= start.back(); i++){
-                selected_products.push_back(i);
-            }
-            calcBackscatter = true;
-            calibration_constant = std::strtof(optarg, NULL);
-            if (fabs(calibration_constant) == HUGE_VALF) {
-                msgs.push_back("calibration_constant out of range");
-                printUsageMessage = true;
-            } else {
-                msgs.push_back(
-                        "Calibration constant for backscatter coefficient = "
-                    + std::to_string(calibration_constant));
-            }
-        } else if (optionChar == 'm'){
-            // Parse arg for float
-            max_amp_multiplier = std::strtof(optarg, NULL);
-                // atof is unpredictable when provided an input that floats do
-                // not support. strtof will return 'inf', which can be checked
-                // for.
-            if (fabs(max_amp_multiplier) == HUGE_VALF) {
-                    // + or - HUGE_VALF is a macro that is returned when a float
-                    // is too big in positive and negative direction,
-                    // respectively.
-                msgs.push_back("max_amp_multiplier out of range");
-                printUsageMessage = true;
-            }
-        } else if (optionChar == ':'){
-            // Missing option argument
-            msgs.push_back("Missing arguments");
-            printUsageMessage = true;
-        } else if (optionChar == '?'){
-            //Invalid option
-            msgs.push_back("Invalid option");
-            printUsageMessage = true;
-        } else {
-            // Invalid argument, if the last option was -h/--help,
-            // then this is considered a valid argument as -h/--help has an optional argument
-            if (lastOpt != 'h') {
-                msgs.push_back(string("Invalid argument: ") + optarg);
-            } else if (strcmp(optarg, "adv") == 0) { 
-                advHelp = true;
-            }
-            printUsageMessage = true;
-        }
-        lastOpt = optionChar;
-    }
-   
-    //Backscatter coefficient requires a calibration constant
-    if (calcBackscatter && calibration_constant == 0){
-        msgs.push_back("Missing Calibration Constant");
-        printUsageMessage = true;
-    }
+    //We handle help separately since we stop when we encounter it, but it isn't an error.
 
-    // For non option input
-    if(optind < argc){
-        msgs.push_back("Invalid option");
-        printUsageMessage = true;
-    }
-
-    //No file inputted
-    if (getInputFileName(true) == ""){
-        msgs.push_back("No file inputted");
-        printUsageMessage = true;
-    }
-
-    // Make sure at least one product was selected
-    if (selected_products.size() < 1){
-        msgs.push_back("Select at least one product");
-        printUsageMessage = true;
-    }
-
-    //Print messages only if we didn't use -h or --help
-    if (!(quiet || wantsHelp)){
-        for (auto it = msgs.begin(); it != msgs.end(); ++it){
-            std::string line(it->length(), '-');
-            std::cout << "\n" << *it << "\n" << line << std::endl;
-        }
-    }
-
-    // Check if an error occured
-    if (printUsageMessage){
-        //Make sure broken data is not used by clearing requested products
-        selected_products.clear();
-        if (!quiet) std::cout << getUsageMessage(advHelp) << std::endl;
+    //Add elevation products
+    argumentMap['e'] = [&](std::string arg){
+        if(parseProducts(arg, PeakProducts::Property::Elevation)) return true;
+        spdlog::critical("Error parsing Elevation products. Argument: \"{}\"", arg);
         return false;
+    };
+
+    //Add amplitude products
+    argumentMap['a'] = [&](std::string arg){
+        if(parseProducts(arg, PeakProducts::Property::Elevation)) return true;
+        spdlog::critical("Error parsing Amplitude products. Argument: \"{}\"", arg);
+        return false;
+    };
+
+    //Add pulsewidth products
+    argumentMap['w'] = [&](std::string arg){
+        if(parseProducts(arg, PeakProducts::Property::Elevation)) return true;
+        spdlog::critical("Error parsing Width products. Argument: \"{}\"", arg);
+        return false;
+    };
+
+    //Add RiseTime products
+    argumentMap['r'] = [&](std::string arg){
+        if(parseProducts(arg, PeakProducts::Property::Elevation)) return true;
+        spdlog::critical("Error parsing Rise Time products. Argument: \"{}\"", arg);
+        return false;
+    };
+
+    //Add backscatter products
+    argumentMap['b'] = [&](std::string arg){
+        if(parseProducts(arg, PeakProducts::Property::Elevation)) return true;
+        spdlog::critical("Error parsing backscatter products. Argument: \"{}\"", arg);
+        fitterOptions.calcBackscatter = true;
+        return false;
+    };
+
+    //Add all products
+    argumentMap['l'] = [&](std::string){
+        for(const auto& iter : productMap){                             //Stat             Subset
+            products.emplace_back(PeakProducts::Property::Amplitude,    iter.second.first, iter.second.second);
+            products.emplace_back(PeakProducts::Property::Backscatter,  iter.second.first, iter.second.second);
+            products.emplace_back(PeakProducts::Property::Elevation,    iter.second.first, iter.second.second);
+            products.emplace_back(PeakProducts::Property::RiseTime,     iter.second.first, iter.second.second);
+            products.emplace_back(PeakProducts::Property::Width,        iter.second.first, iter.second.second);
+        }
+        fitterOptions.calcBackscatter = true;
+
+        return true;
+    };
+
+    //Set noise level
+    argumentMap['n'] = [&](std::string arg){
+        int noise = -1;
+        if(!tryParseInteger(arg, noise, 0)){
+            spdlog::critical("Error parsing argument \"{}\" as integer. Valid range is 0 to int_max");
+            return false;
+        }
+
+        fitterOptions.noiseLevel = noise;
+        return true;
+    };
+
+    //Set verbosity
+    argumentMap['v'] = [&](std::string arg){
+        if(setVerbosity(arg)) return true;
+        spdlog::critical("Invalid verbosity \"{}\". Use \"--help\" to see valid options", arg);
+        return true;
+    };
+
+    //Set number of threads
+    argumentMap['t'] = [&](std::string arg){
+        int numThreads = -1;
+        if(!tryParseInteger(arg, numThreads, 1)){
+            spdlog::critical("Error parsing argument \"{}\" as integer. Valid range is 1 to int_max");
+            return false;
+        }
+
+        fitterOptions.numThreads = numThreads;
+        return true;
+    };
+
+    //Set number of waves per thread
+    argumentMap['p'] = [&](std::string arg){
+        int wavesPerThread = -1;
+        if(!tryParseInteger(arg, wavesPerThread, 1)){
+            spdlog::critical("Error parsing argument \"{}\" as integer. Valid range is 1 to int_max");
+            return false;
+        }
+
+        fitterOptions.wavesPerThread = wavesPerThread;
+        return true;
+    };
+
+    //Set min peak amplitude
+    argumentMap['m'] = [&](std::string arg){
+        int minPeakAmp = -1;
+
+        if(!tryParseInteger(arg, minPeakAmp, 1)){
+            spdlog::critical("Error parsing argument \"{}\" as integer. Valid range is 1 to int_max");
+            return false;
+        }
+
+        fitterOptions.minPeakAmp = minPeakAmp;
+        return true;
+    };
+
+    //Disable smoothing
+    argumentMap['s'] = [&](std::string){
+        fitterOptions.smoothData = false;
+        return true;
+    };
+
+    //Disable noise reduction
+    argumentMap['o'] = [&](std::string){
+        fitterOptions.reduceNoise = false;
+        return true;
+    };
+
+    //-----End Argument Functions-----
+
+    
+    opterr = 0; //Don't print error messages
+    int optionCode = -1;
+    while((optionCode = getopt_long(argc, argv, optionsString.c_str(), optionsArray.data(), nullptr)) != -1){
+        std::string arg;
+        if(optarg){ //If we have an argument, put it into arg for use later.
+            arg = std::string(optarg);
+        }
+
+        switch(optionCode){
+            case 'h':   //Handle help separately, since it's not really an error but we need to stop parsing.
+                spdlog::info(getUsageMessage());
+                spdlog::info(getAdvancedUsageMessage());
+                return false;
+            case ':':   //Missing argument
+                spdlog::critical("Missing argument for option -\'{}\'. Use --help for more information", static_cast<char>(optionCode));
+                return false;
+            case '?':   //Unknown option
+                spdlog::critical("Invalid Option -\'{}\'. Use --help for more information", static_cast<char>(optionCode));
+                return false;
+            default:
+                if(argumentMap.count(optionCode) == 0){
+                    spdlog::critical("Invalid Option -\'{}\'. Use --help for more information", static_cast<char>(optionCode));
+                    return false;
+                }
+
+                if(!argumentMap.at(optionCode)(arg)){   //Call the function associated with the option.
+                    spdlog::critical("Parsing option -\'{}\' failed. Use --help to see usage.", static_cast<char>(optionCode));
+                    return false;
+                }
+
+                //Argument parsed successfully, continue
+                break;
+        }
     }
     
+    //Validate that we have everything we need
+    
+    if(fileName.empty()){   //No input file
+        spdlog::critical("No input file specified. Use -f to specify a file. --help for more information");
+        return false;
+    }
+
+    //If fitterOptions.calcBackscatter == true, then fitterOptions.calibrationConstant should've been set to something else.
+    //Must be set when -b or -l is used. 
+    if(fitterOptions.calcBackscatter && fitterOptions.calibrationConstant == std::numeric_limits<double>::min()){
+        spdlog::critical("No backscatter coefficient specified. Specify it with -c <coeff>. Use --help for more details");
+        return false;
+    }
+
+    if(products.empty()){
+        spdlog::critical("No products specified. Use --help to see available products");
+        return false;
+    }
+
+    if(fitterOptions.minPeakAmp <= fitterOptions.noiseLevel){
+        spdlog::critical("The minimum amplitude ({}) must be higher than the noise level ({})", fitterOptions.minPeakAmp, fitterOptions.noiseLevel);
+    }
+
     return true;
 }
 
-/**
- * check if the input file exists, print error message if not
- */
-void CmdLine::check_input_file_exists() {
-    plsFileName = getInputFileName(true);
-    if (!std::ifstream(plsFileName.c_str())) {
-        if (!quiet) {
-            std::cout << "\nFile " << plsFileName << " not found."
-                << std::endl;
+std::string CmdLine::getPLSFilename() const{
+    if(fileName.empty()) return "";
+    return fileName + ".pls";
+}
+
+std::string CmdLine::getWVSFilename() const{
+    if(fileName.empty()) return "";
+    return fileName + ".wvs";
+}
+
+std::string CmdLine::getTrimmedFileName() const{
+    return fileName;
+}
+
+
+//Private members & functions
+
+//Map string verbosities to spdlog enums
+const std::unordered_map<std::string, spdlog::level::level_enum> CmdLine::verbosityMap{
+    {"trace",   spdlog::level::trace},
+    {"debug",   spdlog::level::debug},
+    {"info",    spdlog::level::info},
+    {"warn",    spdlog::level::warn},
+    {"error",   spdlog::level::err},
+    {"critical",spdlog::level::critical}
+};
+
+//Map product ids to actual product stats and subsets
+const std::unordered_map<int, std::pair<PeakProducts::Statistic, PeakProducts::Subset>> CmdLine::productMap{
+    { 1, {PeakProducts::Statistic::Maximum,              PeakProducts::Subset::First}},
+    { 2, {PeakProducts::Statistic::Minimum,              PeakProducts::Subset::First}},
+    { 3, {PeakProducts::Statistic::Average,              PeakProducts::Subset::First}},
+    { 4, {PeakProducts::Statistic::StandardDeviation,    PeakProducts::Subset::First}},
+    { 5, {PeakProducts::Statistic::Skewness,             PeakProducts::Subset::First}},
+    { 6, {PeakProducts::Statistic::Kurtosis,             PeakProducts::Subset::First}},
+    { 7, {PeakProducts::Statistic::Maximum,              PeakProducts::Subset::Last}},
+    { 8, {PeakProducts::Statistic::Minimum,              PeakProducts::Subset::Last}},
+    { 9, {PeakProducts::Statistic::Average,              PeakProducts::Subset::Last}},
+    {10, {PeakProducts::Statistic::StandardDeviation,    PeakProducts::Subset::Last}},
+    {11, {PeakProducts::Statistic::Skewness,             PeakProducts::Subset::Last}},
+    {12, {PeakProducts::Statistic::Kurtosis,             PeakProducts::Subset::Last}},
+    {13, {PeakProducts::Statistic::Maximum,              PeakProducts::Subset::All}},
+    {14, {PeakProducts::Statistic::Minimum,              PeakProducts::Subset::All}},
+    {15, {PeakProducts::Statistic::Average,              PeakProducts::Subset::All}},
+    {16, {PeakProducts::Statistic::StandardDeviation,    PeakProducts::Subset::All}},
+    {17, {PeakProducts::Statistic::Skewness,             PeakProducts::Subset::All}},
+    {18, {PeakProducts::Statistic::Kurtosis,             PeakProducts::Subset::All}}
+};
+
+
+std::string CmdLine::getUsageMessage(){
+return R"DELIM(
+Usage:
+    geotiff-driver -f <path to pls file> -product_type <list of products> [-product_type <list_of_products>]* [-d]
+
+Example:
+    bin/geotiff-driver -f etc/Nayani_clipped_test.pls -e 1,2,3 -w 14,9 -b 13,4 -c 0.768
+
+Options:
+    -f  <path to pls file>
+        Path to the pls file. Will determine the output name.
+    -h
+        Prints this help message.
+
+Product Type Options:
+    -e, --elevation  <list of products>
+        Generates Elevation products;
+    -a, --amplitude  <list of products>
+        Generates Amplitude products
+    -w, --width  <list of products>
+        Generates Width products 
+    -r, --rise-time  <list of products>
+        Generates Rise Time products
+    -b, --backscatter  <list of products>
+        Generates Backscatter Coefficient products. Must specify the calibration constant with -c
+    -l, --all
+        Generates all products for every variable. Must also specify the calibration constant with -c. 
+        Calibration constant is used for backscatter coefficient calculations
+    -c, --calibration <calibration constant>
+        Calibration constant to use when calculating backscatter. Required when using -b/--backscatter or -l/--all
+        Note: Scientific notation is allowed (e.g. 0.78 = 7.8e-1 = 7.8E-1)
+
+Product Options and Numbers:
+
+-----------------------------------------
+| Calculation | Peaks Used  | Product # |
+|-------------|------------ |-----------|
+| All Options | All Options |  0        |
+| Max         | First       |  1        |
+| Min         | First       |  2        |
+| Mean        | First       |  3        |
+| Std.Dev     | First       |  4        |
+| Skewness    | First       |  5        |
+| Kurtosis    | First       |  6        |
+| Max         | Last        |  7        |
+| Min         | Last        |  8        |
+| Mean        | Last        |  9        |
+| Std.Dev     | Last        | 10        |
+| Skewness    | Last        | 11        |
+| Kurtosis    | Last        | 12        |
+| Max         | All         | 13        |
+| Min         | All         | 14        |
+| Mean        | All         | 15        |
+| Std.Dev     | All         | 16        |
+| Skewness    | All         | 17        |
+| Kurtosis    | All         | 18        |
+-----------------------------------------
+
+Valid ways to format the product list include:
+    -e 1,2,3           (no white-space)
+    -e 1 -e 3 -e 2     (broken into multiple arguments)
+    -e " 1 , 2 , 3 "   (white-space allowed inside quotes)
+
+)DELIM";
+}
+
+std::string CmdLine::getAdvancedUsageMessage(){
+return R"DELIM(
+Advanced Options:
+    -n, --noise-level <noise level>
+        Set the noise level. The default value is 6. Integer.
+    -v, --verbosity <logging level>
+        Set the logging level. Valid levels are: "trace", "debug", "info", "warn", "error", and "critical"
+    -t, --number-threads <number of threads>
+        Set the number of threads to be used. Defaults to 8. Integer.
+    -p, --waves-per-thread <waves per thread>
+        Sets the number of waves per thread. Defaults to 50. Integer.
+    -m, --min-peak-amp <min peak amplitude (int)>
+        Sets the minimum allowed height for a peak. Peaks under this height will not be identified. Must be higher than the noise level. Defaults to 9. Integer.
+    -s, --no-smoothing
+        Disable the 3-point scaled moving average smoother.
+    -o, --no-noise-reduction
+        Disable the scaled noise reduction.
+)DELIM";
+}
+
+bool CmdLine::setVerbosity(const std::string& str){
+    if(verbosityMap.count(str) == 0) return false;
+    spdlog::set_level(verbosityMap.at(str));
+    return true;
+}
+
+
+bool CmdLine::setInputFile(const std::string& fileName){
+    //Check if file exists
+    if(!std::ifstream(fileName).good()){
+        spdlog::critical("File {} does not exist", fileName);
+        return false;
+    }
+
+    //Check if file has correct extension
+    if(fileName.rfind(".pls") != fileName.size()-4){
+        spdlog::critical("File must end in .pls");
+        return false;
+    }
+
+    this->fileName = fileName.substr(0, fileName.size()-4);
+
+    //Check for matching .wvs file
+    if(!std::ifstream(getWVSFilename()).good()){
+        spdlog::critical("Missing matching .wvs file named \"{}\"", getWVSFilename());
+        this->fileName = "";
+        return false;
+    }
+
+    return true;
+}
+
+bool CmdLine::parseProducts(std::string productList, PeakProducts::Property property){
+    std::vector<PeakProducts::Product> newProducts;
+
+    std::stringstream ss(productList);  //Allow us to easily split by a delimiter (',')
+    while(ss.good()){
+        std::string str;
+        std::getline(ss, str, ',');
+
+        int productId = -1;
+        if(!tryParseInteger(str, productId, 1, productMap.size())){
+            spdlog::critical("Unable to parse argument \'{}\' as integer in range [1, {}]", str, productMap.size());
+            return false;
         }
-        printUsageMessage = true;
+
+        assert(productMap.count(productId) != 0);
+
+        newProducts.emplace_back(property, productMap.at(productId).first, productMap.at(productId).second);
     }
-    std::size_t idx = plsFileName.rfind(".pls");
-    wvsFileName = plsFileName.substr(0,idx) + ".wvs";
-    if (!std::ifstream(wvsFileName.c_str())) {
-        if (!quiet) {
-            std::cout << "\nFile " << wvsFileName << " not found."
-                << std::endl;
+
+    products.insert(products.begin(), newProducts.begin(), newProducts.end());
+    return true;
+}
+
+
+bool CmdLine::tryParseInteger(const std::string& integer, int& outInt, int lowerBound, int upperBound){
+    try{
+        int val = std::stoi(integer);
+        if(lowerBound <= val && val <= upperBound){
+            outInt = val;
+            return true;
+        }else{
+            spdlog::critical("int with value {} out of bound range: [{}, {}]", val, lowerBound, upperBound);
         }
-        printUsageMessage = true;
+    }catch(const std::invalid_argument& e){
+        spdlog::critical("Unable to convert {} to type int", integer);
+    }catch(const std::out_of_range& e){
+        spdlog::critical("Number {} exceeded the capacity of type int", integer);
     }
-}
 
-/**
- * get the input file name, stripped of leading path info and trailing
- * extension info
- * @param pls True returns pls file name, false returns wvs file name
- * @return input file name stripped of path or extension information
- */
-std::string CmdLine::getTrimmedFileName(bool pls){
-    size_t start = getInputFileName(pls).find_last_of("/");
-    if(start==string::npos){
-        start = 0;
-    }else{
-        start++;
-    }
-    size_t end = getInputFileName(pls).find_last_of(".");
-    int len = end - start;
-    return getInputFileName(pls).substr(start,len);
-}
-
-/**
- * get the output filename based on the command line arguments and input
- * filename
- * @param product_id the id of the product to produce
- * @return the output filename
- */
-std::string CmdLine::get_output_filename(int product_id) {
-    std::string output_filename = getTrimmedFileName(true);
-    //Name file base on method used
-    std::string file_type = ".tif";
-    std::string fit_type = useGaussianFitting ? "_gaussian" : "_firstDiff";
-    std::string prod_desc = "_" + get_product_desc(product_id);
-    return output_filename +  prod_desc + fit_type + file_type;
-}
-
-/**
- * get the description of the product being produced
- * @param product_id the product id
- * @return a short description of the product
- */
-std::string CmdLine::get_product_desc(int id){
-    return prod_calc[get_calculation_code(id)] + "_" +
-    prod_peaks[get_peaks_code(id)] + "_" + prod_vars[get_variable_code(id)];
-}
-
-/**
- * get the code for the calculation used
- * @param product_id the product id
- * @return the code for the calculation used
- */
-int CmdLine::get_calculation_code(int id){
-    //loop through variable start points until the product id is less than
-    //the start point of the next variable
-    size_t i;
-    for (i = 0; i+1 < start.size() && id > start.at(i+1); i ++) {}
-    //The calculations used repeat every 6 product numbers
-    return i < 7 ? (id - 1) % 6 : 0;
-}
-
-/**
- * get the code for the peaks used
- * @param product_id the product id
- * @return the code for the peaks used
- */
-int CmdLine::get_peaks_code(int id){
-    //loop through variable start points until the product id is less than
-    //the start point of the next variable
-    size_t i;
-    for (i = 0; i+1 < start.size() && id > start.at(i+1); i ++) {}
-    //For elev, amp, width, riseTime, and backscatter:
-    //every six product numbers, the peaks used changes fromm first->last->all
-    //However energy at % heigth and height at % energy always use all peaks
-    return i < 5 ? ((id - 1) % 18) / 6 : i < 7 ? 2 : 0;
-}
-
-/**
- * get the code for the variable used
- * @param product_id the product id
- * @return the code for the variable used
- */
-int CmdLine::get_variable_code(int id){
-    //loop through variable start points until the product id is less than
-    //the start point of the next variable 
-    size_t i;
-    for (i = 0; i+1 < start.size() && id > start.at(i+1); i ++) {}
-    return i;
+    return false;
 }

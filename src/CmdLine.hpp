@@ -1,84 +1,96 @@
-/*
- * File name: CmdLine.hpp
- * Created on: 17-May-2017
- * Author: ravi
- */
+#ifndef ADAPTLIDARTOOLS_CMDLINE_HPP
+#define ADAPTLIDARTOOLS_CMDLINE_HPP
 
-#ifndef CMDLINE_HPP_
-#define CMDLINE_HPP_
-
-#include <iostream>
-#include <fstream>
-#include <getopt.h>
-#include <sstream>
+#include <limits>
+#include <string>
+#include <unordered_map>
+#include <utility>
 #include <vector>
-#include <cstring>
-#include <stdexcept>
-#include <stdlib.h>
-#include <map>
+
+#include "spdlog/spdlog.h"
+
+#include "Common.hpp"
+#include "PeakProducts.hpp"
 
 class CmdLine{
+public:
+    //Contains the list of all specified products. Not guaranteed to be unique @@TODO maybe it should
+    std::vector<PeakProducts::Product> products;
+
+    //Options for the fitting and processing.
+    Common::Options fitterOptions;
+
+
+    /** Parse the command line arguments. 
+     * @param argc      Argument Count
+     * @param argv      c-array of c-strings of arguments
+     * @return          true if program execution should continue, false otherwise. This could mean an error in option parsing or the --help option was called.
+     */
+    bool parseArguments(int argc, char* argv[]);
+
+    /** Returns the full path to the .pls file
+     * @return the path to the .pls file
+     */
+    std::string getPLSFilename() const;
+
+    /** Returns the full path to the .wvs file.
+     * @return the path to the .wvs file
+     */
+    std::string getWVSFilename() const;
+
+    /** Get the filename without an extension, but with the leading path.
+     * @return trimmed file name
+     */
+    std::string getTrimmedFileName() const;
+
 
 private:
-    //possible parameters
-    std::string plsFileName;
-    std::string wvsFileName;
+    //Map string verbosity to actual spdlog verbosity enum
+    const static std::unordered_map<std::string, spdlog::level::level_enum> verbosityMap;
 
-    // helpful stuff
-    std::string usageMessage;
-    std::string advUsageMessage;
-    std::string exeName;
+    //Map product id(from the product table) to corresponding statistic and subset pair
+    const static std::unordered_map<int, std::pair<PeakProducts::Statistic, PeakProducts::Subset>> productMap;
 
-    // If peakFlag == true, use first difference to find peaks
-    // else, use smooth second difference 
-    bool max_elev_flag;
+    //Filename without extension, but including path
+    std::string fileName;
 
-    bool set_verbosity(char* new_verb);
+    /** Returns the regular usage message.
+     * @return The normal usage message.
+     */
+    static std::string getUsageMessage();
 
-public:
-    //calibration constant (for backscatter option)
-    double calibration_constant;
+    /** Returns the advanced usage message. Note that this doesn't include the text returned by getUsageMessage(), so you probably want to print them both.
+     * @return The advanced usage message
+     */
+    static std::string getAdvancedUsageMessage();
 
-    // help parameters
-    bool printUsageMessage;
-    // use find_peaks parameter
-    // True = gaussian fitting, False = first differencing
-    bool useGaussianFitting;
+    /** Set the verbosity of spdlog, if valid.
+     * @param str        One of "trace", "debug", "info", "warn", "error", or "critical
+     * @return true if the verbosity was valid and updated.
+     */
+    bool static setVerbosity(const std::string& str);
 
-    //Default noise level
-    int noise_level = 6;
+    /** Check if fileName is a .pls file, and if it and a corresponding .wvs file exists. If so, set CmdLine::fileName to that, and return true.
+     * @param fileName   path to .pls file
+     * @return true iff fileName is a .pls file that exists, and a file with the same name but a .wvs extension exists.
+     */
+    bool setInputFile(const std::string& fileName);
 
-    // Whether or not backscatter coefficient has been requested
-    bool calcBackscatter;
+    /** Attempt to parse the list of products in productList, and add the to CmdLine::products with the specified property.
+     * @param productList   The list of products to parse. Allowed format is integers separated by whitespace and/or commas
+     * @param property      The peak property to add the products with.
+     * @return              true the if the productList was parsed and successfully added to CmdLine::products, false otherwise
+     */
+    bool parseProducts(std::string productList, PeakProducts::Property property);
 
-    //True stifles all output statements
-    bool quiet;
-
-    // For conveying verbosity to main function in a readable way
-    std::string verb = "";
-
-    // Decides the multiple by which maximum amplitude is decided in
-    // guess peaks. GaussianFitter will default to a value if this is
-    // not determined.
-    float max_amp_multiplier;
-
-    CmdLine();
-
-
-    bool parse_args(int argc, char *argv[]);
-    void setUsageMessage();
-    std::string getUsageMessage(bool adv);
-    void check_input_file_exists();
-    void setInputFileName(char *args);
-    void setInputFileName(std::string filename);
-    std::string getInputFileName(bool pls);
-    std::string getTrimmedFileName(bool pls);
-    std::string get_output_filename(int product_id);
-    std::string get_product_desc(int product_id);
-    int get_calculation_code(int id);
-    int get_peaks_code(int id);
-    int get_variable_code(int id);
-    std::vector<int> selected_products;
+    /** Attempts to parse the string integer into an int. Returns false if parsing failed. Also takes an optional set of boundaries. If the parsed int is not within the boundaries(inclusive), outInt is not modified and the function returns false.
+     * @param integer       String containing the integer to be parsed.
+     * @param outInt        If parsing was successful, write result into outInt
+     * @param lowerBound    (Optional) Inclusive lower bound. Defaults to int min
+     * @param upperBound    (Optional) Inclusive upper bound. Defaults to int max
+     * @return              True if integer was successfully parsed into an int, and the result is in the range [lowerBound, upperBound]. False otherwise.
+     */
+    static bool tryParseInteger(const std::string& integer, int& outInt, int lowerBound = std::numeric_limits<int>::min(), int upperBound = std::numeric_limits<int>::max());
 };
 
-#endif /* CMDLINE_HPP_ */
+#endif //ADAPTLIDARTOOLS_CMDLINE_HPP

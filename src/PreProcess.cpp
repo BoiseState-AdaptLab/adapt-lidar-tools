@@ -27,7 +27,7 @@ void smoothData(const std::vector<int>& indexData, std::vector<int>& amplitudeDa
     int prevValue = amplitudeData.front();
     for(std::size_t i = 1; i < amplitudeData.size()-1; ++i){
         //Account for segmented waves
-        if(indexData[i] - indexData[i] != 1 || indexData[i+1] - indexData[i] != 1){
+        if(indexData[i] - indexData[i-1] != 1 || indexData[i+1] - indexData[i] != 1){
             prevValue = amplitudeData[i];
             continue;
         }

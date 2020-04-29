@@ -12,35 +12,12 @@
 
 //See https://en.cppreference.com/w/cpp/algorithm/accumulate for details on std::accumulate
 
-//Add specializations to std::hash for our enum classes. This isn't needed as of C++14. See https://en.cppreference.com/w/cpp/utility/hash for more information.
-namespace std{
-    template <> struct hash<PeakProducts::Property>{
-        std::size_t operator()(PeakProducts::Property& property) const{
-            using UnderlyingType = std::underlying_type<PeakProducts::Property>::type;
-            return std::hash<UnderlyingType>{}(static_cast<UnderlyingType>(property));
-        }
-    };
-
-    template <> struct hash<PeakProducts::Statistic>{
-        std::size_t operator()(PeakProducts::Statistic& stat) const{
-            using UnderlyingType = std::underlying_type<PeakProducts::Statistic>::type;
-            return std::hash<UnderlyingType>{}(static_cast<UnderlyingType>(stat));
-        }
-    };
-
-    template <> struct hash<PeakProducts::Subset>{
-        std::size_t operator()(PeakProducts::Subset& subset) const{
-            using UnderlyingType = std::underlying_type<PeakProducts::Subset>::type;
-            return std::hash<UnderlyingType>{}(static_cast<UnderlyingType>(subset));
-        }
-    };
-}
 
 namespace PeakProducts{
 
 //A mapping of property enums, used to extract a property from the peak.
 //C++11 doesn't provide a hashing function for enums so we provide one
-const std::unordered_map<Property, std::function<double(const Peak&)>, std::hash<int>> propertyMap{
+const std::unordered_map<Property, std::function<double(const Peak&)>> propertyMap{
     {Property::Amplitude,   [](const Peak& peak){return peak.amp;}},
     {Property::Elevation,   [](const Peak& peak){return peak.z_activation;}},
     {Property::Width,       [](const Peak& peak){return peak.fwhm;}},

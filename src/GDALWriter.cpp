@@ -4,6 +4,7 @@
 
 #include <gdal.h>
 #include <gdal_priv.h>
+#include <ogr_spatialref.h>
 
 #include "spdlog/spdlog.h"
 

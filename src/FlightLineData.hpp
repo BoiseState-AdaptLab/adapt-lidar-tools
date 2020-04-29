@@ -16,7 +16,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <obstack.h>
 #include <algorithm>
 
 
@@ -66,7 +65,7 @@ class FlightLineData{
         int setFlightLineData(std::string fileName);
         void FlightLineDataToCSV();
         bool hasNextPulse() const;
-        void getNextPulse(PulseData& pd);;
+        void getNextPulse(PulseData& pd);
         int calc_xyz_activation(std::vector<Peak>& peaks, const PulseData& pd) const;
         void closeFlightLineData(void);
         int parse_for_UTM_value(std::string input);

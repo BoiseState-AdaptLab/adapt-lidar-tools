@@ -26,11 +26,11 @@ PULSEWAVES = deps/PulseWaves
 
 CXX = g++
 
-CXXFLAGS += -std=c++11 -Wall -Wextra -Wnon-virtual-dtor -pedantic -Wcast-align -Woverloaded-virtual -Wpedantic -Wmisleading-indentation -Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wnull-dereference -Wuseless-cast -Wdouble-promotion -Wformat=2 -Wno-float-conversion
+CXXFLAGS += -std=c++11 -Wall -Wextra -Wnon-virtual-dtor -pedantic -Wcast-align -Woverloaded-virtual -Wpedantic -Wlogical-op -Wuseless-cast -Wdouble-promotion -Wformat=2 -Wno-float-conversion
 
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP)/$*.d #For generating dependencies
 
-LDFLAGS = -lpthread -lm -lgsl -lcblas -lgdal -L $(PULSEWAVES)/lib -lpulsewaves
+LDFLAGS = -lpthread -lm -lgsl -lgslcblas -lgdal -L $(PULSEWAVES)/lib -lpulsewaves
 
 INCFLAGS = -isystem $(PULSEWAVES)/inc -isystem deps/ -isystem deps/spdlog # @@ TODO -isystem deps/googletest/googletest/include
 

@@ -2,7 +2,7 @@
 
 
 ### Adapt Lidar Tools is a GPL-Licensed set of C++11 Tools for Processing Full-Waveform Lidar Data
-#### Developed by a [team of students](https://github.com/nicholasprussen/adapt-lidar-tools/blob/master/pubs/AdaptLidarTools-A.Full.Waveform.Lidar.Processing.Suite.pdf)
+#### Developed by a [team of students](https://github.com/BoiseState-AdaptLab/adapt-lidar-tools/blob/master/pubs/AdaptLidarTools-A.Full.Waveform.Lidar.Processing.Suite.pdf)
 
 # Outline:
  * [Introduction](#Introduction)

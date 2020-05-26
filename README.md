@@ -1,4 +1,4 @@
-<p align="center"><img width="45%" src="https://github.com/nicholasprussen/adapt-lidar-tools/blob/master/adapt-logo.png"></p>
+<p align="center"><img width="45%" src="https://github.com/BoiseState-AdaptLab/adapt-lidar-tools/blob/master/adapt-logo.png"></p>
 
 
 ### Adapt Lidar Tools is a GPL-Licensed set of C++11 Tools for Processing Full-Waveform Lidar Data

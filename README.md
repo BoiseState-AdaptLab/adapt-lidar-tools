@@ -1,6 +1,35 @@
-# Synopsis
+<p align="center"><img width="45%" src="https://github.com/nicholasprussen/adapt-lidar-tools/blob/master/adapt-logo.png"></p>
 
-Contains code/project notes/ and Data for GEO+CS lidar data processing
+
+### Adapt Lidar Tools is a GPL-Licensed set of C++11 Tools for Processing Full-Waveform Lidar Data
+#### Developed by a [team of students](https://github.com/nicholasprussen/adapt-lidar-tools/blob/master/pubs/AdaptLidarTools-A.Full.Waveform.Lidar.Processing.Suite.pdf)
+
+# Outline:
+ * [Introduction](#Introduction)
+ * [Installation](#Installation)
+   * [Installation On Boise State's R2 Cluster](#Install1)
+   * [Installation On a Normal Machine](#Install2)
+   * [Installation With Docker](#Install3)
+ * [Implemented Products](#implemented)
+   * [Amplitude](#amplitude)
+   * [Elevation](#elevation)
+   * [Width](#width)
+   * [Rise Time](#risetime)
+   * [Backscatter Coefficient](#backscatter)
+   * [Arguments](#arguments)
+   * [Examples](#examples)
+ * [Product Definitions](#definitions)
+   * [AR](#ar)
+   * [AE](#ae)
+   * [Full Width Half Maximum (fwhm)](#fwhm)
+   * [Elevation](#elevation-def)
+   * [Peaks](#peaks)
+   * [Backscatter Coefficient](#backscatter-def)
+   * [Rise Time](#risetime-def)
+   * [Total Energy](#total-energy)
+ * [Student Participants](#studentparticipants)
+
+
 
 ## Introduction
 
@@ -10,76 +39,76 @@ This project aims at developing full waveform LiDAR processing tools based on th
 
 ## Installation
 
+<a name="install1"></a>
 ### Installation on Boise State's R2 cluster
 
-* Clone the repository: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
-* After cloning the directory, 
+* **Clone** the repository: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
+* After **cloning** the directory, 
   * Load the following modules:
     * `module load gsl/gcc/2.4`
     * `module load gdal/intel/2.2.2` this should automatically load other modules that are required
+* [**Click for Continuation**](#continuation)
 
-### Installation on a local machine running CentOS 7 linux distribution
+<a name="install2"></a>
+### Installation on a Local Machine
 
-* g++ (GCC 4.8.5)
+Requirements:
+* g++ (Must Support C++11)
+* GSL 2.4 or newer
+* GDAL 2.2.2 or newer
 
-* GSL 2.4 from: [https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz](https://ftp.gnu.org/gnu/gsl/gsl-2.4.tar.gz)   
-follow these install instructions modified from: [http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html](http://www.linuxfromscratch.org/blfs/view/8.2/general/gsl.html)
-```
-$>./configure --prefix=/usr
-$>make
-$>make check
-$>sudo make install
+Directions:
+* **Clone** the repository: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
+* [**Click for Continuation**](#continuation)
 
-$>gsl-config --lib
-```
+<a name="Install3"></a>
+### Installation With Docker
+* Follow this **readme** located on our DockerHub: [https://hub.docker.com/repository/docker/nicholasprussen/adapt-lidar-tools-docker](https://hub.docker.com/repository/docker/nicholasprussen/adapt-lidar-tools-docker)
 
-* GDAL 2.2.2 from: [https://trac.osgeo.org/gdal/wiki/DownloadSource#a2.2.2-September2017](https://trac.osgeo.org/gdal/wiki/DownloadSource#a2.2.2-September2017)   
-follow theses instructions modified from [https://trac.osgeo.org/gdal/wiki/BuildingOnUnix](https://trac.osgeo.org/gdal/wiki/BuildingOnUnix)
-
-```
-$>./configure --prefix=/usr
-$>make
-$>sudo make install
-```   
-test that gdal installed with `gdalinfo --version`
-
-* add the library path for the linker `export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH`
----
-After GDAL and GSL have been loaded/installed
-    
-* Run the install script `./install.sh` to automatically download, update & build the dependencies, and make the executables.
-  * For R2 users, if you had errors during the installation process you most likely have a module loaded that is causing a conflict. We recommend you remove all modules `module purge` and load only the ones required to make the executables.
-* If the install script ran successfully, you can find the executables in either your choice of directory if you so chose during installation, or the `bin/` folder of the `adapt-lidar-tools` directory.
+***
+<a name="continuation"></a>    
+**Installation Continuation**: (Only do this after following your appropiate installation instructions)
+* **Change directory** into the adapt-lidar-tools repository.
+* **Run the install script** `./install.sh` to automatically download, update & build the dependencies, and make the executables.
+  * **For R2 users**, if you had errors during the installation process you most likely have a module loaded that is causing a conflict. We recommend you remove all modules `module purge` and load only the ones required to make the executables.
+* If the install script **ran successfully**, you can find the executables in either your choice of directory if you so chose during installation, or the `bin/` folder of the `adapt-lidar-tools` directory.
 
 **Note:** After running the install script to make sure the dependencies are built, you can at any time regenerate the executables by running `make geotiff-driver` or `make pls-info`. To cleanup and remove all executables and object files , run `make clean`.
 
 __The waveform samples of the pulses that are reported in the Pulse Records are stored in a separate Waves file that must be in the same directory and have the same base name as the *.pls file, but have the ending *.wvs__.
 
 
+<a name="implemented"></a>
 ## Implemented Products
 These are the properties the program can analyze currently. For each property of interest, a comma separated list of 
 product numbers specifies the desired output.
 
+<a name="amplitude"></a> 
 ### Amplitude
 - Short flag -a
 - Long flag --amplitude
 
+<a name="elevation"></a> 
 ### Elevation
 - Short flag -e
 - Long flag --elevation
 
+<a name="width"></a> 
 ### Width
 - Short flag -w
 - Long flag --width
 
+<a name="risetime"></a> 
 ### Rise Time
 - Short flag -r
 - Long flag --risetime
 
+<a name="backscatter"></a> 
 ### Backscatter Coefficient
 - Short flag -b
 - Long flag --backscatter
 
+<a name="arguments"></a> 
 ### Arguments
 Combine the property type flag above with one or more product types below to generate products
 
@@ -127,6 +156,7 @@ Sorted by Product Number
 | Skew     | All       | 17             |
 | Kurtosis | All       | 18             |
 
+<a name="examples"></a> 
 ### Examples
 ```shell
 //generate max first elevation, min first elevation, mean first elevation
@@ -148,21 +178,46 @@ bin/geotiff-driver -f etc/test-file-1.pls -w 13,11,14
 bin/geotiff-driver -f etc/test-file-1.pls -w 13,11,14 -a 4,8,17 -e 1,2,3
 ```
 
-
+<a name="definitions"></a> 
 ## Product Definitions
+<a name="ar"></a> 
 ### AR
 raw amplitude data
+<a name="ae"></a> 
 ### AE
 Estimated amplitude using Gaussian fitting
+<a name="fwhm"></a> 
 ### Full Width Half Maximum (fwhm)
 Estimated pulse width
+<a name="elevation-def"></a> 
 ### Elevation
 Height on Z axis(Elevation from mean sea level (MSL))
+<a name="peaks"></a> 
 ### Peaks
 Number of peaks
+<a name="backscatter-def"></a> 
 ### Backscatter Coefficient
 The backscatter coefficient compares the emitted pulse to the returning pulse within a plane normal to the path of the emitted pulse centered at the location of the peak of the returning pulse.
+<a name="risetime-def"></a> 
 ### Rise time
 Leading edge (Time between the activation point and maximum amplitude at the rising edge of each pulse)
+<a name="total-energy"></a> 
 ### Total Energy
 Total energy from the estimated wave (summation of all amplitudes from wave triggering location to the wave end). Wave triggering location is found by the location that has amplitude value of max amplitude * 1/e(1). 
+
+<a name="studentparticipants"></a>
+## Student Participants (alphabetical)
+
+* Nicholas Chapa
+* Floriana Ciaglia
+* Brandon Echols
+* Jason Egbert
+* Spencer Fleming
+* Ahmad Hojatimalekshah
+* Nayani Ilangakoon
+* Ariel Marvasti
+* Aaron Orenstein
+* Nicholas Prussen
+* Ahmad Rezaii
+* Ravi Shankar
+* Jared White

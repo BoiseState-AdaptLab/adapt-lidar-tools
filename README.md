@@ -61,10 +61,6 @@ Directions:
 * **Clone** the repository: `git clone https://github.com/BoiseState-AdaptLab/adapt-lidar-tools.git`
 * [**Click for Continuation**](#continuation)
 
-<a name="Install3"></a>
-### Installation With Docker
-* Follow this **readme** located on our DockerHub: [https://hub.docker.com/repository/docker/nicholasprussen/adapt-lidar-tools-docker](https://hub.docker.com/repository/docker/nicholasprussen/adapt-lidar-tools-docker)
-
 ***
 <a name="continuation"></a>    
 **Installation Continuation**: (Only do this after following your appropiate installation instructions)

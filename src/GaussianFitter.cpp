@@ -829,7 +829,12 @@ float GaussianFitter::get_fwhm(int a, float t, int ai, float ti){
     float w = 2 * (t - ti);
     if (w < 0) {w *= -1.;}
     float sqrt_lnN = sqrt(log((float)a / ai));
-    return w * SQRT_LN2 / sqrt_lnN;
+    ///sqrt_lnN==0 means the result will become infinite.
+    //we will return maximum 15 if we find greater than 15
+    if(sqrt_lnN==0){sqrt_lnN=0.001;}
+    float ret = w * SQRT_LN2 / sqrt_lnN;
+    if(ret >15) return 15;
+    return ret;   
 }
 
 /*

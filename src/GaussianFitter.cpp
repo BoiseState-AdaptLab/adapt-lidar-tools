@@ -764,16 +764,22 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 // Make sure the flat section did end and it isn't a trough
                 if (a2 != a3 and (a2 > a1 or a2 > a3)){
                     // Get the center of the flat section
+                    // malik: need to clarify
+                    // responsible for test error for problemwaveform12
                     float t2 = (idxData[before+1] + idxData[i]) / 2.;
+		    spdlog::trace("Peak location: {}",t2);
                     // Record amplitude and time value in a new Peak object
                     Peak* peak = new Peak();
                     peak->amp = a2;
-                    peak->location = t2;
+              //malik: need to clarify
+	            peak->location = t2;
                     // Calculate FWHM
                     float fwhm =0.;
                     if (a2 > a1) {
                         int idx = greatest_change(ampData, before, a2, true);
-                        fwhm = get_fwhm(a2,t2,ampData[idx], idxData[idx]);
+                    //malik
+                    	spdlog::trace("if(a2>a1) greatest_change_idx: {}",idx);
+		        fwhm = get_fwhm(a2,t2,ampData[idx], idxData[idx]);
                     }
                     if (a2 > a3) {
                         int idx = greatest_change(ampData, i, a2, false);
@@ -829,6 +835,7 @@ float GaussianFitter::get_fwhm(int a, float t, int ai, float ti){
     float w = 2 * (t - ti);
     if (w < 0) {w *= -1.;}
     float sqrt_lnN = sqrt(log((float)a / ai));
+    if(isnan(sqrt_lnN))return 15;
     ///sqrt_lnN==0 means the result will become infinite.
     //we will return maximum 15 if we find greater than 15
     if(sqrt_lnN==0){sqrt_lnN=0.001;}

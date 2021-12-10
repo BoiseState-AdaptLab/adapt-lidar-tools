@@ -268,8 +268,8 @@ TEST_F(CmdLineTest, allProducts){
     strncpy(commonArgSpace[4],"9e-8",5);
     ASSERT_NO_THROW(cmd.parse_args(numberOfArgs,commonArgSpace));
     ASSERT_FALSE(cmd.printUsageMessage);
-    ASSERT_EQ(cmd.selected_products.size(), 102);
-    for (size_t i = 0; i < 102; i++){
+    ASSERT_EQ(cmd.selected_products.size(), 90);
+    for (size_t i = 0; i < 90; i++){
         EXPECT_EQ(cmd.selected_products.at(i),i+1);
     }
 }

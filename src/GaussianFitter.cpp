@@ -751,6 +751,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                 idx = greatest_change(ampData, i + 1, a2, false);
                 fwhm += get_fwhm(a2,t2,ampData[idx],idxData[idx]);
                 peak->fwhm = fwhm / 2.;
+                spdlog::trace("guess_peaks: peak->amp: {}, peak->location: {}",peak->amp,peak->location);
                 results->push_back(peak);
             } else if (a3 == a2) {
                 // Store data point before the flat section
@@ -788,6 +789,7 @@ int GaussianFitter::guess_peaks(std::vector<Peak*>* results,
                         if (a2 > a1) {fwhm /= 2;}
                     }
                     peak->fwhm = fwhm;
+                    spdlog::trace("guess_peaks: peak->amp: {}, peak->location: {}",peak->amp,peak->location);
                     results->push_back(peak);
                 }
             }

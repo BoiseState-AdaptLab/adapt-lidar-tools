@@ -308,7 +308,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
 
     auto addPeak = [&](int a, int b){
         if(a > noiseLevel){        //Only add if greater than noise. @@TODO should be greater eq?
-            spdlog::trace("Found peak at {}", b);
+            spdlog::trace("Found peak:{} at {}", a,b);
             guesses.emplace_back(a, b, 1);
         }
     };

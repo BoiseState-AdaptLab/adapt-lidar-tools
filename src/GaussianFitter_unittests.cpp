@@ -25,7 +25,7 @@ class GaussianFitterTest: public testing::Test{
         PulseData* pd;
     GaussianFitter fitter;
     //    GaussianFitter fitter;
-    //    fitter.noise_level = 9;
+    //    fitter.noise_level = 10;
 
     protected:
 
@@ -40,7 +40,7 @@ class GaussianFitterTest: public testing::Test{
         //Function to set up space used by all tests
         virtual void SetUp(){
             spdlog::set_level(spdlog::level::trace);
-            fitter.noise_level = 9;
+            fitter.noise_level = 10;
         }
 };
 
@@ -67,7 +67,7 @@ TEST_F(GaussianFitterTest, NayaniClipped1_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -101,7 +101,7 @@ TEST_F(GaussianFitterTest, NayaniClipped2_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -131,7 +131,7 @@ TEST_F(GaussianFitterTest, gaussianFitter_guess){
     //the noise level for this waveform is 21.6
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -161,7 +161,7 @@ TEST_F(GaussianFitterTest, NayaniClipped3_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -190,7 +190,7 @@ TEST_F(GaussianFitterTest, NayaniClipped4_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -220,7 +220,7 @@ TEST_F(GaussianFitterTest, NayaniClipped5_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -252,7 +252,7 @@ TEST_F(GaussianFitterTest, NayaniClipped6_guess){
     //the noise level for this waveform is 17.4
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -303,7 +303,7 @@ TEST_F(GaussianFitterTest, NayaniClipped7_guess){
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
     ASSERT_EQ(3,peaks.size());//Nayani's peaks = 4 (example of double peak)
@@ -341,7 +341,7 @@ TEST_F(GaussianFitterTest, NayaniClipped8_guess){
     //the noise level for this waveform is 19.9
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -381,7 +381,7 @@ TEST_F(GaussianFitterTest, max_iter_1_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -412,7 +412,7 @@ TEST_F(GaussianFitterTest, max_iter_2_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -446,7 +446,7 @@ TEST_F(GaussianFitterTest, max_iter_3_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
     fitter.guess_peaks(&peaks, ampData, idxData);
@@ -479,7 +479,7 @@ TEST_F(GaussianFitterTest, max_iter_4_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -518,7 +518,7 @@ TEST_F(GaussianFitterTest, max_iter_5_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -583,7 +583,7 @@ TEST_F(GaussianFitterTest, trig_loc_1_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -620,7 +620,7 @@ TEST_F(GaussianFitterTest, trig_loc_2_guess){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -655,7 +655,7 @@ TEST_F(GaussianFitterTest, num_iterations_10_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -684,7 +684,7 @@ TEST_F(GaussianFitterTest, problem_waveform_1_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -718,7 +718,7 @@ TEST_F(GaussianFitterTest, problem_waveform_2_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -746,7 +746,7 @@ TEST_F(GaussianFitterTest, problem_waveform_3_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -781,7 +781,7 @@ TEST_F(GaussianFitterTest, problem_waveform_4_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -813,7 +813,7 @@ TEST_F(GaussianFitterTest, problem_waveform_5_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -840,7 +840,7 @@ TEST_F(GaussianFitterTest, problem_waveform_6_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -868,7 +868,7 @@ TEST_F(GaussianFitterTest, problem_waveform_7_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -902,7 +902,7 @@ TEST_F(GaussianFitterTest, problem_waveform_8_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -936,7 +936,7 @@ TEST_F(GaussianFitterTest, problem_waveform_9_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -964,7 +964,7 @@ TEST_F(GaussianFitterTest, problem_waveform_10_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -994,7 +994,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest1_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -1018,7 +1018,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest2_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 //malik changed 0 to 1 after observing data
@@ -1043,7 +1043,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 
@@ -1063,7 +1063,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
     EXPECT_EQ(0,peaks.size());
@@ -1085,7 +1085,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks, ampData, idxData);
 //malik changed 0 to 4
@@ -1105,7 +1105,7 @@ TEST_F(GaussianFitterTest,problem_waveform_11_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks,ampData,idxData);
 
@@ -1137,7 +1137,7 @@ TEST_F(GaussianFitterTest,problem_waveform_12_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks,ampData,idxData);
 
@@ -1166,7 +1166,7 @@ TEST_F(GaussianFitterTest, Split3_find_guess){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.guess_peaks(&peaks,ampData,idxData);
 
@@ -1203,7 +1203,7 @@ TEST_F(GaussianFitterTest, Split_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 //Malik: unit test returns 3 as count but I found 2 while observing data.
@@ -1231,7 +1231,7 @@ TEST_F(GaussianFitterTest, Split2_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
@@ -1259,7 +1259,7 @@ TEST_F(GaussianFitterTest, Split3_find){
     //struct vector amp = {ampData.data(), ampData.size(), ampData.capacity()};
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1289,7 +1289,7 @@ TEST_F(GaussianFitterTest, NayaniClipped1_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
@@ -1320,7 +1320,7 @@ TEST_F(GaussianFitterTest, NayaniClipped2_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1347,7 +1347,7 @@ TEST_F(GaussianFitterTest, gaussianFitter_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1380,7 +1380,7 @@ TEST_F(GaussianFitterTest, NayaniClipped3_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1412,7 +1412,7 @@ TEST_F(GaussianFitterTest, NayaniClipped4_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1445,7 +1445,7 @@ TEST_F(GaussianFitterTest, NayaniClipped5_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1476,7 +1476,7 @@ TEST_F(GaussianFitterTest, NayaniClipped6_find){
     //the noise level for this waveform is 17.4
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1515,7 +1515,7 @@ TEST_F(GaussianFitterTest, NayaniClipped7_find){
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
     std::vector<Peak*> peaks;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
@@ -1547,7 +1547,7 @@ TEST_F(GaussianFitterTest, NayaniClipped8_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1580,7 +1580,7 @@ TEST_F(GaussianFitterTest, max_iter_1_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1613,7 +1613,7 @@ TEST_F(GaussianFitterTest, max_iter_2_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1644,7 +1644,7 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1681,7 +1681,7 @@ TEST_F(GaussianFitterTest, max_iter_4_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1714,7 +1714,7 @@ TEST_F(GaussianFitterTest, max_iter_5_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1759,7 +1759,7 @@ TEST_F(GaussianFitterTest, trig_loc_1_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1789,7 +1789,7 @@ TEST_F(GaussianFitterTest, trig_loc_2_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1818,7 +1818,7 @@ TEST_F(GaussianFitterTest, num_iterations_10_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1846,7 +1846,7 @@ TEST_F(GaussianFitterTest, problem_waveform_1_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1875,7 +1875,7 @@ TEST_F(GaussianFitterTest, problem_waveform_2_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1904,7 +1904,7 @@ TEST_F(GaussianFitterTest, problem_waveform_3_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1934,7 +1934,7 @@ TEST_F(GaussianFitterTest, problem_waveform_4_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1962,7 +1962,7 @@ TEST_F(GaussianFitterTest, problem_waveform_5_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -1991,7 +1991,7 @@ TEST_F(GaussianFitterTest, problem_waveform_6_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2019,7 +2019,7 @@ TEST_F(GaussianFitterTest, problem_waveform_7_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2044,7 +2044,7 @@ TEST_F(GaussianFitterTest, problem_waveform_8_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2074,7 +2074,7 @@ TEST_F(GaussianFitterTest, problem_waveform_9_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2107,7 +2107,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2129,7 +2129,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2152,7 +2152,7 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2175,7 +2175,7 @@ TEST_F(GaussianFitterTest,problem_waveform_11_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
@@ -2203,7 +2203,7 @@ TEST_F(GaussianFitterTest,problem_waveform_12_find){
     std::iota(idxData.begin(), idxData.end(), 0);
 
     GaussianFitter fitter;
-    fitter.noise_level = 9;
+    fitter.noise_level = 10;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);

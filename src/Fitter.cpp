@@ -325,14 +325,9 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         //the old one is commented below. 
         //int secondDeriv = amplitudeData[i+1] - 2* amplitudeData[i]- amplitudeData[i-1];
         //malik changed this two line below.
-        diff = amplitudeData[i+1] - amplitudeData[i];
-        diff2= amplitudeData[i-1] - amplitudeData[i];
-        if(diff <0  && diff2 <0){
-            actual_peak = true;
-        }
-            
-
-        
+       // diff = amplitudeData[i+1] - amplitudeData[i];
+        //diff2= amplitudeData[i-1] - amplitudeData[i];
+             
         //we will reward or penalize based on the real peak. if we find real peak we will reward otherwise we will penalize
         //if(trackingPeak && diff < 0)
         //secondDeriv = amplitudeData[i+1] + (diff) - 2*amplitudeData[i]  + amplitudeData[i-1];
@@ -344,10 +339,11 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         secondDeriv, amplitudeData[i+1], amplitudeData[i],amplitudeData[i-1]);
         if(indexData[i] - indexData[i-1] != 1 || indexData[i+1] - indexData[i] != 1){   //Gap in the data (segmented wave)
             secondDeriv = 0;
+            //malik
             trackingPeak = false;
         }
-
-        if(secondDeriv >= 0 && trackingPeak){   //Finished tracking a peak, add it to guesses
+        //prev was secondDeriv >=0 malik changed to 4
+        if(secondDeriv >= 4 && trackingPeak){   //Finished tracking a peak, add it to guesses
            // spdlog::trace("secondDeriv:{}, min2ndDiffIdx:{}",secondDeriv, min2ndDiffIdx);
             addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
             min2ndDiffVal = 0;
@@ -355,7 +351,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
 
         }//secondDeriv<0 means it finds a peak whose left_amp < peak_amp and its right_amp >= peak_amp
         //this doesn't define a peak is it? consult with professor about this issue
-        else if(actual_peak && secondDeriv < 0){  //Currently tracking a peak
+        else if(secondDeriv < 0){  //Currently tracking a peak
             trackingPeak = true;
             if(secondDeriv < min2ndDiffVal || (secondDeriv == min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
                 min2ndDiffVal = secondDeriv;

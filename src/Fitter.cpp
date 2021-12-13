@@ -337,9 +337,9 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
             if(secondDeriv < min2ndDiffVal || (secondDeriv == min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
                 min2ndDiffVal = secondDeriv;
                 min2ndDiffIdx = i;
-                spdlog::trace("min2ndDiffIdx:{}  current_peak_amp: {}",min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
+                spdlog::trace("secondDeriv: {}, min2ndDiffIdx:{}  current_peak_amp: {}",secondDeriv, min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
             }
-            spdlog::trace("min2ndDiffIdx:{}  current_peak_amp: {}",min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
+            spdlog::trace("secondDeriv: {}, min2ndDiffIdx:{}  current_peak_amp: {}",secondDeriv, min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
         }
     }
 

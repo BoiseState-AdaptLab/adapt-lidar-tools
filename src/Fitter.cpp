@@ -339,6 +339,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
                 min2ndDiffIdx = i;
                 spdlog::trace("min2ndDiffIdx:{}  current_peak_amp: {}",min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
             }
+            spdlog::trace("min2ndDiffIdx:{}  current_peak_amp: {}",min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
         }
     }
 

@@ -370,6 +370,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
     std::vector<std::size_t> deleteList;
     for(std::size_t i = 1; i < guesses.size(); ++i){
         if(guesses[i].b - guesses[i-1].b < 4){//@@TODO threshold
+            spdlog::trace("Too close peak1{} at {} - peak2{} at {}",guesses[i].a,guesses[i].b,guesses[i-1].a, guesses[i-1].b);
             deleteList.push_back(i);
         }
     }

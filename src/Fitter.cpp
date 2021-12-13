@@ -351,7 +351,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
 
         }//secondDeriv<0 means it finds a peak whose left_amp < peak_amp and its right_amp >= peak_amp
         //this doesn't define a peak is it? consult with professor about this issue
-        else if(secondDeriv < 0){  //Currently tracking a peak
+        else if(secondDeriv < -2){  //Currently tracking a peak
             trackingPeak = true;
             //malik: we cannot define if the amplitude is local minimum by only observing the minimum secondDeriv
             if(secondDeriv < min2ndDiffVal || (secondDeriv >= min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude

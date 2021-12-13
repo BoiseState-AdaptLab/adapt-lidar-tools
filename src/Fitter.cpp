@@ -343,7 +343,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
             trackingPeak = false;
         }
         //prev was secondDeriv >=0 malik changed to 4
-        if(secondDeriv >= 4 && trackingPeak){   //Finished tracking a peak, add it to guesses
+        if(secondDeriv >= 2 && trackingPeak){   //Finished tracking a peak, add it to guesses
            // spdlog::trace("secondDeriv:{}, min2ndDiffIdx:{}",secondDeriv, min2ndDiffIdx);
             addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
             min2ndDiffVal = 0;

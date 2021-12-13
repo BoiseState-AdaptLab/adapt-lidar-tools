@@ -317,12 +317,14 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
     int min2ndDiffIdx = -1;
 
     bool trackingPeak = false;
-    for(std::size_t i = 2; i < amplitudeData.size()-2; ++i){
+    for(std::size_t i = 1; i < amplitudeData.size()-2; ++i){
         //the old one is commented below. 
         //int secondDeriv = amplitudeData[i+1] - 2* amplitudeData[i]- amplitudeData[i-1];
         //malik changed this two line below.
         int diff = amplitudeData[i+1] - amplitudeData[i];
-        int secondDeriv = amplitudeData[i+2] + amplitudeData[i+1] + (diff) - 4*amplitudeData[i] + amplitudeData[i-2] + amplitudeData[i-1];
+        diff+= amplitudeData[i-1] - amplitudeData[i];
+        //we will reward or penalize based on the real peak. if we find real peak we will reward otherwise we will penalize
+        int secondDeriv = amplitudeData[i+1] + (diff) - 2*amplitudeData[i]  + amplitudeData[i-1];
         
         spdlog::trace("SecondDeriv:{}, amplitudeData[i+1]:{} - amplitudeData[i]:{} amplitudeData[i-1]:{}",
         secondDeriv, amplitudeData[i+1], amplitudeData[i],amplitudeData[i-1]);

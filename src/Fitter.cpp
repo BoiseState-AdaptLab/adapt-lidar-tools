@@ -318,9 +318,11 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
 
     bool trackingPeak = false;
     for(std::size_t i = 2; i < amplitudeData.size()-2; ++i){
-        
-        //int secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i] + amplitudeData[i-1];
-        int secondDeriv = amplitudeData[i+2] + amplitudeData[i+1] - 4*amplitudeData[i] + amplitudeData[i-2] + amplitudeData[i-1];
+        //the old one is commented below. 
+        //int secondDeriv = amplitudeData[i+1] - 2* amplitudeData[i]- amplitudeData[i-1];
+        //malik changed this two line below.
+        int diff = amplitudeData[i+1] - amplitudeData[i];
+        int secondDeriv = amplitudeData[i+2] + amplitudeData[i+1] + (diff) - 4*amplitudeData[i] + amplitudeData[i-2] + amplitudeData[i-1];
         
         spdlog::trace("SecondDeriv:{}, amplitudeData[i+1]:{} - amplitudeData[i]:{} amplitudeData[i-1]:{}",
         secondDeriv, amplitudeData[i+1], amplitudeData[i],amplitudeData[i-1]);

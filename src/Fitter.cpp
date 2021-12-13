@@ -353,7 +353,8 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         //this doesn't define a peak is it? consult with professor about this issue
         else if(secondDeriv < 0){  //Currently tracking a peak
             trackingPeak = true;
-            if(secondDeriv < min2ndDiffVal || (secondDeriv == min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
+            //malik: we cannot define if the amplitude is local minimum by only observing the minimum secondDeriv
+            if(secondDeriv < min2ndDiffVal || (secondDeriv >= min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
                 min2ndDiffVal = secondDeriv;
                 min2ndDiffIdx = i;
                 spdlog::trace("secondDeriv: {}, min2ndDiffIdx:{}  current_peak_amp: {}",secondDeriv, min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);

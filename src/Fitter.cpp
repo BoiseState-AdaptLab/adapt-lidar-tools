@@ -325,16 +325,19 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         }
 
         if(secondDeriv >= 0 && trackingPeak){   //Finished tracking a peak, add it to guesses
-            spdlog::trace("secondDeriv:{}, min2ndDiffIdx:{}\n",secondDeriv, min2ndDiffIdx);
+            spdlog::trace("secondDeriv:{}, min2ndDiffIdx:{}",secondDeriv, min2ndDiffIdx);
             addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
             min2ndDiffVal = 0;
             trackingPeak = false;
 
-        }else if(secondDeriv < 0){  //Currently tracking a peak
+        }//secondDeriv<0 means it finds a peak whose left_amp < peak_amp and its right_amp >= peak_amp
+        //this doesn't define a peak is it? consult with professor about this issue
+        else if(secondDeriv < 0){  //Currently tracking a peak
             trackingPeak = true;
             if(secondDeriv < min2ndDiffVal || (secondDeriv == min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
                 min2ndDiffVal = secondDeriv;
                 min2ndDiffIdx = i;
+                spdlog::trace("min2ndDiffIdx:{}  current_peak_amp: {}",min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
             }
         }
     }

@@ -317,9 +317,11 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
     int min2ndDiffIdx = -1;
 
     bool trackingPeak = false;
-    for(std::size_t i = 1; i < amplitudeData.size()-1; ++i){
+    for(std::size_t i = 2; i < amplitudeData.size()-2; ++i){
         
-        int secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i] + amplitudeData[i-1];
+        //int secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i] + amplitudeData[i-1];
+        int secondDeriv = amplitudeData[i+2] + amplitudeData[i+1] - 4*amplitudeData[i] + amplitudeData[i-2] + amplitudeData[i-1];
+        
         spdlog::trace("SecondDeriv:{}, amplitudeData[i+1]:{} - amplitudeData[i]:{} amplitudeData[i-1]:{}",
         secondDeriv, amplitudeData[i+1], amplitudeData[i],amplitudeData[i-1]);
         if(indexData[i] - indexData[i-1] != 1 || indexData[i+1] - indexData[i] != 1){   //Gap in the data (segmented wave)

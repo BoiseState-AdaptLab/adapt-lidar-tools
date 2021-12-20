@@ -64,7 +64,8 @@ int func_f(const gsl_vector* x, void* params, gsl_vector* f){
     for(std::size_t i = 0; i < data.indexData.size(); ++i){
         double t = data.indexData[i];
         double y = data.amplitudeData[i];
-
+        //malik
+        spdlog::trace("func_f: t_b: {}, y_b: {}",t,y);
         for(std::size_t j = 0; j < x->size/3; ++j){
             double a = gsl_vector_get(x, j*3);
             double b = gsl_vector_get(x, j*3+1);
@@ -76,7 +77,7 @@ int func_f(const gsl_vector* x, void* params, gsl_vector* f){
                 y+=1000;    //Penalty to act as a contraint.
             }
         }
-
+        
         gsl_vector_set(f, i, y);
     }
 
@@ -343,7 +344,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
             trackingPeak = false;
         }
         //prev was secondDeriv >=0 malik changed to 4
-        if(secondDeriv >= 2 && trackingPeak){   //Finished tracking a peak, add it to guesses
+        if(secondDeriv >= 0 && trackingPeak){   //Finished tracking a peak, add it to guesses
            // spdlog::trace("secondDeriv:{}, min2ndDiffIdx:{}",secondDeriv, min2ndDiffIdx);
             addPeak(amplitudeData[min2ndDiffIdx], indexData[min2ndDiffIdx]);
             min2ndDiffVal = 0;
@@ -351,7 +352,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
 
         }//secondDeriv<0 means it finds a peak whose left_amp < peak_amp and its right_amp >= peak_amp
         //this doesn't define a peak is it? consult with professor about this issue
-        else if(secondDeriv < -2){  //Currently tracking a peak
+        else if(secondDeriv < 0){  //Currently tracking a peak
             trackingPeak = true;
             //malik: we cannot define if the amplitude is local minimum by only observing the minimum secondDeriv
             if(secondDeriv < min2ndDiffVal || (secondDeriv >= min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude

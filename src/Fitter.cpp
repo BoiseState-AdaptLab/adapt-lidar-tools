@@ -65,7 +65,7 @@ int func_f(const gsl_vector* x, void* params, gsl_vector* f){
         double t = data.indexData[i];
         double y = data.amplitudeData[i];
         //malik
-        spdlog::trace("func_f: t_b: {}, y_b: {}",t,y);
+       // spdlog::trace("func_f: t_b: {}, y_b: {}",t,y);
         for(std::size_t j = 0; j < x->size/3; ++j){
             double a = gsl_vector_get(x, j*3);
             double b = gsl_vector_get(x, j*3+1);
@@ -273,7 +273,7 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
     }
 
     //If failed, log waveform
-    if(!result && spdlog::default_logger()->level() <= spdlog::level::err){
+    //if(!result && spdlog::default_logger()->level() <= spdlog::level::err){
         std::string tmp;
         for(auto val : indexData){
             tmp+=std::to_string(val)+" ";
@@ -286,7 +286,7 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         }
 
         spdlog::error("Amplitude Data:\n{}", tmp);
-    }
+    //}
 
     return result; //Someone else can check and see if the peaks make sense (i.e. check negative amplitude)
 }

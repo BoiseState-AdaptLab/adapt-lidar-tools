@@ -337,7 +337,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i]  + amplitudeData[i-1];
 
        // spdlog::trace("SecondDeriv:{}, amplitudeData[i+1]:{} - amplitudeData[i]:{} amplitudeData[i-1]:{}",
-        secondDeriv, amplitudeData[i+1], amplitudeData[i],amplitudeData[i-1]);
+       // secondDeriv, amplitudeData[i+1], amplitudeData[i],amplitudeData[i-1]);
         if(indexData[i] - indexData[i-1] != 1 || indexData[i+1] - indexData[i] != 1){   //Gap in the data (segmented wave)
             secondDeriv = 0;
             //malik

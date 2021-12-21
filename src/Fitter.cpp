@@ -286,7 +286,7 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
         }
 
         spdlog::error("Amplitude Data:\n{}", tmp);
-    //}
+    }
 
     return result; //Someone else can check and see if the peaks make sense (i.e. check negative amplitude)
 }
@@ -336,7 +336,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
         //else
         secondDeriv = amplitudeData[i+1] - 2*amplitudeData[i]  + amplitudeData[i-1];
 
-        spdlog::trace("SecondDeriv:{}, amplitudeData[i+1]:{} - amplitudeData[i]:{} amplitudeData[i-1]:{}",
+       // spdlog::trace("SecondDeriv:{}, amplitudeData[i+1]:{} - amplitudeData[i]:{} amplitudeData[i-1]:{}",
         secondDeriv, amplitudeData[i+1], amplitudeData[i],amplitudeData[i-1]);
         if(indexData[i] - indexData[i-1] != 1 || indexData[i+1] - indexData[i] != 1){   //Gap in the data (segmented wave)
             secondDeriv = 0;
@@ -358,7 +358,7 @@ void guessGaussians(const std::vector<int>& indexData, const std::vector<int>& a
             if(secondDeriv < min2ndDiffVal || (secondDeriv >= min2ndDiffVal && amplitudeData[i] > amplitudeData[min2ndDiffIdx])){     //New minimium, or same min but larger amplitude
                 min2ndDiffVal = secondDeriv;
                 min2ndDiffIdx = i;
-                spdlog::trace("secondDeriv: {}, min2ndDiffIdx:{}  current_peak_amp: {}",secondDeriv, min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
+               // spdlog::trace("secondDeriv: {}, min2ndDiffIdx:{}  current_peak_amp: {}",secondDeriv, min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
             }
            // spdlog::trace("secondDeriv: {}, min2ndDiffIdx:{}  current_peak_amp: {}",secondDeriv, min2ndDiffIdx,amplitudeData[min2ndDiffIdx]);
         }

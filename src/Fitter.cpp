@@ -159,7 +159,7 @@ bool solveSystem(gsl_multifit_nlinear_workspace* workspace, gsl_vector* results)
     int result = gsl_multifit_nlinear_driver(maxIter, xTol, gTol, fTol, iterCallback, nullptr, &info, workspace);
 
     gsl_vector_memcpy(results, params);  //Copy results into output vector
-
+    spdlog::debug("Guesses: {}", gaussianToString(*params));
     if(result != GSL_SUCCESS){
         spdlog::error("Fitting failed with error \"{}\"", gsl_strerror(result));
         spdlog::error("Last guesses: {}", gaussianToString(*params));
@@ -273,7 +273,7 @@ bool fitGaussians(const std::vector<int>& indexData, const std::vector<int>& amp
     }
 
     //If failed, log waveform
-    //if(!result && spdlog::default_logger()->level() <= spdlog::level::err){
+    if(!result && spdlog::default_logger()->level() <= spdlog::level::err){
         std::string tmp;
         for(auto val : indexData){
             tmp+=std::to_string(val)+" ";

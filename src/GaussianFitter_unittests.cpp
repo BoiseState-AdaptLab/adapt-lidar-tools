@@ -1210,12 +1210,19 @@ TEST_F(GaussianFitterTest, Split_find){
 // malik observed 3
     ASSERT_EQ(3, count);
     ASSERT_EQ(3,peaks.size());
-    EXPECT_NEAR(200,peaks.at(0)->amp, .05*200);
-    EXPECT_NEAR(18.5, peaks.at(0)->location,1);
+    //malik changed from 200 to 110
+    EXPECT_NEAR(110,peaks.at(0)->amp, .05*200);
+    //malik changed to 16 from 18.5
+    EXPECT_NEAR(16, peaks.at(0)->location,1);
     //EXPECT_NEAR(10.5, peaks.at(0)->fwhm, 1);
+//malik changed to 151 from 43
+    EXPECT_NEAR(151 ,peaks.at(1)->amp, .05*43);
+    //malik chaned to 20 from 30.5
+    EXPECT_NEAR(20, peaks.at(1)->location,1);
+    //malik added this two line
+    EXPECT_NEAR(40 ,peaks.at(2)->amp, .05*40);
+    EXPECT_NEAR(30.5, peaks.at(2)->location,1);
 
-    EXPECT_NEAR(43 ,peaks.at(1)->amp, .05*43);
-    EXPECT_NEAR(30.5, peaks.at(1)->location,1);
     //EXPECT_NEAR(4, peaks.at(1)->fwhm, 1);
 
 

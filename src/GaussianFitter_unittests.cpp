@@ -1274,13 +1274,18 @@ TEST_F(GaussianFitterTest, Split3_find){
 //malik observed 3
     ASSERT_EQ(3, count);
     ASSERT_EQ(3,peaks.size());
+//malik changed from 69 to 41
+    EXPECT_NEAR(41 ,peaks.at(0)->amp, 0.2*69);
 
-    EXPECT_NEAR(69 ,peaks.at(0)->amp, 0.2*69);
-    EXPECT_NEAR(7.5 ,peaks.at(0)->location, 1);
-
-    EXPECT_NEAR(90 ,peaks.at(1)->amp, 0.2*90);
-    EXPECT_NEAR(19.5 ,peaks.at(1)->location,1);
-
+//malik changed from 7.5 to 4
+    EXPECT_NEAR(4 ,peaks.at(0)->location, 1);
+//malik changed from 90 to 28
+    EXPECT_NEAR(28 ,peaks.at(1)->amp, 0.2*90);
+    //malik changed from 19.5 to 7
+    EXPECT_NEAR(7 ,peaks.at(1)->location,1);
+    //malik added this
+    EXPECT_NEAR(81 ,peaks.at(1)->amp, 0.2*90);
+    EXPECT_NEAR(20.5 ,peaks.at(1)->location,1);
     //EXPECT_EQ(3, peaks.at(0)->location);
     //EXPECT_NEAR(6, peaks.at(0)->fwhm, 1);
 }
@@ -1300,19 +1305,37 @@ TEST_F(GaussianFitterTest, NayaniClipped1_find){
     fitter.noise_level = 10;
     std::vector<Peak*> peaks;
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
+//Malik: Older
+    // ASSERT_EQ(3, count);
+    // ASSERT_EQ(3,peaks.size());
+    // EXPECT_NEAR(200,peaks.at(0)->amp, .05*200);
+    // EXPECT_NEAR(18.5, peaks.at(0)->location, 1);
+    // //EXPECT_NEAR(10.5, peaks.at(0)->fwhm, 1);
 
-    ASSERT_EQ(3, count);
-    ASSERT_EQ(3,peaks.size());
-    EXPECT_NEAR(200,peaks.at(0)->amp, .05*200);
-    EXPECT_NEAR(18.5, peaks.at(0)->location, 1);
+    // EXPECT_NEAR(43 ,peaks.at(1)->amp, .2*43);
+    // EXPECT_NEAR(30.5, peaks.at(1)->location,1);
+    // //EXPECT_NEAR(4, peaks.at(1)->fwhm, 1);
+
+    // EXPECT_NEAR(34 ,peaks.at(2)->amp,.2*34);
+    // EXPECT_NEAR(38, peaks.at(2)->location,1.2);
+    // //EXPECT_NEAR(6, peaks.at(2)->fwhm, 1);
+
+//malik updated this
+    ASSERT_EQ(4, count);
+    ASSERT_EQ(4,peaks.size());
+    EXPECT_NEAR(105,peaks.at(0)->amp, .05*200);
+    EXPECT_NEAR(16.5, peaks.at(0)->location, 1);
     //EXPECT_NEAR(10.5, peaks.at(0)->fwhm, 1);
 
-    EXPECT_NEAR(43 ,peaks.at(1)->amp, .2*43);
-    EXPECT_NEAR(30.5, peaks.at(1)->location,1);
+    EXPECT_NEAR(144 ,peaks.at(1)->amp, .2*43);
+    EXPECT_NEAR(20.5, peaks.at(1)->location,1);
     //EXPECT_NEAR(4, peaks.at(1)->fwhm, 1);
 
-    EXPECT_NEAR(34 ,peaks.at(2)->amp,.2*34);
-    EXPECT_NEAR(38, peaks.at(2)->location,1.2);
+    EXPECT_NEAR(38 ,peaks.at(2)->amp,.2*34);
+    EXPECT_NEAR(29, peaks.at(2)->location,1.2);
+
+    EXPECT_NEAR(13 ,peaks.at(3)->amp,.2*34);
+    EXPECT_NEAR(38, peaks.at(3)->location,1.2);
     //EXPECT_NEAR(6, peaks.at(2)->fwhm, 1);
 
 }

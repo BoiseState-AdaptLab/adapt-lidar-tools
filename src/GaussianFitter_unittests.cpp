@@ -1284,8 +1284,8 @@ TEST_F(GaussianFitterTest, Split3_find){
     //malik changed from 19.5 to 7
     EXPECT_NEAR(7 ,peaks.at(1)->location,1);
     //malik added this
-    EXPECT_NEAR(81 ,peaks.at(1)->amp, 0.2*90);
-    EXPECT_NEAR(20.5 ,peaks.at(1)->location,1);
+    EXPECT_NEAR(81 ,peaks.at(2)->amp, 0.2*90);
+    EXPECT_NEAR(20.5 ,peaks.at(2)->location,1);
     //EXPECT_EQ(3, peaks.at(0)->location);
     //EXPECT_NEAR(6, peaks.at(0)->fwhm, 1);
 }

@@ -1483,14 +1483,19 @@ TEST_F(GaussianFitterTest, NayaniClipped5_find){
 
     ASSERT_EQ(2,count);
     ASSERT_EQ(2,peaks.size());
-    EXPECT_NEAR(150,peaks.at(0)->amp,.05*150);
-    EXPECT_NEAR(146,peaks.at(1)->amp,.05*146);
+    EXPECT_NEAR(156,peaks.at(0)->amp,.05*156);
+    EXPECT_NEAR(128,peaks.at(1)->amp,.05*128);
+    //malik added after observation
+    EXPECT_NEAR(73,peaks.at(2)->amp,.05*73);
+    EXPECT_NEAR(9.77,peaks.at(3)->amp,.05*9.77);
 //malik changed to 1.2
     EXPECT_NEAR(17.5, peaks.at(0)->location,1.2);
 //malik changed to EQ to NEAR
-    EXPECT_NEAR(31, peaks.at(1)->location,1.2);
-    //EXPECT_NEAR(7.3, peaks.at(0)->fwhm, 1);
-    //EXPECT_NEAR(10.2, peaks.at(1)->fwhm, 1);
+
+    EXPECT_NEAR(29, peaks.at(1)->location,1.2);
+    //malik added after observation
+    EXPECT_NEAR(35, peaks.at(2)->location,1.2);
+    EXPECT_NEAR(40, peaks.at(3)->location,1.2);
 }
 
 TEST_F(GaussianFitterTest, NayaniClipped6_find){

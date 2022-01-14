@@ -1481,8 +1481,8 @@ TEST_F(GaussianFitterTest, NayaniClipped5_find){
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
-    ASSERT_EQ(2,count);
-    ASSERT_EQ(2,peaks.size());
+    ASSERT_EQ(4,count);
+    ASSERT_EQ(4,peaks.size());
     EXPECT_NEAR(156,peaks.at(0)->amp,.05*156);
     EXPECT_NEAR(128,peaks.at(1)->amp,.05*128);
     //malik added after observation

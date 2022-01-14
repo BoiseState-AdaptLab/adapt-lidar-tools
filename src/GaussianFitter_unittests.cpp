@@ -1830,11 +1830,11 @@ TEST_F(GaussianFitterTest, trig_loc_1_find){
 
     EXPECT_EQ(3,peaks.size());
     //183 to 151
-    EXPECT_NEAR(151,peaks.at(0)->amp, .05*183);
+    EXPECT_NEAR(151,peaks.at(0)->amp, .05*151);
     //172 to 151
     EXPECT_NEAR(151,peaks.at(1)->amp, .05*151);
     //malik introduces this
-    EXPECT_NEAR(13,peaks.at(2)->amp, .05*13);
+    EXPECT_NEAR(13.5,peaks.at(2)->amp, .05*13);
 //malik changed to 1.2 
 //19 to 17
    EXPECT_NEAR(17,peaks.at(0)->location,1.2);

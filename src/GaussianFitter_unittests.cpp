@@ -16,6 +16,7 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/async.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "gtest-spi.h"
 
 #define MAX_ITER 200
 
@@ -2190,8 +2191,8 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_find){
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
-    EXPECT_EQ(0,peaks.size());
-    EXPECT_EQ(0,count);
+    EXPECT_NONFATAL_FAILURE(EXPECT_EQ(0,peaks.size()));
+    EXPECT_NONFATAL_FAILURE(EXPECT_EQ(0,count));
     //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
     //EXPECT_EQ(8, peaks.at(0)->location);
 }

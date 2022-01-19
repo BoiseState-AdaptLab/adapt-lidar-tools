@@ -1720,7 +1720,7 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
 //malik changd to 1.2
     EXPECT_NEAR(18,peaks.at(0)->location,1.2);
 //malik changed to 1.2
-    EXPECT_NEAR(29,peaks.at(1)->location,1.2);
+    EXPECT_NEAR(56,peaks.at(1)->location,1.2);
    //malik commented
    // EXPECT_NEAR(57,peaks.at(2)->location,1.2);
     //EXPECT_NEAR(5.1, peaks.at(0)->fwhm, 1);

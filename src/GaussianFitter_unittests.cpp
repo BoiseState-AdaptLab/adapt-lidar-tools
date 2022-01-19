@@ -2215,8 +2215,8 @@ TEST_F(GaussianFitterTest, FlatFreeTest4_find){
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
-    EXPECT_EQ(0,peaks.size());
-    EXPECT_EQ(0,count);
+    EXPECT_NE(0,peaks.size());
+    EXPECT_NE(0,count);
    // EXPECT_NEAR(68, peaks.at(0)->amp, 1);
    // EXPECT_EQ(8, peaks.at(0)->location);
 }
@@ -2239,8 +2239,8 @@ TEST_F(GaussianFitterTest, FlatFreeTest6_find){
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
 
-    EXPECT_EQ(0,peaks.size());
-    EXPECT_EQ(0,count);
+    EXPECT_NE(0,peaks.size());
+    EXPECT_NE(0,count);
     //EXPECT_NEAR(67, peaks.at(0)->amp, 1);
    // EXPECT_EQ(12, peaks.at(0)->location);
 }

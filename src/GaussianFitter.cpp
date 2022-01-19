@@ -377,6 +377,7 @@ int GaussianFitter::find_peaks(std::vector<Peak*>* results,
 
     smoothing_expt(&ampData);
     std::vector<Fitter::Gaussian> guesses;
+    spdlog::logger("Noise_level:{}",noise_level);
     Fitter::guessGaussians(idxData, ampData, noise_level, guesses);
 
     if(guesses.empty()){

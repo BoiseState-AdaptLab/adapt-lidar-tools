@@ -2191,8 +2191,10 @@ TEST_F(GaussianFitterTest, FlatFreeTest3_find){
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);
-    EXPECT_NONFATAL_FAILURE(EXPECT_EQ(0,peaks.size())&&FAIL(),"This should be failed");
-    EXPECT_NONFATAL_FAILURE(EXPECT_EQ(0,count) && FAIL(),"This should be failed");
+    //EXPECT_NONFATAL_FAILURE(EXPECT_EQ(0,peaks.size()),"This should be failed");
+    //EXPECT_NONFATAL_FAILURE(EXPECT_EQ(0,count),"This should be failed");
+    EXPECT_FALSE(EXPECT_EQ(0,peaks.size()));
+    EXPECT_FALSE(EXPECT_EQ(0,count));
     //EXPECT_NEAR(68, peaks.at(0)->amp, 1);
     //EXPECT_EQ(8, peaks.at(0)->location);
 }

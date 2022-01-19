@@ -1716,7 +1716,7 @@ TEST_F(GaussianFitterTest, max_iter_3_find){
 //malik commmented
     //EXPECT_NEAR(11,peaks.at(1)->amp, .2*11);
 
-    EXPECT_NEAR(33,peaks.at(2)->amp, .2*33);
+    EXPECT_NEAR(33,peaks.at(1)->amp, .2*33);
 //malik changd to 1.2
     EXPECT_NEAR(18,peaks.at(0)->location,1.2);
 //malik changed to 1.2

@@ -1785,7 +1785,8 @@ TEST_F(GaussianFitterTest, max_iter_5_find){
 
     // now that we have the input vectors call the gaussianFitter
     GaussianFitter fitter;
-    fitter.noise_level = 10;
+    //malik set noise level 10 to 12
+    fitter.noise_level = 12;
     std::vector<Peak*> peaks;
 
     int count = fitter.find_peaks(&peaks,ampData,idxData, 200);

@@ -51,7 +51,9 @@ int FlightLineData::setFlightLineData(std::string fileName){
     pReader = pOpener.open();
     if(pReader == NULL){
         spdlog::critical("Unable to Open File {}", fileName);
-        return 1;
+        //malik
+        throw 1;
+        //return 1;
     }
 
     spdlog::trace("Target file opened for reading, wasn't empty");

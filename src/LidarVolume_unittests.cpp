@@ -69,7 +69,6 @@ TEST_F(LidarVolumeTest, testPosition){
     std::string file_name =  "etc/140823_152425_1.pls";
     FlightLineData fld;
     EXPECT_NO_THROW (fld.setFlightLineData(file_name));
-
     LidarVolume lv;
     lv.setBoundingBox(fld.bb_x_min,fld.bb_x_max,
             fld.bb_y_min,fld.bb_y_max,
@@ -82,13 +81,13 @@ TEST_F(LidarVolumeTest, testPosition){
     EXPECT_EQ(known_y_idx_extent, lv.y_idx_extent);
 
     //Testing postion at y = 1770, x = 1771
-    int known_position_1 = 1771 + (1770 * known_y_idx_extent);
+    //malik wrote from known_y_idx_extent to known_x_id_extent
+    int known_position_1 = 1771 + (1770 * known_x_idx_extent);
     EXPECT_EQ(known_position_1, lv.position(1770,1771));
-
     //Testing postion at y = 1770, x = 1772
-    int known_position_2 = 1772 + (1770 * known_y_idx_extent);
+    //malik wrote from known_y_idx_extent to known_x_id_extent
+    int known_position_2 = 1772 + (1770 * known_x_idx_extent);
     EXPECT_EQ(known_position_2, lv.position(1770,1772));
-
 }
 
 

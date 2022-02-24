@@ -30,7 +30,7 @@ int main (int argc, char *argv[]) {
     if(!cmdLineArgs.parse_args(argc,argv)){
         return 1;
     }
-
+    /*
     // Set verbosity
     if (cmdLineArgs.verb == "trace") {
         spdlog::set_level(spdlog::level::trace);
@@ -110,6 +110,6 @@ int main (int argc, char *argv[]) {
     double diff = std::chrono::duration_cast<std::chrono::seconds>(t2-t1).
         count();
     spdlog::info("All done! Time elapsed: {} seconds", diff);
-
+*/
     return 0;
 }

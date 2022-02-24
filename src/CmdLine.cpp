@@ -3,7 +3,7 @@
 // Author: ravi
 
 #include "spdlog/spdlog.h"
-#include "CmdLine.hpp"
+#include "CmdLine.hpp" 
 #include <math.h>
 
 using namespace std;
@@ -186,6 +186,7 @@ bool CmdLine::set_verbosity (char* new_verb) {
 bool CmdLine::parse_args(int argc,char *argv[]){
     // Stores all messages to the user
     std::vector<std::string> msgs;
+    spdlog::trace("parse_args function:argc:{},  ** argv:{} ",argc,argv);
     // Determines which help statement to print
     bool advHelp = false;
     //Clear selected products

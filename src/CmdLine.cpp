@@ -4,6 +4,7 @@
 
 
 #include "CmdLine.hpp" 
+#include <iostream>
 #include "spdlog/spdlog.h"
 #include <math.h>
 
@@ -187,7 +188,6 @@ bool CmdLine::set_verbosity (char* new_verb) {
 bool CmdLine::parse_args(int argc,char *argv[]){
     // Stores all messages to the user
     std::vector<std::string> msgs;
-    spdlog::trace("parse_args function:argc:{},  ** argv:{} ",argc,argv);
     // Determines which help statement to print
     bool advHelp = false;
     //Clear selected products
@@ -235,7 +235,6 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      */
     while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:m:",
                     long_options, &option_index))!= -1){
-        spdlog::trace("delete it later: longopt:{}",optionChar);
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
             setInputFileName(fArg);

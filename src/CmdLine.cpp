@@ -2,8 +2,9 @@
 // Created on: 17-May-2017
 // Author: ravi
 
-#include "spdlog/spdlog.h"
+
 #include "CmdLine.hpp" 
+#include "spdlog/spdlog.h"
 #include <math.h>
 
 using namespace std;

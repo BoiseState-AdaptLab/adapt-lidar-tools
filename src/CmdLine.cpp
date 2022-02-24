@@ -2,7 +2,7 @@
 // Created on: 17-May-2017
 // Author: ravi
 
-
+#include "spdlog/spdlog.h"
 #include "CmdLine.hpp"
 #include <math.h>
 
@@ -233,6 +233,7 @@ bool CmdLine::parse_args(int argc,char *argv[]){
      */
     while((optionChar = getopt_long (argc, argv, "-:hdf:n:e:a:w:r:b:l:v:m:",
                     long_options, &option_index))!= -1){
+        spdlog::trace("longopt:{}",optionChar);
         if (optionChar == 'f') { //Set the filename to parse
             fArg = optarg;
             setInputFileName(fArg);
